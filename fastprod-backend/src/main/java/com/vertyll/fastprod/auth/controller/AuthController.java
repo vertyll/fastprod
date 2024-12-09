@@ -3,13 +3,14 @@ package com.vertyll.fastprod.auth.controller;
 import com.vertyll.fastprod.auth.dto.AuthRequestDto;
 import com.vertyll.fastprod.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.auth.dto.RegisterRequestDto;
-import com.vertyll.fastprod.auth.dto.RegisterResponseDto;
 import com.vertyll.fastprod.auth.service.AuthService;
+import com.vertyll.fastprod.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,21 +24,38 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register new user")
-    public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto request) throws MessagingException {
-        RegisterResponseDto response = authService.register(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse<Void>> register(
+            @RequestBody @Valid RegisterRequestDto request
+    ) throws MessagingException {
+        authService.register(request);
+        return ApiResponse.buildResponse(
+                null,
+                "User registered successfully",
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/authenticate")
     @Operation(summary = "Authenticate user and get token")
-    public ResponseEntity<AuthResponseDto> authenticate(@RequestBody @Valid AuthRequestDto request) {
-        return ResponseEntity.ok(authService.authenticate(request));
+    public ResponseEntity<ApiResponse<AuthResponseDto>> authenticate(
+            @RequestBody @Valid AuthRequestDto request
+    ) {
+        AuthResponseDto response = authService.authenticate(request);
+        return ApiResponse.buildResponse(
+                response,
+                "Authentication successful",
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/verify")
     @Operation(summary = "Verify user account with code")
-    public ResponseEntity<Void> verifyAccount(@RequestParam String code) {
+    public ResponseEntity<ApiResponse<Void>> verifyAccount(@RequestParam String code) {
         authService.verifyAccount(code);
-        return ResponseEntity.ok().build();
+        return ApiResponse.buildResponse(
+                null,
+                "Account verified successfully",
+                HttpStatus.OK
+        );
     }
 }

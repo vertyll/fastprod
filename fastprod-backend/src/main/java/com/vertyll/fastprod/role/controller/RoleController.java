@@ -1,11 +1,15 @@
 package com.vertyll.fastprod.role.controller;
 
+import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,24 +20,47 @@ import java.util.List;
 @RestController
 @RequestMapping("/roles")
 @RequiredArgsConstructor
+@Tag(name = "Roles", description = "Role management APIs")
 public class RoleController {
 
     private final RoleService roleService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RoleResponseDto> createRole(@RequestBody @Valid RoleCreateDto dto) {
-        return ResponseEntity.ok(roleService.createRole(dto));
+    @Operation(summary = "Create new role")
+    public ResponseEntity<ApiResponse<RoleResponseDto>> createRole(
+            @RequestBody @Valid RoleCreateDto dto
+    ) {
+        RoleResponseDto role = roleService.createRole(dto);
+        return ApiResponse.buildResponse(
+                role,
+                "Role created successfully",
+                HttpStatus.CREATED
+        );
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RoleResponseDto> getRole(@PathVariable Long id) {
-        return ResponseEntity.ok(roleService.getRoleById(id));
+    @Operation(summary = "Get role by ID")
+    public ResponseEntity<ApiResponse<RoleResponseDto>> getRole(
+            @PathVariable Long id
+    ) {
+        RoleResponseDto role = roleService.getRoleById(id);
+        return ApiResponse.buildResponse(
+                role,
+                "Role retrieved successfully",
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/types")
-    public ResponseEntity<List<RoleType>> getAllRoleTypes() {
-        return ResponseEntity.ok(Arrays.asList(RoleType.values()));
+    @Operation(summary = "Get all available role types")
+    public ResponseEntity<ApiResponse<List<RoleType>>> getAllRoleTypes() {
+        List<RoleType> types = Arrays.asList(RoleType.values());
+        return ApiResponse.buildResponse(
+                types,
+                "Role types retrieved successfully",
+                HttpStatus.OK
+        );
     }
 }
