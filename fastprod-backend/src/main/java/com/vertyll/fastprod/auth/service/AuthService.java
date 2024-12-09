@@ -3,6 +3,7 @@ package com.vertyll.fastprod.auth.service;
 import com.vertyll.fastprod.auth.dto.AuthRequestDto;
 import com.vertyll.fastprod.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.auth.dto.RegisterRequestDto;
+import com.vertyll.fastprod.auth.dto.RegisterResponseDto;
 import com.vertyll.fastprod.auth.model.VerificationToken;
 import com.vertyll.fastprod.auth.repository.VerificationTokenRepository;
 import com.vertyll.fastprod.common.exception.ApiException;
@@ -37,7 +38,7 @@ public class AuthService {
     private final EmailService emailService;
 
     @Transactional
-    public void register(RegisterRequestDto request) throws MessagingException {
+    public RegisterResponseDto register(RegisterRequestDto request) throws MessagingException {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ApiException("Email already registered", HttpStatus.BAD_REQUEST);
         }
@@ -62,6 +63,11 @@ public class AuthService {
                 verificationCode,
                 "Account activation"
         );
+
+        return RegisterResponseDto.builder()
+                .message("Verification code has been sent to your email")
+                .email(user.getEmail())
+                .build();
     }
 
     public AuthResponseDto authenticate(AuthRequestDto request) {

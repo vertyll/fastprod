@@ -3,6 +3,7 @@ package com.vertyll.fastprod.auth.controller;
 import com.vertyll.fastprod.auth.dto.AuthRequestDto;
 import com.vertyll.fastprod.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.auth.dto.RegisterRequestDto;
+import com.vertyll.fastprod.auth.dto.RegisterResponseDto;
 import com.vertyll.fastprod.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,9 +23,9 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register new user")
-    public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequestDto request) throws MessagingException {
-        authService.register(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto request) throws MessagingException {
+        RegisterResponseDto response = authService.register(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/authenticate")
