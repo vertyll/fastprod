@@ -90,7 +90,7 @@ class RoleControllerTest {
                         .content(objectMapper.writeValueAsString(createDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Name is required"));
+                .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(roleService, never()).createRole(any());
     }

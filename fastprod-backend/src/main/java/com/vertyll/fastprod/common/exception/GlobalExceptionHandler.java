@@ -10,6 +10,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import java.util.HashMap;
+import java.util.Map;
+import java.time.LocalDateTime;
+import com.vertyll.fastprod.common.response.ValidationErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,14 +28,20 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
-        String message = getFirstValidationMessage(ex);
+    public ResponseEntity<ValidationErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
 
-        return ApiResponse.buildResponse(
-                null,
-                message,
-                HttpStatus.BAD_REQUEST
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value")
         );
+
+        ValidationErrorResponse response = ValidationErrorResponse.builder()
+                .message("Validation failed")
+                .errors(errors)
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -68,23 +78,5 @@ public class GlobalExceptionHandler {
                 "An unexpected error occurred",
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
-    }
-
-    private String getFirstValidationMessage(MethodArgumentNotValidException ex) {
-        return ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(this::getValidationMessage)
-                .filter(msg -> !msg.isEmpty())
-                .findFirst()
-                .orElse("Validation error");
-    }
-
-    private String getValidationMessage(FieldError fieldError) {
-        String defaultMessage = fieldError.getDefaultMessage();
-        if (defaultMessage == null || defaultMessage.isEmpty()) {
-            return String.format("Invalid value for field: %s", fieldError.getField());
-        }
-        return defaultMessage;
     }
 }

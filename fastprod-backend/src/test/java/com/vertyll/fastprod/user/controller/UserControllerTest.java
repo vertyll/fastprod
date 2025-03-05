@@ -106,7 +106,7 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(createDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email should be valid"));
+                .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(userService, never()).createUser(any(UserCreateDto.class));
     }

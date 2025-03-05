@@ -104,7 +104,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email should be valid"));
+                .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).register(any(RegisterRequestDto.class));
     }
@@ -120,12 +120,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(Matchers.anyOf(
-                        Matchers.equalTo("First name is required"),
-                        Matchers.equalTo("Last name is required"),
-                        Matchers.equalTo("Email is required"),
-                        Matchers.equalTo("Password is required")
-                )));
+                .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).register(any(RegisterRequestDto.class));
     }
@@ -190,7 +185,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email should be valid"));
+                .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).authenticate(any(AuthRequestDto.class));
     }
@@ -206,10 +201,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", Matchers.anyOf(
-                        Matchers.equalTo("Email is required"),
-                        Matchers.equalTo("Password is required")
-                )));
+                .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).authenticate(any(AuthRequestDto.class));
     }

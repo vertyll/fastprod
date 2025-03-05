@@ -1,6 +1,7 @@
 package com.vertyll.fastprod.common.exception;
 
 import com.vertyll.fastprod.common.response.ApiResponse;
+import com.vertyll.fastprod.common.response.ValidationErrorResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,21 +44,27 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void handleValidationException_ShouldReturnFirstError() {
+    void handleValidationException_ShouldReturnValidationErrorResponse() {
         // given
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         BindingResult bindingResult = mock(BindingResult.class);
-        FieldError fieldError = new FieldError("object", "field", "error message");
+        FieldError fieldError = new FieldError("object", "username", "Username is required");
 
         when(ex.getBindingResult()).thenReturn(bindingResult);
-        when(bindingResult.getFieldErrors()).thenReturn(java.util.Collections.singletonList(fieldError));
+        when(bindingResult.getFieldErrors()).thenReturn(Collections.singletonList(fieldError));
 
         // when
-        ResponseEntity<ApiResponse<Void>> response = handler.handleValidationException(ex);
+        ResponseEntity<ValidationErrorResponse> response = handler.handleValidationException(ex);
 
         // then
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("error message", Objects.requireNonNull(response.getBody()).getMessage());
+        assertEquals("Validation failed", Objects.requireNonNull(response.getBody()).getMessage());
+        assertNotNull(response.getBody().getTimestamp());
+        assertNotNull(response.getBody().getErrors());
+
+        Map<String, String> errors = response.getBody().getErrors();
+        assertEquals(1, errors.size());
+        assertEquals("Username is required", errors.get("username"));
     }
 
     @Test
