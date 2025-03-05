@@ -1,0 +1,88 @@
+services:
+  db:
+    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    container_name: postgres-sql-fastprod
+    restart: always
+    ports:
+      - "${POSTGRES_HOST_DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-fastprod}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - fastprod
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  test-db:
+    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    restart: always
+    ports:
+      - "${POSTGRES_HOST_TEST_PORT:-5433}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_TEST_DB:-fastprod_test}
+    networks:
+      - fastprod
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mail-dev:
+    image: maildev/maildev:${MAILDEV_VERSION:-latest}
+    container_name: mail-dev-fastprod
+    restart: always
+    ports:
+      - "${MAIL_SMTP_PORT:-1025}:1025"
+      - "${MAIL_WEB_PORT:-1080}:1080"
+    networks:
+      - fastprod
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+      target: ${DOCKER_ENV:-development}
+      args:
+        - JAVA_VERSION=${JAVA_VERSION:-23}
+        - MAVEN_VERSION=${MAVEN_VERSION:-3.9.5}
+        - APP_PORT=${BACKEND_PORT:-8080}
+        - DEBUG_PORT=${BACKEND_DEBUG_PORT:-5005}
+    container_name: fastprod-backend
+    volumes:
+      - ./fastprod-backend:/app
+      - maven-repo:/root/.m2
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+      - "${BACKEND_DEBUG_PORT:-5005}:5005"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB:-fastprod}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-postgres}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - SPRING_MAIL_HOST=mail-dev
+      - SPRING_MAIL_PORT=${MAIL_SMTP_PORT:-1025}
+      - SERVER_PORT=${BACKEND_PORT:-8080}
+    networks:
+      - fastprod
+    depends_on:
+      db:
+        condition: service_healthy
+      mail-dev:
+        condition: service_started
+
+networks:
+  fastprod:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  maven-repo:
