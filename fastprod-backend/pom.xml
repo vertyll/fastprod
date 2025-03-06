@@ -125,7 +125,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
-			<version>3.3.4</version>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
@@ -156,6 +155,7 @@
 						</exclude>
 					</excludes>
 					<excludeDevtools>false</excludeDevtools>
+					<addResources>true</addResources>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -13,7 +13,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -62,9 +64,35 @@ class GlobalExceptionHandlerTest {
         assertNotNull(response.getBody().getTimestamp());
         assertNotNull(response.getBody().getErrors());
 
-        Map<String, String> errors = response.getBody().getErrors();
+        Map<String, List<String>> errors = response.getBody().getErrors();
         assertEquals(1, errors.size());
-        assertEquals("Username is required", errors.get("username"));
+        assertEquals(List.of("Username is required"), errors.get("username"));
+    }
+
+    @Test
+    void handleValidationException_ShouldHandleMultipleErrors() {
+        // given
+        MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+        FieldError passwordError1 = new FieldError("object", "password", "Password must be at least 8 characters");
+        FieldError passwordError2 = new FieldError("object", "password", "Password must contain an uppercase letter");
+        FieldError emailError = new FieldError("object", "email", "Invalid email format");
+
+        when(ex.getBindingResult()).thenReturn(bindingResult);
+        when(bindingResult.getFieldErrors()).thenReturn(Arrays.asList(passwordError1, passwordError2, emailError));
+
+        // when
+        ResponseEntity<ValidationErrorResponse> response = handler.handleValidationException(ex);
+
+        // then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Map<String, List<String>> errors = Objects.requireNonNull(response.getBody()).getErrors();
+        assertEquals(2, errors.size());
+        assertEquals(2, errors.get("password").size());
+        assertEquals(1, errors.get("email").size());
+        assertTrue(errors.get("password").contains("Password must be at least 8 characters"));
+        assertTrue(errors.get("password").contains("Password must contain an uppercase letter"));
+        assertEquals(List.of("Invalid email format"), errors.get("email"));
     }
 
     @Test

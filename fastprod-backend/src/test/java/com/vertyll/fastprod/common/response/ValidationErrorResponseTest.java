@@ -3,6 +3,7 @@ package com.vertyll.fastprod.common.response;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,9 +13,9 @@ class ValidationErrorResponseTest {
     void shouldBuildValidationErrorResponseCorrectly() {
         // given
         String testMessage = "Validation failed";
-        Map<String, String> testErrors = new HashMap<>();
-        testErrors.put("username", "Username cannot be empty");
-        testErrors.put("email", "Invalid email format");
+        Map<String, List<String>> testErrors = new HashMap<>();
+        testErrors.put("username", List.of("Username cannot be empty"));
+        testErrors.put("email", List.of("Invalid email format"));
         LocalDateTime testTime = LocalDateTime.now();
 
         // when
@@ -29,9 +30,32 @@ class ValidationErrorResponseTest {
         assertEquals(testTime, response.getTimestamp());
         assertEquals(testErrors, response.getErrors());
         assertEquals(2, response.getErrors().size());
-        assertEquals("Username cannot be empty", response.getErrors().get("username"));
-        assertEquals("Invalid email format", response.getErrors().get("email"));
+        assertEquals(List.of("Username cannot be empty"), response.getErrors().get("username"));
+        assertEquals(List.of("Invalid email format"), response.getErrors().get("email"));
         assertNull(response.getData());
+    }
+
+    @Test
+    void shouldHandleMultipleErrorsForSameField() {
+        // given
+        String testMessage = "Validation failed";
+        Map<String, List<String>> testErrors = new HashMap<>();
+        testErrors.put("password", List.of(
+                "Password must contain at least 8 characters",
+                "Password must contain at least one uppercase letter"
+        ));
+
+        // when
+        ValidationErrorResponse response = ValidationErrorResponse.builder()
+                .message(testMessage)
+                .errors(testErrors)
+                .build();
+
+        // then
+        assertEquals(1, response.getErrors().size());
+        assertEquals(2, response.getErrors().get("password").size());
+        assertTrue(response.getErrors().get("password").contains("Password must contain at least 8 characters"));
+        assertTrue(response.getErrors().get("password").contains("Password must contain at least one uppercase letter"));
     }
 
     @Test
@@ -42,6 +66,6 @@ class ValidationErrorResponseTest {
                 .build();
 
         // then
-        assertTrue(response instanceof BaseResponse);
+        assertNotNull(response);
     }
 }

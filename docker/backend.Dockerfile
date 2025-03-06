@@ -34,7 +34,7 @@ EXPOSE ${APP_PORT}
 EXPOSE ${DEBUG_PORT}
 
 # Run the application with devtools and remote debugging
-CMD mvn spring-boot:run -Dspring-boot.run.jvmArguments="-XX:TieredStopAtLevel=1 -Dspring.devtools.restart.enabled=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+CMD mvn spring-boot:run -Dspring-boot.run.jvmArguments="-XX:TieredStopAtLevel=1 -Dspring.devtools.restart.enabled=true -Dspring.devtools.restart.poll-interval=2s -Dspring.devtools.restart.quiet-period=1s -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005" -Dspring-boot.run.fork=false
 
 # Build stage
 FROM base AS build
