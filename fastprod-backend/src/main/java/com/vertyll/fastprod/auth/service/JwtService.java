@@ -21,10 +21,10 @@ import javax.crypto.SecretKey;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret-key}")
+    @Value("${security.jwt.secret-key}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
+    @Value("${security.jwt.expiration}")
     private long jwtExpiration;
 
     public String extractUsername(String token) {
