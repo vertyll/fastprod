@@ -5,6 +5,7 @@ import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
+import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +22,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -93,6 +93,63 @@ class RoleControllerTest {
                 .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(roleService, never()).createRole(any());
+    }
+
+    @Test
+    void updateRole_WhenValidInput_ShouldReturnUpdated() throws Exception {
+        // given
+        RoleUpdateDto updateDto = new RoleUpdateDto();
+        updateDto.setName("ADMIN");
+        updateDto.setDescription("Administrator role");
+
+        when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class))).thenReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(put("/roles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.name").value("ADMIN"))
+                .andExpect(jsonPath("$.data.description").value("Administrator role"))
+                .andExpect(jsonPath("$.message").value("Role updated successfully"));
+    }
+
+    @Test
+    void updateRole_WhenNotFound_ShouldReturnNotFound() throws Exception {
+        // given
+        RoleUpdateDto updateDto = new RoleUpdateDto();
+        updateDto.setName("ADMIN");
+        updateDto.setDescription("Administrator role");
+
+        when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class)))
+                .thenThrow(new ApiException("Role not found", HttpStatus.NOT_FOUND));
+
+        // when & then
+        mockMvc.perform(put("/roles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Role not found"));
+    }
+
+    @Test
+    void updateRole_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
+        // given
+        RoleUpdateDto updateDto = new RoleUpdateDto();
+        updateDto.setName(null);
+
+        // when & then
+        mockMvc.perform(put("/roles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+
+        verify(roleService, never()).updateRole(anyLong(), any());
     }
 
     @Test

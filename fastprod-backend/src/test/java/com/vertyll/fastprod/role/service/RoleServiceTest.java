@@ -3,6 +3,7 @@ package com.vertyll.fastprod.role.service;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
+import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.model.Role;
 import com.vertyll.fastprod.role.repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,6 +82,84 @@ class RoleServiceTest {
         );
 
         assertEquals("Role already exists", exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        verify(roleRepository, never()).save(any(Role.class));
+    }
+
+    @Test
+    void updateRole_WhenValidData_ShouldUpdateRole() {
+        // given
+        Role existingRole = Role.builder()
+                .name("ADMIN")
+                .description("Old description")
+                .build();
+        existingRole.setId(1L); // Set ID after building
+
+        RoleUpdateDto updateDto = new RoleUpdateDto();
+        updateDto.setName("ADMIN");
+        updateDto.setDescription("Updated description");
+
+        when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
+        when(roleRepository.existsByName(updateDto.getName())).thenReturn(true); // Same name, so it's OK
+        when(roleRepository.save(any(Role.class))).thenReturn(existingRole);
+
+        // when
+        RoleResponseDto result = roleService.updateRole(1L, updateDto);
+
+        // then
+        verify(roleRepository).save(roleCaptor.capture());
+        Role capturedRole = roleCaptor.getValue();
+
+        assertEquals("ADMIN", capturedRole.getName());
+        assertEquals("Updated description", capturedRole.getDescription());
+        assertEquals(1L, result.getId());
+        assertEquals("ADMIN", result.getName());
+        assertEquals("Updated description", result.getDescription());
+    }
+
+    @Test
+    void updateRole_WhenRoleNotFound_ShouldThrowException() {
+        // given
+        RoleUpdateDto updateDto = new RoleUpdateDto();
+        updateDto.setName("ADMIN");
+        updateDto.setDescription("Updated description");
+
+        when(roleRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // when & then
+        ApiException exception = assertThrows(
+                ApiException.class,
+                () -> roleService.updateRole(1L, updateDto)
+        );
+
+        assertEquals("Role not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        verify(roleRepository, never()).save(any(Role.class));
+    }
+
+    @Test
+    void updateRole_WhenNameAlreadyExists_ShouldThrowException() {
+        // given
+        Role existingRole = Role.builder()
+                .name("ADMIN")
+                .description("Old description")
+                .build();
+        existingRole.setId(1L); // Set ID after building
+
+        RoleUpdateDto updateDto = new RoleUpdateDto();
+        updateDto.setName("USER"); // Different name than existing role
+        updateDto.setDescription("Updated description");
+
+        when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
+        when(roleRepository.existsByName("USER")).thenReturn(true); // Name conflict with another role
+
+        // when & then
+        ApiException exception = assertThrows(
+                ApiException.class,
+                () -> roleService.updateRole(1L, updateDto)
+        );
+
+        assertEquals("Role with this name already exists", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         verify(roleRepository, never()).save(any(Role.class));
     }

@@ -3,6 +3,7 @@ package com.vertyll.fastprod.role.controller;
 import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
+import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +37,21 @@ public class RoleController {
                 role,
                 "Role created successfully",
                 HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Update existing role")
+    public ResponseEntity<ApiResponse<RoleResponseDto>> updateRole(
+            @PathVariable Long id,
+            @RequestBody @Valid RoleUpdateDto dto
+    ) {
+        RoleResponseDto role = roleService.updateRole(id, dto);
+        return ApiResponse.buildResponse(
+                role,
+                "Role updated successfully",
+                HttpStatus.OK
         );
     }
 
