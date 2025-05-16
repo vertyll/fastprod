@@ -52,14 +52,14 @@ services:
       dockerfile: docker/backend.Dockerfile
       target: ${DOCKER_ENV:-development}
       args:
-        - JAVA_VERSION=${JAVA_VERSION:-24}
-        - MAVEN_VERSION=${MAVEN_VERSION:-3.9.9}
-        - APP_PORT=${BACKEND_PORT:-8080}
-        - DEBUG_PORT=${BACKEND_DEBUG_PORT:-5005}
+        JAVA_VERSION: ${JAVA_VERSION:-24}
+        GRADLE_VERSION: ${GRADLE_VERSION:-8.14}
+        APP_PORT: ${BACKEND_PORT:-8080}
+        DEBUG_PORT: ${BACKEND_DEBUG_PORT:-5005}
     container_name: fastprod-backend
     volumes:
       - ./fastprod-backend:/app
-      - maven-repo:/root/.m2
+      - gradle-cache:/home/gradle/.gradle
     ports:
       - "${BACKEND_PORT:-8080}:8080"
       - "${BACKEND_DEBUG_PORT:-5005}:5005"
@@ -85,4 +85,4 @@ networks:
 
 volumes:
   postgres-data:
-  maven-repo:
+  gradle-cache:
