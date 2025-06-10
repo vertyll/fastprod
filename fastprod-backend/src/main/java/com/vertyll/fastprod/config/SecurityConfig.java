@@ -1,6 +1,5 @@
 package com.vertyll.fastprod.config;
 
-import com.vertyll.fastprod.auth.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
