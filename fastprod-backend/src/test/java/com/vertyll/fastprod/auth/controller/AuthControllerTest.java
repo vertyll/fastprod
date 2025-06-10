@@ -52,22 +52,22 @@ class AuthControllerTest {
                 .setValidator(validator)
                 .build();
 
-        registerRequest = RegisterRequestDto.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@example.com")
-                .password("password123")
-                .build();
+        registerRequest = new RegisterRequestDto(
+                "John",
+                "Doe",
+                "john@example.com",
+                "password123"
+        );
 
-        authRequest = AuthRequestDto.builder()
-                .email("john@example.com")
-                .password("password123")
-                .build();
+        authRequest = new AuthRequestDto(
+                "john@example.com",
+                "password123"
+        );
 
-        authResponse = AuthResponseDto.builder()
-                .token("jwt-token")
-                .type("Bearer")
-                .build();
+        authResponse = new AuthResponseDto(
+                "jwt-token",
+                "Bearer"
+        );
     }
 
     @Test
@@ -90,12 +90,12 @@ class AuthControllerTest {
     @Test
     void register_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        RegisterRequestDto invalidRequest = RegisterRequestDto.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("invalid-email")
-                .password("password123")
-                .build();
+        RegisterRequestDto invalidRequest = new RegisterRequestDto(
+                "John",
+                "Doe",
+                "invalid-email",
+                "password123"
+        );
 
         // when & then
         mockMvc.perform(post("/auth/register")
@@ -110,8 +110,12 @@ class AuthControllerTest {
 
     @Test
     void register_WhenMissingRequiredFields_ShouldReturnBadRequest() throws Exception {
-        // given
-        RegisterRequestDto invalidRequest = new RegisterRequestDto();
+        RegisterRequestDto invalidRequest = new RegisterRequestDto(
+                "",
+                "",
+                "",
+                ""
+        );
 
         // when & then
         mockMvc.perform(post("/auth/register")
@@ -173,10 +177,10 @@ class AuthControllerTest {
     @Test
     void authenticate_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        AuthRequestDto invalidRequest = AuthRequestDto.builder()
-                .email("invalid-email")
-                .password("password123")
-                .build();
+        AuthRequestDto invalidRequest = new AuthRequestDto(
+                "invalid-email",
+                "password123"
+        );
 
         // when & then
         mockMvc.perform(post("/auth/authenticate")
@@ -191,8 +195,10 @@ class AuthControllerTest {
 
     @Test
     void authenticate_WhenMissingCredentials_ShouldReturnBadRequest() throws Exception {
-        // given
-        AuthRequestDto invalidRequest = new AuthRequestDto();
+        AuthRequestDto invalidRequest = new AuthRequestDto(
+                "",
+                ""
+        );
 
         // when & then
         mockMvc.perform(post("/auth/authenticate")

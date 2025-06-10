@@ -76,17 +76,17 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        registerRequest = RegisterRequestDto.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@example.com")
-                .password("password123")
-                .build();
+        registerRequest = new RegisterRequestDto(
+                "John",
+                "Doe",
+                "john@example.com",
+                "password123"
+        );
 
-        authRequest = AuthRequestDto.builder()
-                .email("john@example.com")
-                .password("password123")
-                .build();
+        authRequest = new AuthRequestDto(
+                "john@example.com",
+                "password123"
+        );
 
         userRole = Role.builder()
                 .name("USER")
@@ -165,8 +165,8 @@ class AuthServiceTest {
 
         // then
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        assertEquals("jwt-token", response.getToken());
-        assertEquals("Bearer", response.getType());
+        assertEquals("jwt-token", response.token());
+        assertEquals("Bearer", response.type());
     }
 
     @Test

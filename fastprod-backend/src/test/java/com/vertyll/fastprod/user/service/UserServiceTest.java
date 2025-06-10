@@ -64,18 +64,21 @@ class UserServiceTest {
                 .description("Admin role")
                 .build();
 
-        createDto = new UserCreateDto();
-        createDto.setFirstName("John");
-        createDto.setLastName("Doe");
-        createDto.setEmail("john@example.com");
-        createDto.setPassword("password123");
-        createDto.setRoleNames(Set.of("USER"));
+        createDto = new UserCreateDto(
+                "John",
+                "Doe",
+                "john@example.com",
+                "password123",
+                Set.of("USER")
+        );
 
-        updateDto = new UserUpdateDto();
-        updateDto.setFirstName("John Updated");
-        updateDto.setLastName("Doe Updated");
-        updateDto.setEmail("john.updated@example.com");
-        updateDto.setRoleNames(Set.of("USER", "ADMIN"));
+        updateDto = new UserUpdateDto(
+                "John Updated",
+                "Doe Updated",
+                "john.updated@example.com",
+                null,
+                Set.of("USER", "ADMIN")
+        );
 
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
@@ -106,11 +109,11 @@ class UserServiceTest {
         User capturedUser = userCaptor.getValue();
 
         assertNotNull(result);
-        assertEquals(createDto.getFirstName(), capturedUser.getFirstName());
-        assertEquals(createDto.getLastName(), capturedUser.getLastName());
-        assertEquals(createDto.getEmail(), capturedUser.getEmail());
+        assertEquals(createDto.firstName(), capturedUser.getFirstName());
+        assertEquals(createDto.lastName(), capturedUser.getLastName());
+        assertEquals(createDto.email(), capturedUser.getEmail());
         assertTrue(capturedUser.isEnabled());
-        verify(passwordEncoder).encode(createDto.getPassword());
+        verify(passwordEncoder).encode(createDto.password());
     }
 
     @Test
@@ -144,9 +147,9 @@ class UserServiceTest {
         User capturedUser = userCaptor.getValue();
 
         assertNotNull(result);
-        assertEquals(updateDto.getFirstName(), capturedUser.getFirstName());
-        assertEquals(updateDto.getLastName(), capturedUser.getLastName());
-        assertEquals(updateDto.getEmail(), capturedUser.getEmail());
+        assertEquals(updateDto.firstName(), capturedUser.getFirstName());
+        assertEquals(updateDto.lastName(), capturedUser.getLastName());
+        assertEquals(updateDto.email(), capturedUser.getEmail());
     }
 
     @Test
@@ -174,12 +177,12 @@ class UserServiceTest {
 
         // then
         assertNotNull(result);
-        assertEquals(user.getFirstName(), result.getFirstName());
-        assertEquals(user.getLastName(), result.getLastName());
-        assertEquals(user.getEmail(), result.getEmail());
-        assertTrue(result.isEnabled());
-        assertEquals(1, result.getRoles().size());
-        assertTrue(result.getRoles().contains("USER"));
+        assertEquals(user.getFirstName(), result.firstName());
+        assertEquals(user.getLastName(), result.lastName());
+        assertEquals(user.getEmail(), result.email());
+        assertTrue(result.enabled());
+        assertEquals(1, result.roles().size());
+        assertTrue(result.roles().contains("USER"));
     }
 
     @Test
@@ -204,8 +207,13 @@ class UserServiceTest {
         when(roleService.getOrCreateDefaultRole("ADMIN")).thenReturn(adminRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        UserUpdateDto updateRequest = new UserUpdateDto();
-        updateRequest.setRoleNames(Set.of("ADMIN"));
+        UserUpdateDto updateRequest = new UserUpdateDto(
+                "John",
+                "Doe",
+                "john@example.com",
+                null,
+                Set.of("ADMIN")
+        );
 
         // when
         UserResponseDto result = userService.updateUser(1L, updateRequest);

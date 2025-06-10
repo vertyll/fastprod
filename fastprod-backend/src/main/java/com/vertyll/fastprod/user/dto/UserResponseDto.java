@@ -1,15 +1,29 @@
 package com.vertyll.fastprod.user.dto;
 
-import lombok.Data;
+import com.vertyll.fastprod.role.model.Role;
+import com.vertyll.fastprod.user.model.User;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Data
-public class UserResponseDto {
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Set<String> roles;
-    private boolean enabled;
+public record UserResponseDto(
+        Long id,
+        String firstName,
+        String lastName,
+        String email,
+        Set<String> roles,
+        boolean enabled
+) {
+    public static UserResponseDto mapToDto(User user) {
+        return new UserResponseDto(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRoles().stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toSet()),
+                user.isEnabled()
+        );
+    }
 }

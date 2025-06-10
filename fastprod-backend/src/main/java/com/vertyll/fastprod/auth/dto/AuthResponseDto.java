@@ -1,15 +1,10 @@
 package com.vertyll.fastprod.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class AuthResponseDto {
-    private String token;
-    private String type;
+public record AuthResponseDto (
+        String token,
+        String type
+) {
+    public static AuthResponseDto mapToDto(String token, String type) {
+        return new AuthResponseDto(token, type);
+    }
 }

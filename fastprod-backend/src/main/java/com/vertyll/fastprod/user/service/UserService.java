@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.vertyll.fastprod.user.dto.UserResponseDto.mapToDto;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -28,13 +30,13 @@ public class UserService {
 
     @Transactional
     public UserResponseDto createUser(UserCreateDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
         Set<Role> roles = new HashSet<>();
-        if (dto.getRoleNames() != null && !dto.getRoleNames().isEmpty()) {
-            for (String roleName : dto.getRoleNames()) {
+        if (dto.roleNames() != null && !dto.roleNames().isEmpty()) {
+            for (String roleName : dto.roleNames()) {
                 roles.add(roleService.getOrCreateDefaultRole(roleName));
             }
         } else {
@@ -42,10 +44,10 @@ public class UserService {
         }
 
         User user = User.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .password(passwordEncoder.encode(dto.password()))
                 .roles(roles)
                 .enabled(true)
                 .build();
@@ -59,20 +61,20 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
-        if (dto.getFirstName() != null) {
-            user.setFirstName(dto.getFirstName());
+        if (dto.firstName() != null) {
+            user.setFirstName(dto.firstName());
         }
 
-        if (dto.getLastName() != null) {
-            user.setLastName(dto.getLastName());
+        if (dto.lastName() != null) {
+            user.setLastName(dto.lastName());
         }
 
-        if (dto.getEmail() != null) {
-            user.setEmail(dto.getEmail());
+        if (dto.email() != null) {
+            user.setEmail(dto.email());
         }
 
-        if (dto.getRoleNames() != null) {
-            Set<Role> roles = dto.getRoleNames().stream()
+        if (dto.roleNames() != null) {
+            Set<Role> roles = dto.roleNames().stream()
                     .map(roleService::getOrCreateDefaultRole)
                     .collect(Collectors.toSet());
             user.setRoles(roles);
@@ -86,18 +88,5 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
         return mapToDto(user);
-    }
-
-    private UserResponseDto mapToDto(User user) {
-        UserResponseDto dto = new UserResponseDto();
-        dto.setId(user.getId());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setEmail(user.getEmail());
-        dto.setRoles(user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet()));
-        dto.setEnabled(user.isEnabled());
-        return dto;
     }
 }

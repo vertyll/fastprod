@@ -40,9 +40,7 @@ class RoleServiceTest {
 
     @BeforeEach
     void setUp() {
-        createDto = new RoleCreateDto();
-        createDto.setName("ADMIN");
-        createDto.setDescription("Administrator role");
+        createDto = new RoleCreateDto("ADMIN", "Administrator role");
 
         role = Role.builder()
                 .name("ADMIN")
@@ -64,10 +62,10 @@ class RoleServiceTest {
         Role capturedRole = roleCaptor.getValue();
 
         assertNotNull(returnedRole);
-        assertEquals(createDto.getName(), capturedRole.getName());
-        assertEquals(createDto.getDescription(), capturedRole.getDescription());
-        assertEquals("ADMIN", returnedRole.getName());
-        assertEquals("Administrator role", returnedRole.getDescription());
+        assertEquals(createDto.name(), capturedRole.getName());
+        assertEquals(createDto.description(), capturedRole.getDescription());
+        assertEquals("ADMIN", returnedRole.name());
+        assertEquals("Administrator role", returnedRole.description());
     }
 
     @Test
@@ -95,12 +93,10 @@ class RoleServiceTest {
                 .build();
         existingRole.setId(1L); // Set ID after building
 
-        RoleUpdateDto updateDto = new RoleUpdateDto();
-        updateDto.setName("ADMIN");
-        updateDto.setDescription("Updated description");
+        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
-        when(roleRepository.existsByName(updateDto.getName())).thenReturn(true); // Same name, so it's OK
+        when(roleRepository.existsByName(updateDto.name())).thenReturn(true); // Same name, so it's OK
         when(roleRepository.save(any(Role.class))).thenReturn(existingRole);
 
         // when
@@ -112,17 +108,15 @@ class RoleServiceTest {
 
         assertEquals("ADMIN", capturedRole.getName());
         assertEquals("Updated description", capturedRole.getDescription());
-        assertEquals(1L, result.getId());
-        assertEquals("ADMIN", result.getName());
-        assertEquals("Updated description", result.getDescription());
+        assertEquals(1L, result.id());
+        assertEquals("ADMIN", result.name());
+        assertEquals("Updated description", result.description());
     }
 
     @Test
     void updateRole_WhenRoleNotFound_ShouldThrowException() {
         // given
-        RoleUpdateDto updateDto = new RoleUpdateDto();
-        updateDto.setName("ADMIN");
-        updateDto.setDescription("Updated description");
+        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -146,9 +140,7 @@ class RoleServiceTest {
                 .build();
         existingRole.setId(1L); // Set ID after building
 
-        RoleUpdateDto updateDto = new RoleUpdateDto();
-        updateDto.setName("USER"); // Different name than existing role
-        updateDto.setDescription("Updated description");
+        RoleUpdateDto updateDto = new RoleUpdateDto("USER", "Updated description"); // Different name than existing role
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
         when(roleRepository.existsByName("USER")).thenReturn(true); // Name conflict with another role
@@ -206,8 +198,8 @@ class RoleServiceTest {
 
         // then
         assertNotNull(returnedRole);
-        assertEquals(role.getName(), returnedRole.getName());
-        assertEquals(role.getDescription(), returnedRole.getDescription());
+        assertEquals(role.getName(), returnedRole.name());
+        assertEquals(role.getDescription(), returnedRole.description());
     }
 
     @Test

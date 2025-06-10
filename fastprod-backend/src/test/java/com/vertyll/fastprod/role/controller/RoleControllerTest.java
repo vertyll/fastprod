@@ -52,14 +52,9 @@ class RoleControllerTest {
                 .setValidator(validator)
                 .build();
 
-        createDto = new RoleCreateDto();
-        createDto.setName("ADMIN");
-        createDto.setDescription("Administrator role");
+        createDto = new RoleCreateDto("ADMIN", "Administrator role");
 
-        responseDto = new RoleResponseDto();
-        responseDto.setId(1L);
-        responseDto.setName("ADMIN");
-        responseDto.setDescription("Administrator role");
+        responseDto = new RoleResponseDto(1L, "ADMIN", "Administrator role");
     }
 
     @Test
@@ -82,12 +77,12 @@ class RoleControllerTest {
     @Test
     void createRole_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
         // given
-        createDto.setName(null);
+        RoleCreateDto invalidCreateDto = new RoleCreateDto(null, "Administrator role");
 
         // when & then
         mockMvc.perform(post("/roles")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
+                        .content(objectMapper.writeValueAsString(invalidCreateDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"));
@@ -98,9 +93,7 @@ class RoleControllerTest {
     @Test
     void updateRole_WhenValidInput_ShouldReturnUpdated() throws Exception {
         // given
-        RoleUpdateDto updateDto = new RoleUpdateDto();
-        updateDto.setName("ADMIN");
-        updateDto.setDescription("Administrator role");
+        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Administrator role");
 
         when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class))).thenReturn(responseDto);
 
@@ -119,9 +112,7 @@ class RoleControllerTest {
     @Test
     void updateRole_WhenNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        RoleUpdateDto updateDto = new RoleUpdateDto();
-        updateDto.setName("ADMIN");
-        updateDto.setDescription("Administrator role");
+        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Administrator role");
 
         when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class)))
                 .thenThrow(new ApiException("Role not found", HttpStatus.NOT_FOUND));
@@ -138,13 +129,12 @@ class RoleControllerTest {
     @Test
     void updateRole_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
         // given
-        RoleUpdateDto updateDto = new RoleUpdateDto();
-        updateDto.setName(null);
+        RoleUpdateDto invalidUpdateDto = new RoleUpdateDto(null, "Administrator role");
 
         // when & then
         mockMvc.perform(put("/roles/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDto)))
+                        .content(objectMapper.writeValueAsString(invalidUpdateDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"));

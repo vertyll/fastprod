@@ -55,26 +55,30 @@ class UserControllerTest {
                 .setValidator(validator)
                 .build();
 
-        createDto = new UserCreateDto();
-        createDto.setFirstName("John");
-        createDto.setLastName("Doe");
-        createDto.setEmail("john@example.com");
-        createDto.setPassword("password123");
-        createDto.setRoleNames(Set.of("USER"));
+        createDto = new UserCreateDto(
+                "John",
+                "Doe",
+                "john@example.com",
+                "password123",
+                Set.of("USER")
+        );
 
-        updateDto = new UserUpdateDto();
-        updateDto.setFirstName("John Updated");
-        updateDto.setLastName("Doe Updated");
-        updateDto.setEmail("john.updated@example.com");
-        updateDto.setRoleNames(Set.of("USER", "ADMIN"));
+        updateDto = new UserUpdateDto(
+                "John Updated",
+                "Doe Updated",
+                "john.updated@example.com",
+                null, // password can be null for updates
+                Set.of("USER", "ADMIN")
+        );
 
-        responseDto = new UserResponseDto();
-        responseDto.setId(1L);
-        responseDto.setFirstName("John");
-        responseDto.setLastName("Doe");
-        responseDto.setEmail("john@example.com");
-        responseDto.setRoles(Set.of("USER"));
-        responseDto.setEnabled(true);
+        responseDto = new UserResponseDto(
+                1L,
+                "John",
+                "Doe",
+                "john@example.com",
+                Set.of("USER"),
+                true
+        );
     }
 
     @Test
@@ -98,12 +102,18 @@ class UserControllerTest {
     @Test
     void createUser_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
         // given
-        createDto.setEmail("invalid-email");
+        UserCreateDto invalidCreateDto = new UserCreateDto(
+                "John",
+                "Doe",
+                "invalid-email", // invalid email format
+                "password123",
+                Set.of("USER")
+        );
 
         // when & then
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createDto)))
+                        .content(objectMapper.writeValueAsString(invalidCreateDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"));

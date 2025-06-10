@@ -38,15 +38,15 @@ public class AuthService {
 
     @Transactional
     public void register(RegisterRequestDto request) throws MessagingException {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new ApiException("Email already registered", HttpStatus.BAD_REQUEST);
         }
 
         User user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
                 .roles(Set.of(roleService.getOrCreateDefaultRole("USER")))
                 .enabled(false)
                 .build();
@@ -67,12 +67,12 @@ public class AuthService {
     public AuthResponseDto authenticate(AuthRequestDto request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
+                        request.email(),
+                        request.password()
                 )
         );
 
-        User user = userRepository.findByEmailWithRoles(request.getEmail())
+        User user = userRepository.findByEmailWithRoles(request.email())
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
         if (!user.isEnabled()) {
@@ -80,10 +80,7 @@ public class AuthService {
         }
 
         String jwtToken = jwtService.generateToken(user);
-        return AuthResponseDto.builder()
-                .token(jwtToken)
-                .type("Bearer")
-                .build();
+        return AuthResponseDto.mapToDto(jwtToken, "Bearer");
     }
 
     @Transactional
