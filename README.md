@@ -23,7 +23,7 @@
 - in progress
 
 ### Authentication:
-- JWT-based authentication - the application uses JWT tokens for user authentication and includes a token refresh mechanism
+- JWT-based authentication - the application uses JWT tokens for user authentication
 - the application allows login on multiple devices simultaneously
 
 ### Core back-end:
