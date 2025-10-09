@@ -1,6 +1,7 @@
 plugins {
-    id("org.springframework.boot") version "3.5.6"
-    id("io.spring.dependency-management") version "1.1.4"
+    id("org.springframework.boot") version "3.5.6" apply false
+    id("io.spring.dependency-management") version "1.1.4" apply false
+    id("com.diffplug.spotless") version "6.25.0" apply false
     java
 }
 
@@ -8,45 +9,61 @@ group = "com.vertyll"
 version = "0.0.1-SNAPSHOT"
 description = "Production management system - api"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
-repositories {
-    mavenCentral()
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "com.diffplug.spotless")
+    
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+    
+    the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
+        imports {
+            mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+        }
+    }
+    
+    dependencies {
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    }
+    
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.add("-parameters")
+    }
+    
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        
+        jvmArgs(
+            "-XX:+EnableDynamicAgentLoading",
+            "-Xshare:off"
+        )
+    }
+    
+    configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+        java {
+            target("src/**/*.java")
+            
+            googleJavaFormat("1.22.0").aosp().reflowLongStrings()
+            
+            removeUnusedImports()
+            
+            endWithNewline()
+            trimTrailingWhitespace()
+        }
+        
+        kotlin {
+            target("**/*.gradle.kts")
+            ktlint()
+        }
+    }
 }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
-    implementation("io.jsonwebtoken:jjwt-api:0.12.3")
-    implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
-
-    runtimeOnly("org.postgresql:postgresql")
-    runtimeOnly("org.springframework.boot:spring-boot-devtools")
-
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-
-    testCompileOnly("org.projectlombok:lombok")
-    testAnnotationProcessor("org.projectlombok:lombok")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("com.h2database:h2")
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.mockito:mockito-core")
-    testImplementation("org.mockito:mockito-junit-jupiter")
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
