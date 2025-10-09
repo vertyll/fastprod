@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,12 +23,14 @@ class ApiResponseTest {
         // then
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(data, response.getBody().getData());
-        assertEquals(message, response.getBody().getMessage());
-        assertNotNull(response.getBody().getTimestamp());
-        assertInstanceOf(BaseResponse.class, response.getBody());
-        assertInstanceOf(IResponse.class, response.getBody());
+        
+        ApiResponse<String> body = response.getBody();
+        assertNotNull(body);
+        assertEquals(data, body.getData());
+        assertEquals(message, body.getMessage());
+        assertNotNull(body.getTimestamp());
+        assertInstanceOf(BaseResponse.class, body);
+        assertInstanceOf(IResponse.class, body);
     }
 
     @Test
@@ -43,7 +44,10 @@ class ApiResponseTest {
 
         // then
         assertNotNull(response);
-        assertNull(Objects.requireNonNull(response.getBody()).getData());
+        
+        ApiResponse<String> body = response.getBody();
+        assertNotNull(body);
+        assertNull(body.getData());
     }
 
     @Test

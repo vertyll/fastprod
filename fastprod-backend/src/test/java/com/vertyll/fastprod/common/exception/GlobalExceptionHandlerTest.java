@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -42,7 +41,10 @@ class GlobalExceptionHandlerTest {
 
         // then
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("test message", Objects.requireNonNull(response.getBody()).getMessage());
+        
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("test message", body.getMessage());
     }
 
     @Test
@@ -60,11 +62,14 @@ class GlobalExceptionHandlerTest {
 
         // then
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Validation failed", Objects.requireNonNull(response.getBody()).getMessage());
-        assertNotNull(response.getBody().getTimestamp());
-        assertNotNull(response.getBody().getErrors());
+        
+        ValidationErrorResponse body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Validation failed", body.getMessage());
+        assertNotNull(body.getTimestamp());
+        assertNotNull(body.getErrors());
 
-        Map<String, List<String>> errors = response.getBody().getErrors();
+        Map<String, List<String>> errors = body.getErrors();
         assertEquals(1, errors.size());
         assertEquals(List.of("Username is required"), errors.get("username"));
     }
@@ -86,7 +91,11 @@ class GlobalExceptionHandlerTest {
 
         // then
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        Map<String, List<String>> errors = Objects.requireNonNull(response.getBody()).getErrors();
+        
+        ValidationErrorResponse body = response.getBody();
+        assertNotNull(body);
+        
+        Map<String, List<String>> errors = body.getErrors();
         assertEquals(2, errors.size());
         assertEquals(2, errors.get("password").size());
         assertEquals(1, errors.get("email").size());
@@ -105,7 +114,10 @@ class GlobalExceptionHandlerTest {
 
         // then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Invalid email or password", Objects.requireNonNull(response.getBody()).getMessage());
+        
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Invalid email or password", body.getMessage());
     }
 
     @Test
@@ -118,7 +130,10 @@ class GlobalExceptionHandlerTest {
 
         // then
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Account is disabled", Objects.requireNonNull(response.getBody()).getMessage());
+        
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Account is disabled", body.getMessage());
     }
 
     @Test
@@ -131,7 +146,10 @@ class GlobalExceptionHandlerTest {
 
         // then
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Account is locked", Objects.requireNonNull(response.getBody()).getMessage());
+        
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Account is locked", body.getMessage());
     }
 
     @Test
@@ -144,6 +162,9 @@ class GlobalExceptionHandlerTest {
 
         // then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("An unexpected error occurred", Objects.requireNonNull(response.getBody()).getMessage());
+        
+        ApiResponse<Void> body = response.getBody();
+        assertNotNull(body);
+        assertEquals("An unexpected error occurred", body.getMessage());
     }
 }
