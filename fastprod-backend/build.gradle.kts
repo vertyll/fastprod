@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "3.4.5"
+    id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.4"
     java
 }
@@ -9,8 +9,8 @@ version = "0.0.1-SNAPSHOT"
 description = "Production management system - api"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_24
-    targetCompatibility = JavaVersion.VERSION_24
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
