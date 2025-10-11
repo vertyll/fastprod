@@ -6,11 +6,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.role.Role;
+import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.RoleService;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import com.vertyll.fastprod.user.dto.UserCreateDto;
+import com.vertyll.fastprod.user.dto.UserResponseDto;
+import com.vertyll.fastprod.user.dto.UserUpdateDto;
+import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +37,7 @@ class UserServiceTest {
 
     @Mock private PasswordEncoder passwordEncoder;
 
-    @InjectMocks private UserServiceImpl userService;
+    @InjectMocks private UserService userService;
 
     @Captor private ArgumentCaptor<User> userCaptor;
 

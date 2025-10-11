@@ -3,13 +3,16 @@ package com.vertyll.fastprod.auth;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vertyll.fastprod.auth.dto.*;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,23 +21,38 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
 
     private MockMvc mockMvc;
 
-    @Mock private AuthService authService;
+    @Mock
+    private AuthService authService;
 
-    @InjectMocks private AuthController authController;
+    @InjectMocks
+    private AuthController authController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private RegisterRequestDto registerRequest;
     private AuthRequestDto authRequest;
     private AuthResponseDto authResponse;
+    private ChangeEmailRequestDto changeEmailRequest;
+    private ChangePasswordRequestDto changePasswordRequest;
+    private ResetPasswordRequestDto resetPasswordRequest;
 
     @BeforeEach
     void setUp() {
@@ -49,9 +67,15 @@ class AuthControllerTest {
 
         registerRequest = new RegisterRequestDto("John", "Doe", "john@example.com", "password123");
 
-        authRequest = new AuthRequestDto("john@example.com", "password123");
+        authRequest = new AuthRequestDto("john@example.com", "password123", "web-browser");
 
         authResponse = new AuthResponseDto("jwt-token", "Bearer");
+
+        changeEmailRequest = new ChangeEmailRequestDto("john@example.com", "john.new@example.com");
+
+        changePasswordRequest = new ChangePasswordRequestDto("oldPassword123", "newPassword123");
+
+        resetPasswordRequest = new ResetPasswordRequestDto("newPassword123");
     }
 
     @Test
@@ -126,7 +150,8 @@ class AuthControllerTest {
     @Test
     void authenticate_WhenValidCredentials_ShouldReturnToken() throws Exception {
         // given
-        when(authService.authenticate(any(AuthRequestDto.class))).thenReturn(authResponse);
+        when(authService.authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+                .thenReturn(authResponse);
 
         // when & then
         mockMvc.perform(
@@ -143,7 +168,7 @@ class AuthControllerTest {
     @Test
     void authenticate_WhenInvalidCredentials_ShouldReturnUnauthorized() throws Exception {
         // given
-        when(authService.authenticate(any(AuthRequestDto.class)))
+        when(authService.authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .thenThrow(new ApiException("Invalid credentials", HttpStatus.UNAUTHORIZED));
 
         // when & then
@@ -159,7 +184,7 @@ class AuthControllerTest {
     @Test
     void authenticate_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        AuthRequestDto invalidRequest = new AuthRequestDto("invalid-email", "password123");
+        AuthRequestDto invalidRequest = new AuthRequestDto("invalid-email", "password123", "web-browser");
 
         // when & then
         mockMvc.perform(
@@ -170,12 +195,12 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"));
 
-        verify(authService, never()).authenticate(any(AuthRequestDto.class));
+        verify(authService, never()).authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
 
     @Test
     void authenticate_WhenMissingCredentials_ShouldReturnBadRequest() throws Exception {
-        AuthRequestDto invalidRequest = new AuthRequestDto("", "");
+        AuthRequestDto invalidRequest = new AuthRequestDto("", "", "web-browser");
 
         // when & then
         mockMvc.perform(
@@ -186,7 +211,95 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"));
 
-        verify(authService, never()).authenticate(any(AuthRequestDto.class));
+        verify(authService, never()).authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+
+    @Test
+    void refreshToken_WhenValidRefreshToken_ShouldReturnNewToken() throws Exception {
+        // given
+        when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+                .thenReturn(authResponse);
+
+        // when & then
+        mockMvc.perform(post("/auth/refresh-token"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.token").value("jwt-token"))
+                .andExpect(jsonPath("$.data.type").value("Bearer"))
+                .andExpect(jsonPath("$.message").value("Token refreshed successfully"));
+    }
+
+    @Test
+    void refreshToken_WhenInvalidRefreshToken_ShouldReturnUnauthorized() throws Exception {
+        // given
+        when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+                .thenThrow(new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED));
+
+        // when & then
+        mockMvc.perform(post("/auth/refresh-token"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Invalid refresh token"));
+    }
+
+    @Test
+    void logout_ShouldReturnSuccess() throws Exception {
+        // given
+        doNothing().when(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
+
+        // when & then
+        mockMvc.perform(post("/auth/logout"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Logged out successfully"));
+
+        verify(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+
+    @Test
+    void logoutAll_ShouldReturnSuccess() throws Exception {
+        // given
+        doNothing().when(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
+
+        // when & then
+        mockMvc.perform(post("/auth/logout-all"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Logged out from all sessions successfully"));
+
+        verify(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+
+    @Test
+    void getSessions_WhenAuthenticated_ShouldReturnSessions() throws Exception {
+        // given
+        setupSecurityContext();
+        List<Map<String, Object>> sessions = Arrays.asList(
+                createSessionMap("session1", "Chrome", "192.168.1.1"),
+                createSessionMap("session2", "Firefox", "192.168.1.2")
+        );
+
+        when(authService.getUserActiveSessions("john@example.com")).thenReturn(sessions);
+
+        // when & then
+        mockMvc.perform(get("/auth/sessions"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(2))
+                .andExpect(jsonPath("$.message").value("Active sessions retrieved successfully"));
+
+        verify(authService).getUserActiveSessions("john@example.com");
+    }
+
+    @Test
+    void getSessions_WhenNotAuthenticated_ShouldReturnUnauthorized() throws Exception {
+        // given - no security context setup
+
+        // when & then
+        mockMvc.perform(get("/auth/sessions"))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -215,5 +328,170 @@ class AuthControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Invalid verification code"));
+    }
+
+    @Test
+    void requestEmailChange_WhenValidRequest_ShouldReturnSuccess() throws Exception {
+        // given
+        setupSecurityContext();
+        doNothing().when(authService).requestEmailChange(any(ChangeEmailRequestDto.class));
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/change-email-request")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(changeEmailRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Email change verification sent to new email"));
+
+        verify(authService).requestEmailChange(any(ChangeEmailRequestDto.class));
+    }
+
+    @Test
+    void requestEmailChange_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
+        // given
+        setupSecurityContext();
+        ChangeEmailRequestDto invalidRequest = new ChangeEmailRequestDto("invalid-email", "new@example.com");
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/change-email-request")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+
+        verify(authService, never()).requestEmailChange(any(ChangeEmailRequestDto.class));
+    }
+
+    @Test
+    void verifyEmailChange_WhenValidCode_ShouldReturnSuccess() throws Exception {
+        // given
+        when(authService.verifyEmailChange(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+                .thenReturn(authResponse);
+
+        // when & then
+        mockMvc.perform(post("/auth/verify-email-change").param("code", "123456"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Email changed successfully"))
+                .andExpect(jsonPath("$.data.token").value("jwt-token"));
+
+        verify(authService).verifyEmailChange(eq("123456"), any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+
+    @Test
+    void requestPasswordChange_WhenValidRequest_ShouldReturnSuccess() throws Exception {
+        // given
+        setupSecurityContext();
+        doNothing().when(authService).requestPasswordChange(any(ChangePasswordRequestDto.class));
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/change-password-request")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(changePasswordRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Password change verification sent to email"));
+
+        verify(authService).requestPasswordChange(any(ChangePasswordRequestDto.class));
+    }
+
+    @Test
+    void verifyPasswordChange_WhenValidCode_ShouldReturnSuccess() throws Exception {
+        // given
+        doNothing().when(authService).verifyPasswordChange(anyString());
+
+        // when & then
+        mockMvc.perform(post("/auth/verify-password-change").param("code", "123456"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Password changed successfully"));
+
+        verify(authService).verifyPasswordChange("123456");
+    }
+
+    @Test
+    void requestPasswordReset_WhenValidEmail_ShouldReturnSuccess() throws Exception {
+        // given
+        doNothing().when(authService).sendPasswordResetEmail(anyString());
+
+        // when & then
+        mockMvc.perform(post("/auth/reset-password-request").param("email", "john@example.com"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Password reset instructions sent to email"));
+
+        verify(authService).sendPasswordResetEmail("john@example.com");
+    }
+
+    @Test
+    void requestPasswordReset_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
+        // when & then
+        mockMvc.perform(post("/auth/reset-password-request").param("email", "invalid-email"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+
+        verify(authService, never()).sendPasswordResetEmail(anyString());
+    }
+
+    @Test
+    void resetPassword_WhenValidTokenAndRequest_ShouldReturnSuccess() throws Exception {
+        // given
+        doNothing().when(authService).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/reset-password")
+                                .param("token", "valid-token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(resetPasswordRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Password reset successfully"));
+
+        verify(authService).resetPassword(eq("valid-token"), any(ResetPasswordRequestDto.class));
+    }
+
+    @Test
+    void resetPassword_WhenInvalidPassword_ShouldReturnBadRequest() throws Exception {
+        // given
+        ResetPasswordRequestDto invalidRequest = new ResetPasswordRequestDto("");
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/reset-password")
+                                .param("token", "valid-token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+
+        verify(authService, never()).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
+    }
+
+    private void setupSecurityContext() {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "john@example.com",
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
+    private Map<String, Object> createSessionMap(String sessionId, String browser, String ipAddress) {
+        Map<String, Object> session = new HashMap<>();
+        session.put("sessionId", sessionId);
+        session.put("browser", browser);
+        session.put("ipAddress", ipAddress);
+        session.put("lastAccess", "2023-01-01T10:00:00Z");
+        return session;
     }
 }

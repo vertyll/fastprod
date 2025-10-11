@@ -36,11 +36,19 @@ spring:
         connection-timeout: 5000
         timeout: 3000
         write-timeout: 5000
+  task:
+    scheduling:
+      enabled: true
 
 security:
   jwt:
-    secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-    expiration: 86400000 # 1 day
+    access-token:
+      secret-key: "c2VjcmV0LWtleS1mb3ItYWNjZXNzLXRva2VuLTMyaGFzaA=="
+      expiration: 900000 # 15 minutes
+    refresh-token:
+      secret-key: "cmVmcmVzaC10b2tlbi1zZWNyZXQta2V5LTMyYnl0ZXM="
+      expiration: 2592000000 # 30 days
+      cookie-name: "refreshToken"
 
 application:
   file:

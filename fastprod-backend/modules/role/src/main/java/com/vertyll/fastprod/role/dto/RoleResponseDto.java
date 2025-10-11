@@ -1,4 +1,6 @@
-package com.vertyll.fastprod.role;
+package com.vertyll.fastprod.role.dto;
+
+import com.vertyll.fastprod.role.entity.Role;
 
 public record RoleResponseDto(Long id, String name, String description) {
     public static RoleResponseDto mapToDto(Role role) {

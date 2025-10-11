@@ -1,6 +1,7 @@
-package com.vertyll.fastprod.user;
+package com.vertyll.fastprod.user.dto;
 
-import com.vertyll.fastprod.role.Role;
+import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.user.entity.User;
 
 import java.util.Set;
 import java.util.stream.Collectors;

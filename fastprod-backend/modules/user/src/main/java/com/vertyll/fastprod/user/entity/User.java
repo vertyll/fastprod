@@ -1,7 +1,7 @@
-package com.vertyll.fastprod.user;
+package com.vertyll.fastprod.user.entity;
 
 import com.vertyll.fastprod.common.entity.BaseEntity;
-import com.vertyll.fastprod.role.Role;
+import com.vertyll.fastprod.role.entity.Role;
 import jakarta.persistence.*;
 
 import java.util.Collection;

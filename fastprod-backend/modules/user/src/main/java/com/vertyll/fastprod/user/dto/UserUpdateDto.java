@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.user;
+package com.vertyll.fastprod.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

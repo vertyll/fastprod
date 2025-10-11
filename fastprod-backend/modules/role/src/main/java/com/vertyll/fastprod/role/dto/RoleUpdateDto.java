@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.role;
+package com.vertyll.fastprod.role.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

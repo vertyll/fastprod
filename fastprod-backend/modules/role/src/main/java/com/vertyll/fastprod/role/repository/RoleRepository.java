@@ -1,7 +1,8 @@
-package com.vertyll.fastprod.role;
+package com.vertyll.fastprod.role.repository;
 
 import java.util.Optional;
 
+import com.vertyll.fastprod.role.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {

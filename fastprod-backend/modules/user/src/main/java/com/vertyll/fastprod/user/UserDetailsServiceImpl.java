@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.user;
 
+import com.vertyll.fastprod.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

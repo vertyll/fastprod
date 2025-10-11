@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.role;
+package com.vertyll.fastprod.role.entity;
 
 import com.vertyll.fastprod.common.entity.BaseEntity;
 import jakarta.persistence.Column;

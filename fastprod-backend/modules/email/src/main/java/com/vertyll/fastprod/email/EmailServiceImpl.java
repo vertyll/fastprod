@@ -3,6 +3,7 @@ package com.vertyll.fastprod.email;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.mail.javamail.MimeMessageHelper.MULTIPART_MODE_MIXED;
 
+import com.vertyll.fastprod.email.enums.EmailTemplateName;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -35,14 +36,15 @@ class EmailServiceImpl implements EmailService {
             String activationCode,
             String subject
     ) throws MessagingException {
-        String templateName;
         if (emailTemplate == null) {
-            templateName = "confirm-email";
-        } else {
-            templateName = emailTemplate.name();
+            throw new IllegalArgumentException("Email template cannot be null");
         }
+
+        String templateName = emailTemplate.getName();
+
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MULTIPART_MODE_MIXED, UTF_8.name());
+
         Map<String, Object> properties = new HashMap<>();
         properties.put("username", username);
         properties.put("activation_code", activationCode);
@@ -54,10 +56,15 @@ class EmailServiceImpl implements EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
 
-        String template = templateEngine.process(templateName, context);
+        try {
+            String template = templateEngine.process(templateName, context);
+            helper.setText(template, true);
+            mailSender.send(mimeMessage);
 
-        helper.setText(template, true);
-
-        mailSender.send(mimeMessage);
+            log.info("Email sent successfully to: {} with template: {}", to, templateName);
+        } catch (Exception e) {
+            log.error("Failed to send email to: {} with template: {}", to, templateName, e);
+            throw new MessagingException("Failed to send email with template: " + templateName, e);
+        }
     }
 }

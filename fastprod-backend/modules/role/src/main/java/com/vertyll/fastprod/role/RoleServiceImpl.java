@@ -1,8 +1,13 @@
 package com.vertyll.fastprod.role;
 
-import static com.vertyll.fastprod.role.RoleResponseDto.mapToDto;
+import static com.vertyll.fastprod.role.dto.RoleResponseDto.mapToDto;
 
 import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.role.dto.RoleCreateDto;
+import com.vertyll.fastprod.role.dto.RoleResponseDto;
+import com.vertyll.fastprod.role.dto.RoleUpdateDto;
+import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.role.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

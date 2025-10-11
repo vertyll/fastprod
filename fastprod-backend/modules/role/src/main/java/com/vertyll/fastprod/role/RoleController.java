@@ -1,6 +1,10 @@
 package com.vertyll.fastprod.role;
 
 import com.vertyll.fastprod.common.response.ApiResponse;
+import com.vertyll.fastprod.role.dto.RoleCreateDto;
+import com.vertyll.fastprod.role.dto.RoleResponseDto;
+import com.vertyll.fastprod.role.dto.RoleUpdateDto;
+import com.vertyll.fastprod.role.enums.RoleType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

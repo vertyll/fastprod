@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.email;
 
+import com.vertyll.fastprod.email.enums.EmailTemplateName;
 import jakarta.mail.MessagingException;
 
 public interface EmailService {

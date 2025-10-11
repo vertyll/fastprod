@@ -1,9 +1,11 @@
-package com.vertyll.fastprod.auth;
+package com.vertyll.fastprod.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record RegisterRequestDto(
+import java.util.Set;
+
+public record UserCreateDto(
         @NotBlank(message = "First name is required")
         String firstName,
 
@@ -15,6 +17,8 @@ public record RegisterRequestDto(
         String email,
 
         @NotBlank(message = "Password is required")
-        String password
+        String password,
+
+        Set<String> roleNames
 ) {
 }

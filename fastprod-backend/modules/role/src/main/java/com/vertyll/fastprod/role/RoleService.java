@@ -1,5 +1,10 @@
 package com.vertyll.fastprod.role;
 
+import com.vertyll.fastprod.role.dto.RoleCreateDto;
+import com.vertyll.fastprod.role.dto.RoleResponseDto;
+import com.vertyll.fastprod.role.dto.RoleUpdateDto;
+import com.vertyll.fastprod.role.entity.Role;
+
 public interface RoleService {
     RoleResponseDto createRole(RoleCreateDto dto);
 

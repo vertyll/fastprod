@@ -1,9 +1,9 @@
 package com.vertyll.fastprod.user;
 
-import static com.vertyll.fastprod.user.UserResponseDto.mapToDto;
+import static com.vertyll.fastprod.user.dto.UserResponseDto.mapToDto;
 
 import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.role.Role;
+import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.RoleService;
 
 import java.util.HashSet;
@@ -11,6 +11,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.vertyll.fastprod.user.dto.UserCreateDto;
+import com.vertyll.fastprod.user.dto.UserResponseDto;
+import com.vertyll.fastprod.user.dto.UserUpdateDto;
+import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;

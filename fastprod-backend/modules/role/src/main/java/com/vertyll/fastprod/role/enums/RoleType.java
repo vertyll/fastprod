@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.role;
+package com.vertyll.fastprod.role.enums;
 
 public enum RoleType {
     ADMIN,

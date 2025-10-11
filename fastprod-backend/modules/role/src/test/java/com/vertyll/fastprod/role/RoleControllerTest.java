@@ -9,6 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
+import com.vertyll.fastprod.role.dto.RoleCreateDto;
+import com.vertyll.fastprod.role.dto.RoleResponseDto;
+import com.vertyll.fastprod.role.dto.RoleUpdateDto;
+import com.vertyll.fastprod.role.enums.RoleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
