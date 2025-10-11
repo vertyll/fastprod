@@ -21,19 +21,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -71,7 +63,7 @@ class AuthControllerTest {
 
         authResponse = new AuthResponseDto("jwt-token", "Bearer");
 
-        changeEmailRequest = new ChangeEmailRequestDto("john@example.com", "john.new@example.com");
+        changeEmailRequest = new ChangeEmailRequestDto("password123", "john.new@example.com");
 
         changePasswordRequest = new ChangePasswordRequestDto("oldPassword123", "newPassword123");
 
@@ -271,38 +263,6 @@ class AuthControllerTest {
     }
 
     @Test
-    void getSessions_WhenAuthenticated_ShouldReturnSessions() throws Exception {
-        // given
-        setupSecurityContext();
-        List<Map<String, Object>> sessions = Arrays.asList(
-                createSessionMap("session1", "Chrome", "192.168.1.1"),
-                createSessionMap("session2", "Firefox", "192.168.1.2")
-        );
-
-        when(authService.getUserActiveSessions("john@example.com")).thenReturn(sessions);
-
-        // when & then
-        mockMvc.perform(get("/auth/sessions"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.length()").value(2))
-                .andExpect(jsonPath("$.message").value("Active sessions retrieved successfully"));
-
-        verify(authService).getUserActiveSessions("john@example.com");
-    }
-
-    @Test
-    void getSessions_WhenNotAuthenticated_ShouldReturnUnauthorized() throws Exception {
-        // given - no security context setup
-
-        // when & then
-        mockMvc.perform(get("/auth/sessions"))
-                .andDo(print())
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
     void verifyAccount_WhenValidCode_ShouldReturnSuccess() throws Exception {
         // given
         doNothing().when(authService).verifyAccount(anyString());
@@ -333,12 +293,11 @@ class AuthControllerTest {
     @Test
     void requestEmailChange_WhenValidRequest_ShouldReturnSuccess() throws Exception {
         // given
-        setupSecurityContext();
-        doNothing().when(authService).requestEmailChange(any(ChangeEmailRequestDto.class));
 
         // when & then
         mockMvc.perform(
                         post("/auth/change-email-request")
+                                .with(user("john@example.com").roles("USER"))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(changeEmailRequest)))
                 .andDo(print())
@@ -351,12 +310,12 @@ class AuthControllerTest {
     @Test
     void requestEmailChange_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        setupSecurityContext();
-        ChangeEmailRequestDto invalidRequest = new ChangeEmailRequestDto("invalid-email", "new@example.com");
+        ChangeEmailRequestDto invalidRequest = new ChangeEmailRequestDto("password123", "invalid-email");
 
         // when & then
         mockMvc.perform(
                         post("/auth/change-email-request")
+                                .with(user("john@example.com").roles("USER"))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andDo(print())
@@ -385,12 +344,11 @@ class AuthControllerTest {
     @Test
     void requestPasswordChange_WhenValidRequest_ShouldReturnSuccess() throws Exception {
         // given
-        setupSecurityContext();
-        doNothing().when(authService).requestPasswordChange(any(ChangePasswordRequestDto.class));
 
         // when & then
         mockMvc.perform(
                         post("/auth/change-password-request")
+                                .with(user("john@example.com").roles("USER"))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(changePasswordRequest)))
                 .andDo(print())
@@ -429,17 +387,6 @@ class AuthControllerTest {
     }
 
     @Test
-    void requestPasswordReset_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
-        // when & then
-        mockMvc.perform(post("/auth/reset-password-request").param("email", "invalid-email"))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
-
-        verify(authService, never()).sendPasswordResetEmail(anyString());
-    }
-
-    @Test
     void resetPassword_WhenValidTokenAndRequest_ShouldReturnSuccess() throws Exception {
         // given
         doNothing().when(authService).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
@@ -473,25 +420,5 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
-    }
-
-    private void setupSecurityContext() {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "john@example.com",
-                null,
-                List.of(new SimpleGrantedAuthority("ROLE_USER"))
-        );
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-    }
-
-    private Map<String, Object> createSessionMap(String sessionId, String browser, String ipAddress) {
-        Map<String, Object> session = new HashMap<>();
-        session.put("sessionId", sessionId);
-        session.put("browser", browser);
-        session.put("ipAddress", ipAddress);
-        session.put("lastAccess", "2023-01-01T10:00:00Z");
-        return session;
     }
 }

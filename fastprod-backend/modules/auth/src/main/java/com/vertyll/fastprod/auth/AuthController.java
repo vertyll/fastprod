@@ -8,11 +8,13 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Validated
 @Tag(name = "Authentication", description = "Auth management APIs")
 class AuthController {
 
@@ -79,8 +82,9 @@ class AuthController {
     @GetMapping("/sessions")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all active sessions for the current user")
-    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getSessions() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getSessions(
+            @AuthenticationPrincipal(expression = "username") String email
+    ) {
         List<Map<String, Object>> sessions = authService.getUserActiveSessions(email);
         return ApiResponse.buildResponse(sessions, "Active sessions retrieved successfully", HttpStatus.OK);
     }
@@ -137,7 +141,7 @@ class AuthController {
     @PostMapping("/reset-password-request")
     @Operation(summary = "Request password reset for a forgotten password")
     public ResponseEntity<ApiResponse<Void>> requestPasswordReset(
-            @RequestParam String email
+            @RequestParam @Email(message = "Email should be valid") String email
     ) throws MessagingException {
         authService.sendPasswordResetEmail(email);
         return ApiResponse.buildResponse(null, "Password reset instructions sent to email", HttpStatus.OK);

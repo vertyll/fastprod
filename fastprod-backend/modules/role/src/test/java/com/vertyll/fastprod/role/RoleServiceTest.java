@@ -28,7 +28,7 @@ class RoleServiceTest {
 
     @Mock private RoleRepository roleRepository;
 
-    @InjectMocks private RoleService roleService;
+    @InjectMocks private RoleServiceImpl roleService;
 
     @Captor private ArgumentCaptor<Role> roleCaptor;
 

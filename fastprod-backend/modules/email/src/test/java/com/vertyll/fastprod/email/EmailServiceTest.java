@@ -34,7 +34,7 @@ class EmailServiceTest {
     private SpringTemplateEngine templateEngine;
 
     @InjectMocks
-    private EmailService emailService;
+    private EmailServiceImpl emailService;
 
     @Mock
     private MimeMessage mimeMessage;

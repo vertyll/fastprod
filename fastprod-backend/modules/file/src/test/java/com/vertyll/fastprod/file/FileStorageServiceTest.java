@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(MockitoExtension.class)
 class FileStorageServiceTest {
 
-    @InjectMocks private FileStorageService fileStorageService;
+    @InjectMocks private FileStorageServiceImpl fileStorageService;
 
     private String tempDir;
     private MultipartFile testFile;

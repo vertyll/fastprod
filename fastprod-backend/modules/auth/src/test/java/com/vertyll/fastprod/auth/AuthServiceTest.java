@@ -3,6 +3,7 @@ package com.vertyll.fastprod.auth;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.vertyll.fastprod.auth.dto.*;
@@ -59,7 +60,7 @@ class AuthServiceTest {
     private JwtService jwtService;
 
     @Mock
-    private RefreshTokenService refreshTokenService;
+    private RefreshTokenServiceImpl refreshTokenService;
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -80,7 +81,7 @@ class AuthServiceTest {
     private Authentication authentication;
 
     @InjectMocks
-    private AuthService authService;
+    private AuthServiceImpl authService;
 
     @Captor
     private ArgumentCaptor<User> userCaptor;
@@ -564,7 +565,9 @@ class AuthServiceTest {
         when(tokenRepository.findByToken("123456")).thenReturn(Optional.of(verificationToken));
         when(userService.saveUser(any(User.class))).thenReturn(user);
         when(jwtService.generateToken(user)).thenReturn("new-jwt-token");
-        when(refreshTokenService.createRefreshToken(any(User.class), any(), any(HttpServletRequest.class))).thenReturn("new-refresh-token");
+        when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
+        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
+        when(refreshTokenService.createRefreshToken(any(User.class), eq(null), any(HttpServletRequest.class))).thenReturn("new-refresh-token");
 
         // when
         AuthResponseDto response = authService.verifyEmailChange("123456", httpServletRequest, httpServletResponse);
