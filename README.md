@@ -27,6 +27,7 @@
 - the application allows login on multiple devices simultaneously
 
 ### Core back-end:
+- Gradle multi module build system
 - the application has an exception handling mechanism
 - the application has a logging mechanism
 - the application has an email sending mechanism
