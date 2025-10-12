@@ -60,7 +60,7 @@ class AuthServiceTest {
     private JwtService jwtService;
 
     @Mock
-    private RefreshTokenServiceImpl refreshTokenService;
+    private RefreshTokenService refreshTokenService;
 
     @Mock
     private AuthenticationManager authenticationManager;
