@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 
@@ -87,6 +88,7 @@ class JwtServiceImpl implements JwtService {
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
+                .id(UUID.randomUUID().toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(refreshTokenExpiration, ChronoUnit.MILLIS)))
                 .signWith(getRefreshTokenSigningKey())
