@@ -1,6 +1,6 @@
 package com.vertyll.fastprod.config;
 
-import com.vertyll.fastprod.auth.JwtService;
+import com.vertyll.fastprod.auth.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
