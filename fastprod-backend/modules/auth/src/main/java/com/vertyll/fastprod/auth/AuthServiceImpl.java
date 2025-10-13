@@ -3,7 +3,6 @@ package com.vertyll.fastprod.auth;
 import com.vertyll.fastprod.auth.dto.*;
 import com.vertyll.fastprod.auth.entity.VerificationToken;
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
-import com.vertyll.fastprod.auth.repository.VerificationTokenRepository;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.email.EmailService;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
@@ -15,7 +14,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
-    private final VerificationTokenRepository tokenRepository;
+    private final VerificationTokenService verificationTokenService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -49,8 +47,7 @@ class AuthServiceImpl implements AuthService {
             throw new ApiException("Email already registered", HttpStatus.BAD_REQUEST);
         }
 
-        User user = User
-                .builder()
+        User user = User.builder()
                 .firstName(request.firstName())
                 .lastName(request.lastName())
                 .email(request.email())
@@ -61,8 +58,12 @@ class AuthServiceImpl implements AuthService {
 
         userService.saveUser(user);
 
-        String verificationCode = generateVerificationCode();
-        createVerificationToken(user, verificationCode, VerificationTokenType.ACCOUNT_ACTIVATION, null);
+        String verificationCode = verificationTokenService.createVerificationToken(
+                user,
+                VerificationTokenType.ACCOUNT_ACTIVATION,
+                null
+        );
+
         emailService.sendEmail(
                 user.getEmail(),
                 user.getFirstName(),
@@ -164,26 +165,16 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void verifyAccount(String code) {
-        VerificationToken verificationToken = getVerificationTokenByCode(code);
-
-        if (verificationToken.isUsed()) {
-            throw new ApiException("Verification code already used", HttpStatus.BAD_REQUEST);
-        }
-
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new ApiException("Verification code expired", HttpStatus.BAD_REQUEST);
-        }
-
-        if (verificationToken.getTokenType() != VerificationTokenType.ACCOUNT_ACTIVATION) {
-            throw new ApiException("Invalid verification code type", HttpStatus.BAD_REQUEST);
-        }
+        VerificationToken verificationToken = verificationTokenService.getValidToken(
+                code,
+                VerificationTokenType.ACCOUNT_ACTIVATION
+        );
 
         User user = verificationToken.getUser();
         user.setVerified(true);
-        verificationToken.setUsed(true);
-
         userService.saveUser(user);
-        tokenRepository.save(verificationToken);
+
+        verificationTokenService.markTokenAsUsed(verificationToken);
     }
 
     @Override
@@ -203,8 +194,11 @@ class AuthServiceImpl implements AuthService {
             throw new ApiException("Email already in use", HttpStatus.BAD_REQUEST);
         }
 
-        String verificationCode = generateVerificationCode();
-        createVerificationToken(user, verificationCode, VerificationTokenType.EMAIL_CHANGE, request.newEmail());
+        String verificationCode = verificationTokenService.createVerificationToken(
+                user,
+                VerificationTokenType.EMAIL_CHANGE,
+                request.newEmail()
+        );
 
         emailService.sendEmail(
                 request.newEmail(),
@@ -218,19 +212,10 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponseDto verifyEmailChange(String code, HttpServletRequest httpRequest, HttpServletResponse response) {
-        VerificationToken verificationToken = getVerificationTokenByCode(code);
-
-        if (verificationToken.isUsed()) {
-            throw new ApiException("Verification code already used", HttpStatus.BAD_REQUEST);
-        }
-
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new ApiException("Verification code expired", HttpStatus.BAD_REQUEST);
-        }
-
-        if (verificationToken.getTokenType() != VerificationTokenType.EMAIL_CHANGE) {
-            throw new ApiException("Invalid verification code type", HttpStatus.BAD_REQUEST);
-        }
+        VerificationToken verificationToken = verificationTokenService.getValidToken(
+                code,
+                VerificationTokenType.EMAIL_CHANGE
+        );
 
         User user = verificationToken.getUser();
         String newEmail = verificationToken.getAdditionalData();
@@ -242,8 +227,7 @@ class AuthServiceImpl implements AuthService {
         user.setEmail(newEmail);
         userService.saveUser(user);
 
-        verificationToken.setUsed(true);
-        tokenRepository.save(verificationToken);
+        verificationTokenService.markTokenAsUsed(verificationToken);
 
         refreshTokenService.revokeAllUserTokens(user);
 
@@ -267,10 +251,13 @@ class AuthServiceImpl implements AuthService {
             throw new ApiException("Invalid current password", HttpStatus.BAD_REQUEST);
         }
 
-        String verificationCode = generateVerificationCode();
         String encodedNewPassword = passwordEncoder.encode(request.newPassword());
 
-        createVerificationToken(user, verificationCode, VerificationTokenType.PASSWORD_CHANGE, encodedNewPassword);
+        String verificationCode = verificationTokenService.createVerificationToken(
+                user,
+                VerificationTokenType.PASSWORD_CHANGE,
+                encodedNewPassword
+        );
 
         emailService.sendEmail(
                 user.getEmail(),
@@ -284,19 +271,10 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void verifyPasswordChange(String code) {
-        VerificationToken verificationToken = getVerificationTokenByCode(code);
-
-        if (verificationToken.isUsed()) {
-            throw new ApiException("Verification code already used", HttpStatus.BAD_REQUEST);
-        }
-
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new ApiException("Verification code expired", HttpStatus.BAD_REQUEST);
-        }
-
-        if (verificationToken.getTokenType() != VerificationTokenType.PASSWORD_CHANGE) {
-            throw new ApiException("Invalid verification code type", HttpStatus.BAD_REQUEST);
-        }
+        VerificationToken verificationToken = verificationTokenService.getValidToken(
+                code,
+                VerificationTokenType.PASSWORD_CHANGE
+        );
 
         User user = verificationToken.getUser();
         String newPasswordHash = verificationToken.getAdditionalData();
@@ -308,8 +286,7 @@ class AuthServiceImpl implements AuthService {
         user.setPassword(newPasswordHash);
         userService.saveUser(user);
 
-        verificationToken.setUsed(true);
-        tokenRepository.save(verificationToken);
+        verificationTokenService.markTokenAsUsed(verificationToken);
 
         refreshTokenService.revokeAllUserTokens(user);
     }
@@ -320,8 +297,11 @@ class AuthServiceImpl implements AuthService {
         User user = userService.findByEmailWithRoles(email)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
-        String verificationCode = generateVerificationCode();
-        createVerificationToken(user, verificationCode, VerificationTokenType.PASSWORD_RESET, null);
+        String verificationCode = verificationTokenService.createVerificationToken(
+                user,
+                VerificationTokenType.PASSWORD_RESET,
+                null
+        );
 
         emailService.sendEmail(
                 email,
@@ -335,19 +315,10 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(String token, ResetPasswordRequestDto request) {
-        VerificationToken verificationToken = getVerificationTokenByCode(token);
-
-        if (verificationToken.isUsed()) {
-            throw new ApiException("Verification token already used", HttpStatus.BAD_REQUEST);
-        }
-
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new ApiException("Verification token expired", HttpStatus.BAD_REQUEST);
-        }
-
-        if (verificationToken.getTokenType() != VerificationTokenType.PASSWORD_RESET) {
-            throw new ApiException("Invalid verification token type", HttpStatus.BAD_REQUEST);
-        }
+        VerificationToken verificationToken = verificationTokenService.getValidToken(
+                token,
+                VerificationTokenType.PASSWORD_RESET
+        );
 
         User user = verificationToken.getUser();
         String newPasswordHash = passwordEncoder.encode(request.newPassword());
@@ -355,30 +326,9 @@ class AuthServiceImpl implements AuthService {
         user.setPassword(newPasswordHash);
         userService.saveUser(user);
 
-        verificationToken.setUsed(true);
-        tokenRepository.save(verificationToken);
+        verificationTokenService.markTokenAsUsed(verificationToken);
 
         refreshTokenService.revokeAllUserTokens(user);
-    }
-
-    private String generateVerificationCode() {
-        Random random = new Random();
-        int code = 100000 + random.nextInt(900000);
-        return String.valueOf(code);
-    }
-
-    private void createVerificationToken(User user, String token, VerificationTokenType tokenType, String additionalData) {
-        VerificationToken verificationToken = VerificationToken
-                .builder()
-                .token(token)
-                .user(user)
-                .expiryDate(LocalDateTime.now().plusHours(24))
-                .isUsed(false)
-                .tokenType(tokenType)
-                .additionalData(additionalData)
-                .build();
-
-        tokenRepository.save(verificationToken);
     }
 
     private void addRefreshTokenCookie(HttpServletResponse response, String token) {
@@ -409,11 +359,6 @@ class AuthServiceImpl implements AuthService {
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElse(null);
-    }
-
-    private VerificationToken getVerificationTokenByCode(String code) {
-        return tokenRepository.findByToken(code)
-                .orElseThrow(() -> new ApiException("Invalid verification code", HttpStatus.BAD_REQUEST));
     }
 
     private Authentication getCurrentAuthentication() {

@@ -4,6 +4,7 @@ import com.vertyll.fastprod.auth.dto.SessionInfoDto;
 import com.vertyll.fastprod.auth.entity.RefreshToken;
 import com.vertyll.fastprod.auth.repository.RefreshTokenRepository;
 import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.common.util.HashUtil;
 import com.vertyll.fastprod.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,16 +26,15 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
 
-    /**
-     * Creates a new refresh token for the given user using JWT.
-     */
     @Override
     @Transactional
     public String createRefreshToken(User user, String deviceInfo, HttpServletRequest request) {
         String tokenValue = jwtService.generateRefreshToken(user);
 
+        String hashedToken = HashUtil.hashToken(tokenValue);
+
         RefreshToken refreshToken = RefreshToken.builder()
-                .token(tokenValue)
+                .token(hashedToken)
                 .user(user)
                 .expiryDate(Instant.now().plusMillis(jwtService.getRefreshTokenExpirationTime()))
                 .isRevoked(false)
@@ -54,24 +54,22 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 
     /**
      * Validates a refresh token and returns the associated user if valid.
+     * Compares the provided token with hashed tokens in database.
      */
     @Override
     @Transactional
     public User validateRefreshToken(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new ApiException("Refresh token not found", HttpStatus.UNAUTHORIZED));
-
-        if (refreshToken.isRevoked()) {
-            log.warn("Attempted to use revoked refresh token for user: {}",
-                    refreshToken.getUser().getEmail());
-            throw new ApiException("Refresh token revoked", HttpStatus.UNAUTHORIZED);
+        // Validate JWT signature and expiration
+        if (!jwtService.isRefreshTokenValid(token)) {
+            log.error("Invalid or expired JWT refresh token");
+            throw new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
         }
 
-        if (refreshToken.getExpiryDate().isBefore(Instant.now())) {
-            log.warn("Attempted to use expired refresh token for user: {}",
-                    refreshToken.getUser().getEmail());
-            throw new ApiException("Refresh token expired", HttpStatus.UNAUTHORIZED);
-        }
+        // Extract username from token
+        String username = jwtService.extractUsernameFromRefreshToken(token);
+
+        // Find the matching token in database
+        RefreshToken refreshToken = findTokenByValue(token, username);
 
         // Validate JWT signature using refresh token secret key
         if (!jwtService.validateRefreshToken(token, refreshToken.getUser())) {
@@ -108,15 +106,23 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public void revokeRefreshToken(String token) {
-        refreshTokenRepository.findByToken(token)
-                .ifPresent(refreshToken -> {
-                    refreshToken.setRevoked(true);
-                    refreshToken.setRevokedAt(Instant.now());
-                    refreshTokenRepository.save(refreshToken);
+        if (!jwtService.isRefreshTokenValid(token)) {
+            log.warn("Attempted to revoke invalid or expired JWT token");
+            return;
+        }
 
-                    log.info("Revoked refresh token for user: {}",
-                            refreshToken.getUser().getEmail());
-                });
+        String username = jwtService.extractUsernameFromRefreshToken(token);
+
+        try {
+            RefreshToken refreshToken = findTokenByValue(token, username);
+            refreshToken.setRevoked(true);
+            refreshToken.setRevokedAt(Instant.now());
+            refreshTokenRepository.save(refreshToken);
+
+            log.info("Revoked refresh token for user: {}", refreshToken.getUser().getEmail());
+        } catch (ApiException e) {
+            log.warn("Token not found for revocation: {}", e.getMessage());
+        }
     }
 
     /**
@@ -138,6 +144,8 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 
     /**
      * Gets all active sessions for a user.
+     * Note: We can't validate individual JWT signatures here because tokens are hashed.
+     * We rely on database state (expiry, revoked) for session listing.
      */
     @Override
     @Transactional(readOnly = true)
@@ -145,7 +153,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         return refreshTokenRepository.findByUserAndIsRevoked(user, false)
                 .stream()
                 .filter(token -> token.getExpiryDate().isAfter(Instant.now()))
-                .filter(token -> jwtService.isRefreshTokenValid(token.getToken()))
                 .collect(Collectors.toList());
     }
 
@@ -178,10 +185,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshTokenRepository.deleteAllExpiredTokens(Instant.now());
     }
 
-    /**
-     * Extracts the client IP address from the request.
-     * Handles proxy headers like X-Forwarded-For.
-     */
     private String extractIpAddress(HttpServletRequest request) {
         if (request == null) {
             return "unknown";
@@ -200,9 +203,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         return request.getRemoteAddr();
     }
 
-    /**
-     * Extracts the User-Agent header from the request.
-     */
     private String extractUserAgent(HttpServletRequest request) {
         if (request == null) {
             return "unknown";
@@ -210,5 +210,17 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 
         String userAgent = request.getHeader("User-Agent");
         return userAgent != null ? userAgent : "unknown";
+    }
+
+    private RefreshToken findTokenByValue(String token, String username) {
+        String hashedToken = HashUtil.hashToken(token);
+
+        return refreshTokenRepository
+                .findByUserEmailAndTokenAndIsRevoked(username, hashedToken, false)
+                .filter(rt -> rt.getExpiryDate().isAfter(Instant.now()))
+                .orElseThrow(() -> {
+                    log.warn("Refresh token not found in database for user: {}", username);
+                    return new ApiException("Refresh token not found", HttpStatus.UNAUTHORIZED);
+                });
     }
 }

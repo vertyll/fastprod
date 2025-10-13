@@ -49,6 +49,8 @@ security:
       secret-key: "cmVmcmVzaC10b2tlbi1zZWNyZXQta2V5LTMyYnl0ZXM="
       expiration: 2592000000 # 30 days
       cookie-name: "refreshToken"
+    cookie:
+      secure: false
 
 application:
   file:
