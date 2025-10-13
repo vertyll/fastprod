@@ -37,7 +37,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
                 .token(tokenValue)
                 .user(user)
                 .expiryDate(Instant.now().plusMillis(jwtService.getRefreshTokenExpirationTime()))
-                .revoked(false)
+                .isRevoked(false)
                 .deviceInfo(deviceInfo)
                 .ipAddress(extractIpAddress(request))
                 .userAgent(extractUserAgent(request))
@@ -125,7 +125,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public void revokeAllUserTokens(User user) {
-        List<RefreshToken> tokens = refreshTokenRepository.findByUserAndRevoked(user, false);
+        List<RefreshToken> tokens = refreshTokenRepository.findByUserAndIsRevoked(user, false);
         tokens.forEach(token -> {
             token.setRevoked(true);
             token.setRevokedAt(Instant.now());
@@ -142,7 +142,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional(readOnly = true)
     public List<RefreshToken> getUserActiveSessions(User user) {
-        return refreshTokenRepository.findByUserAndRevoked(user, false)
+        return refreshTokenRepository.findByUserAndIsRevoked(user, false)
                 .stream()
                 .filter(token -> token.getExpiryDate().isAfter(Instant.now()))
                 .filter(token -> jwtService.isRefreshTokenValid(token.getToken()))

@@ -122,7 +122,7 @@ class AuthServiceTest {
                         .email("john@example.com")
                         .password("encodedPassword")
                         .roles(Set.of(userRole))
-                        .enabled(false)
+                        .isVerified(false)
                         .build();
 
         verificationToken =
@@ -130,7 +130,7 @@ class AuthServiceTest {
                         .token("123456")
                         .user(user)
                         .expiryDate(LocalDateTime.now().plusHours(24))
-                        .used(false)
+                        .isUsed(false)
                         .tokenType(VerificationTokenType.ACCOUNT_ACTIVATION)
                         .build();
     }
@@ -160,7 +160,7 @@ class AuthServiceTest {
         User capturedUser = userCaptor.getValue();
         assertEquals("John", capturedUser.getFirstName());
         assertEquals("john@example.com", capturedUser.getEmail());
-        assertFalse(capturedUser.isEnabled());
+        assertFalse(capturedUser.isVerified());
     }
 
     @Test
@@ -179,7 +179,7 @@ class AuthServiceTest {
     @Test
     void authenticate_ShouldReturnToken() {
         // given
-        user.setEnabled(true);
+        user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -210,9 +210,9 @@ class AuthServiceTest {
     }
 
     @Test
-    void authenticate_WhenUserNotEnabled_ShouldThrowException() {
+    void authenticate_WhenUserNotVerified_ShouldThrowException() {
         // given
-        user.setEnabled(false);
+        user.setVerified(false);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
 
         // when & then
@@ -239,7 +239,7 @@ class AuthServiceTest {
         User verifiedUser = userCaptor.getValue();
         VerificationToken usedToken = tokenCaptor.getValue();
 
-        assertTrue(verifiedUser.isEnabled());
+        assertTrue(verifiedUser.isVerified());
         assertTrue(usedToken.isUsed());
     }
 
@@ -345,7 +345,7 @@ class AuthServiceTest {
     @Test
     void authenticate_ShouldCallAuthenticationManager() {
         // given
-        user.setEnabled(true);
+        user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -364,7 +364,7 @@ class AuthServiceTest {
     @Test
     void authenticate_ShouldCreateRefreshTokenWhenResponseNotNull() {
         // given
-        user.setEnabled(true);
+        user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -391,7 +391,7 @@ class AuthServiceTest {
     @Test
     void authenticate_ShouldNotCreateRefreshTokenWhenResponseNull() {
         // given
-        user.setEnabled(true);
+        user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(any(User.class))).thenReturn("jwt-token");
 
@@ -406,7 +406,7 @@ class AuthServiceTest {
     @Test
     void authenticate_ShouldSetRefreshTokenCookie() {
         // given
-        user.setEnabled(true);
+        user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -431,7 +431,7 @@ class AuthServiceTest {
     @Test
     void authenticate_ShouldGenerateJwtToken() {
         // given
-        user.setEnabled(true);
+        user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn("generated-jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");

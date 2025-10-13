@@ -53,7 +53,7 @@ class UserServiceImpl implements UserService {
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
                 .roles(roles)
-                .enabled(true)
+                .isVerified(true)
                 .build();
 
         User savedUser = userRepository.save(user);

@@ -56,7 +56,7 @@ class AuthServiceImpl implements AuthService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .roles(Set.of(roleService.getOrCreateDefaultRole("USER")))
-                .enabled(false)
+                .isVerified(false)
                 .build();
 
         userService.saveUser(user);
@@ -82,7 +82,7 @@ class AuthServiceImpl implements AuthService {
         User user = userService.findByEmailWithRoles(request.email())
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
-        if (!user.isEnabled()) {
+        if (!user.isVerified()) {
             throw new ApiException("Account not verified", HttpStatus.FORBIDDEN);
         }
 
@@ -179,7 +179,7 @@ class AuthServiceImpl implements AuthService {
         }
 
         User user = verificationToken.getUser();
-        user.setEnabled(true);
+        user.setVerified(true);
         verificationToken.setUsed(true);
 
         userService.saveUser(user);
@@ -373,7 +373,7 @@ class AuthServiceImpl implements AuthService {
                 .token(token)
                 .user(user)
                 .expiryDate(LocalDateTime.now().plusHours(24))
-                .used(false)
+                .isUsed(false)
                 .tokenType(tokenType)
                 .additionalData(additionalData)
                 .build();

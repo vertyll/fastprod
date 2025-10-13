@@ -74,7 +74,7 @@ class UserServiceTest {
                         .email("john@example.com")
                         .password("encodedPassword")
                         .roles(roles)
-                        .enabled(true)
+                        .isVerified(true)
                         .build();
     }
 
@@ -97,7 +97,7 @@ class UserServiceTest {
         assertEquals(createDto.firstName(), capturedUser.getFirstName());
         assertEquals(createDto.lastName(), capturedUser.getLastName());
         assertEquals(createDto.email(), capturedUser.getEmail());
-        assertTrue(capturedUser.isEnabled());
+        assertTrue(capturedUser.isVerified());
         verify(passwordEncoder).encode(createDto.password());
     }
 
@@ -165,7 +165,7 @@ class UserServiceTest {
         assertEquals(user.getFirstName(), result.firstName());
         assertEquals(user.getLastName(), result.lastName());
         assertEquals(user.getEmail(), result.email());
-        assertTrue(result.enabled());
+        assertTrue(result.isVerified());
         assertEquals(1, result.roles().size());
         assertTrue(result.roles().contains("USER"));
     }

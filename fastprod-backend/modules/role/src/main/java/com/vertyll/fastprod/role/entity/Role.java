@@ -1,9 +1,7 @@
 package com.vertyll.fastprod.role.entity;
 
 import com.vertyll.fastprod.common.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -12,12 +10,24 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "role")
+@Table(name = "role",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_role_name", columnNames = "name")
+        },
+        indexes = {
+                @Index(name = "idx_role_is_active", columnList = "is_active"),
+                @Index(name = "idx_role_created_at", columnList = "created_at"),
+                @Index(name = "idx_role_name_is_active", columnList = "name, is_active")
+        }
+)
 public class Role extends BaseEntity {
 
-    @Getter
     @Column(nullable = false, unique = true)
     private String name;
 
     private String description;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isActive = true;
 }

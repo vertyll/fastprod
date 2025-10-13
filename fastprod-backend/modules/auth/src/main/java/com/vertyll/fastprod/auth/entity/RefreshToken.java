@@ -16,9 +16,10 @@ import java.time.Instant;
 @Table(
         name = "refresh_token",
         indexes = {
-                @Index(name = "idx_refresh_token_user", columnList = "user_id"),
-                @Index(name = "idx_refresh_token_expiry", columnList = "expiry_date"),
-                @Index(name = "idx_refresh_token_revoked", columnList = "revoked")
+                @Index(name = "idx_refresh_token_user_id", columnList = "user_id"),
+                @Index(name = "idx_refresh_token_expiry_date", columnList = "expiry_date"),
+                @Index(name = "idx_refresh_token_is_revoked", columnList = "is_revoked"),
+                @Index(name = "idx_refresh_token_token", columnList = "token"),
         }
 )
 public class RefreshToken extends BaseEntity {
@@ -27,7 +28,11 @@ public class RefreshToken extends BaseEntity {
     private String token;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(
+            name = "user_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_refresh_token_user")
+    )
     private User user;
 
     @Column(nullable = false)
@@ -35,7 +40,7 @@ public class RefreshToken extends BaseEntity {
 
     @Builder.Default
     @Column(nullable = false)
-    private boolean revoked = false;
+    private boolean isRevoked = false;
 
     @Column(length = 255)
     private String deviceInfo;

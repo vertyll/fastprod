@@ -15,23 +15,23 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
     Optional<RefreshToken> findByToken(String token);
 
-    List<RefreshToken> findByUserAndRevoked(User user, boolean revoked);
+    List<RefreshToken> findByUserAndIsRevoked(User user, boolean revoked);
 
     @Modifying
-    @Query("UPDATE RefreshToken rt SET rt.revoked = true, rt.revokedAt = CURRENT_TIMESTAMP WHERE rt.user = :user AND rt.revoked = false")
+    @Query("UPDATE RefreshToken rt SET rt.isRevoked = true, rt.revokedAt = CURRENT_TIMESTAMP WHERE rt.user = :user AND rt.isRevoked = false")
     void revokeAllUserTokens(@Param("user") User user);
 
     @Modifying
-    @Query("DELETE FROM RefreshToken rt WHERE rt.expiryDate < :now OR (rt.revoked = true AND rt.revokedAt < :thirtyDaysAgo)")
+    @Query("DELETE FROM RefreshToken rt WHERE rt.expiryDate < :now OR (rt.isRevoked = true AND rt.revokedAt < :thirtyDaysAgo)")
     int deleteAllExpiredTokens(@Param("now") Instant now, @Param("thirtyDaysAgo") Instant thirtyDaysAgo);
 
     @Modifying
     @Query("DELETE FROM RefreshToken rt WHERE rt.expiryDate < :now")
     void deleteAllExpiredTokens(@Param("now") Instant now);
 
-    @Query("SELECT COUNT(rt) FROM RefreshToken rt WHERE rt.user = :user AND rt.revoked = false AND rt.expiryDate > CURRENT_TIMESTAMP")
+    @Query("SELECT COUNT(rt) FROM RefreshToken rt WHERE rt.user = :user AND rt.isRevoked = false AND rt.expiryDate > CURRENT_TIMESTAMP")
     long countActiveSessionsByUser(@Param("user") User user);
 
-    @Query("SELECT rt FROM RefreshToken rt WHERE rt.user = :user AND rt.ipAddress = :ipAddress AND rt.revoked = false AND rt.expiryDate > CURRENT_TIMESTAMP")
+    @Query("SELECT rt FROM RefreshToken rt WHERE rt.user = :user AND rt.ipAddress = :ipAddress AND rt.isRevoked = false AND rt.expiryDate > CURRENT_TIMESTAMP")
     List<RefreshToken> findActiveSessionsByUserAndIp(@Param("user") User user, @Param("ipAddress") String ipAddress);
 }

@@ -20,9 +20,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "\"user\"")
+@Table(name = "\"user\"",
+        indexes = {
+                @Index(name = "idx_user_email", columnList = "email"),
+                @Index(name = "idx_user_is_active", columnList = "is_active"),
+                @Index(name = "idx_user_is_verified", columnList = "is_verified"),
+                @Index(name = "idx_user_is_system_account", columnList = "is_system_account"),
+                @Index(name = "idx_user_created_at", columnList = "created_at"),
+                @Index(name = "idx_user_is_active_is_verified", columnList = "is_active, is_verified")
+        }
+)
 public class User extends BaseEntity implements UserDetails {
-
     @Column(nullable = false)
     private String firstName;
 
@@ -38,18 +46,35 @@ public class User extends BaseEntity implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            joinColumns = @JoinColumn(
+                    name = "user_id",
+                    foreignKey = @ForeignKey(name = "fk_user_role_user")
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id",
+                    foreignKey = @ForeignKey(name = "fk_user_role_role")
+            )
     )
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
     @Column(nullable = false)
-    private boolean enabled;
+    @Builder.Default
+    private boolean isVerified = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isSystemAccount = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isActive = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).collect(Collectors.toList());
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override

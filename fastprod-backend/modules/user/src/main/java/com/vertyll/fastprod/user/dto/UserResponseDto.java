@@ -12,7 +12,7 @@ public record UserResponseDto(
         String lastName,
         String email,
         Set<String> roles,
-        boolean enabled
+        boolean isVerified
 ) {
     public static UserResponseDto mapToDto(User user) {
         return new UserResponseDto(
@@ -21,7 +21,7 @@ public record UserResponseDto(
                 user.getLastName(),
                 user.getEmail(),
                 user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()),
-                user.isEnabled()
+                user.isVerified()
         );
     }
 }
