@@ -29,10 +29,10 @@ spring:
 security:
   jwt:
     access-token:
-      secret-key: "c2VjcmV0LWtleS1mb3ItYWNjZXNzLXRva2VuLTMyaGFzaA=="
+      secret-key: "CbIKeXKAkneVUn5me1nHZ+V74qpmZ36InUDFEXsg6YY="
       expiration: 900000 # 15 minutes
     refresh-token:
-      secret-key: "cmVmcmVzaC10b2tlbi1zZWNyZXQta2V5LTMyYnl0ZXM="
+      secret-key: "isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA="
       expiration: 2592000000 # 30 days
       cookie-name: "refreshToken"
 
