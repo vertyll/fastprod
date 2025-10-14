@@ -3,6 +3,7 @@ package com.vertyll.fastprod.common.exception;
 import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.common.response.ValidationErrorResponse;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,9 +12,11 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -40,12 +43,7 @@ public class GlobalExceptionHandler {
             errors.get(field).add(message);
         });
 
-        ValidationErrorResponse response = ValidationErrorResponse
-                .builder()
-                .message("Validation failed")
-                .errors(errors)
-                .timestamp(LocalDateTime.now())
-                .build();
+        ValidationErrorResponse response = ValidationErrorResponse.builder().message("Validation failed").errors(errors).timestamp(LocalDateTime.now()).build();
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -68,5 +66,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception ignoredEx) {
         return ApiResponse.buildResponse(null, "An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(AuthorizationDeniedException ignoredEx) {
+        return ApiResponse.buildResponse(null, "You do not have permission to perform this action", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ignoredEx) {
+        return ApiResponse.buildResponse(null, "Access denied", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ignoredEx) {
+        return ApiResponse.buildResponse(null, "Authentication required", HttpStatus.UNAUTHORIZED);
     }
 }

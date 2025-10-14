@@ -1,8 +1,13 @@
 package com.vertyll.fastprod.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vertyll.fastprod.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -24,6 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -47,7 +53,33 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+                            ResponseEntity<ApiResponse<Void>> responseEntity = ApiResponse.buildResponse(
+                                    null,
+                                    "Authentication is required to access this resource",
+                                    HttpStatus.UNAUTHORIZED
+                            );
+
+                            response.getWriter().write(objectMapper.writeValueAsString(responseEntity.getBody()));
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+                            ResponseEntity<ApiResponse<Void>> responseEntity = ApiResponse.buildResponse(
+                                    null,
+                                    "You do not have permission to access this resource",
+                                    HttpStatus.FORBIDDEN
+                            );
+
+                            response.getWriter().write(objectMapper.writeValueAsString(responseEntity.getBody()));
+                        })
+                );
 
         return http.build();
     }
