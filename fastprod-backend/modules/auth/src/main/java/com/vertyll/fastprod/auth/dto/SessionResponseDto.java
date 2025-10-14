@@ -14,13 +14,17 @@ public record SessionResponseDto(
         String userAgent,
         String browser,
         String os,
+
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
         LocalDateTime createdAt,
+
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
         Instant lastUsedAt,
+
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
         Instant expiresAt,
-        boolean current
+
+        boolean isCurrent
 ) {
     public static SessionResponseDto fromSessionInfo(
             SessionInfoDto info,
@@ -38,7 +42,7 @@ public record SessionResponseDto(
                 .createdAt(info.createdAt())
                 .lastUsedAt(info.lastUsedAt())
                 .expiresAt(info.expiresAt())
-                .current(isCurrent)
+                .isCurrent(isCurrent)
                 .build();
     }
 

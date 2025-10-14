@@ -2,6 +2,8 @@ package com.vertyll.fastprod.file.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.vertyll.fastprod.file.config.FileUploadProperties;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,34 +12,34 @@ import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-@ExtendWith(MockitoExtension.class)
 class FileStorageServiceTest {
 
-    @InjectMocks private FileStorageServiceImpl fileStorageService;
+    private FileStorageServiceImpl fileStorageService;
 
-    private String tempDir;
+    @TempDir
+    Path tempDir;
+
     private MultipartFile testFile;
     private static final String TEST_USER_ID = "123";
 
     @BeforeEach
     void setUp() throws IOException {
-        // Tworzenie tymczasowego katalogu dla testów
-        tempDir = Files.createTempDirectory("file-test").toString();
-        ReflectionTestUtils.setField(fileStorageService, "fileUploadPath", tempDir);
+        // Create FileUploadProperties with the temp directory
+        FileUploadProperties properties = new FileUploadProperties(tempDir.toString());
 
-        // Przygotowanie testowego pliku
-        testFile =
-                new MockMultipartFile(
-                        "test-file.txt", "test-file.txt", "text/plain", "test content".getBytes());
+        // Create service instance with properties
+        fileStorageService = new FileStorageServiceImpl(properties);
+
+        // Prepare test file
+        testFile = new MockMultipartFile(
+                "test-file.txt", "test-file.txt", "text/plain", "test content".getBytes());
     }
 
+    // Your test methods remain the same...
     @Test
     void saveFile_WhenValidFile_ShouldSaveAndReturnPath() {
         // when
@@ -71,7 +73,7 @@ class FileStorageServiceTest {
         fileStorageService.saveFile(testFile, TEST_USER_ID);
 
         // then
-        Path userDir = Paths.get(tempDir, "users", TEST_USER_ID);
+        Path userDir = Paths.get(tempDir.toString(), "users", TEST_USER_ID);
         assertTrue(Files.exists(userDir));
         assertTrue(Files.isDirectory(userDir));
     }

@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 public interface AuthService {
     @Transactional
@@ -26,7 +25,7 @@ public interface AuthService {
     void logoutAllSessions(HttpServletRequest request, HttpServletResponse response);
 
     @Transactional(readOnly = true)
-    List<Map<String, Object>> getUserActiveSessions(String email);
+    List<SessionResponseDto> getUserActiveSessions(String email);
 
     @Transactional
     void verifyAccount(String code);

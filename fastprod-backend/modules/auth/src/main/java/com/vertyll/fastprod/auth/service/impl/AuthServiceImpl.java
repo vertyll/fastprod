@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.auth.service.impl;
 
+import com.vertyll.fastprod.auth.config.CookieProperties;
 import com.vertyll.fastprod.auth.dto.*;
 import com.vertyll.fastprod.auth.entity.VerificationToken;
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -43,6 +45,7 @@ class AuthServiceImpl implements AuthService {
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final CookieProperties cookieProperties;
 
     @Override
     @Transactional
@@ -146,23 +149,13 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> getUserActiveSessions(String email) {
+    public List<SessionResponseDto> getUserActiveSessions(String email) {
         User user = userService.findByEmailWithRoles(email)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
         return refreshTokenService.getUserSessionDetails(user)
                 .stream()
-                .map(session -> {
-                    Map<String, Object> sessionMap = new HashMap<>();
-                    sessionMap.put("id", session.id());
-                    sessionMap.put("deviceInfo", session.deviceInfo() != null ? session.deviceInfo() : "Unknown device");
-                    sessionMap.put("ipAddress", session.ipAddress());
-                    sessionMap.put("userAgent", session.userAgent());
-                    sessionMap.put("createdAt", session.createdAt());
-                    sessionMap.put("lastUsedAt", session.lastUsedAt());
-                    sessionMap.put("expiresAt", session.expiresAt());
-                    return sessionMap;
-                })
+                .map(session -> SessionResponseDto.fromSessionInfo(session, false)) // TODO: Implement isCurrent logic
                 .collect(Collectors.toList());
     }
 
@@ -336,22 +329,27 @@ class AuthServiceImpl implements AuthService {
     }
 
     private void addRefreshTokenCookie(HttpServletResponse response, String token) {
-        Cookie cookie = new Cookie(jwtService.getRefreshTokenCookieName(), token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge((int) (jwtService.getRefreshTokenExpirationTime() / 1000));
-        cookie.setAttribute("SameSite", "Strict");
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from(jwtService.getRefreshTokenCookieName(), token)
+                .httpOnly(cookieProperties.httpOnly())
+                .secure(cookieProperties.secure())
+                .path(cookieProperties.path())
+                .maxAge(jwtService.getRefreshTokenExpirationTime() / 1000)
+                .sameSite(cookieProperties.sameSite())
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie(jwtService.getRefreshTokenCookieName(), "");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from(jwtService.getRefreshTokenCookieName(), "")
+                .httpOnly(cookieProperties.httpOnly())
+                .secure(cookieProperties.secure())
+                .path(cookieProperties.path())
+                .maxAge(0)
+                .sameSite(cookieProperties.sameSite())
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {

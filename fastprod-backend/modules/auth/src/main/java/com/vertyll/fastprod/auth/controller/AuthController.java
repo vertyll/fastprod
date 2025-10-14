@@ -19,7 +19,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -83,10 +82,10 @@ class AuthController {
     @GetMapping("/sessions")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all active sessions for the current user")
-    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getSessions(
-            @AuthenticationPrincipal(expression = "username") String email
+    public ResponseEntity<ApiResponse<List<SessionResponseDto>>> getSessions(
+            @AuthenticationPrincipal String email
     ) {
-        List<Map<String, Object>> sessions = authService.getUserActiveSessions(email);
+        List<SessionResponseDto> sessions = authService.getUserActiveSessions(email);
         return ApiResponse.buildResponse(sessions, "Active sessions retrieved successfully", HttpStatus.OK);
     }
 

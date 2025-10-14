@@ -42,7 +42,6 @@ public class RefreshToken extends BaseEntity {
     @Column(nullable = false)
     private boolean isRevoked = false;
 
-    @Column(length = 255)
     private String deviceInfo;
 
     @Column(length = 45) // IPv6 max length

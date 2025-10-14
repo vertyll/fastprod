@@ -3,6 +3,7 @@ package com.vertyll.fastprod.file.service.impl;
 import static java.io.File.separator;
 import static java.lang.System.currentTimeMillis;
 
+import com.vertyll.fastprod.file.config.FileUploadProperties;
 import com.vertyll.fastprod.file.service.FileStorageService;
 import jakarta.annotation.Nonnull;
 
@@ -14,7 +15,6 @@ import java.nio.file.Paths;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,8 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 class FileStorageServiceImpl implements FileStorageService {
 
-    @Value("${application.file.uploads.file-output-path}")
-    private String fileUploadPath;
+    private final FileUploadProperties fileUploadProperties;
 
     @Override
     public String saveFile(@Nonnull MultipartFile sourceFile, @Nonnull String userId) {
@@ -33,7 +32,7 @@ class FileStorageServiceImpl implements FileStorageService {
     }
 
     private String uploadFile(@Nonnull MultipartFile sourceFile, @Nonnull String fileUploadSubPath) {
-        final String finalUploadPath = fileUploadPath + separator + fileUploadSubPath;
+        final String finalUploadPath = fileUploadProperties.fileOutputPath() + separator + fileUploadSubPath;
         File targetFolder = new File(finalUploadPath);
 
         if (!targetFolder.exists()) {

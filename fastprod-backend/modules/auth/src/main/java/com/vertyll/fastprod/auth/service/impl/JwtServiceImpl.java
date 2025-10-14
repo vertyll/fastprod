@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.auth.service.impl;
 
+import com.vertyll.fastprod.auth.config.JwtProperties;
 import com.vertyll.fastprod.auth.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,27 +16,15 @@ import java.util.UUID;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 class JwtServiceImpl implements JwtService {
 
-    @Value("${security.jwt.access-token.secret-key}")
-    private String accessTokenSecretKey;
-
-    @Value("${security.jwt.refresh-token.secret-key}")
-    private String refreshTokenSecretKey;
-
-    @Value("${security.jwt.access-token.expiration}")
-    private long accessTokenExpiration;
-
-    @Value("${security.jwt.refresh-token.expiration}")
-    private long refreshTokenExpiration;
-
-    @Value("${security.jwt.refresh-token.cookie-name}")
-    private String refreshTokenCookieName;
+    private final JwtProperties jwtProperties;
 
     @Override
     public String extractUsername(String token) {
@@ -54,7 +43,7 @@ class JwtServiceImpl implements JwtService {
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(accessTokenExpiration, ChronoUnit.MILLIS)))
+                .expiration(Date.from(now.plus(jwtProperties.accessToken().expiration(), ChronoUnit.MILLIS)))
                 .signWith(getAccessTokenSigningKey())
                 .compact();
     }
@@ -71,12 +60,12 @@ class JwtServiceImpl implements JwtService {
 
     @Override
     public String getRefreshTokenCookieName() {
-        return refreshTokenCookieName;
+        return jwtProperties.refreshToken().cookieName();
     }
 
     @Override
     public long getRefreshTokenExpirationTime() {
-        return refreshTokenExpiration;
+        return jwtProperties.refreshToken().expiration();
     }
 
     @Override
@@ -90,7 +79,7 @@ class JwtServiceImpl implements JwtService {
                 .subject(userDetails.getUsername())
                 .id(UUID.randomUUID().toString())
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(refreshTokenExpiration, ChronoUnit.MILLIS)))
+                .expiration(Date.from(now.plus(jwtProperties.refreshToken().expiration(), ChronoUnit.MILLIS)))
                 .signWith(getRefreshTokenSigningKey())
                 .compact();
     }
@@ -154,12 +143,12 @@ class JwtServiceImpl implements JwtService {
     }
 
     private SecretKey getAccessTokenSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(accessTokenSecretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.accessToken().secretKey());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private SecretKey getRefreshTokenSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(refreshTokenSecretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.refreshToken().secretKey());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
