@@ -74,8 +74,15 @@ class UserServiceImpl implements UserService {
             user.setLastName(dto.lastName());
         }
 
-        if (dto.email() != null) {
+        if (dto.email() != null && !dto.email().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(dto.email())) {
+                throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
+            }
             user.setEmail(dto.email());
+        }
+
+        if (dto.password() != null) {
+            user.setPassword(passwordEncoder.encode(dto.password()));
         }
 
         if (dto.roleNames() != null) {

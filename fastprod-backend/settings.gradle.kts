@@ -8,5 +8,6 @@ include(
     "modules:file",
     "modules:auth",
     "modules:config",
-    "modules:app"
+    "modules:app",
+    "modules:employee"
 )

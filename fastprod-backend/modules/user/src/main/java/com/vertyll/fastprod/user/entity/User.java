@@ -25,9 +25,10 @@ import org.springframework.security.core.userdetails.UserDetails;
                 @Index(name = "idx_user_email", columnList = "email"),
                 @Index(name = "idx_user_is_active", columnList = "is_active"),
                 @Index(name = "idx_user_is_verified", columnList = "is_verified"),
-                @Index(name = "idx_user_is_system_account", columnList = "is_system_account"),
+                @Index(name = "idx_user_is_employee", columnList = "is_employee"),
                 @Index(name = "idx_user_created_at", columnList = "created_at"),
-                @Index(name = "idx_user_is_active_is_verified", columnList = "is_active, is_verified")
+                @Index(name = "idx_user_is_active_is_verified", columnList = "is_active, is_verified"),
+                @Index(name = "idx_user_is_active_is_employee", columnList = "is_active, is_employee")
         }
 )
 public class User extends BaseEntity implements UserDetails {
@@ -63,8 +64,7 @@ public class User extends BaseEntity implements UserDetails {
     private boolean isVerified = false;
 
     @Column(nullable = false)
-    @Builder.Default
-    private boolean isSystemAccount = false;
+    private boolean isEmployee = false;
 
     @Column(nullable = false)
     @Builder.Default
