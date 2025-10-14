@@ -64,6 +64,7 @@ public class User extends BaseEntity implements UserDetails {
     private boolean isVerified = false;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean isEmployee = false;
 
     @Column(nullable = false)
