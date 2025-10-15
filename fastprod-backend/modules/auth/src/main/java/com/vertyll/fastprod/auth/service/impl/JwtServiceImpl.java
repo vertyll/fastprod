@@ -44,7 +44,7 @@ class JwtServiceImpl implements JwtService {
                 .subject(userDetails.getUsername())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(jwtProperties.accessToken().expiration(), ChronoUnit.MILLIS)))
-                .signWith(getAccessTokenSigningKey())
+                .signWith(getAccessTokenSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -80,7 +80,7 @@ class JwtServiceImpl implements JwtService {
                 .id(UUID.randomUUID().toString())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(jwtProperties.refreshToken().expiration(), ChronoUnit.MILLIS)))
-                .signWith(getRefreshTokenSigningKey())
+                .signWith(getRefreshTokenSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
