@@ -7,7 +7,7 @@ plugins {
 
 group = "com.vertyll"
 version = "0.0.1-SNAPSHOT"
-description = "Production management system - api"
+description = "Production management system - API"
 
 allprojects {
     repositories {
@@ -106,18 +106,4 @@ tasks.register("testAll") {
 
     dependsOn(subprojects.map { it.tasks.withType<Test>() })
     finalizedBy("testReport")
-}
-
-tasks.register("buildFast") {
-    group = "build"
-    description = "Fast build without tests, formatting, and documentation"
-    dependsOn(tasks.named("classes"))
-
-    tasks.withType<Test>().configureEach {
-        enabled = false
-    }
-
-    doFirst {
-        println("Fast build - skipping tests, formatting, and docs...")
-    }
 }

@@ -52,7 +52,7 @@ services:
       dockerfile: docker/backend.Dockerfile
       target: ${DOCKER_ENV:-development}
       args:
-        JAVA_VERSION: ${JAVA_VERSION:-24}
+        JAVA_VERSION: ${JAVA_VERSION:-21}
         GRADLE_VERSION: ${GRADLE_VERSION:-8.14}
         APP_PORT: ${BACKEND_PORT:-8080}
         DEBUG_PORT: ${BACKEND_DEBUG_PORT:-5005}
@@ -79,6 +79,32 @@ services:
       mail-dev:
         condition: service_started
 
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      target: ${DOCKER_ENV:-development}
+      args:
+        JAVA_VERSION: ${JAVA_VERSION:-21}
+        MAVEN_VERSION: ${MAVEN_VERSION:-3.9.9}
+        APP_PORT: ${FRONTEND_PORT:-8001}
+        DEBUG_PORT: ${FRONTEND_DEBUG_PORT:-5006}
+    container_name: fastprod-frontend
+    volumes:
+      - ./fastprod-frontend:/app
+      - maven-cache:/root/.m2
+    ports:
+      - "${FRONTEND_PORT:-8001}:8001"
+      - "${FRONTEND_DEBUG_PORT:-5006}:5006"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
+      - SERVER_PORT=${FRONTEND_PORT:-8001}
+      - VAADIN_LAUNCH_BROWSER=false
+    networks:
+      - fastprod
+    depends_on:
+      - backend
+
 networks:
   fastprod:
     driver: bridge
@@ -86,3 +112,4 @@ networks:
 volumes:
   postgres-data:
   gradle-cache:
+  maven-cache:

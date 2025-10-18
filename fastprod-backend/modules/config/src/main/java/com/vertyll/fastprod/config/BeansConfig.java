@@ -1,7 +1,6 @@
 package com.vertyll.fastprod.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -15,8 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class BeansConfig {
 
-    @Value("${application.frontend.url}")
-    private String frontendUrl;
+    private final ApplicationProperties applicationProperties;
 
     @Bean
     public AuditorAware<String> auditorAware() {
@@ -29,7 +27,7 @@ public class BeansConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(frontendUrl)
+                        .allowedOrigins(applicationProperties.frontend().url())
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);

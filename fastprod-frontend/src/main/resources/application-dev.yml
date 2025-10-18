@@ -1,0 +1,26 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java,src/main/resources
+      poll-interval: 2s
+      quiet-period: 1s
+      exclude: frontend/**,node_modules/**
+    livereload:
+      enabled: true
+
+vaadin:
+  launch-browser: false
+  allowed-packages: com.vaadin,org.vaadin,com.flowingcode,com.vertyll.fastprod
+
+api:
+  backend:
+    url: http://localhost:8080/api/v1
+
+server:
+  port: 8001
+
+logging:
+  level:
+    org.atmosphere: warn
+    com.vertyll.fastprod: debug
