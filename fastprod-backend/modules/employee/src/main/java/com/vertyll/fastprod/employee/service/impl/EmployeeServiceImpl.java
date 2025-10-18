@@ -37,7 +37,6 @@ class EmployeeServiceImpl implements EmployeeService {
                 .lastName(dto.lastName())
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
-                .isEmployee(true)
                 .isVerified(true)
                 .build();
 
