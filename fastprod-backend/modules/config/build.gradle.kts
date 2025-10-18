@@ -6,6 +6,7 @@ dependencies {
     // Internal dependencies
     api(project(":modules:common"))
     api(project(":modules:auth"))
+    api(project(":modules:role"))
 
     // Spring dependencies
     api("org.springframework.boot:spring-boot-starter-security")

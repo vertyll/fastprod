@@ -7,6 +7,8 @@ import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.employee.service.EmployeeService;
+import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.role.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.repository.UserRepository;
@@ -31,6 +33,8 @@ class EmployeeServiceImpl implements EmployeeService {
             throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
+        Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE.name());
+
         User user = User
                 .builder()
                 .firstName(dto.firstName())
@@ -39,6 +43,8 @@ class EmployeeServiceImpl implements EmployeeService {
                 .password(passwordEncoder.encode(dto.password()))
                 .isVerified(true)
                 .build();
+        
+        user.getRoles().add(employeeRole);
 
         User savedUser = userRepository.save(user);
         return mapToDto(savedUser);

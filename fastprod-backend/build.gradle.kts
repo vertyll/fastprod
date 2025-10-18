@@ -108,20 +108,6 @@ tasks.register("testAll") {
     finalizedBy("testReport")
 }
 
-tasks.register("buildNoFormat") {
-    group = "build"
-    description = "Build without formatting checks and tests"
-    dependsOn(tasks.named("build"))
-
-    tasks.withType<Test>().configureEach {
-        enabled = false
-    }
-
-    doFirst {
-        println("Skipping tests and formatting checks...")
-    }
-}
-
 tasks.register("buildFast") {
     group = "build"
     description = "Fast build without tests, formatting, and documentation"
