@@ -8,6 +8,9 @@ dependencies {
     // Internal dependencies
     implementation(project(":modules:auth"))
     implementation(project(":modules:config"))
+    implementation(project(":modules:employee"))
+    implementation(project(":modules:role"))
+    implementation(project(":modules:user"))
 
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter-web")
