@@ -13,6 +13,7 @@
 - PostgreSQL
 - JUnit
 - Mockito
+- Loombok
 - Spring Security
 - Spring Data
 - Spring Web
@@ -20,7 +21,14 @@
 - OpenAPI (Swagger)
 
 ### Front-end:
-- in progress
+- Vaadn (Java-only(Flow))
+- Spring Boot
+- Java
+- Maven
+- JUnit
+- Mockito
+- Loombok
+- Spring Web
 
 ### Authentication:
 - JWT-based authentication - the application uses JWT tokens for user authentication and includes token refresh mechanism (http only secure cookie)
@@ -38,7 +46,12 @@
 - and many other features that can be found in the application code
 
 ### Core front-end:
-- in progress
+- Maven build system
+- Vaadin
+- the application has separate environments for dev and prod
+- the application has a dedicated configuration file
+- and many other features that can be found in the application code
+
 
 ### Other:
 - Docker for development environment
