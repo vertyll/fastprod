@@ -5,10 +5,3 @@ spring:
 vaadin:
   launch-browser: false
   allowed-packages: com.vaadin,org.vaadin,com.flowingcode,com.vertyll.fastprod
-
-server:
-  port: 8001
-
-logging:
-  level:
-    org.atmosphere: warn

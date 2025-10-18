@@ -39,18 +39,8 @@ FROM base AS build
 
 WORKDIR /app
 
-COPY fastprod-frontend/pom.xml .
-COPY fastprod-frontend/mvnw .
-COPY fastprod-frontend/.mvn .mvn
-
-# Download dependencies
-RUN mvn dependency:go-offline -B
-
-# Copy source code
-COPY fastprod-frontend/src ./src
-
-# Build application
-RUN mvn clean package -Pproduction -DskipTests
+COPY fastprod-frontend .
+RUN mvn clean package -DskipTests
 
 # Production stage
 FROM eclipse-temurin:${JAVA_VERSION}-jre AS production

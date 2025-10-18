@@ -1,0 +1,38 @@
+### Global ###
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose*.yml
+docker/
+README.md
+LICENSE
+
+### Build outputs ###
+**/target/
+**/build/
+**/bin/
+**/out/
+*.jar
+*.war
+
+### Development ###
+**/.idea/
+**/.vscode/
+**/.settings/
+**/*.log
+**/logs/
+
+### Cache ###
+**/.gradle/
+**/.mvn/
+**/.m2/
+
+### Vaadin ###
+**/node_modules/
+**/src/main/frontend/generated/
+**/vite.generated.ts
+
+### OS ###
+**/.DS_Store
+**/Thumbs.db

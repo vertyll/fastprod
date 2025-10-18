@@ -40,7 +40,7 @@ FROM base AS build
 WORKDIR /app
 
 COPY fastprod-backend .
-RUN gradle clean bootJar -x test
+RUN gradle clean bootJar -x test -x spotlessCheck -x spotlessApply
 
 # Production stage
 FROM eclipse-temurin:${JAVA_VERSION}-jre AS production
