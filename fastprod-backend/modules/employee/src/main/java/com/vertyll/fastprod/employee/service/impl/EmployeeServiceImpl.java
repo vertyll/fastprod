@@ -1,7 +1,5 @@
 package com.vertyll.fastprod.employee.service.impl;
 
-import static com.vertyll.fastprod.employee.dto.EmployeeResponseDto.mapToDto;
-
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
@@ -43,7 +41,7 @@ class EmployeeServiceImpl implements EmployeeService {
         user.getRoles().add(employeeRole);
 
         User savedUser = userRepository.save(user);
-        return mapToDto(savedUser);
+        return employeeMapper.toResponseDto(savedUser);
     }
 
     @Override
@@ -64,12 +62,12 @@ class EmployeeServiceImpl implements EmployeeService {
         }
 
         User updatedUser = userRepository.save(user);
-        return mapToDto(updatedUser);
+        return employeeMapper.toResponseDto(updatedUser);
     }
 
     @Override
     public EmployeeResponseDto getEmployeeById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
-        return mapToDto(user);
+        return employeeMapper.toResponseDto(user);
     }
 }

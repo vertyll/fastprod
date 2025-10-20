@@ -1,7 +1,5 @@
 package com.vertyll.fastprod.user.service.impl;
 
-import static com.vertyll.fastprod.user.dto.UserResponseDto.mapToDto;
-
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.service.RoleService;
@@ -55,7 +53,7 @@ class UserServiceImpl implements UserService {
         user.setVerified(true);
 
         User savedUser = userRepository.save(user);
-        return mapToDto(savedUser);
+        return userMapper.toResponseDto(savedUser);
     }
 
     @Override
@@ -81,13 +79,13 @@ class UserServiceImpl implements UserService {
         }
 
         User updatedUser = userRepository.save(user);
-        return mapToDto(updatedUser);
+        return userMapper.toResponseDto(updatedUser);
     }
 
     @Override
     public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
-        return mapToDto(user);
+        return userMapper.toResponseDto(user);
     }
 
     @Override

@@ -100,7 +100,7 @@ class AuthServiceImpl implements AuthService {
             addRefreshTokenCookie(response, refreshToken);
         }
 
-        return AuthResponseDto.mapToDto(jwtToken, "Bearer");
+        return authMapper.toAuthResponseDto(jwtToken, "Bearer");
     }
 
     @Override
@@ -117,7 +117,7 @@ class AuthServiceImpl implements AuthService {
 
         addRefreshTokenCookie(response, newRefreshToken);
 
-        return AuthResponseDto.mapToDto(accessToken, "Bearer");
+        return authMapper.toAuthResponseDto(accessToken, "Bearer");
     }
 
     @Override
@@ -154,7 +154,7 @@ class AuthServiceImpl implements AuthService {
 
         return refreshTokenService.getUserSessionDetails(user)
                 .stream()
-                .map(session -> SessionResponseDto.fromSessionInfo(session, false)) // TODO: Implement isCurrent logic
+                .map(session -> authMapper.toSessionResponseDto(session, false)) // TODO: Implement isCurrent logic
                 .collect(Collectors.toList());
     }
 
@@ -261,7 +261,7 @@ class AuthServiceImpl implements AuthService {
         String refreshToken = refreshTokenService.createRefreshToken(user, null, httpRequest);
         addRefreshTokenCookie(response, refreshToken);
 
-        return AuthResponseDto.mapToDto(jwtToken, "Bearer");
+        return authMapper.toAuthResponseDto(jwtToken, "Bearer");
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.vertyll.fastprod.role.mapper;
 
 import com.vertyll.fastprod.common.mapper.MapStructConfig;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
+import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.entity.Role;
 import org.mapstruct.BeanMapping;
@@ -22,4 +23,9 @@ public interface RoleMapper {
     @Mapping(target = "name", source = "name")
     @Mapping(target = "description", source = "description")
     void updateFromDto(RoleUpdateDto dto, @MappingTarget Role role);
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "description", source = "description")
+    RoleResponseDto toResponseDto(Role role);
 }

@@ -1,7 +1,5 @@
 package com.vertyll.fastprod.role.service.impl;
 
-import static com.vertyll.fastprod.role.dto.RoleResponseDto.mapToDto;
-
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
@@ -32,7 +30,7 @@ class RoleServiceImpl implements RoleService {
         Role role = roleMapper.toEntity(dto);
 
         Role savedRole = roleRepository.save(role);
-        return mapToDto(savedRole);
+        return roleMapper.toResponseDto(savedRole);
     }
 
     @Override
@@ -47,7 +45,7 @@ class RoleServiceImpl implements RoleService {
         roleMapper.updateFromDto(dto, role);
 
         Role updatedRole = roleRepository.save(role);
-        return mapToDto(updatedRole);
+        return roleMapper.toResponseDto(updatedRole);
     }
 
     @Override
@@ -62,6 +60,6 @@ class RoleServiceImpl implements RoleService {
     public RoleResponseDto getRoleById(Long id) {
         Role role = roleRepository.findById(id).orElseThrow(() -> new ApiException("Role not found", HttpStatus.NOT_FOUND));
 
-        return mapToDto(role);
+        return roleMapper.toResponseDto(role);
     }
 }
