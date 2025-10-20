@@ -4,6 +4,7 @@ import com.vertyll.fastprod.auth.config.CookieProperties;
 import com.vertyll.fastprod.auth.dto.*;
 import com.vertyll.fastprod.auth.entity.VerificationToken;
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
+import com.vertyll.fastprod.auth.mapper.AuthMapper;
 import com.vertyll.fastprod.auth.service.AuthService;
 import com.vertyll.fastprod.auth.service.JwtService;
 import com.vertyll.fastprod.auth.service.RefreshTokenService;
@@ -46,6 +47,7 @@ class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final CookieProperties cookieProperties;
+    private final AuthMapper authMapper;
 
     @Override
     @Transactional
@@ -54,14 +56,11 @@ class AuthServiceImpl implements AuthService {
             throw new ApiException("Email already registered", HttpStatus.BAD_REQUEST);
         }
 
-        User user = User.builder()
-                .firstName(request.firstName())
-                .lastName(request.lastName())
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .roles(Set.of(roleService.getOrCreateDefaultRole("USER")))
-                .isVerified(false)
-                .build();
+        User user = authMapper.toUserEntity(request);
+               
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setRoles(Set.of(roleService.getOrCreateDefaultRole("USER")));
+        user.setVerified(false);
 
         userService.saveUser(user);
 

@@ -7,6 +7,7 @@ import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.role.mapper.RoleMapper;
 import com.vertyll.fastprod.role.repository.RoleRepository;
 import com.vertyll.fastprod.role.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
+    private final RoleMapper roleMapper;
 
     @Override
     @Transactional
@@ -27,7 +29,7 @@ class RoleServiceImpl implements RoleService {
             throw new ApiException("Role already exists", HttpStatus.BAD_REQUEST);
         }
 
-        Role role = Role.builder().name(dto.name()).description(dto.description()).build();
+        Role role = roleMapper.toEntity(dto);
 
         Role savedRole = roleRepository.save(role);
         return mapToDto(savedRole);
@@ -42,8 +44,7 @@ class RoleServiceImpl implements RoleService {
             throw new ApiException("Role with this name already exists", HttpStatus.BAD_REQUEST);
         }
 
-        role.setName(dto.name());
-        role.setDescription(dto.description());
+        roleMapper.updateFromDto(dto, role);
 
         Role updatedRole = roleRepository.save(role);
         return mapToDto(updatedRole);

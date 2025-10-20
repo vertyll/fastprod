@@ -6,6 +6,7 @@ import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
+import com.vertyll.fastprod.employee.mapper.EmployeeMapper;
 import com.vertyll.fastprod.employee.service.EmployeeService;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.enums.RoleType;
@@ -25,6 +26,7 @@ class EmployeeServiceImpl implements EmployeeService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final EmployeeMapper employeeMapper;
 
     @Override
     @Transactional
@@ -35,15 +37,9 @@ class EmployeeServiceImpl implements EmployeeService {
 
         Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE.name());
 
-        User user = User
-                .builder()
-                .firstName(dto.firstName())
-                .lastName(dto.lastName())
-                .email(dto.email())
-                .password(passwordEncoder.encode(dto.password()))
-                .isVerified(true)
-                .build();
-        
+        User user = employeeMapper.toUserEntity(dto);
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setVerified(true);
         user.getRoles().add(employeeRole);
 
         User savedUser = userRepository.save(user);
@@ -55,19 +51,13 @@ class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDto updateEmployee(Long id, EmployeeUpdateDto dto) {
         User user = userRepository.findById(id).orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
 
-        if (dto.firstName() != null) {
-            user.setFirstName(dto.firstName());
-        }
-        if (dto.lastName() != null) {
-            user.setLastName(dto.lastName());
-        }
-
         if (dto.email() != null && !dto.email().equals(user.getEmail())) {
             if (userRepository.existsByEmail(dto.email())) {
                 throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
             }
-            user.setEmail(dto.email());
         }
+
+        employeeMapper.updateUserFromDto(dto, user);
 
         if (dto.password() != null) {
             user.setPassword(passwordEncoder.encode(dto.password()));

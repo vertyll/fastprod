@@ -15,6 +15,7 @@ import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.dto.UserUpdateDto;
 import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.mapper.UserMapper;
 import com.vertyll.fastprod.user.repository.UserRepository;
 import com.vertyll.fastprod.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -47,15 +49,10 @@ class UserServiceImpl implements UserService {
             roles.add(roleService.getOrCreateDefaultRole("USER"));
         }
 
-        User user = User
-                .builder()
-                .firstName(dto.firstName())
-                .lastName(dto.lastName())
-                .email(dto.email())
-                .password(passwordEncoder.encode(dto.password()))
-                .roles(roles)
-                .isVerified(true)
-                .build();
+        User user = userMapper.toEntity(dto);
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setRoles(roles);
+        user.setVerified(true);
 
         User savedUser = userRepository.save(user);
         return mapToDto(savedUser);
@@ -66,20 +63,13 @@ class UserServiceImpl implements UserService {
     public UserResponseDto updateUser(Long id, UserUpdateDto dto) {
         User user = userRepository.findById(id).orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
-        if (dto.firstName() != null) {
-            user.setFirstName(dto.firstName());
-        }
-
-        if (dto.lastName() != null) {
-            user.setLastName(dto.lastName());
-        }
-
         if (dto.email() != null && !dto.email().equals(user.getEmail())) {
             if (userRepository.existsByEmail(dto.email())) {
                 throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
             }
-            user.setEmail(dto.email());
         }
+
+        userMapper.updateFromDto(dto, user);
 
         if (dto.password() != null) {
             user.setPassword(passwordEncoder.encode(dto.password()));

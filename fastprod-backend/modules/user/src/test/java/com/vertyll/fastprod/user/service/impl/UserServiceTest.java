@@ -16,14 +16,17 @@ import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.dto.UserUpdateDto;
 import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.mapper.UserMapper;
 import com.vertyll.fastprod.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +39,8 @@ class UserServiceTest {
     @Mock private RoleService roleService;
 
     @Mock private PasswordEncoder passwordEncoder;
+
+    @Spy private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @InjectMocks private UserServiceImpl userService;
 

@@ -14,6 +14,15 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-validation")
     api("org.springframework.boot:spring-boot-starter-security")
 
+    // MapStruct
+    api("org.mapstruct:mapstruct:1.5.5.Final")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+
+    // Ensure Lombok and MapStruct work together during annotation processing
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    testAnnotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+
     // OpenAPI/Swagger
     compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 

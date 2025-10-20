@@ -12,14 +12,17 @@ import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.role.mapper.RoleMapper;
 import com.vertyll.fastprod.role.repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
@@ -27,6 +30,8 @@ import org.springframework.http.HttpStatus;
 class RoleServiceTest {
 
     @Mock private RoleRepository roleRepository;
+
+    @Spy private RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);
 
     @InjectMocks private RoleServiceImpl roleService;
 
