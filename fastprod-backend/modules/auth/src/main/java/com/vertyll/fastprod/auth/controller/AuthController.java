@@ -98,6 +98,15 @@ class AuthController {
         return ApiResponse.buildResponse(null, "Account verified successfully", HttpStatus.OK);
     }
 
+    @PostMapping("/resend-verification-code")
+    @Operation(summary = "Resend verification code to user email")
+    public ResponseEntity<ApiResponse<Void>> resendVerificationCode(
+            @RequestBody @Valid ResendVerificationRequestDto request
+    ) throws MessagingException {
+        authService.resendVerificationCode(request.email());
+        return ApiResponse.buildResponse(null, "Verification code sent successfully", HttpStatus.OK);
+    }
+
     @PostMapping("/change-email-request")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Request email change, sends verification to new email")

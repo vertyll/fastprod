@@ -168,10 +168,40 @@ class AuthServiceImpl implements AuthService {
         );
 
         User user = verificationToken.getUser();
+
+        if (user.isVerified()) {
+            throw new ApiException("Account already verified", HttpStatus.BAD_REQUEST);
+        }
+
         user.setVerified(true);
         userService.saveUser(user);
 
         verificationTokenService.markTokenAsUsed(verificationToken);
+    }
+
+    @Override
+    @Transactional
+    public void resendVerificationCode(String email) throws MessagingException {
+        User user = userService.findByEmailWithRoles(email)
+                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+
+        if (user.isVerified()) {
+            throw new ApiException("Account already verified", HttpStatus.BAD_REQUEST);
+        }
+
+        String verificationCode = verificationTokenService.createVerificationToken(
+                user,
+                VerificationTokenType.ACCOUNT_ACTIVATION,
+                null
+        );
+
+        emailService.sendEmail(
+                user.getEmail(),
+                user.getFirstName(),
+                EmailTemplateName.ACTIVATE_ACCOUNT,
+                verificationCode,
+                "Account activation"
+        );
     }
 
     @Override

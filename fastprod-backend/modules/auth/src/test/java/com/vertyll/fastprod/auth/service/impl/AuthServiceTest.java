@@ -247,6 +247,76 @@ class AuthServiceTest {
     }
 
     @Test
+    void  verifyAccount_WhenAccountAlreadyVerified_ShouldThrowException() {
+        // given
+        user.setVerified(true);
+        verificationToken.setUser(user);
+        when(verificationTokenService.getValidToken("123456", VerificationTokenType.ACCOUNT_ACTIVATION))
+                .thenReturn(verificationToken);
+
+        // when & then
+        ApiException exception = assertThrows(ApiException.class,
+                () -> authService.verifyAccount("123456"));
+        assertEquals("Account already verified", exception.getMessage());
+        verify(userService, never()).saveUser(any(User.class));
+        verify(verificationTokenService, never()).markTokenAsUsed(any(VerificationToken.class));
+    }
+
+    @Test
+    void resendVerificationCode_ShouldCreateNewTokenAndSendEmail() throws MessagingException {
+        // given
+        when(userService.findByEmailWithRoles("john@example.com")).thenReturn(Optional.of(user));
+        when(verificationTokenService.createVerificationToken(any(User.class), any(VerificationTokenType.class), any()))
+                .thenReturn("654321");
+
+        // when
+        authService.resendVerificationCode("john@example.com");
+
+        // then
+        verify(verificationTokenService).createVerificationToken(
+                eq(user),
+                eq(VerificationTokenType.ACCOUNT_ACTIVATION),
+                eq(null)
+        );
+        verify(emailService).sendEmail(
+                eq("john@example.com"),
+                eq("John"),
+                eq(EmailTemplateName.ACTIVATE_ACCOUNT),
+                eq("654321"),
+                eq("Account activation")
+        );
+    }
+
+    @Test
+    void resendVerificationCode_WhenUserNotFound_ShouldThrowException() throws MessagingException {
+        // given
+        when(userService.findByEmailWithRoles("nonexistent@example.com")).thenReturn(Optional.empty());
+
+        // when & then
+        ApiException exception = assertThrows(ApiException.class,
+                () -> authService.resendVerificationCode("nonexistent@example.com"));
+        assertEquals("User not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+        verify(verificationTokenService, never()).createVerificationToken(any(), any(), any());
+        verify(emailService, never()).sendEmail(anyString(), anyString(), any(), anyString(), anyString());
+    }
+
+    @Test
+    void resendVerificationCode_WhenAccountAlreadyVerified_ShouldThrowException() throws MessagingException {
+        // given
+        user.setVerified(true);
+        when(userService.findByEmailWithRoles("john@example.com")).thenReturn(Optional.of(user));
+
+        // when & then
+        ApiException exception = assertThrows(ApiException.class,
+                () -> authService.resendVerificationCode("john@example.com"));
+        assertEquals("Account already verified", exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        verify(verificationTokenService, never()).createVerificationToken(any(), any(), any());
+        verify(emailService, never()).sendEmail(anyString(), anyString(), any(), anyString(), anyString());
+    }
+
+    @Test
     void authenticate_ShouldCallAuthenticationManager() {
         // given
         setupCookieProperties();

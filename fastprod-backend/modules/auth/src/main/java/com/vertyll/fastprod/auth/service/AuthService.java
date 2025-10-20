@@ -31,6 +31,9 @@ public interface AuthService {
     void verifyAccount(String code);
 
     @Transactional
+    void resendVerificationCode(String email) throws MessagingException;
+
+    @Transactional
     void requestEmailChange(ChangeEmailRequestDto request) throws MessagingException;
 
     @Transactional

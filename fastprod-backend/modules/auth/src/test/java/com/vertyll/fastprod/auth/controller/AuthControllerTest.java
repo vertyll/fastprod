@@ -292,6 +292,77 @@ class AuthControllerTest {
     }
 
     @Test
+    void resendVerificationCode_WhenValidEmail_ShouldReturnSuccess() throws Exception {
+        // given
+        ResendVerificationRequestDto request = new ResendVerificationRequestDto("john@example.com");
+        doNothing().when(authService).resendVerificationCode(anyString());
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/resend-verification-code")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Verification code sent successfully"));
+
+        verify(authService).resendVerificationCode("john@example.com");
+    }
+
+    @Test
+    void resendVerificationCode_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
+        // given
+        ResendVerificationRequestDto request = new ResendVerificationRequestDto("invalid-email");
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/resend-verification-code")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+
+        verify(authService, never()).resendVerificationCode(anyString());
+    }
+
+    @Test
+    void resendVerificationCode_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
+        // given
+        ResendVerificationRequestDto request = new ResendVerificationRequestDto("nonexistent@example.com");
+        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND))
+                .when(authService)
+                .resendVerificationCode(anyString());
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/resend-verification-code")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User not found"));
+    }
+
+    @Test
+    void resendVerificationCode_WhenAccountAlreadyVerified_ShouldReturnBadRequest() throws Exception {
+        // given
+        ResendVerificationRequestDto request = new ResendVerificationRequestDto("john@example.com");
+        doThrow(new ApiException("Account already verified", HttpStatus.BAD_REQUEST))
+                .when(authService)
+                .resendVerificationCode(anyString());
+
+        // when & then
+        mockMvc.perform(
+                        post("/auth/resend-verification-code")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Account already verified"));
+    }
+
+    @Test
     void requestEmailChange_WhenValidRequest_ShouldReturnSuccess() throws Exception {
         // given
 
