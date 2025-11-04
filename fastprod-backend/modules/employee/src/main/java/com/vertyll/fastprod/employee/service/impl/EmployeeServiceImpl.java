@@ -36,12 +36,11 @@ class EmployeeServiceImpl implements EmployeeService {
             throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
-        Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE.name());
-
         User user = employeeMapper.toUserEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.password()));
         user.setVerified(true);
-        user.getRoles().add(employeeRole);
+
+        assignRolesToUser(user, dto.roleNames());
 
         User savedUser = userRepository.save(user);
         return employeeMapper.toResponseDto(savedUser);
@@ -60,8 +59,13 @@ class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.updateUserFromDto(dto, user);
 
-        if (dto.password() != null) {
+        if (dto.password() != null && !dto.password().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.password()));
+        }
+
+        if (dto.roleNames() != null && !dto.roleNames().isEmpty()) {
+            user.getRoles().clear();
+            assignRolesToUser(user, dto.roleNames());
         }
 
         User updatedUser = userRepository.save(user);
@@ -81,5 +85,17 @@ class EmployeeServiceImpl implements EmployeeService {
                         .anyMatch(role -> role.getName().equals(RoleType.EMPLOYEE.name())))
                 .map(employeeMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    private void assignRolesToUser(User user, java.util.Set<String> roleNames) {
+        if (roleNames != null && !roleNames.isEmpty()) {
+            roleNames.forEach(roleName -> {
+                Role role = roleService.getOrCreateDefaultRole(roleName);
+                user.getRoles().add(role);
+            });
+        } else {
+            Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE.name());
+            user.getRoles().add(employeeRole);
+        }
     }
 }

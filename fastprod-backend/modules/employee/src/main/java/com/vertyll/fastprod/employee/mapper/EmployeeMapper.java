@@ -10,7 +10,11 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(config = MapStructConfig.class)
 public interface EmployeeMapper {
@@ -31,11 +35,17 @@ public interface EmployeeMapper {
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "email", source = "email")
-    @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "roles", source = "roles", qualifiedByName = "rolesToNames")
     @Mapping(target = "isVerified", source = "verified")
     EmployeeResponseDto toResponseDto(User user);
 
-    default String roleToName(Role role) {
-        return role != null ? role.getName() : null;
+    @Named("rolesToNames")
+    default Set<String> rolesToNames(Set<Role> roles) {
+        if (roles == null || roles.isEmpty()) {
+            return Set.of();
+        }
+        return roles.stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
     }
 }
