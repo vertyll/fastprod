@@ -1,0 +1,39 @@
+package com.vertyll.fastprod.shared.security;
+
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterListener;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequiredArgsConstructor
+public class SecurityBeforeEnterListener implements BeforeEnterListener {
+
+    private final SecurityService securityService;
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        boolean isAuthenticated = securityService.isAuthenticated();
+        String targetLocation = event.getLocation().getPath();
+        
+        log.debug("Navigation to: {}, authenticated: {}", targetLocation, isAuthenticated);
+
+        // Public routes that don't require authentication
+        boolean isPublicRoute = targetLocation.equals("login") 
+                || targetLocation.equals("register") 
+                || targetLocation.equals("verify-account")
+                || targetLocation.equals("");
+
+        // If trying to access protected route without authentication
+        if (!isAuthenticated && !isPublicRoute) {
+            log.info("Unauthorized access attempt to: {}. Redirecting to login.", targetLocation);
+            event.rerouteTo("login");
+        }
+
+        // If authenticated and trying to access login/register, redirect to home
+        if (isAuthenticated && (targetLocation.equals("login") || targetLocation.equals("register"))) {
+            log.info("Already authenticated. Redirecting to home.");
+            event.rerouteTo("");
+        }
+    }
+}
