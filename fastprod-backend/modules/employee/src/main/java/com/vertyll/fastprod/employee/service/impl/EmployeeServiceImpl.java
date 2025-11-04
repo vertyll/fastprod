@@ -13,6 +13,9 @@ import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -90,14 +93,16 @@ class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeResponseDto> getAllEmployees() {
-        return userRepository.findAll().stream()
-                .filter(user -> user.isActive())
-                .filter(user -> user.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals(RoleType.EMPLOYEE.name()))
-                )
+    public Page<EmployeeResponseDto> getAllEmployees(Pageable pageable) {
+        Page<User> usersPage = userRepository.findAll(pageable);
+        
+        List<EmployeeResponseDto> employees = usersPage.getContent().stream()
+                .filter(user -> user.isActive() && user.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals(RoleType.EMPLOYEE.name())))
                 .map(employeeMapper::toResponseDto)
                 .collect(Collectors.toList());
+        
+        return new PageImpl<>(employees, pageable, usersPage.getTotalElements());
     }
 
     @Override

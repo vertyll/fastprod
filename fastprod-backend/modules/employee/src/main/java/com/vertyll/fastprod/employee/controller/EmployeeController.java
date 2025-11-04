@@ -1,7 +1,9 @@
 package com.vertyll.fastprod.employee.controller;
 
 import com.vertyll.fastprod.common.response.ApiResponse;
+import com.vertyll.fastprod.common.response.PaginatedApiResponse;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
+import com.vertyll.fastprod.employee.dto.EmployeeFilterDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.employee.service.EmployeeService;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -55,10 +58,12 @@ class EmployeeController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(summary = "Get all employees")
-    public ResponseEntity<ApiResponse<java.util.List<EmployeeResponseDto>>> getAllEmployees() {
-        java.util.List<EmployeeResponseDto> employees = employeeService.getAllEmployees();
-        return ApiResponse.buildResponse(employees, "Employees retrieved successfully", HttpStatus.OK);
+    @Operation(summary = "Get all employees with pagination and filters")
+    public ResponseEntity<PaginatedApiResponse<EmployeeResponseDto>> getAllEmployees(
+            @Valid @ModelAttribute EmployeeFilterDto filterDto
+    ) {
+        Page<EmployeeResponseDto> employees = employeeService.getAllEmployees(filterDto.toPageable());
+        return PaginatedApiResponse.buildResponse(employees, "Employees retrieved successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
