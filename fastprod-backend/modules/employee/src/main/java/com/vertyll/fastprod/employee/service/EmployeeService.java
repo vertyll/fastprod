@@ -5,6 +5,8 @@ import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
+
 public interface EmployeeService {
     @Transactional
     EmployeeResponseDto createEmployee(EmployeeCreateDto dto);
@@ -13,4 +15,6 @@ public interface EmployeeService {
     EmployeeResponseDto updateEmployee(Long id, EmployeeUpdateDto dto);
 
     EmployeeResponseDto getEmployeeById(Long id);
+
+    List<EmployeeResponseDto> getAllEmployees();
 }

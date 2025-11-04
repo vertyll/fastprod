@@ -52,4 +52,12 @@ class EmployeeController {
         EmployeeResponseDto employee = employeeService.getEmployeeById(id);
         return ApiResponse.buildResponse(employee, "Employee retrieved successfully", HttpStatus.OK);
     }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @Operation(summary = "Get all employees")
+    public ResponseEntity<ApiResponse<java.util.List<EmployeeResponseDto>>> getAllEmployees() {
+        java.util.List<EmployeeResponseDto> employees = employeeService.getAllEmployees();
+        return ApiResponse.buildResponse(employees, "Employees retrieved successfully", HttpStatus.OK);
+    }
 }

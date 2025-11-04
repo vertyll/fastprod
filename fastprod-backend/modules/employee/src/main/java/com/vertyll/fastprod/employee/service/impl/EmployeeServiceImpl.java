@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 class EmployeeServiceImpl implements EmployeeService {
@@ -69,5 +72,14 @@ class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDto getEmployeeById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
         return employeeMapper.toResponseDto(user);
+    }
+
+    @Override
+    public List<EmployeeResponseDto> getAllEmployees() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals(RoleType.EMPLOYEE.name())))
+                .map(employeeMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 }
