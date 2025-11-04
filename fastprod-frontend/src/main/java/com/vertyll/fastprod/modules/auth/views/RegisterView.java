@@ -175,7 +175,7 @@ public class RegisterView extends VerticalLayout {
 
             ApiResponse<Void> response = authService.register(registerRequest);
 
-            String message = response.getMessage() != null ? response.getMessage() : "Registration successful! Please check your email for verification code.";
+            String message = response.message() != null ? response.message() : "Registration successful! Please check your email for verification code.";
             showNotification(message, NotificationVariant.LUMO_SUCCESS);
 
             String email = registerRequest.email();

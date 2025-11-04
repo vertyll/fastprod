@@ -49,8 +49,8 @@ public class TokenRefreshService {
             log.debug("Attempting to refresh token using cookie: {}", cookieName);
             ApiResponse<AuthResponseDto> response = authService.refreshToken();
 
-            if (response.getData() != null) {
-                securityService.login(response.getData());
+            if (response.data() != null) {
+                securityService.login(response.data());
                 setTokenExpiration();
                 log.info("Token refreshed successfully");
                 return true;

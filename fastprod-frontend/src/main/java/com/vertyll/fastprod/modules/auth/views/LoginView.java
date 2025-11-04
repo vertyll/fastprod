@@ -141,13 +141,13 @@ public class LoginView extends VerticalLayout {
 
             ApiResponse<AuthResponseDto> response = authService.login(loginRequest);
 
-            if (response.getData() != null) {
-                securityService.login(response.getData());
+            if (response.data() != null) {
+                securityService.login(response.data());
                 tokenRefreshService.setTokenExpiration();
             }
 
-            String message = response.getMessage() != null
-                    ? response.getMessage()
+            String message = response.message() != null
+                    ? response.message()
                     : "Login successful!";
             showNotification(message, NotificationVariant.LUMO_SUCCESS);
 

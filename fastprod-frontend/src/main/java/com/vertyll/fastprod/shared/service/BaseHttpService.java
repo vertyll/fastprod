@@ -104,8 +104,8 @@ public abstract class BaseHttpService {
             try {
                 ApiResponse<?> errorResponse = objectMapper.readValue(response.body(),
                         objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Object.class));
-                String errorMessage = errorResponse.getMessage() != null
-                        ? errorResponse.getMessage()
+                String errorMessage = errorResponse.message() != null
+                        ? errorResponse.message()
                         : "Server error (code: " + response.statusCode() + ")";
                 throw new ApiException(errorMessage, response.statusCode());
             } catch (ApiException ae) {
