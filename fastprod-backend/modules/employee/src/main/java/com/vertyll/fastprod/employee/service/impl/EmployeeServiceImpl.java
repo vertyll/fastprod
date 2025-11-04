@@ -14,14 +14,10 @@ import com.vertyll.fastprod.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,15 +90,9 @@ class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Page<EmployeeResponseDto> getAllEmployees(Pageable pageable) {
-        Page<User> usersPage = userRepository.findAll(pageable);
+        Page<User> usersPage = userRepository.findActiveUsersByRole(RoleType.EMPLOYEE.name(), pageable);
         
-        List<EmployeeResponseDto> employees = usersPage.getContent().stream()
-                .filter(user -> user.isActive() && user.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals(RoleType.EMPLOYEE.name())))
-                .map(employeeMapper::toResponseDto)
-                .collect(Collectors.toList());
-        
-        return new PageImpl<>(employees, pageable, usersPage.getTotalElements());
+        return usersPage.map(employeeMapper::toResponseDto);
     }
 
     @Override
