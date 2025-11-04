@@ -146,7 +146,10 @@ public final class MainLayout extends AppLayout {
         // Dashboard
         SideNavItem dashboard = new SideNavItem("Dashboard", "/", VaadinIcon.DASHBOARD.create());
 
-        nav.addItem(dashboard);
+        // Employees
+        SideNavItem employees = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
+
+        nav.addItem(dashboard, employees);
 
         return nav;
     }
@@ -156,6 +159,6 @@ public final class MainLayout extends AppLayout {
      */
     private void handleLogout() {
         securityService.logout();
-        UI.getCurrent().getPage().reload();
+        UI.getCurrent().navigate("login");
     }
 }
