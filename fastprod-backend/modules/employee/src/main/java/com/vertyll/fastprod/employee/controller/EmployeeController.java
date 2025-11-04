@@ -60,4 +60,12 @@ class EmployeeController {
         java.util.List<EmployeeResponseDto> employees = employeeService.getAllEmployees();
         return ApiResponse.buildResponse(employees, "Employees retrieved successfully", HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete employee")
+    public ResponseEntity<ApiResponse<Void>> deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
+        return ApiResponse.buildResponse(null, "Employee deleted successfully", HttpStatus.OK);
+    }
 }

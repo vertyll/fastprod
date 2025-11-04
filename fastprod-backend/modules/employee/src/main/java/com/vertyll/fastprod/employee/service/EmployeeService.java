@@ -17,4 +17,7 @@ public interface EmployeeService {
     EmployeeResponseDto getEmployeeById(Long id);
 
     List<EmployeeResponseDto> getAllEmployees();
+
+    @Transactional
+    void deleteEmployee(Long id);
 }

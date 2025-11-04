@@ -49,7 +49,12 @@ class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponseDto updateEmployee(Long id, EmployeeUpdateDto dto) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+
+        if (!user.isActive()) {
+            throw new ApiException("Cannot update inactive employee", HttpStatus.BAD_REQUEST);
+        }
 
         if (dto.email() != null && !dto.email().equals(user.getEmail())) {
             if (userRepository.existsByEmail(dto.email())) {
@@ -74,17 +79,39 @@ class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponseDto getEmployeeById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+        
+        if (!user.isActive()) {
+            throw new ApiException("Employee not found", HttpStatus.NOT_FOUND);
+        }
+        
         return employeeMapper.toResponseDto(user);
     }
 
     @Override
     public List<EmployeeResponseDto> getAllEmployees() {
         return userRepository.findAll().stream()
+                .filter(user -> user.isActive())
                 .filter(user -> user.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals(RoleType.EMPLOYEE.name())))
+                        .anyMatch(role -> role.getName().equals(RoleType.EMPLOYEE.name()))
+                )
                 .map(employeeMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deleteEmployee(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+        
+        if (!user.isActive()) {
+            throw new ApiException("Employee already deleted", HttpStatus.BAD_REQUEST);
+        }
+        
+        user.setActive(false);
+        userRepository.save(user);
     }
 
     private void assignRolesToUser(User user, java.util.Set<String> roleNames) {
