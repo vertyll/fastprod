@@ -93,7 +93,8 @@ class AuthServiceImpl implements AuthService {
             throw new ApiException("Account not verified", HttpStatus.FORBIDDEN);
         }
 
-        String jwtToken = jwtService.generateToken(user);
+        Map<String, Object> claims = createClaimsWithRoles(user);
+        String jwtToken = jwtService.generateToken(claims, user);
 
         if (response != null) {
             String refreshToken = refreshTokenService.createRefreshToken(user, request.deviceInfo(), httpRequest);
@@ -112,7 +113,9 @@ class AuthServiceImpl implements AuthService {
         }
 
         User user = refreshTokenService.validateRefreshToken(refreshToken);
-        String accessToken = jwtService.generateToken(user);
+        
+        Map<String, Object> claims = createClaimsWithRoles(user);
+        String accessToken = jwtService.generateToken(claims, user);
         String newRefreshToken = refreshTokenService.rotateRefreshToken(refreshToken, null, request);
 
         addRefreshTokenCookie(response, newRefreshToken);
@@ -257,7 +260,8 @@ class AuthServiceImpl implements AuthService {
 
         refreshTokenService.revokeAllUserTokens(user);
 
-        String jwtToken = jwtService.generateToken(user);
+        Map<String, Object> claims = createClaimsWithRoles(user);
+        String jwtToken = jwtService.generateToken(claims, user);
         String refreshToken = refreshTokenService.createRefreshToken(user, null, httpRequest);
         addRefreshTokenCookie(response, refreshToken);
 
@@ -394,5 +398,14 @@ class AuthServiceImpl implements AuthService {
 
     private Authentication getCurrentAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    private Map<String, Object> createClaimsWithRoles(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        List<String> roles = user.getRoles().stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toList());
+        claims.put("roles", roles);
+        return claims;
     }
 }
