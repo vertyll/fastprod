@@ -22,7 +22,7 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
         boolean isPublicRoute = targetLocation.equals("login") 
                 || targetLocation.equals("register") 
                 || targetLocation.equals("verify-account")
-                || targetLocation.equals("");
+                || targetLocation.isEmpty();
 
         // If trying to access protected route without authentication
         if (!isAuthenticated && !isPublicRoute) {

@@ -143,10 +143,7 @@ public final class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
         nav.addClassNames(LumoUtility.Margin.Horizontal.MEDIUM);
 
-        // Dashboard
         SideNavItem dashboard = new SideNavItem("Dashboard", "/", VaadinIcon.DASHBOARD.create());
-
-        // Employees
         SideNavItem employees = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
 
         nav.addItem(dashboard, employees);

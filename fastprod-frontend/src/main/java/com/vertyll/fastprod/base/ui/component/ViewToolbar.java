@@ -14,8 +14,15 @@ import org.jspecify.annotations.Nullable;
 public final class ViewToolbar extends Composite<Header> {
 
     public ViewToolbar(@Nullable String viewTitle, Component... components) {
-        addClassNames(Display.FLEX, FlexDirection.COLUMN, JustifyContent.BETWEEN, AlignItems.STRETCH, Gap.MEDIUM,
-                FlexDirection.Breakpoint.Medium.ROW, AlignItems.Breakpoint.Medium.CENTER);
+        addClassNames(
+                Display.FLEX,
+                FlexDirection.COLUMN,
+                JustifyContent.BETWEEN,
+                AlignItems.STRETCH,
+                Gap.MEDIUM,
+                FlexDirection.Breakpoint.Medium.ROW,
+                AlignItems.Breakpoint.Medium.CENTER
+        );
 
         var drawerToggle = new DrawerToggle();
         drawerToggle.addClassNames(Margin.NONE);
@@ -29,16 +36,28 @@ public final class ViewToolbar extends Composite<Header> {
 
         if (components.length > 0) {
             var actions = new Div(components);
-            actions.addClassNames(Display.FLEX, FlexDirection.COLUMN, JustifyContent.BETWEEN, Flex.GROW, Gap.SMALL,
-                    FlexDirection.Breakpoint.Medium.ROW);
+            actions.addClassNames(
+                    Display.FLEX,
+                    FlexDirection.COLUMN,
+                    JustifyContent.BETWEEN,
+                    Flex.GROW,
+                    Gap.SMALL,
+                    FlexDirection.Breakpoint.Medium.ROW
+            );
             getContent().add(actions);
         }
     }
 
     public static Component group(Component... components) {
         var group = new Div(components);
-        group.addClassNames(Display.FLEX, FlexDirection.COLUMN, AlignItems.STRETCH, Gap.SMALL,
-                FlexDirection.Breakpoint.Medium.ROW, AlignItems.Breakpoint.Medium.CENTER);
+        group.addClassNames(
+                Display.FLEX,
+                FlexDirection.COLUMN,
+                AlignItems.STRETCH,
+                Gap.SMALL,
+                FlexDirection.Breakpoint.Medium.ROW,
+                AlignItems.Breakpoint.Medium.CENTER
+        );
         return group;
     }
 }

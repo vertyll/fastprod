@@ -31,7 +31,7 @@ public record EmployeeFilterDto(
     public EmployeeFilterDto {
         if (page == null || page < 0) page = 0;
         if (size == null || size < 1) size = 10;
-        if (size > 100) size = 100; // Max limit
+        if (size > 100) size = 100;
         if (sortDirection == null || sortDirection.isBlank()) sortDirection = "ASC";
         
         if (sortBy == null || sortBy.isBlank() || !ALLOWED_SORT_FIELDS.contains(sortBy.toLowerCase())) {

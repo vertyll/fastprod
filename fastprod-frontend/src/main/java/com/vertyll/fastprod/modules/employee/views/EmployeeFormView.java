@@ -22,6 +22,8 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
@@ -84,7 +86,8 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
         FormLayout formLayout = new FormLayout();
         formLayout.setResponsiveSteps(
                 new FormLayout.ResponsiveStep("0", 1),
-                new FormLayout.ResponsiveStep("500px", 2));
+                new FormLayout.ResponsiveStep("500px", 2)
+        );
 
         firstNameField = new TextField("First Name");
         firstNameField.setRequiredIndicatorVisible(true);
@@ -128,7 +131,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
                     if (isEditMode) {
                         return pass == null || pass.isEmpty() || pass.length() >= 6;
                     }
-                    return pass != null && !pass.isEmpty() && pass.length() >= 6;
+                    return pass != null && pass.length() >= 6;
                 }, "Password must be at least 6 characters")
                 .bind(EmployeeFormData::getPassword, EmployeeFormData::setPassword);
 
@@ -188,7 +191,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
             if (formData.getPassword() != null && !formData.getPassword().isEmpty()) {
                 String confirmPass = confirmPasswordField.getValue();
-                if (confirmPass == null || !formData.getPassword().equals(confirmPass)) {
+                if (!formData.getPassword().equals(confirmPass)) {
                     Notification.show("Passwords must match", 3000, Notification.Position.TOP_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_ERROR);
                     confirmPasswordField.setInvalid(true);
@@ -239,6 +242,8 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
         UI.getCurrent().navigate(EmployeeListView.class);
     }
 
+    @Setter
+    @Getter
     public static class EmployeeFormData {
         private String firstName;
         private String lastName;
@@ -246,44 +251,5 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
         private String password;
         private Set<String> roleNames = new HashSet<>();
 
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-
-        public String getLastName() {
-            return lastName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-        public Set<String> getRoleNames() {
-            return roleNames;
-        }
-
-        public void setRoleNames(Set<String> roleNames) {
-            this.roleNames = roleNames;
-        }
     }
 }

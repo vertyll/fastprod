@@ -31,13 +31,12 @@ public class EmployeeService extends BaseHttpService {
     private String getAuthToken() {
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            String token = (String) session.getAttribute("token");
-            return token;
+            return (String) session.getAttribute("token");
         }
         return null;
     }
 
-    public ApiResponse<EmployeeResponseDto> createEmployee(EmployeeCreateDto createDto) throws Exception {
+    public void createEmployee(EmployeeCreateDto createDto) throws Exception {
         String json = objectMapper.writeValueAsString(createDto);
         String authToken = getAuthToken();
 
@@ -54,16 +53,15 @@ public class EmployeeService extends BaseHttpService {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
-            return objectMapper.readValue(response.body(),
-                    objectMapper.getTypeFactory().constructParametricType(ApiResponse.class,
-                            EmployeeResponseDto.class));
+            objectMapper.readValue(response.body(),
+                    objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, EmployeeResponseDto.class));
         } else {
             throw new Exception("Failed to create employee: " + response.body());
         }
     }
 
-    public ApiResponse<EmployeeResponseDto> updateEmployee(Long id, EmployeeUpdateDto updateDto) throws Exception {
-        return put(EMPLOYEE_ENDPOINT + "/" + id, updateDto, EmployeeResponseDto.class, getAuthToken());
+    public void updateEmployee(Long id, EmployeeUpdateDto updateDto) throws Exception {
+        put(EMPLOYEE_ENDPOINT + "/" + id, updateDto, EmployeeResponseDto.class, getAuthToken());
     }
 
     public ApiResponse<EmployeeResponseDto> getEmployee(Long id) throws Exception {

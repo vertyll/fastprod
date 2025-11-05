@@ -26,14 +26,14 @@ public class AuthService extends BaseHttpService {
         return post(AUTH_ENDPOINT + "/authenticate", loginRequest, AuthResponseDto.class);
     }
 
-    public ApiResponse<Void> verifyAccount(VerifyAccountRequestDto verifyAccountRequest) throws Exception {
+    public void verifyAccount(VerifyAccountRequestDto verifyAccountRequest) throws Exception {
         String endpoint = AUTH_ENDPOINT + "/verify?code=" + verifyAccountRequest.code();
-        return post(endpoint, null, Void.class);
+        post(endpoint, null, Void.class);
     }
 
-    public ApiResponse<Void> resendVerificationCode(String email) throws Exception {
+    public void resendVerificationCode(String email) throws Exception {
         ResendVerificationRequestDto request = new ResendVerificationRequestDto(email);
-        return post(AUTH_ENDPOINT + "/resend-verification-code", request, Void.class);
+        post(AUTH_ENDPOINT + "/resend-verification-code", request, Void.class);
     }
 
     public ApiResponse<AuthResponseDto> refreshToken() throws Exception {

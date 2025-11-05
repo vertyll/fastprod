@@ -3,7 +3,6 @@ package com.vertyll.fastprod.modules.employee.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -15,6 +14,8 @@ import com.vaadin.flow.router.*;
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
+import com.vertyll.fastprod.shared.components.DetailsTableComponent;
+import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,12 +28,8 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     private Long employeeId;
 
     private final H2 titleLabel = new H2();
-    private final Span idLabel = new Span();
-    private final Span firstNameLabel = new Span();
-    private final Span lastNameLabel = new Span();
-    private final Span emailLabel = new Span();
-    private final Span rolesLabel = new Span();
-    private final Span statusLabel = new Span();
+    private final DetailsTableComponent detailsTable = new DetailsTableComponent();
+    private final LoadingSpinner loadingSpinner = new LoadingSpinner();
 
     public EmployeeDetailsView(EmployeeService employeeService) {
         this.employeeService = employeeService;
@@ -40,6 +37,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         setSizeFull();
         setPadding(true);
         setSpacing(true);
+        getStyle().set("position", "relative");
 
         createLayout();
     }
@@ -61,15 +59,14 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
 
     private void createLayout() {
         add(createHeader());
-        add(createDetailsTable());
+        add(detailsTable);
+        add(loadingSpinner);
     }
 
     private VerticalLayout createHeader() {
         VerticalLayout header = new VerticalLayout();
         header.setPadding(false);
-        header.setSpacing(false);
-
-        titleLabel.getStyle().set("margin", "0");
+        header.setSpacing(true);
 
         Button backButton = new Button("Back to List", VaadinIcon.ARROW_LEFT.create());
         backButton.addClickListener(e -> navigateToList());
@@ -88,57 +85,16 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         buttonLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
         buttonLayout.add(backButton, new HorizontalLayout(editButton, deleteButton));
 
-        header.add(titleLabel, buttonLayout);
+        titleLabel.getStyle()
+                .set("margin-top", "var(--lumo-space-m)")
+                .set("margin-bottom", "var(--lumo-space-s)");
+
+        header.add(buttonLayout, titleLabel);
         return header;
     }
 
-    private Div createDetailsTable() {
-        Div table = new Div();
-        table.getStyle()
-                .set("display", "table")
-                .set("width", "100%")
-                .set("max-width", "600px")
-                .set("border", "1px solid var(--lumo-contrast-10pct)")
-                .set("border-radius", "var(--lumo-border-radius-m)");
-
-        table.add(
-                createTableRow("ID", idLabel),
-                createTableRow("First Name", firstNameLabel),
-                createTableRow("Last Name", lastNameLabel),
-                createTableRow("Email", emailLabel),
-                createTableRow("Roles", rolesLabel),
-                createTableRow("Status", statusLabel));
-
-        return table;
-    }
-
-    private Div createTableRow(String label, Span valueSpan) {
-        Div row = new Div();
-        row.getStyle()
-                .set("display", "table-row");
-
-        Div labelCell = new Div();
-        labelCell.setText(label);
-        labelCell.getStyle()
-                .set("display", "table-cell")
-                .set("padding", "var(--lumo-space-s)")
-                .set("border-bottom", "1px solid var(--lumo-contrast-10pct)")
-                .set("font-weight", "500")
-                .set("width", "30%")
-                .set("background", "var(--lumo-contrast-5pct)");
-
-        Div valueCell = new Div();
-        valueCell.add(valueSpan);
-        valueCell.getStyle()
-                .set("display", "table-cell")
-                .set("padding", "var(--lumo-space-s)")
-                .set("border-bottom", "1px solid var(--lumo-contrast-10pct)");
-
-        row.add(labelCell, valueCell);
-        return row;
-    }
-
     private void loadEmployee(Long id) {
+        loadingSpinner.show();
         try {
             ApiResponse<EmployeeResponseDto> response = employeeService.getEmployee(id);
             if (response.data() != null) {
@@ -150,26 +106,30 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
             Notification.show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
+        } finally {
+            loadingSpinner.hide();
         }
     }
 
     private void displayEmployee(EmployeeResponseDto employee) {
         titleLabel.setText(employee.firstName() + " " + employee.lastName());
-        idLabel.setText(String.valueOf(employee.id()));
-        firstNameLabel.setText(employee.firstName());
-        lastNameLabel.setText(employee.lastName());
-        emailLabel.setText(employee.email());
-
-        rolesLabel.setText(String.join(", ", employee.roles()));
-
-        statusLabel.setText(employee.isVerified() ? "Verified" : "Not Verified");
-        statusLabel.getElement().getThemeList().clear();
-        statusLabel.getElement().getThemeList().add("badge");
+        
+        detailsTable.clear();
+        detailsTable.addRow("ID", String.valueOf(employee.id()));
+        detailsTable.addRow("First Name", employee.firstName());
+        detailsTable.addRow("Last Name", employee.lastName());
+        detailsTable.addRow("Email", employee.email());
+        detailsTable.addRow("Roles", String.join(", ", employee.roles()));
+        
+        Span statusBadge = new Span(employee.isVerified() ? "Verified" : "Not Verified");
+        statusBadge.getElement().getThemeList().clear();
+        statusBadge.getElement().getThemeList().add("badge");
         if (employee.isVerified()) {
-            statusLabel.getElement().getThemeList().add("success");
+            statusBadge.getElement().getThemeList().add("success");
         } else {
-            statusLabel.getElement().getThemeList().add("error");
+            statusBadge.getElement().getThemeList().add("error");
         }
+        detailsTable.addRow("Status", statusBadge);
     }
 
     private void navigateToForm(Long employeeId) {
