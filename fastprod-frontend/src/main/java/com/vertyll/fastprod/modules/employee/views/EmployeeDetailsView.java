@@ -121,7 +121,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         labelCell.setText(label);
         labelCell.getStyle()
                 .set("display", "table-cell")
-                .set("padding", "var(--lumo-space-m)")
+                .set("padding", "var(--lumo-space-s)")
                 .set("border-bottom", "1px solid var(--lumo-contrast-10pct)")
                 .set("font-weight", "500")
                 .set("width", "30%")
@@ -131,7 +131,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         valueCell.add(valueSpan);
         valueCell.getStyle()
                 .set("display", "table-cell")
-                .set("padding", "var(--lumo-space-m)")
+                .set("padding", "var(--lumo-space-s)")
                 .set("border-bottom", "1px solid var(--lumo-contrast-10pct)");
 
         row.add(labelCell, valueCell);
