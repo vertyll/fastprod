@@ -90,7 +90,7 @@ class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Page<EmployeeResponseDto> getAllEmployees(Pageable pageable) {
-        Page<User> usersPage = userRepository.findActiveUsersByRole(RoleType.EMPLOYEE.name(), pageable);
+        Page<User> usersPage = userRepository.findActiveUsers(pageable);
         
         return usersPage.map(employeeMapper::toResponseDto);
     }
