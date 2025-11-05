@@ -80,22 +80,27 @@ public class EmployeeListView extends VerticalLayout {
     }
 
     private void configureGrid() {
-        grid.addColumn(EmployeeResponseDto::id).setHeader("ID").setSortable(true).setAutoWidth(true);
-        grid.addColumn(EmployeeResponseDto::firstName).setHeader("First Name").setSortable(true).setAutoWidth(true);
-        grid.addColumn(EmployeeResponseDto::lastName).setHeader("Last Name").setSortable(true).setAutoWidth(true);
-        grid.addColumn(EmployeeResponseDto::email).setHeader("Email").setSortable(true).setAutoWidth(true);
+        grid.addColumn(EmployeeResponseDto::id).setHeader("ID").setSortable(true).setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
+        grid.addColumn(EmployeeResponseDto::firstName).setHeader("First Name").setSortable(true).setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
+        grid.addColumn(EmployeeResponseDto::lastName).setHeader("Last Name").setSortable(true).setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
+        grid.addColumn(EmployeeResponseDto::email).setHeader("Email").setSortable(true).setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             String roles = employee.roles().stream()
                     .collect(Collectors.joining(", "));
-            return new Span(roles);
-        }).setHeader("Roles").setAutoWidth(true);
+            Span span = new Span(roles);
+            span.getStyle().set("display", "flex").set("justify-content", "center");
+            return span;
+        }).setHeader("Roles").setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             Span badge = new Span(employee.isVerified() ? "Verified" : "Not Verified");
             badge.getElement().getThemeList().add(employee.isVerified() ? "badge success" : "badge error");
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
+            HorizontalLayout layout = new HorizontalLayout(badge);
+            layout.setJustifyContentMode(JustifyContentMode.CENTER);
+            layout.setWidthFull();
+            return layout;
+        }).setHeader("Status").setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             Button viewButton = new Button(VaadinIcon.EYE.create());
@@ -124,8 +129,9 @@ public class EmployeeListView extends VerticalLayout {
 
             HorizontalLayout actions = new HorizontalLayout(viewButton, editButton, deleteButton);
             actions.setSpacing(true);
+            actions.setJustifyContentMode(JustifyContentMode.CENTER);
             return actions;
-        }).setHeader("Actions").setAutoWidth(true);
+        }).setHeader("Actions").setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
 
         grid.setSizeFull();
     }
