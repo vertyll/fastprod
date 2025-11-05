@@ -43,6 +43,7 @@ public class EmployeeListView extends VerticalLayout {
     private Button nextButton;
     private TextField pageField;
     private ComboBox<Integer> pageSizeComboBox;
+    private HorizontalLayout paginationLayout;
 
     public EmployeeListView(EmployeeService employeeService) {
         this.employeeService = employeeService;
@@ -58,6 +59,7 @@ public class EmployeeListView extends VerticalLayout {
         loadEmployees();
 
         add(grid);
+        addPaginationToLayout();
     }
 
     private void createToolbar() {
@@ -199,7 +201,7 @@ public class EmployeeListView extends VerticalLayout {
         Span pageSizeLabel = new Span("Items per page:");
         pageSizeLabel.getStyle().set("margin-right", "var(--lumo-space-s)");
 
-        HorizontalLayout paginationLayout = new HorizontalLayout();
+        paginationLayout = new HorizontalLayout();
         paginationLayout.setSpacing(true);
         paginationLayout.setAlignItems(Alignment.CENTER);
         paginationLayout.add(
@@ -214,7 +216,9 @@ public class EmployeeListView extends VerticalLayout {
                 new Span("total"),
                 pageSizeLabel,
                 pageSizeComboBox);
+    }
 
+    private void addPaginationToLayout() {
         add(paginationLayout);
     }
 
