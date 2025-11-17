@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.dto.UserUpdateDto;
+import com.vertyll.fastprod.user.dto.ProfileUpdateDto;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.mapper.UserMapper;
 import com.vertyll.fastprod.user.repository.UserRepository;
@@ -102,5 +103,30 @@ class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByEmailWithRoles(String email) {
         return userRepository.findByEmailWithRoles(email);
+    }
+
+    @Override
+    public UserResponseDto getCurrentUser(String email) {
+        User user = userRepository.findByEmailWithRoles(email)
+                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+        return userMapper.toResponseDto(user);
+    }
+
+    @Override
+    @Transactional
+    public UserResponseDto updateCurrentUserProfile(String email, ProfileUpdateDto dto) {
+        User user = userRepository.findByEmailWithRoles(email)
+                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+
+        user.setFirstName(dto.firstName());
+        user.setLastName(dto.lastName());
+
+        User updatedUser = userRepository.save(user);
+        return userMapper.toResponseDto(updatedUser);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

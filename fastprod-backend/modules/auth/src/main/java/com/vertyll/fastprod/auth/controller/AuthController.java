@@ -118,6 +118,7 @@ class AuthController {
     }
 
     @PostMapping("/verify-email-change")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Verify email change with code")
     public ResponseEntity<ApiResponse<AuthResponseDto>> verifyEmailChange(
             @RequestParam String code,
@@ -139,6 +140,7 @@ class AuthController {
     }
 
     @PostMapping("/verify-password-change")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Verify password change with code")
     public ResponseEntity<ApiResponse<Void>> verifyPasswordChange(
             @RequestParam String code

@@ -12,6 +12,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.boot:spring-boot-starter-validation")
     api("org.springframework.boot:spring-boot-starter-security")
+    api("org.springframework.boot:spring-boot-starter-mail")
 
     // MapStruct
     api("org.mapstruct:mapstruct:1.5.5.Final")

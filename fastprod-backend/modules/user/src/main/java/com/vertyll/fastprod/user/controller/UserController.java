@@ -2,6 +2,7 @@ package com.vertyll.fastprod.user.controller;
 
 import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.user.service.UserService;
+import com.vertyll.fastprod.user.dto.ProfileUpdateDto;
 import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.dto.UserUpdateDto;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -51,5 +53,24 @@ class UserController {
     ) {
         UserResponseDto user = userService.getUserById(id);
         return ApiResponse.buildResponse(user, "User retrieved successfully", HttpStatus.OK);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get current user profile")
+    public ResponseEntity<ApiResponse<UserResponseDto>> getCurrentUser(Authentication authentication) {
+        UserResponseDto user = userService.getCurrentUser(authentication.getName());
+        return ApiResponse.buildResponse(user, "Profile retrieved successfully", HttpStatus.OK);
+    }
+
+    @PutMapping("/me/profile")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Update current user profile")
+    public ResponseEntity<ApiResponse<UserResponseDto>> updateProfile(
+            @RequestBody @Valid ProfileUpdateDto dto,
+            Authentication authentication
+    ) {
+        UserResponseDto user = userService.updateCurrentUserProfile(authentication.getName(), dto);
+        return ApiResponse.buildResponse(user, "Profile updated successfully", HttpStatus.OK);
     }
 }

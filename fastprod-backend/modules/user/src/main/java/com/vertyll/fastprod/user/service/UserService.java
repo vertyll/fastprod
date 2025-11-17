@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.user.service;
 
+import com.vertyll.fastprod.user.dto.ProfileUpdateDto;
 import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.dto.UserUpdateDto;
@@ -23,4 +24,11 @@ public interface UserService {
     User saveUser(User user);
 
     Optional<User> findByEmailWithRoles(String email);
+
+    UserResponseDto getCurrentUser(String email);
+
+    @Transactional
+    UserResponseDto updateCurrentUserProfile(String email, ProfileUpdateDto dto);
+
+    Optional<User> findByEmail(String email);
 }
