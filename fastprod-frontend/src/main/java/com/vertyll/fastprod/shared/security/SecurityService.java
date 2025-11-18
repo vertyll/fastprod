@@ -2,12 +2,17 @@ package com.vertyll.fastprod.shared.security;
 
 import com.vaadin.flow.server.VaadinSession;
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.modules.auth.service.AuthService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class SecurityService {
+
+    private final AuthService authService;
 
     private static final String USER_SESSION_KEY = "user";
     private static final String TOKEN_SESSION_KEY = "token";
@@ -24,12 +29,19 @@ public class SecurityService {
     }
 
     public void logout() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            session.setAttribute(TOKEN_SESSION_KEY, null);
-            session.setAttribute(TOKEN_TYPE_SESSION_KEY, null);
-            session.setAttribute(USER_SESSION_KEY, null);
-            session.close();
+        try {
+            authService.logout();
+            log.debug("Backend logout successful");
+        } catch (Exception e) {
+            log.error("Failed to logout from backend, proceeding with local session cleanup", e);
+        } finally {
+            VaadinSession session = VaadinSession.getCurrent();
+            if (session != null) {
+                session.setAttribute(TOKEN_SESSION_KEY, null);
+                session.setAttribute(TOKEN_TYPE_SESSION_KEY, null);
+                session.setAttribute(USER_SESSION_KEY, null);
+                session.close();
+            }
         }
     }
 

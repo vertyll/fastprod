@@ -25,11 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterObserver {
 
     private final EmployeeService employeeService;
-    private Long employeeId;
-
     private final H2 titleLabel = new H2();
     private final DetailsTableComponent detailsTable = new DetailsTableComponent();
     private final LoadingSpinner loadingSpinner = new LoadingSpinner();
+
+    private Long employeeId;
 
     public EmployeeDetailsView(EmployeeService employeeService) {
         this.employeeService = employeeService;
@@ -69,6 +69,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         header.setSpacing(true);
 
         Button backButton = new Button("Back to List", VaadinIcon.ARROW_LEFT.create());
+        backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         backButton.addClickListener(e -> navigateToList());
 
         Button editButton = new Button("Edit", VaadinIcon.EDIT.create());
@@ -113,14 +114,14 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
 
     private void displayEmployee(EmployeeResponseDto employee) {
         titleLabel.setText(employee.firstName() + " " + employee.lastName());
-        
+
         detailsTable.clear();
         detailsTable.addRow("ID", String.valueOf(employee.id()));
         detailsTable.addRow("First Name", employee.firstName());
         detailsTable.addRow("Last Name", employee.lastName());
         detailsTable.addRow("Email", employee.email());
         detailsTable.addRow("Roles", String.join(", ", employee.roles()));
-        
+
         Span statusBadge = new Span(employee.isVerified() ? "Verified" : "Not Verified");
         statusBadge.getElement().getThemeList().clear();
         statusBadge.getElement().getThemeList().add("badge");

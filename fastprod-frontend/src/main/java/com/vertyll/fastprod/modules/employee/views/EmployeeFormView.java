@@ -22,8 +22,7 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
@@ -37,15 +36,8 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
     private final EmployeeService employeeService;
     private final Binder<EmployeeFormData> binder;
 
-    private TextField firstNameField;
-    private TextField lastNameField;
-    private EmailField emailField;
     private PasswordField passwordField;
     private PasswordField confirmPasswordField;
-    private MultiSelectComboBox<String> rolesField;
-    private Button saveButton;
-    private Button cancelButton;
-
     private Long employeeId;
     private boolean isEditMode = false;
 
@@ -89,16 +81,16 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
                 new FormLayout.ResponsiveStep("500px", 2)
         );
 
-        firstNameField = new TextField("First Name");
+        TextField firstNameField = new TextField("First Name");
         firstNameField.setRequiredIndicatorVisible(true);
 
-        lastNameField = new TextField("Last Name");
+        TextField lastNameField = new TextField("Last Name");
         lastNameField.setRequiredIndicatorVisible(true);
 
-        emailField = new EmailField("Email");
+        EmailField emailField = new EmailField("Email");
         emailField.setRequiredIndicatorVisible(true);
 
-        rolesField = new MultiSelectComboBox<>("Roles");
+        MultiSelectComboBox<String> rolesField = new MultiSelectComboBox<>("Roles");
         rolesField.setItems("EMPLOYEE", "ADMIN", "MANAGER");
         rolesField.select("EMPLOYEE");
         rolesField.setPlaceholder("Select roles...");
@@ -150,11 +142,12 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
         binder.forField(rolesField)
                 .bind(EmployeeFormData::getRoleNames, EmployeeFormData::setRoleNames);
 
-        saveButton = new Button("Save");
+        Button saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(e -> saveEmployee());
 
-        cancelButton = new Button("Cancel");
+        Button cancelButton = new Button("Cancel");
+        cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         cancelButton.addClickListener(e -> navigateToList());
 
         HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
@@ -229,8 +222,6 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
             navigateToList();
         } catch (ValidationException e) {
             log.error("Validation failed", e);
-            Notification.show("Please fix validation errors", 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (Exception e) {
             log.error("Failed to save employee", e);
             Notification.show("Failed to save employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
@@ -242,8 +233,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
         UI.getCurrent().navigate(EmployeeListView.class);
     }
 
-    @Setter
-    @Getter
+    @Data
     public static class EmployeeFormData {
         private String firstName;
         private String lastName;

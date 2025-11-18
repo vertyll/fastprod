@@ -69,7 +69,7 @@ public class LoginView extends VerticalLayout {
                 .set("max-width", "400px")
                 .set("width", "100%");
 
-        H1 title = new H1("Welcome Back");
+        H1 title = new H1("Sign In");
         title.getStyle()
                 .set("margin", "0")
                 .set("font-size", "var(--lumo-font-size-xxxl)")
@@ -100,6 +100,15 @@ public class LoginView extends VerticalLayout {
         loginButton.addClickListener(e -> handleLogin());
         loginButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
 
+        RouterLink forgotPasswordLink = new RouterLink("Forgot password?", ForgotPasswordView.class);
+        forgotPasswordLink.getStyle()
+                .set("color", "var(--lumo-primary-color)")
+                .set("text-decoration", "none")
+                .set("font-size", "var(--lumo-font-size-s)")
+                .set("display", "block")
+                .set("text-align", "center")
+                .set("margin-bottom", "var(--lumo-space-m)");
+
         RouterLink registerLink = new RouterLink("Create an account", RegisterView.class);
         registerLink.getStyle()
                 .set("color", "var(--lumo-primary-color)")
@@ -114,8 +123,8 @@ public class LoginView extends VerticalLayout {
 
         configureBinder();
 
-        card.add(title, subtitle, emailField, passwordField, loginButton, registerContainer);
-        
+        card.add(title, subtitle, emailField, passwordField, loginButton, forgotPasswordLink, registerContainer);
+
         add(card);
     }
 
@@ -154,7 +163,6 @@ public class LoginView extends VerticalLayout {
             UI.getCurrent().getPage().setLocation("/");
 
         } catch (ValidationException e) {
-            showNotification("Please correct the errors in the form", NotificationVariant.LUMO_ERROR);
             log.error("Validation error during login", e);
         } catch (ApiException e) {
             if (e.getStatusCode() == 403 && e.getMessage().contains("not verified")) {
@@ -178,9 +186,19 @@ public class LoginView extends VerticalLayout {
     }
 
     private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification(message, 5000);
+        Notification notification = new Notification();
         notification.addThemeVariants(variant);
         notification.setPosition(Notification.Position.TOP_CENTER);
+        notification.setDuration(5000);
+
+        Div text = new Div();
+        text.setText(message);
+        text.getStyle()
+                .set("white-space", "normal")
+                .set("max-width", "400px")
+                .set("text-align", "center");
+
+        notification.add(text);
         notification.open();
     }
 }

@@ -3,7 +3,6 @@ package com.vertyll.fastprod.base.ui;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
@@ -18,6 +17,8 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vertyll.fastprod.base.ui.component.UserMenu;
+import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.security.SecurityService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,9 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 public final class MainLayout extends AppLayout {
 
     private final SecurityService securityService;
+    private final UserService userService;
 
-    public MainLayout(SecurityService securityService) {
+    public MainLayout(SecurityService securityService, UserService userService) {
         this.securityService = securityService;
+        this.userService = userService;
 
         if (securityService.isAuthenticated()) {
             createAuthenticatedLayout();
@@ -43,11 +46,9 @@ public final class MainLayout extends AppLayout {
     private void createAuthenticatedLayout() {
         setPrimarySection(Section.DRAWER);
 
-        // Create navbar
         HorizontalLayout navbar = createAuthenticatedNavbar();
         addToNavbar(navbar);
 
-        // Create drawer
         addToDrawer(createDrawerHeader(), new Scroller(createSideNav()));
     }
 
@@ -69,16 +70,7 @@ public final class MainLayout extends AppLayout {
         H1 viewTitle = new H1("FastProd");
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE, LumoUtility.Margin.Left.MEDIUM);
 
-        Avatar avatar = new Avatar("User");
-        avatar.setColorIndex(1);
-
-        Button logoutButton = new Button("Logout", VaadinIcon.SIGN_OUT.create());
-        logoutButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        logoutButton.addClickListener(e -> handleLogout());
-
-        HorizontalLayout userMenu = new HorizontalLayout(avatar, logoutButton);
-        userMenu.setAlignItems(FlexComponent.Alignment.CENTER);
-        userMenu.setSpacing(true);
+        UserMenu userMenu = new UserMenu(userService, securityService);
 
         HorizontalLayout navbar = new HorizontalLayout(toggle, viewTitle, userMenu);
         navbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -149,13 +141,5 @@ public final class MainLayout extends AppLayout {
         nav.addItem(dashboard, employees);
 
         return nav;
-    }
-
-    /**
-     * Handle logout
-     */
-    private void handleLogout() {
-        securityService.logout();
-        UI.getCurrent().navigate("login");
     }
 }

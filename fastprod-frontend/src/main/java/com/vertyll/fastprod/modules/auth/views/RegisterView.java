@@ -51,8 +51,8 @@ public class RegisterView extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
         getStyle()
-            .set("background", "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
-            .set("padding", "var(--lumo-space-l)");
+                .set("background", "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
+                .set("padding", "var(--lumo-space-l)");
 
         createForm();
     }
@@ -135,7 +135,7 @@ public class RegisterView extends VerticalLayout {
         configureBinder();
 
         card.add(title, subtitle, nameLayout, emailField, passwordField, confirmPasswordField, registerButton, loginContainer);
-        
+
         add(card);
     }
 
@@ -183,7 +183,6 @@ public class RegisterView extends VerticalLayout {
             UI.getCurrent().navigate(VerifyAccountView.class, email);
 
         } catch (ValidationException e) {
-            showNotification("Please correct the errors in the form", NotificationVariant.LUMO_ERROR);
             log.error("Validation error during registration", e);
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
@@ -198,9 +197,19 @@ public class RegisterView extends VerticalLayout {
     }
 
     private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification(message, 5000);
+        Notification notification = new Notification();
         notification.addThemeVariants(variant);
         notification.setPosition(Notification.Position.TOP_CENTER);
+        notification.setDuration(5000);
+
+        Div text = new Div();
+        text.setText(message);
+        text.getStyle()
+                .set("white-space", "normal")
+                .set("max-width", "400px")
+                .set("text-align", "center");
+
+        notification.add(text);
         notification.open();
     }
 }

@@ -50,23 +50,11 @@ public class LoadingSpinner extends Div {
         setVisible(false);
     }
 
-    /**
-     * Show the loading spinner
-     */
     public void show() {
         setVisible(true);
     }
 
-    /**
-     * Hide the loading spinner
-     */
     public void hide() {
         setVisible(false);
-    }
-
-    /**
-     * Set custom message
-     */
-    public void setMessage(String message) {
     }
 }

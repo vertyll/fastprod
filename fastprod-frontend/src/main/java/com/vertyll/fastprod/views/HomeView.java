@@ -2,7 +2,7 @@ package com.vertyll.fastprod.views;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -31,10 +31,10 @@ public class HomeView extends VerticalLayout {
     }
 
     private void createAuthenticatedView() {
-        H1 title = new H1("Dashboard");
+        H2 title = new H2("Dashboard");
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
 
-        H2 welcome = new H2("Welcome to FastProd!");
+        H3 welcome = new H3("Welcome to FastProd!");
         Paragraph description = new Paragraph("This is your main dashboard. Navigate using the side menu to access different features.");
 
         add(title, welcome, description);
@@ -44,7 +44,7 @@ public class HomeView extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
 
-        H1 title = new H1("Welcome to FastProd");
+        H2 title = new H2("Welcome to FastProd");
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
 
         Paragraph tagline = new Paragraph("Your production management solution");

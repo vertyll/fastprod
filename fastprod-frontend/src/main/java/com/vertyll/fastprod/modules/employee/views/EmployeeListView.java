@@ -3,7 +3,9 @@ package com.vertyll.fastprod.modules.employee.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -12,24 +14,27 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.components.PagedGridComponent;
 import com.vertyll.fastprod.shared.dto.PageResponse;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees", layout = MainLayout.class)
 @PageTitle("Employees | FastProd")
+@RolesAllowed({"ADMIN", "MANAGER"})
 @Slf4j
 public class EmployeeListView extends VerticalLayout {
 
     private final EmployeeService employeeService;
     private final PagedGridComponent<EmployeeResponseDto> pagedGrid;
     private final LoadingSpinner loadingSpinner;
-    private String sortBy = "id";
-    private String sortDirection = "ASC";
+    private final String sortBy = "id";
+    private final String sortDirection = "ASC";
 
     public EmployeeListView(EmployeeService employeeService) {
         this.employeeService = employeeService;
@@ -37,24 +42,28 @@ public class EmployeeListView extends VerticalLayout {
         this.loadingSpinner = new LoadingSpinner();
 
         setSizeFull();
-        setPadding(true);
         setSpacing(true);
         getStyle().set("position", "relative");
 
+        H2 title = new H2("Employees");
+        title.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Margin.Bottom.MEDIUM);
+        add(title);
+
         createToolbar();
         configureGrid();
-        
+
         pagedGrid.setOnPageChange(this::loadEmployees);
         pagedGrid.setInitialPageSize(10);
-        
+
         add(pagedGrid);
         add(loadingSpinner);
-        
+
         loadEmployees(0, 10);
     }
 
     private void createToolbar() {
         Button refreshButton = new Button("Refresh", VaadinIcon.REFRESH.create());
+        refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         refreshButton.addClickListener(e -> loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize()));
 
         Button addButton = new Button("Add Employee", VaadinIcon.PLUS.create());
@@ -72,18 +81,18 @@ public class EmployeeListView extends VerticalLayout {
 
     private void configureGrid() {
         Grid<EmployeeResponseDto> grid = pagedGrid.getGrid();
-        
-        grid.addColumn(EmployeeResponseDto::id).setHeader("ID").setSortable(true).setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
-        grid.addColumn(EmployeeResponseDto::firstName).setHeader("First Name").setSortable(true).setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
-        grid.addColumn(EmployeeResponseDto::lastName).setHeader("Last Name").setSortable(true).setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
-        grid.addColumn(EmployeeResponseDto::email).setHeader("Email").setSortable(true).setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
+
+        grid.addColumn(EmployeeResponseDto::id).setHeader("ID").setSortable(true).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addColumn(EmployeeResponseDto::firstName).setHeader("First Name").setSortable(true).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addColumn(EmployeeResponseDto::lastName).setHeader("Last Name").setSortable(true).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addColumn(EmployeeResponseDto::email).setHeader("Email").setSortable(true).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             String roles = String.join(", ", employee.roles());
             Span span = new Span(roles);
             span.getStyle().set("display", "flex").set("justify-content", "center");
             return span;
-        }).setHeader("Roles").setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
+        }).setHeader("Roles").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             Span badge = new Span(employee.isVerified() ? "Verified" : "Not Verified");
@@ -92,7 +101,7 @@ public class EmployeeListView extends VerticalLayout {
             layout.setJustifyContentMode(JustifyContentMode.CENTER);
             layout.setWidthFull();
             return layout;
-        }).setHeader("Status").setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
+        }).setHeader("Status").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             Button viewButton = new Button(VaadinIcon.EYE.create());
@@ -123,7 +132,7 @@ public class EmployeeListView extends VerticalLayout {
             actions.setSpacing(true);
             actions.setJustifyContentMode(JustifyContentMode.CENTER);
             return actions;
-        }).setHeader("Actions").setAutoWidth(true).setTextAlign(com.vaadin.flow.component.grid.ColumnTextAlign.CENTER);
+        }).setHeader("Actions").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
     }
 
     private void loadEmployees(int page, int pageSize) {

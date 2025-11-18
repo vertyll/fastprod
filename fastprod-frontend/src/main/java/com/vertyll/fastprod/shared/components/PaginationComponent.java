@@ -25,7 +25,6 @@ public class PaginationComponent extends HorizontalLayout {
     private int currentPage = 0;
     private int totalPages = 0;
     private long totalElements = 0;
-
     @Setter
     private Consumer<Integer> onPageChange;
     @Setter

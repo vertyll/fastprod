@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class VerifyAccountView extends VerticalLayout implements HasUrlParameter<String> {
 
     private final AuthService authService;
+
     private TextField codeField;
     private TextField emailField;
     private Button verifyButton;
@@ -81,7 +82,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
 
         Paragraph description = new Paragraph(
                 "We've sent a verification code to your email address. " +
-                "Please enter the code below to verify your account."
+                        "Please enter the code below to verify your account."
         );
         description.getStyle()
                 .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
@@ -214,9 +215,19 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
     }
 
     private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification(message, 5000);
+        Notification notification = new Notification();
         notification.addThemeVariants(variant);
         notification.setPosition(Notification.Position.TOP_CENTER);
+        notification.setDuration(5000);
+
+        Div text = new Div();
+        text.setText(message);
+        text.getStyle()
+                .set("white-space", "normal")
+                .set("max-width", "400px")
+                .set("text-align", "center");
+
+        notification.add(text);
         notification.open();
     }
 }

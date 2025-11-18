@@ -15,13 +15,15 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
     public void beforeEnter(BeforeEnterEvent event) {
         boolean isAuthenticated = securityService.isAuthenticated();
         String targetLocation = event.getLocation().getPath();
-        
+
         log.debug("Navigation to: {}, authenticated: {}", targetLocation, isAuthenticated);
 
         // Public routes that don't require authentication
-        boolean isPublicRoute = targetLocation.equals("login") 
-                || targetLocation.equals("register") 
+        boolean isPublicRoute = targetLocation.equals("login")
+                || targetLocation.equals("register")
                 || targetLocation.equals("verify-account")
+                || targetLocation.equals("forgot-password")
+                || targetLocation.startsWith("reset-password")
                 || targetLocation.isEmpty();
 
         // If trying to access protected route without authentication

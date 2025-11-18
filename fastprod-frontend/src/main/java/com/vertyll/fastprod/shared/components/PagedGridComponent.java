@@ -14,6 +14,7 @@ public class PagedGridComponent<T> extends VerticalLayout {
     private final Grid<T> grid;
     @Getter
     private final PaginationComponent pagination;
+
     @Setter
     private BiConsumer<Integer, Integer> onPageChange;
 
