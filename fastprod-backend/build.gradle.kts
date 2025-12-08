@@ -9,6 +9,9 @@ group = "com.vertyll"
 version = "0.0.1-SNAPSHOT"
 description = "Production management system - API"
 
+extra["author"] = "Mikołaj Gawron"
+extra["email"] = "gawrmiko@gmail.com"
+
 allprojects {
     repositories {
         mavenCentral()
