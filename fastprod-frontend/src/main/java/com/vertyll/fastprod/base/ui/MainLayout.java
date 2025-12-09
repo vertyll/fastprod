@@ -19,6 +19,7 @@ import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vertyll.fastprod.base.ui.component.UserMenu;
 import com.vertyll.fastprod.modules.user.service.UserService;
+import com.vertyll.fastprod.shared.security.RoleType;
 import com.vertyll.fastprod.shared.security.SecurityService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -136,9 +137,12 @@ public final class MainLayout extends AppLayout {
         nav.addClassNames(LumoUtility.Margin.Horizontal.MEDIUM);
 
         SideNavItem dashboard = new SideNavItem("Dashboard", "/", VaadinIcon.DASHBOARD.create());
-        SideNavItem employees = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
+        nav.addItem(dashboard);
 
-        nav.addItem(dashboard, employees);
+        if (securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
+            SideNavItem employees = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
+            nav.addItem(employees);
+        }
 
         return nav;
     }
