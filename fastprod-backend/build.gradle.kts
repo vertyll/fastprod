@@ -1,7 +1,7 @@
 plugins {
-    id("org.springframework.boot") version "3.5.7" apply false
-    id("io.spring.dependency-management") version "1.1.4" apply false
-    id("com.diffplug.spotless") version "6.25.0" apply false
+    id("org.springframework.boot") version "4.0.0" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
+    id("com.diffplug.spotless") version "8.1.0" apply false
     java
 }
 
@@ -24,8 +24,11 @@ subprojects {
     apply(plugin = "com.diffplug.spotless")
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(25))
+        }
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
 
     the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
@@ -54,7 +57,7 @@ subprojects {
         java {
             target("src/**/*.java")
 
-            googleJavaFormat("1.22.0").aosp().reflowLongStrings()
+            googleJavaFormat("1.33.0").aosp().reflowLongStrings()
 
             removeUnusedImports()
 
@@ -64,7 +67,7 @@ subprojects {
 
         kotlin {
             target("**/*.gradle.kts")
-            ktlint()
+            ktlint("1.8.0")
         }
     }
 }
