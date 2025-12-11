@@ -15,20 +15,21 @@ vaadin:
 
 api:
   backend:
-    url: http://localhost:8080/api/v1
+    url: ${API_URL:http://localhost:8080/api/v1}
 
 security:
   jwt:
     access-token:
-      expiration: 900000
-      refresh-before-expiry: 120000 #
+      expiration: ${JWT_ACCESS_EXPIRATION:900000}
+      refresh-before-expiry: ${JWT_REFRESH_BEFORE_EXPIRY:120000}
     refresh-token:
       cookie-name: "refresh_token"
 
 server:
-  port: 8001
+  port: ${SERVER_PORT:8001}
 
 logging:
   level:
-    org.atmosphere: warn
-    com.vertyll.fastprod: debug
+    org.atmosphere: ${LOG_LEVEL_ATMOSPHERE:WARN}
+    com.vertyll.fastprod: ${LOG_LEVEL_APP:DEBUG}
+    org.springframework.security: ${LOG_LEVEL_SECURITY:DEBUG}

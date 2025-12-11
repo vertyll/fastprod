@@ -1,9 +1,25 @@
 spring:
+  application:
+    name: fastprod-backend
   profiles:
-    active: dev
+    active: ${SPRING_PROFILE:dev}
   servlet:
     multipart:
-      max-file-size: 50MB
+      max-file-size: ${MAX_FILE_SIZE:50MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS:health,metrics,info}
+  endpoint:
+    info:
+      access: READ_ONLY
+    health:
+      access: READ_ONLY
+    metrics:
+      access: READ_ONLY
 
 springdoc:
   default-produces-media-type: application/json

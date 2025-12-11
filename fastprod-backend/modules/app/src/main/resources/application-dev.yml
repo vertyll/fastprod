@@ -1,4 +1,7 @@
 spring:
+  application:
+    name: fastprod-backend
+
   devtools:
     restart:
       enabled: true
@@ -8,56 +11,66 @@ spring:
       exclude: static/**,public/**
     livereload:
       enabled: true
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/fastprod
-    username: postgres
-    password: postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/fastprod}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: false
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
     open-in-view: false
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
   mail:
-    host: localhost
-    port: 1025
-    username: vertyll
-    password: vertyll
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USER:vertyll}
+    password: ${MAIL_PASSWORD:vertyll}
     properties:
       mail:
         smtp:
           trust: "*"
-        auth: true
-        starttls:
-          enabled: true
-        connection-timeout: 5000
-        timeout: 3000
-        write-timeout: 5000
+          auth: true
+          starttls:
+            enabled: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 security:
   jwt:
     access-token:
-      secret-key: "CbIKeXKAkneVUn5me1nHZ+V74qpmZ36InUDFEXsg6YY="
-      expiration: 900000 # 15 minutes
+      secret-key: ${JWT_ACCESS_SECRET:CbIKeXKAkneVUn5me1nHZ+V74qpmZ36InUDFEXsg6YY=}
+      expiration: ${JWT_ACCESS_EXPIRATION:900000}
     refresh-token:
-      secret-key: "isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA="
-      expiration: 2592000000 # 30 days
+      secret-key: ${JWT_REFRESH_SECRET:isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA=}
+      expiration: ${JWT_REFRESH_EXPIRATION:2592000000}
       cookie-name: "refresh_token"
     cookie:
       httpOnly: true
-      secure: false
-      sameSite: "Strict"
+      secure: ${JWT_COOKIE_SECURE:false}
+      sameSite: ${JWT_COOKIE_SAMESITE:Strict}
       path: "/"
 
 application:
   file:
     uploads:
-      file-output-path: ./uploads
+      file-output-path: ${FILE_UPLOAD_PATH:./uploads}
   frontend:
-    url: http://localhost:8001
+    url: ${FRONTEND_URL:http://localhost:8001}
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.vertyll.fastprod: ${LOG_LEVEL_APP:DEBUG}
+    org.springframework.security: ${LOG_LEVEL_SECURITY:DEBUG}
