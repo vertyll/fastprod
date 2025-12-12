@@ -39,8 +39,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
 
     // Test dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
     testImplementation("com.h2database:h2")
     testImplementation("org.testcontainers:postgresql:1.21.3")
 }

@@ -7,7 +7,7 @@ dependencies {
     api(project(":modules:common"))
 
     // Spring dependencies
-    api("org.springframework.boot:spring-boot-starter-web")
+    api("org.springframework.boot:spring-boot-starter-webmvc")
 
     // Apache Commons
     implementation("org.apache.commons:commons-lang3")
@@ -20,5 +20,5 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
 
     // Test dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 }
