@@ -18,5 +18,6 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
 
     // Test dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-mail-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf-test")
 }
