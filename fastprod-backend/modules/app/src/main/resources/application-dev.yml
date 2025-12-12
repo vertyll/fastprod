@@ -63,6 +63,7 @@ application:
   file:
     uploads:
       file-output-path: ./uploads
+
   frontend:
     url: http://localhost:8001
 

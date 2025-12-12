@@ -1,8 +1,10 @@
 spring:
   application:
     name: fastprod-backend
+
   profiles:
     active: dev
+
   servlet:
     multipart:
       max-file-size: 50MB

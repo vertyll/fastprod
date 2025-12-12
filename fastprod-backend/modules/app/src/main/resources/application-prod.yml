@@ -53,6 +53,7 @@ application:
   file:
     uploads:
       file-output-path: ${FILE_UPLOAD_PATH:/var/app/uploads}
+
   frontend:
     url: ${FRONTEND_URL}
 

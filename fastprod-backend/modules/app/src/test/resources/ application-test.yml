@@ -4,6 +4,7 @@ spring:
     username: sa
     password: password
     driver-class-name: org.h2.Driver
+
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -11,6 +12,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
   mail:
     host: localhost
     port: 3025
@@ -22,6 +24,7 @@ spring:
           auth: false
           starttls:
             enable: false
+
   task:
     scheduling:
       enabled: true
@@ -30,18 +33,24 @@ security:
   jwt:
     access-token:
       secret-key: "CbIKeXKAkneVUn5me1nHZ+V74qpmZ36InUDFEXsg6YY="
-      expiration: 900000 # 15 minutes
+      expiration: 900000
     refresh-token:
       secret-key: "isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA="
-      expiration: 2592000000 # 30 days
+      expiration: 2592000000
       cookie-name: "refreshToken"
+    cookie:
+      httpOnly: true
+      secure: false
+      sameSite: Strict
+      path: "/"
 
 application:
-  frontend:
-    url: http://localhost:4200
   file:
     uploads:
       file-output-path: ./test-uploads
+
+  frontend:
+    url: http://localhost:4200
 
 server:
   port: 0
