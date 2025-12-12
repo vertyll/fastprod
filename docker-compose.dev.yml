@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:${POSTGRES_VERSION:-17}-alpine
-    container_name: postgres-sql-fastprod
+    container_name: fastprod-postgre-sql
     restart: always
     ports:
       - "${POSTGRES_HOST_DB_PORT:-5432}:5432"
@@ -21,7 +21,7 @@ services:
 
   test-db:
     image: postgres:${POSTGRES_VERSION:-17}-alpine
-    container_name: postgres-test-fastprod
+    container_name: fastprod-postgre-sql-test
     restart: always
     ports:
       - "${POSTGRES_HOST_TEST_PORT:-5433}:5432"
@@ -39,7 +39,7 @@ services:
 
   mail-dev:
     image: maildev/maildev:${MAILDEV_VERSION:-latest}
-    container_name: mail-dev-fastprod
+    container_name: fastprod-mail-dev
     restart: always
     ports:
       - "${MAIL_SMTP_PORT:-1025}:1025"
@@ -54,6 +54,9 @@ services:
       target: ${DOCKER_ENV:-development}
       args:
         JAVA_VERSION: ${JAVA_VERSION:-25}
+        GRADLE_VERSION: ${GRADLE_VERSION:-9.2.1}
+        BACKEND_PORT: ${BACKEND_PORT:-8080}
+        BACKEND_DEBUG_PORT: ${BACKEND_DEBUG_PORT:-5005}
     container_name: fastprod-backend
     volumes:
       - ./fastprod-backend:/app
@@ -67,8 +70,8 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SPRING_MAIL_HOST: mail-dev
-      SPRING_MAIL_PORT: 1025
-      SERVER_PORT: 8080
+      SPRING_MAIL_PORT: ${MAIL_SMTP_PORT:-1025}
+      SERVER_PORT: ${BACKEND_PORT:-8080}
     networks:
       - fastprod
     depends_on:
@@ -84,6 +87,9 @@ services:
       target: ${DOCKER_ENV:-development}
       args:
         JAVA_VERSION: ${JAVA_VERSION:-25}
+        MAVEN_VERSION: ${MAVEN_VERSION:-3.9.9}
+        FRONTEND_PORT: ${FRONTEND_PORT:-8001}
+        FRONTEND_DEBUG_PORT: ${FRONTEND_DEBUG_PORT:-5006}
     container_name: fastprod-frontend
     volumes:
       - ./fastprod-frontend:/app
@@ -93,7 +99,7 @@ services:
       - "${FRONTEND_DEBUG_PORT:-5006}:5006"
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
-      SERVER_PORT: 8001
+      SERVER_PORT: ${FRONTEND_PORT:-8001}
       VAADIN_LAUNCH_BROWSER: "false"
       API_BACKEND_URL: http://backend:8080/api/v1
     networks:
