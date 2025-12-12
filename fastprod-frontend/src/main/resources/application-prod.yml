@@ -1,0 +1,25 @@
+vaadin:
+  launch-browser: false
+  allowed-packages: com.vaadin,org.vaadin,com.flowingcode,com.vertyll.fastprod
+  productionMode: true
+
+api:
+  backend:
+    url: ${API_BACKEND_URL}
+
+security:
+  jwt:
+    access-token:
+      expiration: ${JWT_ACCESS_EXPIRATION:900000}
+      refresh-before-expiry: ${JWT_REFRESH_BEFORE_EXPIRY:120000}
+    refresh-token:
+      cookie-name: "refresh_token"
+
+server:
+  port: ${SERVER_PORT:8001}
+
+logging:
+  level:
+    org.atmosphere: WARN
+    com.vertyll.fastprod: INFO
+    org.springframework.security: INFO

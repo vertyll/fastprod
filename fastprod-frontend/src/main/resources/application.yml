@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${SPRING_PROFILE:dev}
+    active: dev
 
 vaadin:
   launch-browser: false
