@@ -1,5 +1,5 @@
 ## Project Assumptions
-- Production management application
+Production management application.
 
 ## Technology Stack
 
