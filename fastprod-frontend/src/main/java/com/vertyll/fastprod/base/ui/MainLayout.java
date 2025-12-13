@@ -140,8 +140,16 @@ public final class MainLayout extends AppLayout {
         nav.addItem(dashboard);
 
         if (securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
-            SideNavItem employees = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
-            nav.addItem(employees);
+            SideNavItem adminSection = new SideNavItem("Admin");
+            adminSection.setPrefixComponent(VaadinIcon.COG.create());
+
+            SideNavItem employeesLink = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
+            employeesLink.addItem(new SideNavItem("List", "employees", VaadinIcon.LIST.create()));
+            employeesLink.addItem(new SideNavItem("Add", "employees/form", VaadinIcon.PLUS.create()));
+
+            adminSection.addItem(employeesLink);
+
+            nav.addItem(adminSection);
         }
 
         return nav;

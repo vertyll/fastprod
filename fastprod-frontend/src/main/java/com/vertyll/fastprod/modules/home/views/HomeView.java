@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.views;
+package com.vertyll.fastprod.modules.home.views;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
