@@ -20,13 +20,16 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: false
     open-in-view: false
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    validate-on-migrate: true
 
   mail:
     host: localhost
@@ -75,3 +78,13 @@ logging:
     root: INFO
     com.vertyll.fastprod: DEBUG
     org.springframework.security: DEBUG
+
+admin:
+  email: admin@fastprod.local
+  password: zaq1@WSX
+  first-name: System
+  last-name: Administrator
+
+app:
+  seed:
+    enabled: true

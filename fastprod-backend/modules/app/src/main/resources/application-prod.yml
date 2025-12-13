@@ -18,6 +18,10 @@ spring:
         format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  flyway:
+    validate-on-migrate: true
+    clean-disabled: true
+
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
@@ -65,3 +69,13 @@ logging:
     root: WARN
     com.vertyll.fastprod: INFO
     org.springframework.security: INFO
+
+admin:
+  email: ${ADMIN_EMAIL:admin@fastprod.local}
+  password: ${ADMIN_PASSWORD:}
+  first-name: ${ADMIN_FIRST_NAME:System}
+  last-name: ${ADMIN_LAST_NAME:Administrator}
+
+app:
+  seed:
+    enabled: ${APP_SEED_ENABLED:false}

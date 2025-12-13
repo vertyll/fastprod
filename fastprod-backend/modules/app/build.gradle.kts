@@ -20,6 +20,13 @@ dependencies {
     // Thymeleaf and Spring Security integration
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 
+    // Database migration
+    implementation("org.springframework.boot:spring-boot-starter-flyway") {
+        exclude(group = "org.flywaydb", module = "flyway-core")
+    }
+    implementation("org.flywaydb:flyway-core:11.16.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.16.0")
+
     // MapStruct
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
@@ -44,6 +51,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.boot:spring-boot-starter-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
     testImplementation("com.h2database:h2")
     testImplementation("org.testcontainers:postgresql:1.21.3")
 }
