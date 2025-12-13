@@ -1,5 +1,5 @@
 ## Project Assumptions
-- in progress
+- Production management application
 
 ## Technology Stack
 
@@ -13,21 +13,22 @@
 - PostgreSQL
 - JUnit
 - Mockito
-- Loombok
+- Lombok
 - Spring Security
 - Spring Data
 - Spring Web
 - Spring Mail
+- Flyway
 - OpenAPI (Swagger)
 
 ### Front-end:
 - Vaadn (Java-only(Flow))
 - Spring Boot
 - Java
-- Maven
+- Gradle Kotlin DSL
 - JUnit
 - Mockito
-- Loombok
+- Lombok
 - Spring Web
 
 ### Authentication:
@@ -43,10 +44,12 @@
 - the application has separate environments for dev and prod
 - the application has a dedicated configuration file
 - the application has RBAC (Role Based Access Control)
+- the application has an audit mechanism (who and when modified data)
+- the application has Flyway database migration mechanism
 - and many other features that can be found in the application code
 
 ### Core front-end:
-- Maven build system
+- Gradle build system
 - Vaadin
 - the application has separate environments for dev and prod
 - the application has a dedicated configuration file
