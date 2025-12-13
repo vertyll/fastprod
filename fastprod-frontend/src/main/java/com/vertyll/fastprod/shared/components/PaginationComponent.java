@@ -2,7 +2,7 @@ package com.vertyll.fastprod.shared.components;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -19,7 +19,7 @@ public class PaginationComponent extends HorizontalLayout {
     private final TextField pageField;
     private final Span pageInfoSpan;
     private final Span totalElementsSpan;
-    private final ComboBox<Integer> pageSizeComboBox;
+    private final Select<Integer> pageSizeSelect;
 
     @Getter
     private int currentPage = 0;
@@ -81,11 +81,11 @@ public class PaginationComponent extends HorizontalLayout {
         pageInfoSpan = new Span("0");
         totalElementsSpan = new Span("0");
 
-        pageSizeComboBox = new ComboBox<>();
-        pageSizeComboBox.setItems(5, 10, 20, 50, 100);
-        pageSizeComboBox.setValue(10);
-        pageSizeComboBox.setWidth("80px");
-        pageSizeComboBox.addValueChangeListener(e -> {
+        pageSizeSelect = new Select<>();
+        pageSizeSelect.setItems(5, 10, 20, 50, 100);
+        pageSizeSelect.setValue(10);
+        pageSizeSelect.setWidth("80px");
+        pageSizeSelect.addValueChangeListener(e -> {
             if (e.getValue() != null && onPageSizeChange != null) {
                 currentPage = 0;
                 onPageSizeChange.accept(e.getValue());
@@ -107,7 +107,7 @@ public class PaginationComponent extends HorizontalLayout {
                 totalElementsSpan,
                 new Span("total"),
                 pageSizeLabel,
-                pageSizeComboBox
+                pageSizeSelect
         );
     }
 
@@ -127,10 +127,10 @@ public class PaginationComponent extends HorizontalLayout {
     }
 
     public void setPageSize(int pageSize) {
-        pageSizeComboBox.setValue(pageSize);
+        pageSizeSelect.setValue(pageSize);
     }
 
     public int getPageSize() {
-        return pageSizeComboBox.getValue() != null ? pageSizeComboBox.getValue() : 10;
+        return pageSizeSelect.getValue() != null ? pageSizeSelect.getValue() : 10;
     }
 }
