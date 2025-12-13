@@ -1,6 +1,6 @@
 # Arguments
 ARG JAVA_VERSION=25
-ARG MAVEN_VERSION=3.9.9
+ARG GRADLE_VERSION=9.2.1
 ARG FRONTEND_PORT=8001
 ARG FRONTEND_DEBUG_PORT=5006
 
@@ -9,14 +9,14 @@ FROM eclipse-temurin:${JAVA_VERSION}-jdk AS base
 
 WORKDIR /app
 
-# Install Maven
-ARG MAVEN_VERSION
-RUN apt-get update && apt-get install -y wget && \
-    wget https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -P /tmp && \
-    tar xf /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin/mvn && \
-    rm /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
-    apt-get remove -y wget && \
+# Install Gradle
+ARG GRADLE_VERSION
+RUN apt-get update && apt-get install -y wget unzip && \
+    wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp && \
+    unzip -d /opt/gradle /tmp/gradle-${GRADLE_VERSION}-bin.zip && \
+    ln -s /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle /usr/local/bin/gradle && \
+    rm /tmp/gradle-${GRADLE_VERSION}-bin.zip && \
+    apt-get remove -y wget unzip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -31,8 +31,8 @@ ARG FRONTEND_DEBUG_PORT
 EXPOSE ${FRONTEND_PORT}
 EXPOSE ${FRONTEND_DEBUG_PORT}
 
-# Run the application with devtools and remote debugging using Maven
-CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-XX:TieredStopAtLevel=1 -Dspring.devtools.restart.enabled=true -Dspring.devtools.restart.poll-interval=2s -Dspring.devtools.restart.quiet-period=1s -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006"]
+# Run the application with devtools and remote debugging using Gradle
+CMD ["gradle", "bootRun", "--args=--spring-boot.run.jvmArguments='-XX:TieredStopAtLevel=1 -Dspring.devtools.restart.enabled=true -Dspring.devtools.restart.poll-interval=2s -Dspring.devtools.restart.quiet-period=1s -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006'"]
 
 # Build stage
 FROM base AS build
@@ -40,7 +40,7 @@ FROM base AS build
 WORKDIR /app
 
 COPY fastprod-frontend .
-RUN mvn clean package -DskipTests
+RUN gradle clean build -x test -x spotlessCheck -x spotlessApply
 
 # Production stage
 FROM eclipse-temurin:${JAVA_VERSION}-jre AS production
@@ -48,6 +48,6 @@ FROM eclipse-temurin:${JAVA_VERSION}-jre AS production
 WORKDIR /app
 
 ARG FRONTEND_PORT
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE ${FRONTEND_PORT}
 ENTRYPOINT ["java", "-jar", "app.jar"]
