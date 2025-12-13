@@ -15,7 +15,7 @@ public record EmployeeFilterDto(
         String lastName,
         String email,
         Boolean isVerified,
-        String role,
+        String roles,
         String search
 ) {
 
@@ -46,7 +46,7 @@ public record EmployeeFilterDto(
 
     public boolean hasFilters() {
         return firstName != null || lastName != null || email != null 
-            || isVerified != null || role != null || search != null;
+            || isVerified != null || roles != null || search != null;
     }
 
     public boolean hasSearchTerm() {

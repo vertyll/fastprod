@@ -7,6 +7,7 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
+import com.vertyll.fastprod.shared.filters.FiltersValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,23 @@ public class EmployeeService extends BaseHttpService {
         return get(EMPLOYEE_ENDPOINT + "/" + id, EmployeeResponseDto.class);
     }
 
-    public PageResponse<EmployeeResponseDto> getAllEmployees(int page, int size, String sortBy, String sortDirection)
-            throws Exception {
-        String endpoint = String.format("%s?page=%d&size=%d&sortBy=%s&sortDirection=%s",
-                EMPLOYEE_ENDPOINT, page, size, sortBy, sortDirection);
-
+    public PageResponse<EmployeeResponseDto> getAllEmployees(
+            int page,
+            int size,
+            String sortBy,
+            String sortDirection,
+            FiltersValue filters
+    ) throws Exception {
+        String base = String.format(
+                "%s?page=%d&size=%d&sortBy=%s&sortDirection=%s",
+                EMPLOYEE_ENDPOINT,
+                page,
+                size,
+                sortBy,
+                sortDirection
+        );
+        String queryFilters = filters != null ? filters.toQueryString() : "";
+        String endpoint = queryFilters == null || queryFilters.isBlank() ? base : (base + "&" + queryFilters);
         return getPaginated(endpoint, EmployeeResponseDto.class);
     }
 

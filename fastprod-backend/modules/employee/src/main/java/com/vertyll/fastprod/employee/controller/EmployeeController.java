@@ -62,7 +62,7 @@ class EmployeeController {
     public ResponseEntity<PaginatedApiResponse<EmployeeResponseDto>> getAllEmployees(
             @Valid @ModelAttribute EmployeeFilterDto filterDto
     ) {
-        Page<EmployeeResponseDto> employees = employeeService.getAllEmployees(filterDto.toPageable());
+        Page<EmployeeResponseDto> employees = employeeService.getAllEmployees(filterDto);
         return PaginatedApiResponse.buildResponse(employees, "Employees retrieved successfully", HttpStatus.OK);
     }
 

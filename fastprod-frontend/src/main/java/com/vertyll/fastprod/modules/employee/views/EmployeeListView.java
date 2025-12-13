@@ -12,6 +12,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -20,6 +21,9 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.components.PagedGridComponent;
+import com.vertyll.fastprod.shared.components.FiltersComponent;
+import com.vertyll.fastprod.shared.filters.FiltersValue;
+import com.vertyll.fastprod.modules.employee.filters.EmployeeFilters;
 import com.vertyll.fastprod.shared.dto.PageResponse;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +36,14 @@ public class EmployeeListView extends VerticalLayout {
 
     private final EmployeeService employeeService;
     private final PagedGridComponent<EmployeeResponseDto> pagedGrid;
+    private final FiltersComponent filtersComponent;
+    private FiltersValue currentFilters = FiltersValue.empty();
     private final LoadingSpinner loadingSpinner;
-    private final String sortBy = "id";
-    private final String sortDirection = "ASC";
 
     public EmployeeListView(EmployeeService employeeService) {
         this.employeeService = employeeService;
         this.pagedGrid = new PagedGridComponent<>(EmployeeResponseDto.class);
+        this.filtersComponent = new FiltersComponent();
         this.loadingSpinner = new LoadingSpinner();
 
         setSizeFull();
@@ -50,25 +55,26 @@ public class EmployeeListView extends VerticalLayout {
         add(title);
 
         createToolbar();
+        createFiltersBar();
         configureGrid();
 
-        pagedGrid.setOnPageChange(this::loadEmployees);
+        pagedGrid.setOnPageChange((page, size) -> loadEmployees(page, size, currentFilters));
         pagedGrid.setInitialPageSize(10);
 
-        add(pagedGrid);
+        add(filtersComponent, pagedGrid);
         add(loadingSpinner);
 
-        loadEmployees(0, 10);
+        loadEmployees(0, 10, currentFilters);
     }
 
     private void createToolbar() {
         Button refreshButton = new Button("Refresh", VaadinIcon.REFRESH.create());
         refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        refreshButton.addClickListener(e -> loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize()));
+        refreshButton.addClickListener(_ -> loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize(), currentFilters));
 
         Button addButton = new Button("Add Employee", VaadinIcon.PLUS.create());
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        addButton.addClickListener(e -> navigateToForm(null));
+        addButton.addClickListener(_ -> navigateToForm(null));
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
@@ -110,7 +116,7 @@ public class EmployeeListView extends VerticalLayout {
             viewButton.getStyle()
                     .set("color", "var(--lumo-contrast)")
                     .set("background", "var(--lumo-contrast-10pct)");
-            viewButton.addClickListener(e -> navigateToDetails(employee.id()));
+            viewButton.addClickListener(_ -> navigateToDetails(employee.id()));
 
             Button editButton = new Button(VaadinIcon.EDIT.create());
             editButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
@@ -118,7 +124,7 @@ public class EmployeeListView extends VerticalLayout {
             editButton.getStyle()
                     .set("color", "var(--lumo-contrast)")
                     .set("background", "var(--lumo-contrast-10pct)");
-            editButton.addClickListener(e -> navigateToForm(employee.id()));
+            editButton.addClickListener(_ -> navigateToForm(employee.id()));
 
             Button deleteButton = new Button(VaadinIcon.TRASH.create());
             deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
@@ -126,7 +132,7 @@ public class EmployeeListView extends VerticalLayout {
             deleteButton.getStyle()
                     .set("color", "var(--lumo-contrast)")
                     .set("background", "var(--lumo-contrast-10pct)");
-            deleteButton.addClickListener(e -> confirmDelete(employee));
+            deleteButton.addClickListener(_ -> confirmDelete(employee));
 
             HorizontalLayout actions = new HorizontalLayout(viewButton, editButton, deleteButton);
             actions.setSpacing(true);
@@ -135,14 +141,17 @@ public class EmployeeListView extends VerticalLayout {
         }).setHeader("Actions").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
     }
 
-    private void loadEmployees(int page, int pageSize) {
+    private void loadEmployees(int page, int pageSize, FiltersValue filters) {
         loadingSpinner.show();
         try {
+            String sortBy = "id";
+            String sortDirection = SortDirection.ASCENDING.getShortName();
             PageResponse<EmployeeResponseDto> pageResponse = employeeService.getAllEmployees(
                     page,
                     pageSize,
                     sortBy,
-                    sortDirection
+                    sortDirection,
+                    filters
             );
             pagedGrid.updateData(pageResponse);
         } catch (Exception e) {
@@ -161,19 +170,27 @@ public class EmployeeListView extends VerticalLayout {
         dialog.setCancelable(true);
         dialog.setConfirmText("Delete");
         dialog.setConfirmButtonTheme("error primary");
-        dialog.addConfirmListener(event -> deleteEmployee(employee.id()));
+        dialog.addConfirmListener(_ -> deleteEmployee(employee.id()));
         dialog.open();
     }
 
     private void deleteEmployee(Long employeeId) {
         try {
             employeeService.deleteEmployee(employeeId);
-            Notification.show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
+            Notification.show(
+                    "Employee deleted successfully",
+                            3000,
+                            Notification.Position.TOP_CENTER
+                    )
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize());
+            loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize(), currentFilters);
         } catch (Exception e) {
             log.error("Failed to delete employee", e);
-            Notification.show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show(
+                    "Failed to delete employee: " + e.getMessage(),
+                            3000,
+                            Notification.Position.TOP_CENTER
+                    )
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
@@ -188,5 +205,14 @@ public class EmployeeListView extends VerticalLayout {
 
     private void navigateToDetails(Long employeeId) {
         UI.getCurrent().navigate("employees/details/" + employeeId);
+    }
+
+    private void createFiltersBar() {
+        var configs = EmployeeFilters.configs();
+        filtersComponent.setConfig(configs);
+        filtersComponent.addValueChangeListener(values -> {
+            currentFilters = EmployeeFilters.normalize(values);
+            loadEmployees(0, pagedGrid.getPageSize(), currentFilters);
+        });
     }
 }
