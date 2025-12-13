@@ -1,17 +1,21 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/fastprod_test
+    url: jdbc:postgresql://localhost:5433/fastprod_test
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: validate
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
+
+  flyway:
+    enabled: true
+    validate-on-migrate: true
 
   mail:
     host: localhost
@@ -27,7 +31,7 @@ spring:
 
   task:
     scheduling:
-      enabled: true
+      enabled: false
 
 security:
   jwt:
