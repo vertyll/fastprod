@@ -8,7 +8,7 @@ public final class UserAgentUtils {
         String ua = userAgent != null ? userAgent : "unknown";
         if (ua.contains("Chrome")) return "Chrome";
         if (ua.contains("Firefox")) return "Firefox";
-        if (ua.contains("Safari") && !ua.contains("Chrome")) return "Safari";
+        if (ua.contains("Safari")) return "Safari";
         if (ua.contains("Edge")) return "Edge";
         if (ua.contains("Opera") || ua.contains("OPR")) return "Opera";
         return "Unknown";

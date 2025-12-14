@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.file.service.impl;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.vertyll.fastprod.file.config.FileUploadProperties;
@@ -35,10 +36,13 @@ class FileStorageServiceTest {
 
         // Prepare test file
         testFile = new MockMultipartFile(
-                "test-file.txt", "test-file.txt", "text/plain", "test content".getBytes());
+                "test-file.txt",
+                "test-file.txt",
+                "text/plain",
+                "test content".getBytes(UTF_8)
+        );
     }
 
-    // Your test methods remain the same...
     @Test
     void saveFile_WhenValidFile_ShouldSaveAndReturnPath() {
         // when
@@ -54,7 +58,12 @@ class FileStorageServiceTest {
     void saveFile_WhenEmptyFileName_ShouldSaveWithOnlyDot() {
         // given
         MultipartFile fileWithoutName =
-                new MockMultipartFile("test", "", "text/plain", "test content".getBytes());
+                new MockMultipartFile(
+                        "test",
+                        "",
+                        "text/plain",
+                        "test content".getBytes(UTF_8)
+                );
 
         // when
         String resultPath = fileStorageService.saveFile(fileWithoutName, TEST_USER_ID);
@@ -83,7 +92,10 @@ class FileStorageServiceTest {
         MultipartFile fileWithSpecialChars =
                 new MockMultipartFile(
                         "test-file@#$%.txt",
-                        "test-file@#$%.txt", "text/plain", "test content".getBytes());
+                        "test-file@#$%.txt",
+                        "text/plain",
+                        "test content".getBytes(UTF_8)
+                );
 
         // when
         String resultPath = fileStorageService.saveFile(fileWithSpecialChars, TEST_USER_ID);
@@ -99,7 +111,11 @@ class FileStorageServiceTest {
         // given
         MultipartFile fileWithoutExtension =
                 new MockMultipartFile(
-                        "testfile", "testfile", "text/plain", "test content".getBytes());
+                        "testfile",
+                        "testfile",
+                        "text/plain",
+                        "test content".getBytes(UTF_8)
+                );
 
         // when
         String resultPath = fileStorageService.saveFile(fileWithoutExtension, TEST_USER_ID);

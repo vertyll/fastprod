@@ -108,10 +108,12 @@ class JwtServiceImpl implements JwtService {
         }
     }
 
+    @SuppressWarnings("JavaUtilDate")
     private boolean isTokenUnexpired(String token) {
         return !extractExpiration(token).before(new Date());
     }
 
+    @SuppressWarnings("JavaUtilDate")
     private boolean isRefreshTokenUnexpired(String token) {
         return !extractExpirationFromRefreshToken(token).before(new Date());
     }

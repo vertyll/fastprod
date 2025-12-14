@@ -28,6 +28,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -90,6 +91,7 @@ class AuthServiceTest {
     @Mock
     private Authentication authentication;
 
+    @SuppressWarnings("UnusedVariable")
     @Spy private AuthMapper authMapper = Mappers.getMapper(AuthMapper.class);
 
     @InjectMocks
@@ -129,7 +131,7 @@ class AuthServiceTest {
         verificationToken = VerificationToken.builder()
                 .token("123456")
                 .user(user)
-                .expiryDate(LocalDateTime.now().plusHours(24))
+                .expiryDate(LocalDateTime.now(ZoneOffset.UTC).plusHours(24))
                 .isUsed(false)
                 .tokenType(VerificationTokenType.ACCOUNT_ACTIVATION)
                 .build();

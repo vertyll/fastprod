@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -29,7 +31,7 @@ class BaseEntityTest {
     void auditFields_ShouldBeSettableAndGettable() {
         // given
         TestEntity entity = new TestEntity();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         String user = "testUser";
 
         // when

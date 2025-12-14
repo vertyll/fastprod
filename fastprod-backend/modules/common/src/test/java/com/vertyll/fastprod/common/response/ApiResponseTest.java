@@ -3,6 +3,8 @@ package com.vertyll.fastprod.common.response;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,12 +53,12 @@ class ApiResponseTest {
     void constructor_ShouldSetDefaultTimestamp() {
         // when
         ApiResponse<String> response =
-                ApiResponse.<String>builder().timestamp(LocalDateTime.now()).build();
+                ApiResponse.<String>builder().timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
 
         // then
         assertNotNull(response.getTimestamp());
-        assertTrue(response.getTimestamp().isBefore(LocalDateTime.now().plusSeconds(1)));
-        assertTrue(response.getTimestamp().isAfter(LocalDateTime.now().minusSeconds(1)));
+        assertTrue(response.getTimestamp().isBefore(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(1)));
+        assertTrue(response.getTimestamp().isAfter(LocalDateTime.now(ZoneOffset.UTC).minusSeconds(1)));
     }
 
     @Test

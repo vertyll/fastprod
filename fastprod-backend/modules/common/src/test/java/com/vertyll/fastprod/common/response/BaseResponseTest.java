@@ -3,6 +3,8 @@ package com.vertyll.fastprod.common.response;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,7 @@ class BaseResponseTest {
         // given
         String testData = "test";
         String testMessage = "message";
-        LocalDateTime testTime = LocalDateTime.now();
+        LocalDateTime testTime = LocalDateTime.now(ZoneOffset.UTC);
 
         // when
         BaseResponse<String> response =
@@ -37,7 +39,7 @@ class BaseResponseTest {
     @Test
     void shouldCreateEmptyResponse() {
         // when
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         BaseResponse<String> response = TestBaseResponse.<String>builder().timestamp(now).build();
 
         // then

@@ -3,6 +3,7 @@ package com.vertyll.fastprod.file.service.impl;
 import static java.io.File.separator;
 import static java.lang.System.currentTimeMillis;
 
+import com.google.common.base.Ascii;
 import com.vertyll.fastprod.file.config.FileUploadProperties;
 import com.vertyll.fastprod.file.service.FileStorageService;
 import jakarta.annotation.Nonnull;
@@ -69,6 +70,6 @@ class FileStorageServiceImpl implements FileStorageService {
             return "";
         }
 
-        return fileName.substring(lastDotIndex + 1).toLowerCase();
+        return Ascii.toLowerCase(fileName.substring(lastDotIndex + 1));
     }
 }

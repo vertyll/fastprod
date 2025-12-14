@@ -31,6 +31,7 @@ class RoleServiceTest {
 
     @Mock private RoleRepository roleRepository;
 
+    @SuppressWarnings("UnusedVariable")
     @Spy private RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);
 
     @InjectMocks private RoleServiceImpl roleService;

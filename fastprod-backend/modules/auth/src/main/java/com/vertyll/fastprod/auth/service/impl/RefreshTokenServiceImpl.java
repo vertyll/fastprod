@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 
 import java.time.Instant;
 import java.util.List;
@@ -194,7 +196,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 
         String xForwardedFor = request.getHeader("X-Forwarded-For");
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            return xForwardedFor.split(",")[0].trim();
+            return Iterables.get(Splitter.on(',').split(xForwardedFor), 0).trim();
         }
 
         String xRealIp = request.getHeader("X-Real-IP");

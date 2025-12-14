@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.file;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
@@ -13,15 +14,18 @@ import org.junit.jupiter.api.io.TempDir;
 
 class FileUtilsTest {
 
-    @TempDir Path tempDir;
+    @TempDir
+    @Nullable
+    Path tempDir;
 
     private Path testFile;
     private final String TEST_CONTENT = "test content";
 
     @BeforeEach
     void setUp() throws IOException {
+        assertNotNull(tempDir, "TempDir should be initialized by JUnit");
         testFile = tempDir.resolve("test-file.txt");
-        Files.write(testFile, TEST_CONTENT.getBytes());
+        Files.writeString(testFile, TEST_CONTENT);
     }
 
     @Test
@@ -31,11 +35,13 @@ class FileUtilsTest {
 
         // then
         assertNotNull(result);
-        assertEquals(TEST_CONTENT, new String(result));
+        assertEquals(TEST_CONTENT, new String(result, UTF_8));
     }
 
     @Test
     void readFileFromLocation_WhenFileDoesNotExist_ShouldReturnNull() {
+        assertNotNull(tempDir, "TempDir should be initialized by JUnit");
+
         // when
         byte[] result =
                 FileUtils.readFileFromLocation(tempDir.resolve("non-existent.txt").toString());
@@ -73,6 +79,8 @@ class FileUtilsTest {
 
     @Test
     void readFileFromLocation_WhenDirectoryInsteadOfFile_ShouldReturnNull() throws IOException {
+        assertNotNull(tempDir, "TempDir should be initialized by JUnit");
+
         // given
         Path testDir = tempDir.resolve("testDir");
         Files.createDirectory(testDir);

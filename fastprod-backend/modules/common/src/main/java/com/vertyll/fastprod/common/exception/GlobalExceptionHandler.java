@@ -5,6 +5,7 @@ import com.vertyll.fastprod.common.response.ValidationErrorResponse;
 
 import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +44,12 @@ public class GlobalExceptionHandler {
             errors.get(field).add(message);
         });
 
-        ValidationErrorResponse response = ValidationErrorResponse.builder().message("Validation failed").errors(errors).timestamp(LocalDateTime.now()).build();
+        ValidationErrorResponse response = ValidationErrorResponse
+                .builder()
+                .message("Validation failed")
+                .errors(errors)
+                .timestamp(LocalDateTime.now(ZoneOffset.UTC))
+                .build();
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

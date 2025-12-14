@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Random;
 
 @Service
@@ -34,7 +35,7 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
         VerificationToken verificationToken = VerificationToken.builder()
                 .token(code)
                 .user(user)
-                .expiryDate(LocalDateTime.now().plusHours(24))
+                .expiryDate(LocalDateTime.now(ZoneOffset.UTC).plusHours(24))
                 .isUsed(false)
                 .tokenType(tokenType)
                 .additionalData(additionalData)
@@ -61,7 +62,7 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
             throw new ApiException("Verification code already used", HttpStatus.BAD_REQUEST);
         }
 
-        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+        if (token.getExpiryDate().isBefore(LocalDateTime.now(ZoneOffset.UTC))) {
             throw new ApiException("Verification code expired", HttpStatus.BAD_REQUEST);
         }
 
@@ -91,7 +92,7 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
     @Scheduled(cron = "0 0 2 * * ?") // 2 AM daily
     @Transactional
     public void cleanupExpiredTokens() {
-        int deleted = verificationTokenRepository.deleteByExpiryDateBeforeAndIsUsed(LocalDateTime.now(), true);
+        int deleted = verificationTokenRepository.deleteByExpiryDateBeforeAndIsUsed(LocalDateTime.now(ZoneOffset.UTC), true);
         log.info("Cleaned up {} expired verification tokens", deleted);
     }
 

@@ -3,6 +3,7 @@ package com.vertyll.fastprod.common.response;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ class ValidationErrorResponseTest {
         Map<String, List<String>> testErrors = new HashMap<>();
         testErrors.put("username", List.of("Username cannot be empty"));
         testErrors.put("email", List.of("Invalid email format"));
-        LocalDateTime testTime = LocalDateTime.now();
+        LocalDateTime testTime = LocalDateTime.now(ZoneOffset.UTC);
 
         // when
         ValidationErrorResponse response =

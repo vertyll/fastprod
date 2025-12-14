@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.common.dto;
 
+import com.google.common.base.Ascii;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.jspecify.annotations.Nullable;
@@ -32,7 +33,7 @@ public record BaseFilterDto(
         }
 
         if (sortDirection != null && !sortDirection.isBlank()) {
-            sortDirection = sortDirection.trim().toUpperCase();
+            sortDirection = Ascii.toUpperCase(sortDirection.trim());
         } else {
             sortDirection = "ASC";
         }

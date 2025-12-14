@@ -21,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Service
 @RequiredArgsConstructor
 class EmployeeServiceImpl implements EmployeeService {
@@ -97,15 +99,15 @@ class EmployeeServiceImpl implements EmployeeService {
         Specification<User> spec = Specification.where((root, _, cb) -> cb.isTrue(root.get("isActive")));
 
         if (filterDto.firstName() != null && !filterDto.firstName().isBlank()) {
-            String like = "%" + filterDto.firstName().trim().toLowerCase() + "%";
+            String like = "%" + filterDto.firstName().trim().toLowerCase(Locale.ROOT) + "%";
             spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("firstName")), like));
         }
         if (filterDto.lastName() != null && !filterDto.lastName().isBlank()) {
-            String like = "%" + filterDto.lastName().trim().toLowerCase() + "%";
+            String like = "%" + filterDto.lastName().trim().toLowerCase(Locale.ROOT) + "%";
             spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("lastName")), like));
         }
         if (filterDto.email() != null && !filterDto.email().isBlank()) {
-            String like = "%" + filterDto.email().trim().toLowerCase() + "%";
+            String like = "%" + filterDto.email().trim().toLowerCase(Locale.ROOT) + "%";
             spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("email")), like));
         }
         if (filterDto.isVerified() != null) {
@@ -127,7 +129,7 @@ class EmployeeServiceImpl implements EmployeeService {
         }
         String searchTerm = filterDto.search();
         if (searchTerm != null && !searchTerm.isBlank()) {
-            String like = "%" + searchTerm.trim().toLowerCase() + "%";
+            String like = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
             spec = spec.and((root, _, cb) -> cb.or(
                     cb.like(cb.lower(root.get("firstName")), like),
                     cb.like(cb.lower(root.get("lastName")), like),
