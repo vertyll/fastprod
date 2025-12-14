@@ -1,8 +1,11 @@
+import net.ltgt.gradle.errorprone.errorprone
+
 plugins {
     id("org.springframework.boot") version "3.5.8"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.vaadin") version "24.9.6"
     id("com.diffplug.spotless") version "8.1.0"
+    id("net.ltgt.errorprone") version "4.3.0"
     java
 }
 
@@ -46,10 +49,27 @@ dependencies {
     // Testing dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // Error Prone and NullAway
+    "errorprone"("com.google.errorprone:error_prone_core:2.36.0")
+    "errorprone"("com.uber.nullaway:nullaway:0.12.14")
+
+    compileOnly("org.jspecify:jspecify:1.0.0")
 }
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
+
+    options.errorprone.isEnabled.set(true)
+
+    options.errorprone {
+        check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
+        option("NullAway:OnlyNullMarked", "true")
+        option("NullAway:CustomContractAnnotations", "org.springframework.lang.Contract")
+        option("NullAway:JSpecifyMode", "true")
+
+        excludedPaths.set(".*/build/generated/.*")
+    }
 }
 
 tasks.withType<Test> {

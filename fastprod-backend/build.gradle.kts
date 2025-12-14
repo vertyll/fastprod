@@ -44,6 +44,7 @@ subprojects {
     dependencies {
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+        // Error Prone and NullAway
         "errorprone"("com.google.errorprone:error_prone_core:2.36.0")
         "errorprone"("com.uber.nullaway:nullaway:0.12.14")
 
