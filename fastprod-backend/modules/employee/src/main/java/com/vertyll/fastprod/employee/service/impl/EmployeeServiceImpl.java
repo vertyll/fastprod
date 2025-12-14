@@ -125,8 +125,9 @@ class EmployeeServiceImpl implements EmployeeService {
                 });
             }
         }
-        if (filterDto.hasSearchTerm()) {
-            String like = "%" + filterDto.search().trim().toLowerCase() + "%";
+        String searchTerm = filterDto.search();
+        if (searchTerm != null && !searchTerm.isBlank()) {
+            String like = "%" + searchTerm.trim().toLowerCase() + "%";
             spec = spec.and((root, _, cb) -> cb.or(
                     cb.like(cb.lower(root.get("firstName")), like),
                     cb.like(cb.lower(root.get("lastName")), like),

@@ -47,13 +47,4 @@ public record EmployeeFilterDto(
         BaseFilterDto baseFilter = new BaseFilterDto(page, size, sortBy, sortDirection);
         return baseFilter.toPageable();
     }
-
-    public boolean hasFilters() {
-        return firstName != null || lastName != null || email != null
-                || isVerified != null || roles != null || search != null;
-    }
-
-    public boolean hasSearchTerm() {
-        return search != null;
-    }
 }
