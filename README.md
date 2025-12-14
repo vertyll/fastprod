@@ -55,9 +55,12 @@ Production management application.
 - the application has a dedicated configuration file
 - and many other features that can be found in the application code
 
-
 ### Other:
 - Docker for development environment
+- JSpecify for null-safety annotations
+- NullAway for null-safety checks
+- Error Prone for static code analysis
+- Spotless for code formatting
 
 > **Note:** During application development, SOLID principles, DRY, composition over inheritance, dependency injection, design patterns, architectural patterns were applied, tests were written, and other good programming practices were adopted.
 
