@@ -12,6 +12,7 @@ import com.vertyll.fastprod.auth.service.VerificationTokenService;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.email.service.EmailService;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
+import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.service.UserService;
@@ -403,7 +404,7 @@ class AuthServiceImpl implements AuthService {
     private Map<String, Object> createClaimsWithRoles(User user) {
         Map<String, Object> claims = new HashMap<>();
         List<String> roles = user.getRoles().stream()
-                .map(role -> role.getName())
+                .map(Role::getName)
                 .collect(Collectors.toList());
         claims.put("roles", roles);
         return claims;

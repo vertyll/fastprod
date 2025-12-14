@@ -2,6 +2,7 @@ package com.vertyll.fastprod.employee.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public record EmployeeCreateDto(
         @NotBlank(message = "Password is required")
         String password,
 
+        @Nullable
         Set<String> roleNames
 ) {
 }
