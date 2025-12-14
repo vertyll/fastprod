@@ -58,12 +58,12 @@ public class VerificationCodeDialog extends Dialog {
         verifyButton = new Button("Verify", VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         verifyButton.setWidthFull();
-        verifyButton.addClickListener(e -> handleVerification());
+        verifyButton.addClickListener(_ -> handleVerification());
 
         Button cancelButton = new Button("Cancel");
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         cancelButton.setWidthFull();
-        cancelButton.addClickListener(e -> close());
+        cancelButton.addClickListener(_ -> close());
 
         layout.add(
                 titleHeader,

@@ -97,7 +97,7 @@ public class LoginView extends VerticalLayout {
         loginButton = new Button("Sign In");
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         loginButton.setWidthFull();
-        loginButton.addClickListener(e -> handleLogin());
+        loginButton.addClickListener(_ -> handleLogin());
         loginButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
 
         RouterLink forgotPasswordLink = new RouterLink("Forgot password?", ForgotPasswordView.class);

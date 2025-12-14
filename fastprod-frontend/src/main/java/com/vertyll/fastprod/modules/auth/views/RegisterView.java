@@ -117,7 +117,7 @@ public class RegisterView extends VerticalLayout {
         registerButton = new Button("Create Account");
         registerButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         registerButton.setWidthFull();
-        registerButton.addClickListener(e -> handleRegistration());
+        registerButton.addClickListener(_ -> handleRegistration());
         registerButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
 
         RouterLink loginLink = new RouterLink("Sign in", LoginView.class);
@@ -159,7 +159,7 @@ public class RegisterView extends VerticalLayout {
         binder.forField(confirmPasswordField).withValidator(confirmPassword -> {
             String password = passwordField.getValue();
             return password != null && password.equals(confirmPassword);
-        }, "Passwords must match").bind(dto -> passwordField.getValue(), (dto, value) -> {
+        }, "Passwords must match").bind(_ -> passwordField.getValue(), (_, _) -> {
         });
     }
 

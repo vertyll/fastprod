@@ -52,11 +52,11 @@ public class HomeView extends VerticalLayout {
 
         Button loginButton = new Button("Sign In", VaadinIcon.SIGN_IN.create());
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
-        loginButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate("login")));
+        loginButton.addClickListener(_ -> getUI().ifPresent(ui -> ui.navigate("login")));
 
         Button registerButton = new Button("Sign Up");
         registerButton.addThemeVariants(ButtonVariant.LUMO_LARGE);
-        registerButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate("register")));
+        registerButton.addClickListener(_ -> getUI().ifPresent(ui -> ui.navigate("register")));
 
         HorizontalLayout buttonLayout = new HorizontalLayout(loginButton, registerButton);
         buttonLayout.setSpacing(true);

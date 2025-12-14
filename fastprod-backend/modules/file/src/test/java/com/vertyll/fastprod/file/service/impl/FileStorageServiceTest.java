@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.vertyll.fastprod.file.config.FileUploadProperties;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,7 +26,7 @@ class FileStorageServiceTest {
     private static final String TEST_USER_ID = "123";
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         // Create FileUploadProperties with the temp directory
         FileUploadProperties properties = new FileUploadProperties(tempDir.toString());
 

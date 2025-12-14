@@ -6,12 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 @SuperBuilder
 @NoArgsConstructor
 public abstract class BaseResponse<T> implements IResponse<T> {
-    protected T data;
+    protected @Nullable T data;
     protected String message;
 
     @Builder.Default

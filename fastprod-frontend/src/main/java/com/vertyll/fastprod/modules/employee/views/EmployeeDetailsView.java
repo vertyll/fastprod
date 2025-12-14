@@ -70,15 +70,15 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
 
         Button backButton = new Button("Back to List", VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        backButton.addClickListener(e -> navigateToList());
+        backButton.addClickListener(_ -> navigateToList());
 
         Button editButton = new Button("Edit", VaadinIcon.EDIT.create());
         editButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        editButton.addClickListener(e -> navigateToForm(employeeId));
+        editButton.addClickListener(_ -> navigateToForm(employeeId));
 
         Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create());
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        deleteButton.addClickListener(e -> confirmDelete());
+        deleteButton.addClickListener(_ -> confirmDelete());
 
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
@@ -144,7 +144,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         dialog.setCancelable(true);
         dialog.setConfirmText("Delete");
         dialog.setConfirmButtonTheme("error primary");
-        dialog.addConfirmListener(event -> deleteEmployee());
+        dialog.addConfirmListener(_ -> deleteEmployee());
         dialog.open();
     }
 

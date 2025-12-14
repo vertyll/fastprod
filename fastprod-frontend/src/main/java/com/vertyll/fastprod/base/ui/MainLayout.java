@@ -93,11 +93,11 @@ public final class MainLayout extends AppLayout {
 
         Button loginButton = new Button("Login", VaadinIcon.SIGN_IN.create());
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        loginButton.addClickListener(e -> UI.getCurrent().navigate("login"));
+        loginButton.addClickListener(_ -> UI.getCurrent().navigate("login"));
 
         Button registerButton = new Button("Register");
         registerButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        registerButton.addClickListener(e -> UI.getCurrent().navigate("register"));
+        registerButton.addClickListener(_ -> UI.getCurrent().navigate("register"));
 
         HorizontalLayout authButtons = new HorizontalLayout(loginButton, registerButton);
         authButtons.setSpacing(true);

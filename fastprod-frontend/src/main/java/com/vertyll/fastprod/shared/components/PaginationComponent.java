@@ -36,7 +36,7 @@ public class PaginationComponent extends HorizontalLayout {
 
         previousButton = new Button(VaadinIcon.ANGLE_LEFT.create());
         previousButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-        previousButton.addClickListener(e -> {
+        previousButton.addClickListener(_ -> {
             if (currentPage > 0) {
                 currentPage--;
                 if (onPageChange != null) {
@@ -48,7 +48,7 @@ public class PaginationComponent extends HorizontalLayout {
 
         nextButton = new Button(VaadinIcon.ANGLE_RIGHT.create());
         nextButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-        nextButton.addClickListener(e -> {
+        nextButton.addClickListener(_ -> {
             if (currentPage < totalPages - 1) {
                 currentPage++;
                 if (onPageChange != null) {
@@ -61,7 +61,7 @@ public class PaginationComponent extends HorizontalLayout {
         pageField = new TextField();
         pageField.setWidth("60px");
         pageField.setValue("1");
-        pageField.addBlurListener(e -> {
+        pageField.addBlurListener(_ -> {
             try {
                 int page = Integer.parseInt(pageField.getValue()) - 1;
                 if (page >= 0 && page < totalPages) {

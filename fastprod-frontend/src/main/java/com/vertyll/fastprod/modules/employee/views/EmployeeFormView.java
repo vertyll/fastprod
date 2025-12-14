@@ -127,8 +127,8 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
                 }, "Password must be at least 6 characters")
                 .bind(EmployeeFormData::getPassword, EmployeeFormData::setPassword);
 
-        passwordField.addValueChangeListener(e -> confirmPasswordField.setValue(""));
-        confirmPasswordField.addValueChangeListener(e -> {
+        passwordField.addValueChangeListener(_ -> confirmPasswordField.setValue(""));
+        confirmPasswordField.addValueChangeListener(_ -> {
             String password = passwordField.getValue();
             String confirm = confirmPasswordField.getValue();
             if (confirm != null && !confirm.isEmpty() && !confirm.equals(password)) {
@@ -144,11 +144,11 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
         Button saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.addClickListener(e -> saveEmployee());
+        saveButton.addClickListener(_ -> saveEmployee());
 
         Button cancelButton = new Button("Cancel");
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        cancelButton.addClickListener(e -> navigateToList());
+        cancelButton.addClickListener(_ -> navigateToList());
 
         HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
         buttonLayout.setSpacing(true);

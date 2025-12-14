@@ -72,12 +72,12 @@ public class UserMenu extends HorizontalLayout {
         profileHeader.add(userName, userEmailSpan);
         subMenu.addItem(profileHeader).setEnabled(false);
 
-        MenuItem profileItem = subMenu.addItem("My Profile", e ->
+        MenuItem profileItem = subMenu.addItem("My Profile", _ ->
                 UI.getCurrent().navigate("profile")
         );
         profileItem.addComponentAsFirst(VaadinIcon.USER.create());
 
-        MenuItem logoutItem = subMenu.addItem("Logout", e -> handleLogout());
+        MenuItem logoutItem = subMenu.addItem("Logout", _ -> handleLogout());
         logoutItem.addComponentAsFirst(VaadinIcon.SIGN_OUT.create());
 
         add(menuBar);

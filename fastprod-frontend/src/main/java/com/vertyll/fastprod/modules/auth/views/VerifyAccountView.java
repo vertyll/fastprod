@@ -108,18 +108,18 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         verifyButton = new Button("Verify Account", VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         verifyButton.setWidthFull();
-        verifyButton.addClickListener(e -> handleVerification());
+        verifyButton.addClickListener(_ -> handleVerification());
         verifyButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
 
         resendButton = new Button("Resend Code", VaadinIcon.REFRESH.create());
         resendButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         resendButton.setWidthFull();
-        resendButton.addClickListener(e -> handleResendCode());
+        resendButton.addClickListener(_ -> handleResendCode());
         resendButton.getStyle().set("margin-bottom", "var(--lumo-space-s)");
 
         Button backButton = new Button("Back to Login", VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        backButton.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
+        backButton.addClickListener(_ -> UI.getCurrent().navigate(LoginView.class));
 
         card.add(
                 icon,

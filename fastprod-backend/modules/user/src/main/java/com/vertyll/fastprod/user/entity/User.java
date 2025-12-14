@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.*;
+import org.jspecify.annotations.NullUnmarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -66,6 +67,7 @@ public class User extends BaseEntity implements UserDetails {
     private boolean isActive = true;
 
     @Override
+    @NullUnmarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
@@ -73,6 +75,7 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     @Override
+    @NullUnmarked
     public String getUsername() {
         return email;
     }

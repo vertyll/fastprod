@@ -122,12 +122,12 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         submitButton = new Button("Reset Password", VaadinIcon.CHECK.create());
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         submitButton.setWidthFull();
-        submitButton.addClickListener(e -> handleSubmit());
+        submitButton.addClickListener(_ -> handleSubmit());
         submitButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
 
         Button backButton = new Button("Back to Login", VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        backButton.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
+        backButton.addClickListener(_ -> UI.getCurrent().navigate(LoginView.class));
 
         card.add(
                 icon,

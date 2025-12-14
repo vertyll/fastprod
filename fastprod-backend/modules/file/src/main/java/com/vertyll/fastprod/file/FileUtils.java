@@ -7,11 +7,12 @@ import java.nio.file.Path;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 
 @Slf4j
 public class FileUtils {
 
-    public static byte[] readFileFromLocation(String fileUrl) {
+    public static byte @Nullable [] readFileFromLocation(@Nullable String fileUrl) {
         if (StringUtils.isBlank(fileUrl)) {
             return null;
         }

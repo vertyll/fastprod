@@ -59,7 +59,6 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
                 });
                 
                 event.rerouteTo("");
-                return;
             }
         }
     }
