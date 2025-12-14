@@ -77,7 +77,7 @@ public class FiltersComponent extends HorizontalLayout {
         add(summaryBar);
         updateToggleLabel();
         updateVisibility();
-        updateSelectedSummary(FiltersValue.empty());
+        updateSelectedSummary();
     }
 
     public void setMaxVisible(int maxVisible) {
@@ -195,30 +195,33 @@ public class FiltersComponent extends HorizontalLayout {
 
     private static List<Object> normalizeItems(List<?> items) {
         if (items == null) return Collections.emptyList();
+
+        List<Object> out;
         if (items.size() == 1) {
             Object first = items.getFirst();
             if (first != null && first.getClass().isArray()) {
                 // Object[] case
                 if (first instanceof Object[] arr) {
-                    return Arrays.asList(arr);
+                    out = new ArrayList<>(Arrays.asList(arr));
+                } else {
+                    // Primitive arrays fallback: copy via reflection
+                    int length = java.lang.reflect.Array.getLength(first);
+                    out = new ArrayList<>(length);
+                    for (int i = 0; i < length; i++) {
+                        out.add(java.lang.reflect.Array.get(first, i));
+                    }
                 }
-                // Primitive arrays fallback: copy via reflection
-                int length = java.lang.reflect.Array.getLength(first);
-                List<Object> out = new ArrayList<>(length);
-                for (int i = 0; i < length; i++) {
-                    out.add(java.lang.reflect.Array.get(first, i));
-                }
-                return out;
+            } else if (first instanceof Collection<?> col) {
+                // If single element is a Collection -> unwrap
+                out = new ArrayList<>(col);
+            } else {
+                out = new ArrayList<>(items);
             }
-            // If single element is a Collection -> unwrap
-            if (first instanceof Collection<?> col) {
-                return new ArrayList<>(col);
-            }
+        } else {
+            // Otherwise return shallow copy as List<Object>
+            out = new ArrayList<>(items);
         }
-        // Otherwise return shallow copy as List<Object>
-        List<Object> out = new ArrayList<>(items.size());
-        out.addAll(items);
-        return out;
+        return Collections.unmodifiableList(out);
     }
 
     public FiltersValue getValues() {
@@ -272,7 +275,7 @@ public class FiltersComponent extends HorizontalLayout {
                 }
             }
         }
-        updateSelectedSummary(getValues());
+        updateSelectedSummary();
     }
 
     public void clear() {
@@ -300,11 +303,11 @@ public class FiltersComponent extends HorizontalLayout {
 
     private void emitChange() {
         FiltersValue fv = getValues();
-        updateSelectedSummary(fv);
+        updateSelectedSummary();
         listeners.forEach(l -> l.accept(fv));
     }
 
-    private void updateSelectedSummary(FiltersValue ignoredValues) {
+    private void updateSelectedSummary() {
         selectedChips.removeAll();
 
         for (Map.Entry<String, Component> e : controls.entrySet()) {

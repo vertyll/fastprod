@@ -77,23 +77,23 @@ public class ChangeEmailView extends VerticalLayout {
         binder.forField(newEmailField)
                 .asRequired("Email is required")
                 .withValidator(new EmailValidator("Please enter a valid email address"))
-                .bind(ChangeEmailDto::newEmail, (dto, value) -> {
+                .bind(ChangeEmailDto::newEmail, (_, _) -> {
                 });
 
         binder.forField(passwordField)
                 .asRequired("Password is required")
-                .bind(ChangeEmailDto::currentPassword, (dto, value) -> {
+                .bind(ChangeEmailDto::currentPassword, (_, _) -> {
                 });
 
         Button saveButton = new Button("Request Email Change");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.setWidthFull();
-        saveButton.addClickListener(e -> handleChangeEmail());
+        saveButton.addClickListener(_ -> handleChangeEmail());
 
         Button cancelButton = new Button("Cancel");
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         cancelButton.setWidthFull();
-        cancelButton.addClickListener(e -> UI.getCurrent().navigate("profile"));
+        cancelButton.addClickListener(_ -> UI.getCurrent().navigate("profile"));
 
         formLayout.add(
                 title,
@@ -114,7 +114,7 @@ public class ChangeEmailView extends VerticalLayout {
             );
 
             if (binder.validate().isOk()) {
-                ApiResponse<Void> response = authService.requestEmailChange(dto);
+                authService.requestEmailChange(dto);
                 showNotification(
                         "Verification code sent to your new email address. Please check your inbox.",
                         NotificationVariant.LUMO_SUCCESS

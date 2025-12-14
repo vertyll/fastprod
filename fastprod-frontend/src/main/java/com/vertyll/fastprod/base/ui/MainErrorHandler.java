@@ -15,6 +15,7 @@ class MainErrorHandler {
     private static final Logger log = LoggerFactory.getLogger(MainErrorHandler.class);
 
     @Bean
+    @SuppressWarnings("FutureReturnValueIgnored")
     public VaadinServiceInitListener errorHandlerInitializer() {
         return (event) -> event.getSource().addSessionInitListener(
                 sessionInitEvent -> sessionInitEvent.getSession().setErrorHandler(errorEvent -> {
@@ -26,6 +27,7 @@ class MainErrorHandler {
                         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                         notification.setPosition(Notification.Position.TOP_CENTER);
                         notification.setDuration(3000);
+
                         ui.access(notification::open);
                     });
                 }));

@@ -17,7 +17,6 @@ import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 import jakarta.annotation.security.PermitAll;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,7 +74,7 @@ public class ChangePasswordView extends VerticalLayout {
 
         binder.forField(currentPasswordField)
                 .asRequired("Current password is required")
-                .bind(ChangePasswordDto::currentPassword, (dto, value) -> {
+                .bind(ChangePasswordDto::currentPassword, (_, _) -> {
                 });
 
         binder.forField(newPasswordField)
@@ -83,18 +82,18 @@ public class ChangePasswordView extends VerticalLayout {
                 .withValidator(pwd -> pwd.length() >= 8, "Password must be at least 8 characters")
                 .withValidator(pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"),
                         "Password must contain at least one letter and one digit")
-                .bind(ChangePasswordDto::newPassword, (dto, value) -> {
+                .bind(ChangePasswordDto::newPassword, (_, _) -> {
                 });
 
         Button saveButton = new Button("Change Password");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.setWidthFull();
-        saveButton.addClickListener(e -> handleChangePassword());
+        saveButton.addClickListener(_ -> handleChangePassword());
 
         Button cancelButton = new Button("Cancel");
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         cancelButton.setWidthFull();
-        cancelButton.addClickListener(e -> UI.getCurrent().navigate("profile"));
+        cancelButton.addClickListener(_ -> UI.getCurrent().navigate("profile"));
 
         formLayout.add(
                 title,
@@ -124,7 +123,7 @@ public class ChangePasswordView extends VerticalLayout {
             );
 
             if (binder.validate().isOk()) {
-                ApiResponse<Void> response = authService.requestPasswordChange(dto);
+                authService.requestPasswordChange(dto);
                 showNotification(
                         "Verification code sent to your email. Please check your inbox.",
                         NotificationVariant.LUMO_SUCCESS
@@ -161,7 +160,7 @@ public class ChangePasswordView extends VerticalLayout {
 
     private void handleVerifyCode(String code, VerificationCodeDialog dialog) {
         try {
-            ApiResponse<Void> response = authService.verifyPasswordChange(code);
+            authService.verifyPasswordChange(code);
             dialog.showSuccess("Password changed successfully!");
             UI.getCurrent().navigate("profile");
         } catch (Exception e) {

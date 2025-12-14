@@ -20,7 +20,7 @@ public class FiltersValue {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "TypeParameterUnusedInFormals"})
     public <T> T get(String key) {
         return (T) values.get(key);
     }

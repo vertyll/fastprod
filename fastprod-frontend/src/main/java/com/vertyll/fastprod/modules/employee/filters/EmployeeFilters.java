@@ -13,20 +13,40 @@ import java.util.stream.Collectors;
 
 public final class EmployeeFilters {
 
-    private EmployeeFilters() {}
+    private EmployeeFilters() {
+    }
 
     public static List<FilterFieldConfig<?>> configs() {
         return List.of(
-                FilterFieldConfig.builder("firstName", "First name", FilterFieldType.TEXT)
+                FilterFieldConfig.builder(
+                                "firstName",
+                                "First name",
+                                FilterFieldType.TEXT
+                        )
                         .placeholder("Search first name")
                         .build(),
-                FilterFieldConfig.builder("lastName", "Last name", FilterFieldType.TEXT)
+
+                FilterFieldConfig.builder(
+                                "lastName",
+                                "Last name",
+                                FilterFieldType.TEXT
+                        )
                         .placeholder("Search last name")
                         .build(),
-                FilterFieldConfig.builder("email", "Email", FilterFieldType.TEXT)
+
+                FilterFieldConfig.builder(
+                                "email",
+                                "Email",
+                                FilterFieldType.TEXT
+                        )
                         .placeholder("Search email")
                         .build(),
-                FilterFieldConfig.builder("isVerified", "Verified", FilterFieldType.SELECT)
+
+                FilterFieldConfig.builder(
+                                "isVerified",
+                                "Verified",
+                                FilterFieldType.SELECT
+                        )
                         .items(List.of(Boolean.TRUE, Boolean.FALSE))
                         .itemLabel(v -> {
                             if (v == null) return "";
@@ -35,12 +55,16 @@ public final class EmployeeFilters {
                         })
                         .placeholder("Any")
                         .build(),
-                FilterFieldConfig.builder("roles", "Roles", FilterFieldType.MULTISELECT)
-                        .items(java.util.Arrays.asList(RoleType.values()))
+
+                FilterFieldConfig.<RoleType>builder(
+                                "roles",
+                                "Roles",
+                                FilterFieldType.MULTISELECT
+                        )
+                        .items(java.util.Arrays.stream(RoleType.values()).toList())
                         .itemLabel(v -> {
                             if (v == null) return "";
-                            if (v instanceof RoleType rt) return rt.name();
-                            return String.valueOf(v);
+                            return v.name();
                         })
                         .placeholder("Any roles")
                         .build()

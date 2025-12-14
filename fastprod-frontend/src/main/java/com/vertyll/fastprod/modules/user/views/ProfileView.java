@@ -68,15 +68,15 @@ public class ProfileView extends VerticalLayout {
 
         Button changePasswordBtn = new Button("Change Password", VaadinIcon.KEY.create());
         changePasswordBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        changePasswordBtn.addClickListener(e -> UI.getCurrent().navigate("profile/change-password"));
+        changePasswordBtn.addClickListener(_ -> UI.getCurrent().navigate("profile/change-password"));
 
         Button changeEmailBtn = new Button("Change Email", VaadinIcon.ENVELOPE.create());
         changeEmailBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        changeEmailBtn.addClickListener(e -> UI.getCurrent().navigate("profile/change-email"));
+        changeEmailBtn.addClickListener(_ -> UI.getCurrent().navigate("profile/change-email"));
 
         Button editBtn = new Button("Edit Profile", VaadinIcon.EDIT.create());
         editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        editBtn.addClickListener(e -> showEditForm());
+        editBtn.addClickListener(_ -> showEditForm());
 
         HorizontalLayout actions = new HorizontalLayout(changePasswordBtn, changeEmailBtn, editBtn);
         actions.setSpacing(true);
@@ -126,23 +126,23 @@ public class ProfileView extends VerticalLayout {
 
         binder.forField(firstNameField)
                 .asRequired("First name is required")
-                .bind(ProfileUpdateDto::firstName, (dto, value) -> {
+                .bind(ProfileUpdateDto::firstName, (_, _) -> {
                 });
 
         binder.forField(lastNameField)
                 .asRequired("Last name is required")
-                .bind(ProfileUpdateDto::lastName, (dto, value) -> {
+                .bind(ProfileUpdateDto::lastName, (_, _) -> {
                 });
 
         formLayout.add(firstNameField, lastNameField);
 
         Button saveButton = new Button("Save");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.addClickListener(e -> handleSave());
+        saveButton.addClickListener(_ -> handleSave());
 
         Button cancelButton = new Button("Cancel");
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        cancelButton.addClickListener(e -> hideEditForm());
+        cancelButton.addClickListener(_ -> hideEditForm());
 
         HorizontalLayout buttons = new HorizontalLayout(saveButton, cancelButton);
         buttons.setSpacing(true);

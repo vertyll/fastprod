@@ -142,6 +142,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         add(card);
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     private void handleSubmit() {
         if (!binder.validate().isOk()) {
             return;
@@ -172,14 +173,14 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
                     NotificationVariant.LUMO_SUCCESS
             );
 
-            UI.getCurrent().access(() -> {
-                try {
-                    Thread.sleep(2000);
-                    UI.getCurrent().navigate(LoginView.class);
-                } catch (InterruptedException ex) {
-                    log.error("Sleep interrupted", ex);
-                }
-            });
+            UI ui = UI.getCurrent();
+            java.util.concurrent.CompletableFuture
+                    .runAsync(() -> {}, java.util.concurrent.CompletableFuture.delayedExecutor(2, java.util.concurrent.TimeUnit.SECONDS))
+                    .thenRun(() -> ui.access(() -> ui.navigate(LoginView.class)))
+                    .exceptionally(ex -> {
+                        log.error("Delayed navigation failed", ex);
+                        return null;
+                    });
 
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);

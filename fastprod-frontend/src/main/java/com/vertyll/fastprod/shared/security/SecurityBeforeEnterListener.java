@@ -1,6 +1,5 @@
 package com.vertyll.fastprod.shared.security;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -48,16 +47,14 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
         if (isAuthenticated && targetLocation.startsWith("employees")) {
             if (!securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
                 log.warn("Access denied to {} for user without required roles", targetLocation);
-                
-                UI.getCurrent().access(() -> {
-                    Notification notification = Notification.show(
+
+                Notification notification = Notification.show(
                         "You do not have permission to access this page",
                         5000,
                         Notification.Position.TOP_CENTER
-                    );
-                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                });
-                
+                );
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+
                 event.rerouteTo("");
             }
         }
