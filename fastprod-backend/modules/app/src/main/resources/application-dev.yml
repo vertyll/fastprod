@@ -36,6 +36,7 @@ spring:
     port: 1025
     username: vertyll
     password: vertyll
+    from: no-reply@fastprod.local
     properties:
       mail:
         smtp:
