@@ -28,8 +28,8 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql:11.16.0")
 
     // MapStruct
-    implementation("org.mapstruct:mapstruct:1.5.5.Final")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
     // Ensure Lombok and MapStruct work together during annotation processing
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")

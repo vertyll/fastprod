@@ -10,9 +10,9 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-security")
 
     // MapStruct (for shared config and usage in common if needed)
-    api("org.mapstruct:mapstruct:1.5.5.Final")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    api("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
     // Lombok
     compileOnly("org.projectlombok:lombok")
