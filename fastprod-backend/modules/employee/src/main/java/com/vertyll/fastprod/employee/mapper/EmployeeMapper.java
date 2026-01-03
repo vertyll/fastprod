@@ -19,10 +19,13 @@ import java.util.stream.Collectors;
 @Mapper(config = MapStructConfig.class)
 public interface EmployeeMapper {
 
-    @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "email", source = "email")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "verified", ignore = true)
+    @Mapping(target = "active", ignore = true)
     User toUserEntity(EmployeeCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

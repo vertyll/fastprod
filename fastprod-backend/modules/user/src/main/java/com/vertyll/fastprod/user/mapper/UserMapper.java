@@ -15,10 +15,13 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(config = MapStructConfig.class)
 public interface UserMapper {
 
-    @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "email", source = "email")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "verified", ignore = true)
+    @Mapping(target = "active", ignore = true)
     User toEntity(UserCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
