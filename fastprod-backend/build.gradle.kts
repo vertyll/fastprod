@@ -1,7 +1,7 @@
 import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
-    id("org.springframework.boot") version "4.0.0" apply false
+    id("org.springframework.boot") version "4.0.1" apply false
     id("io.spring.dependency-management") version "1.1.7" apply false
     id("com.diffplug.spotless") version "8.1.0" apply false
     id("net.ltgt.errorprone") version "4.3.0" apply false
