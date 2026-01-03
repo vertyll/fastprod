@@ -31,7 +31,7 @@ java {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.8")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.9")
         mavenBom("com.vaadin:vaadin-bom:24.9.6")
     }
 }
