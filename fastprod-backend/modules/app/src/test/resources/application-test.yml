@@ -42,7 +42,7 @@ security:
     refresh-token:
       secret-key: "isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA="
       expiration: 2592000000
-      cookie-name: "refreshToken"
+      cookie-name: "refresh_token"
     cookie:
       httpOnly: true
       secure: false
