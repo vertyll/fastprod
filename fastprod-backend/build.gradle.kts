@@ -24,6 +24,7 @@ val jspecifyVersion = "1.0.0"
 val googleJavaFormatVersion = "1.33.0"
 val ktlintVersion = "1.8.0"
 val betaCheckerVersion = "1.0"
+val pmdVersion = "7.20.0"
 
 allprojects {
     repositories {
@@ -181,7 +182,7 @@ subprojects {
 
     pmd {
         isConsoleOutput = true
-        toolVersion = "7.20.0"
+        toolVersion = pmdVersion
         ruleSets = listOf()
         ruleSetFiles = files(rootProject.file("config/pmd/pmd-main-ruleset.xml"))
         isIgnoreFailures = false
