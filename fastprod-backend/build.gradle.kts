@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7" apply false
     id("com.diffplug.spotless") version "8.1.0" apply false
     id("net.ltgt.errorprone") version "4.3.0" apply false
+    id("net.ltgt.nullaway") version "2.3.0" apply false
     java
 }
 
@@ -21,6 +22,7 @@ val nullawayVersion = "0.12.14"
 val jspecifyVersion = "1.0.0"
 val googleJavaFormatVersion = "1.33.0"
 val ktlintVersion = "1.8.0"
+val betaCheckerVersion = "1.0"
 
 allprojects {
     repositories {
@@ -33,6 +35,7 @@ subprojects {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "com.diffplug.spotless")
     apply(plugin = "net.ltgt.errorprone")
+    apply(plugin = "net.ltgt.nullaway")
 
     java {
         toolchain {
@@ -53,8 +56,11 @@ subprojects {
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
         // Error Prone dependencies
-        "errorprone"("com.google.errorprone:error_prone_core:$errorProneVersion")
-        "errorprone"("com.uber.nullaway:nullaway:$nullawayVersion")
+        add("errorprone", "com.google.errorprone:error_prone_core:$errorProneVersion")
+        add("errorprone", "com.uber.nullaway:nullaway:$nullawayVersion")
+
+        // Annotation processor dependencies
+        annotationProcessor("com.google.guava:guava-beta-checker:$betaCheckerVersion")
 
         // Compile-only dependencies
         compileOnly("org.jspecify:jspecify:$jspecifyVersion")
@@ -63,9 +69,9 @@ subprojects {
     tasks.withType<JavaCompile> {
         options.compilerArgs.add("-parameters")
 
-        options.errorprone.isEnabled.set(true)
-
         options.errorprone {
+            isEnabled.set(true)
+
             check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
             option("NullAway:OnlyNullMarked", "true")
             option("NullAway:CustomContractAnnotations", "org.springframework.lang.Contract")
