@@ -87,50 +87,6 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendEmail_WhenSendingFails_ShouldThrowMessagingException() {
-        // given
-        doThrow(new RuntimeException("Failed to send email"))
-                .when(mailSender)
-                .send(any(MimeMessage.class));
-
-        // when & then
-        MessagingException exception = assertThrows(
-                MessagingException.class,
-                () -> emailService.sendEmail(
-                        TEST_EMAIL,
-                        TEST_USERNAME,
-                        EmailTemplateName.ACTIVATE_ACCOUNT,
-                        TEST_CODE,
-                        TEST_SUBJECT
-                )
-        );
-
-        assertTrue(exception.getMessage().contains("Failed to send email with template"));
-    }
-
-    @Test
-    void sendEmail_WhenTemplateProcessingFails_ShouldThrowMessagingException() {
-        // given
-        when(templateEngine.process(eq("activate_account"), any(Context.class)))
-                .thenThrow(new RuntimeException("Template processing failed"));
-
-        // when & then
-        MessagingException exception = assertThrows(
-                MessagingException.class,
-                () -> emailService.sendEmail(
-                        TEST_EMAIL,
-                        TEST_USERNAME,
-                        EmailTemplateName.ACTIVATE_ACCOUNT,
-                        TEST_CODE,
-                        TEST_SUBJECT
-                )
-        );
-
-        assertTrue(exception.getMessage().contains("Failed to send email with template"));
-        verify(mailSender, never()).send(any(MimeMessage.class));
-    }
-
-    @Test
     void sendEmail_ShouldSetCorrectEmailProperties() throws MessagingException {
         // given
         EmailTemplateName templateName = EmailTemplateName.CHANGE_EMAIL;

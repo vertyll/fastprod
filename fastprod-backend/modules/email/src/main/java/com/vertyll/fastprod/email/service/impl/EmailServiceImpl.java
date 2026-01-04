@@ -11,11 +11,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Service
@@ -59,9 +61,15 @@ class EmailServiceImpl implements EmailService {
             helper.setText(template, true);
             mailSender.send(mimeMessage);
             log.info("Email sent successfully to: {} with template: {}", to, templateName);
-        } catch (Exception e) {
+        } catch (TemplateEngineException e) {
+            log.error("Failed to process email template: {} for recipient: {}", templateName, to, e);
+            throw new MessagingException("Failed to process email template: " + templateName, e);
+        } catch (MailException e) {
             log.error("Failed to send email to: {} with template: {}", to, templateName, e);
             throw new MessagingException("Failed to send email with template: " + templateName, e);
+        } catch (MessagingException e) {
+            log.error("Failed to prepare email message for: {} with template: {}", to, templateName, e);
+            throw e; // Re-throw since the method already declares this exception
         }
     }
 }

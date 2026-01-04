@@ -2,6 +2,9 @@ package com.vertyll.fastprod.config;
 
 import com.vertyll.fastprod.auth.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -59,8 +63,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (ExpiredJwtException e) {
             log.debug("JWT token expired: {}", e.getMessage());
-        } catch (Exception e) {
-            log.error("JWT authentication error: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.debug("Malformed JWT token: {}", e.getMessage());
+        } catch (SignatureException e) {
+            log.debug("Invalid JWT signature: {}", e.getMessage());
+        } catch (JwtException e) {
+            log.debug("JWT validation error: {}", e.getMessage());
+        } catch (UsernameNotFoundException e) {
+            log.debug("User not found: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.debug("Invalid JWT argument: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

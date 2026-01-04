@@ -3,6 +3,7 @@ package com.vertyll.fastprod.auth.service.impl;
 import com.vertyll.fastprod.auth.config.JwtProperties;
 import com.vertyll.fastprod.auth.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -53,7 +54,7 @@ class JwtServiceImpl implements JwtService {
         try {
             final String username = extractUsername(token);
             return username.equals(userDetails.getUsername()) && isTokenUnexpired(token);
-        } catch (Exception _) {
+        } catch (JwtException | IllegalArgumentException _) {
             return false;
         }
     }
@@ -89,7 +90,7 @@ class JwtServiceImpl implements JwtService {
         try {
             final String username = extractUsernameFromRefreshToken(token);
             return username.equals(userDetails.getUsername()) && isRefreshTokenUnexpired(token);
-        } catch (Exception _) {
+        } catch (JwtException | IllegalArgumentException _) {
             return false;
         }
     }
@@ -103,7 +104,7 @@ class JwtServiceImpl implements JwtService {
     public boolean isRefreshTokenValid(String token) {
         try {
             return isRefreshTokenUnexpired(token);
-        } catch (Exception _) {
+        } catch (JwtException | IllegalArgumentException _) {
             return false;
         }
     }

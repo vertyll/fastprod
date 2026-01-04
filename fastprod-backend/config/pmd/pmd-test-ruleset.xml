@@ -54,9 +54,7 @@
     </rule>
 
     <!-- Multithreading -->
-    <rule ref="category/java/multithreading.xml">
-        <exclude name="UseConcurrentHashMap"/>
-    </rule>
+    <rule ref="category/java/multithreading.xml" />
 
     <!-- Performance -->
     <rule ref="category/java/performance.xml"/>

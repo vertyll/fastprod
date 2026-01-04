@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 class ValidationErrorResponseTest {
 
     @Test
+    @SuppressWarnings("PMD.UseConcurrentHashMap")
     void shouldBuildValidationErrorResponseCorrectly() {
         // given
         String testMessage = "Validation failed";
@@ -39,6 +40,7 @@ class ValidationErrorResponseTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.UseConcurrentHashMap")
     void shouldHandleMultipleErrorsForSameField() {
         // given
         String testMessage = "Validation failed";
