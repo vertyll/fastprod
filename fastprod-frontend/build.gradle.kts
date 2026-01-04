@@ -16,6 +16,15 @@ description = "Production management system - front-end"
 extra["author"] = "Mikołaj Gawron"
 extra["email"] = "gawrmiko@gmail.com"
 
+// Dependency versions
+val springBootVersion = "3.5.9"
+val vaadinVersion = "24.9.6"
+val errorProneVersion = "2.36.0"
+val nullawayVersion = "0.12.14"
+val jspecifyVersion = "1.0.0"
+val googleJavaFormatVersion = "1.33.0"
+val ktlintVersion = "1.8.0"
+
 repositories {
     mavenCentral()
     maven("https://maven.vaadin.com/vaadin-addons")
@@ -31,30 +40,33 @@ java {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:3.5.9")
-        mavenBom("com.vaadin:vaadin-bom:24.9.6")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+        mavenBom("com.vaadin:vaadin-bom:$vaadinVersion")
     }
 }
 
 dependencies {
-    // Vaadin and Spring Boot dependencies
+    // Implementation dependencies - Vaadin and Spring Boot
     implementation("com.vaadin:vaadin-core")
     implementation("com.vaadin:vaadin-spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    // Lombok
+    // Compile-only dependencies
     compileOnly("org.projectlombok:lombok")
+    compileOnly("org.jspecify:jspecify:$jspecifyVersion")
+
+    // Annotation processors
     annotationProcessor("org.projectlombok:lombok")
 
-    // Testing dependencies
+    // Error Prone dependencies
+    "errorprone"("com.google.errorprone:error_prone_core:$errorProneVersion")
+    "errorprone"("com.uber.nullaway:nullaway:$nullawayVersion")
+
+    // Test implementation dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    // Test runtime-only dependencies
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    // Error Prone and NullAway
-    "errorprone"("com.google.errorprone:error_prone_core:2.36.0")
-    "errorprone"("com.uber.nullaway:nullaway:0.12.14")
-
-    compileOnly("org.jspecify:jspecify:1.0.0")
 }
 
 tasks.withType<JavaCompile> {
@@ -80,7 +92,7 @@ tasks.withType<Test> {
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     java {
         target("src/**/*.java")
-        googleJavaFormat("1.33.0").aosp().reflowLongStrings()
+        googleJavaFormat(googleJavaFormatVersion).aosp().reflowLongStrings()
         removeUnusedImports()
         endWithNewline()
         trimTrailingWhitespace()
@@ -88,7 +100,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 
     kotlin {
         target("**/*.gradle.kts")
-        ktlint("1.8.0")
+        ktlint(ktlintVersion)
     }
 }
 

@@ -15,6 +15,13 @@ description = "Production management system - API"
 extra["author"] = "Mikołaj Gawron"
 extra["email"] = "gawrmiko@gmail.com"
 
+// Shared dependency versions
+val errorProneVersion = "2.36.0"
+val nullawayVersion = "0.12.14"
+val jspecifyVersion = "1.0.0"
+val googleJavaFormatVersion = "1.33.0"
+val ktlintVersion = "1.8.0"
+
 allprojects {
     repositories {
         mavenCentral()
@@ -42,13 +49,15 @@ subprojects {
     }
 
     dependencies {
+        // Test runtime-only dependencies
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-        // Error Prone and NullAway
-        "errorprone"("com.google.errorprone:error_prone_core:2.36.0")
-        "errorprone"("com.uber.nullaway:nullaway:0.12.14")
+        // Error Prone dependencies
+        "errorprone"("com.google.errorprone:error_prone_core:$errorProneVersion")
+        "errorprone"("com.uber.nullaway:nullaway:$nullawayVersion")
 
-        compileOnly("org.jspecify:jspecify:1.0.0")
+        // Compile-only dependencies
+        compileOnly("org.jspecify:jspecify:$jspecifyVersion")
     }
 
     tasks.withType<JavaCompile> {
@@ -148,7 +157,7 @@ subprojects {
         java {
             target("src/**/*.java")
 
-            googleJavaFormat("1.33.0").aosp().reflowLongStrings()
+            googleJavaFormat(googleJavaFormatVersion).aosp().reflowLongStrings()
 
             removeUnusedImports()
 
@@ -158,7 +167,7 @@ subprojects {
 
         kotlin {
             target("**/*.gradle.kts")
-            ktlint("1.8.0")
+            ktlint(ktlintVersion)
         }
     }
 }
