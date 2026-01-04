@@ -5,6 +5,7 @@ import com.vertyll.fastprod.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serial;
 import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
@@ -23,6 +24,9 @@ import java.time.Instant;
         }
 )
 public class RefreshToken extends BaseEntity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(nullable = false, unique = true, length = 500)
     private String token;

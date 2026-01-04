@@ -39,7 +39,7 @@ public class DataSeeder implements ApplicationRunner {
     @Override
     @Transactional
     public void run(@NonNull ApplicationArguments args) {
-        if (!seedProps.enabled()) {
+        if (!seedProps.isEnabled()) {
             log.info("[DataSeeder] Seeding is disabled (app.seed.enabled=false)");
             return;
         }
@@ -94,6 +94,9 @@ public class DataSeeder implements ApplicationRunner {
     public static class SeedProps {
         private boolean enabled = true;
 
-        public boolean enabled() { return enabled; }
+        // Zmień nazwę metody na standardowy getter
+        public boolean isEnabled() { 
+            return enabled; 
+        }
     }
 }

@@ -14,18 +14,11 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(config = MapStructConfig.class)
 public interface RoleMapper {
 
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
     @Mapping(target = "active", ignore = true)
     Role toEntity(RoleCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
     void updateFromDto(RoleUpdateDto dto, @MappingTarget Role role);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
     RoleResponseDto toResponseDto(Role role);
 }

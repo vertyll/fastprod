@@ -2,6 +2,7 @@ package com.vertyll.fastprod.user.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -16,6 +17,8 @@ import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.dto.UserUpdateDto;
 import com.vertyll.fastprod.user.service.UserService;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +35,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 class UserControllerTest {
 
     private MockMvc mockMvc;
+    private LocalValidatorFactoryBean validator;
 
     @Mock private UserService userService;
 
@@ -44,7 +48,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
         mockMvc =
@@ -66,6 +70,13 @@ class UserControllerTest {
 
         responseDto =
                 new UserResponseDto(1L, "John", "Doe", "john@example.com", Set.of("USER"), true);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (validator != null) {
+            validator.close();
+        }
     }
 
     @Test

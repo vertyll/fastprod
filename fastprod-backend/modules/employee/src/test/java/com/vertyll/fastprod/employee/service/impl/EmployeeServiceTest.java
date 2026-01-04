@@ -43,9 +43,9 @@ class EmployeeServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @SuppressWarnings("UnusedVariable")
     @Spy
-    private EmployeeMapper employeeMapper = Mappers.getMapper(EmployeeMapper.class);
+    @SuppressWarnings("UnusedVariable")
+    private final EmployeeMapper employeeMapper = Mappers.getMapper(EmployeeMapper.class);
 
     @InjectMocks
     private EmployeeServiceImpl employeeService;

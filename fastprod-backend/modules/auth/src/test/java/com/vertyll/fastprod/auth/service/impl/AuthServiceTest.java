@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 
 import com.vertyll.fastprod.auth.config.CookieProperties;
@@ -91,8 +92,9 @@ class AuthServiceTest {
     @Mock
     private Authentication authentication;
 
+    @Spy
     @SuppressWarnings("UnusedVariable")
-    @Spy private AuthMapper authMapper = Mappers.getMapper(AuthMapper.class);
+    private final AuthMapper authMapper = Mappers.getMapper(AuthMapper.class);
 
     @InjectMocks
     private AuthServiceImpl authService;

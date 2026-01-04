@@ -7,9 +7,9 @@ import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,16 +32,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
-        Map<String, List<String>> errors = new HashMap<>();
+        Map<String, List<String>> errors = new ConcurrentHashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             String field = error.getField();
             String message = error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value";
 
-            if (!errors.containsKey(field)) {
-                errors.put(field, new ArrayList<>());
-            }
-            errors.get(field).add(message);
+            errors.computeIfAbsent(field, k -> new ArrayList<>()).add(message);
         });
 
         ValidationErrorResponse response = ValidationErrorResponse

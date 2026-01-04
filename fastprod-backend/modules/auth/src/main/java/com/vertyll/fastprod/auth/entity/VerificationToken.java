@@ -5,6 +5,7 @@ import com.vertyll.fastprod.common.entity.BaseEntity;
 import com.vertyll.fastprod.user.entity.User;
 import jakarta.persistence.*;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 
 import lombok.*;
@@ -26,6 +27,9 @@ import lombok.*;
         }
 )
 public class VerificationToken extends BaseEntity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private String token;
 

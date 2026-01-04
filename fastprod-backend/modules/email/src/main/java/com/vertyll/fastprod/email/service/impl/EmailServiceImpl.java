@@ -7,10 +7,8 @@ import com.vertyll.fastprod.email.enums.EmailTemplateName;
 import com.vertyll.fastprod.email.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-
-import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -42,11 +40,10 @@ class EmailServiceImpl implements EmailService {
         }
 
         String templateName = emailTemplate.getName();
-
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MULTIPART_MODE_MIXED, UTF_8.name());
 
-        Map<String, Object> properties = new HashMap<>();
+        Map<String, Object> properties = new ConcurrentHashMap<>();
         properties.put("username", username);
         properties.put("activation_code", activationCode);
 
@@ -61,7 +58,6 @@ class EmailServiceImpl implements EmailService {
             String template = templateEngine.process(templateName, context);
             helper.setText(template, true);
             mailSender.send(mimeMessage);
-
             log.info("Email sent successfully to: {} with template: {}", to, templateName);
         } catch (Exception e) {
             log.error("Failed to send email to: {} with template: {}", to, templateName, e);

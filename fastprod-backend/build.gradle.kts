@@ -7,6 +7,7 @@ plugins {
     id("net.ltgt.errorprone") version "4.3.0" apply false
     id("net.ltgt.nullaway") version "2.3.0" apply false
     java
+    pmd
 }
 
 group = "com.vertyll"
@@ -32,6 +33,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "pmd")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "com.diffplug.spotless")
     apply(plugin = "net.ltgt.errorprone")
@@ -174,6 +176,20 @@ subprojects {
         kotlin {
             target("**/*.gradle.kts")
             ktlint(ktlintVersion)
+        }
+    }
+
+    pmd {
+        isConsoleOutput = true
+        toolVersion = "7.20.0"
+        ruleSets = listOf()
+        ruleSetFiles = files(rootProject.file("config/pmd/pmd-main-ruleset.xml"))
+        isIgnoreFailures = false
+    }
+
+    tasks.withType<Pmd> {
+        if (name == "pmdTest") {
+            ruleSetFiles = files(rootProject.file("config/pmd/pmd-test-ruleset.xml"))
         }
     }
 }

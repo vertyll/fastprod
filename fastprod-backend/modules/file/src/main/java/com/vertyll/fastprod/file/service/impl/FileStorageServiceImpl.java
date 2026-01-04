@@ -7,13 +7,11 @@ import com.google.common.base.Ascii;
 import com.vertyll.fastprod.file.config.FileUploadProperties;
 import com.vertyll.fastprod.file.service.FileStorageService;
 import jakarta.annotation.Nonnull;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,19 +33,17 @@ class FileStorageServiceImpl implements FileStorageService {
     private String uploadFile(@Nonnull MultipartFile sourceFile, @Nonnull String fileUploadSubPath) {
         final String finalUploadPath = fileUploadProperties.fileOutputPath() + separator + fileUploadSubPath;
         File targetFolder = new File(finalUploadPath);
-
         if (!targetFolder.exists()) {
             boolean folderCreated = targetFolder.mkdirs();
             if (!folderCreated) {
                 log.warn("Failed to create the target folder: {}", targetFolder);
-                return null;
+                return "";
             }
         }
 
         final String fileExtension = getFileExtension(sourceFile.getOriginalFilename());
         String targetFilePath = finalUploadPath + separator + currentTimeMillis() + "." + fileExtension;
         Path targetPath = Paths.get(targetFilePath);
-
         try {
             Files.write(targetPath, sourceFile.getBytes());
             log.info("File saved to: {}", targetFilePath);
@@ -55,21 +51,17 @@ class FileStorageServiceImpl implements FileStorageService {
         } catch (IOException e) {
             log.error("File was not saved", e);
         }
-
-        return null;
+        return "";
     }
 
     private String getFileExtension(String fileName) {
         if (fileName == null || fileName.isEmpty()) {
             return "";
         }
-
-        int lastDotIndex = fileName.lastIndexOf(".");
-
+        int lastDotIndex = fileName.lastIndexOf('.');
         if (lastDotIndex == -1) {
             return "";
         }
-
         return Ascii.toLowerCase(fileName.substring(lastDotIndex + 1));
     }
 }

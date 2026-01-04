@@ -10,9 +10,9 @@ import io.jsonwebtoken.security.Keys;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 
@@ -33,7 +33,7 @@ class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        return generateToken(new ConcurrentHashMap<>(), userDetails);
     }
 
     @Override
@@ -71,7 +71,7 @@ class JwtServiceImpl implements JwtService {
     @Override
     public String generateRefreshToken(UserDetails userDetails) {
         Instant now = Instant.now();
-        Map<String, Object> claims = new HashMap<>();
+        Map<String, Object> claims = new ConcurrentHashMap<>();
         claims.put("token_type", "refresh");
 
         return Jwts.builder()
@@ -108,22 +108,20 @@ class JwtServiceImpl implements JwtService {
         }
     }
 
-    @SuppressWarnings("JavaUtilDate")
     private boolean isTokenUnexpired(String token) {
-        return !extractExpiration(token).before(new Date());
+        return extractExpiration(token).isAfter(Instant.now());
     }
 
-    @SuppressWarnings("JavaUtilDate")
     private boolean isRefreshTokenUnexpired(String token) {
-        return !extractExpirationFromRefreshToken(token).before(new Date());
+        return extractExpirationFromRefreshToken(token).isAfter(Instant.now());
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    private Instant extractExpiration(String token) {
+        return extractClaim(token, claims -> claims.getExpiration().toInstant());
     }
 
-    private Date extractExpirationFromRefreshToken(String token) {
-        return extractClaimFromRefreshToken(token, Claims::getExpiration);
+    private Instant extractExpirationFromRefreshToken(String token) {
+        return extractClaimFromRefreshToken(token, claims -> claims.getExpiration().toInstant());
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

@@ -4,21 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
 @Slf4j
-public class FileUtils {
+public final class FileUtils {
 
     private FileUtils() {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static byte @Nullable [] readFileFromLocation(@Nullable String fileUrl) {
+    public static byte[] readFileFromLocation(@Nullable String fileUrl) {
         if (StringUtils.isBlank(fileUrl)) {
-            return null;
+            return new byte[0];
         }
 
         try {
@@ -28,6 +27,6 @@ public class FileUtils {
             log.warn("No file found in the path {}", fileUrl);
         }
 
-        return null;
+        return new byte[0];
     }
 }

@@ -19,9 +19,6 @@ import java.util.stream.Collectors;
 @Mapper(config = MapStructConfig.class)
 public interface EmployeeMapper {
 
-    @Mapping(target = "firstName", source = "firstName")
-    @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "email", source = "email")
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "verified", ignore = true)
@@ -29,15 +26,8 @@ public interface EmployeeMapper {
     User toUserEntity(EmployeeCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "firstName", source = "firstName")
-    @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "email", source = "email")
     void updateUserFromDto(EmployeeUpdateDto dto, @MappingTarget User user);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "firstName", source = "firstName")
-    @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "email", source = "email")
     @Mapping(target = "roles", source = "roles", qualifiedByName = "rolesToNames")
     @Mapping(target = "isVerified", source = "verified")
     EmployeeResponseDto toResponseDto(User user);

@@ -2,6 +2,7 @@ package com.vertyll.fastprod.auth.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -14,6 +15,8 @@ import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +35,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 class AuthControllerTest {
 
     private MockMvc mockMvc;
+    private LocalValidatorFactoryBean validator;
 
     @Mock
     private AuthService authService;
@@ -49,7 +53,7 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
         mockMvc =
@@ -69,6 +73,13 @@ class AuthControllerTest {
         changePasswordRequest = new ChangePasswordRequestDto("oldPassword123", "newPassword123");
 
         resetPasswordRequest = new ResetPasswordRequestDto("newPassword123");
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (validator != null) {
+            validator.close();
+        }
     }
 
     @Test

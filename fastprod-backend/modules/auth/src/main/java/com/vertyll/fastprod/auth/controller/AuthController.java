@@ -27,6 +27,8 @@ import java.util.List;
 @Tag(name = "Authentication", description = "Auth management APIs")
 class AuthController {
 
+    private static final String IS_AUTHENTICATED = "isAuthenticated()";
+
     private final AuthService authService;
 
     @PostMapping("/register")
@@ -80,7 +82,7 @@ class AuthController {
     }
 
     @GetMapping("/sessions")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(IS_AUTHENTICATED)
     @Operation(summary = "Get all active sessions for the current user")
     public ResponseEntity<ApiResponse<List<SessionResponseDto>>> getSessions(
             @AuthenticationPrincipal String email
@@ -108,7 +110,7 @@ class AuthController {
     }
 
     @PostMapping("/change-email-request")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(IS_AUTHENTICATED)
     @Operation(summary = "Request email change, sends verification to new email")
     public ResponseEntity<ApiResponse<Void>> requestEmailChange(
             @RequestBody @Valid ChangeEmailRequestDto request
@@ -118,7 +120,7 @@ class AuthController {
     }
 
     @PostMapping("/verify-email-change")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(IS_AUTHENTICATED)
     @Operation(summary = "Verify email change with code")
     public ResponseEntity<ApiResponse<AuthResponseDto>> verifyEmailChange(
             @RequestParam String code,
@@ -130,7 +132,7 @@ class AuthController {
     }
 
     @PostMapping("/change-password-request")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(IS_AUTHENTICATED)
     @Operation(summary = "Request password change, sends verification email")
     public ResponseEntity<ApiResponse<Void>> requestPasswordChange(
             @RequestBody @Valid ChangePasswordRequestDto request
@@ -140,7 +142,7 @@ class AuthController {
     }
 
     @PostMapping("/verify-password-change")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize(IS_AUTHENTICATED)
     @Operation(summary = "Verify password change with code")
     public ResponseEntity<ApiResponse<Void>> verifyPasswordChange(
             @RequestParam String code

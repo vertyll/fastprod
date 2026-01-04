@@ -40,8 +40,9 @@ class UserServiceTest {
 
     @Mock private PasswordEncoder passwordEncoder;
 
-    @SuppressWarnings("UnusedVariable")
-    @Spy private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    @Spy 
+    @SuppressWarnings("UnusedVariable") 
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @InjectMocks private UserServiceImpl userService;
 

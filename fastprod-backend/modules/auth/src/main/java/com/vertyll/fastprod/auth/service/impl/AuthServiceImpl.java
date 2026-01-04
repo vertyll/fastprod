@@ -20,9 +20,6 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.*;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -33,6 +30,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -252,13 +252,12 @@ class AuthServiceImpl implements AuthService {
                 VerificationTokenType.EMAIL_CHANGE
         );
 
-        User user = verificationToken.getUser();
         String newEmail = verificationToken.getAdditionalData();
-
         if (newEmail == null) {
             throw new ApiException("New email not found", HttpStatus.BAD_REQUEST);
         }
 
+        User user = verificationToken.getUser();
         user.setEmail(newEmail);
         userService.saveUser(user);
 
@@ -315,13 +314,12 @@ class AuthServiceImpl implements AuthService {
                 VerificationTokenType.PASSWORD_CHANGE
         );
 
-        User user = verificationToken.getUser();
         String newPasswordHash = verificationToken.getAdditionalData();
-
         if (newPasswordHash == null) {
             throw new ApiException("New password not found", HttpStatus.BAD_REQUEST);
         }
 
+        User user = verificationToken.getUser();
         user.setPassword(newPasswordHash);
         userService.saveUser(user);
 
@@ -410,7 +408,7 @@ class AuthServiceImpl implements AuthService {
     }
 
     private Map<String, Object> createClaimsWithRoles(User user) {
-        Map<String, Object> claims = new HashMap<>();
+        Map<String, Object> claims = new ConcurrentHashMap<>();
         List<String> roles = user.getRoles().stream()
                 .map(Role::getName)
                 .toList();

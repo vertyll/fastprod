@@ -9,5 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 class FastprodBackendApplicationTests {
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        // Test to ensure the Spring application context loads successfully
+    }
 }

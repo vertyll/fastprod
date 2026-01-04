@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,18 +16,19 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class FileUtilsTest {
 
+    private static final String TEST_CONTENT = "test content";
+
     @TempDir
     @Nullable
     Path tempDir;
 
     private Path testFile;
-    private final String testContent = "test content";
 
     @BeforeEach
     void setUp() throws IOException {
         assertNotNull(tempDir, "TempDir should be initialized by JUnit");
         testFile = tempDir.resolve("test-file.txt");
-        Files.writeString(testFile, testContent);
+        Files.writeString(testFile, TEST_CONTENT);
     }
 
     @Test
@@ -38,34 +38,35 @@ class FileUtilsTest {
 
         // then
         assertNotNull(result);
-        assertEquals(testContent, new String(result, UTF_8));
+        assertEquals(TEST_CONTENT, new String(result, UTF_8));
     }
 
     @Test
-    void readFileFromLocation_WhenFileDoesNotExist_ShouldReturnNull() {
+    void readFileFromLocation_WhenFileDoesNotExist_ShouldReturnEmptyArray() {
         assertNotNull(tempDir, "TempDir should be initialized by JUnit");
 
         // when
-        byte[] result =
-                FileUtils.readFileFromLocation(tempDir.resolve("non-existent.txt").toString());
+        byte[] result = FileUtils.readFileFromLocation(tempDir.resolve("non-existent.txt").toString());
 
         // then
-        assertNull(result);
+        assertNotNull(result);
+        assertEquals(0, result.length);
     }
 
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"", "   "})
-    void readFileFromLocation_WhenPathIsNullOrBlank_ShouldReturnNull(String path) {
+    void readFileFromLocation_WhenPathIsNullOrBlank_ShouldReturnEmptyArray(String path) {
         // when
         byte[] result = FileUtils.readFileFromLocation(path);
 
         // then
-        assertNull(result);
+        assertNotNull(result);
+        assertEquals(0, result.length);
     }
 
     @Test
-    void readFileFromLocation_WhenDirectoryInsteadOfFile_ShouldReturnNull() throws IOException {
+    void readFileFromLocation_WhenDirectoryInsteadOfFile_ShouldReturnEmptyArray() throws IOException {
         assertNotNull(tempDir, "TempDir should be initialized by JUnit");
 
         // given
@@ -76,6 +77,7 @@ class FileUtilsTest {
         byte[] result = FileUtils.readFileFromLocation(testDir.toString());
 
         // then
-        assertNull(result);
+        assertNotNull(result);
+        assertEquals(0, result.length);
     }
 }

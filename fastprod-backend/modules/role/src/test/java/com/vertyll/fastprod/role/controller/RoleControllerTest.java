@@ -1,6 +1,7 @@
 package com.vertyll.fastprod.role.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -14,6 +15,8 @@ import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +33,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 class RoleControllerTest {
 
     private MockMvc mockMvc;
+    private LocalValidatorFactoryBean validator;
 
     @Mock private RoleService roleService;
 
@@ -41,7 +45,7 @@ class RoleControllerTest {
 
     @BeforeEach
     void setUp() {
-        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
         mockMvc =
@@ -53,6 +57,13 @@ class RoleControllerTest {
         createDto = new RoleCreateDto("ADMIN", "Administrator role");
 
         responseDto = new RoleResponseDto(1L, "ADMIN", "Administrator role");
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (validator != null) {
+            validator.close();
+        }
     }
 
     @Test

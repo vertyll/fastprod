@@ -2,6 +2,7 @@ package com.vertyll.fastprod.employee.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -14,6 +15,8 @@ import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.employee.service.EmployeeService;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +35,7 @@ import java.util.Set;
 class EmployeeControllerTest {
 
     private MockMvc mockMvc;
+    private LocalValidatorFactoryBean validator;
 
     @Mock
     private EmployeeService employeeService;
@@ -46,7 +50,7 @@ class EmployeeControllerTest {
 
     @BeforeEach
     void setUp() {
-        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
         mockMvc =
@@ -79,6 +83,13 @@ class EmployeeControllerTest {
                         "john@example.com",
                         Set.of("EMPLOYEE"),
                         true);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (validator != null) {
+            validator.close();
+        }
     }
 
     @Test

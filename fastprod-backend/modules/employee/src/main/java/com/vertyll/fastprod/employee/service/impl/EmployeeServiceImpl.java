@@ -12,6 +12,7 @@ import com.vertyll.fastprod.role.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.repository.UserRepository;
+import jakarta.persistence.criteria.Join;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +58,8 @@ class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponseDto updateEmployee(Long id, EmployeeUpdateDto dto) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!user.isActive()) {
             throw new ApiException("Cannot update inactive employee", HttpStatus.BAD_REQUEST);
@@ -71,7 +76,7 @@ class EmployeeServiceImpl implements EmployeeService {
             user.setPassword(passwordEncoder.encode(password));
         }
 
-        java.util.Set<String> roleNames = dto.roleNames();
+        Set<String> roleNames = dto.roleNames();
         if (roleNames != null && !roleNames.isEmpty()) {
             user.getRoles().clear();
             assignRolesToUser(user, roleNames);
@@ -96,57 +101,7 @@ class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Page<EmployeeResponseDto> getAllEmployees(EmployeeFilterDto filterDto) {
         Pageable pageable = filterDto.toPageable();
-
-        Specification<User> spec = Specification.where((root, _, cb) -> cb.isTrue(root.get("active")));
-
-        String firstName = filterDto.firstName();
-        if (firstName != null && !firstName.isBlank()) {
-            String like = "%" + firstName.trim().toLowerCase(Locale.ROOT) + "%";
-            spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("firstName")), like));
-        }
-        
-        String lastName = filterDto.lastName();
-        if (lastName != null && !lastName.isBlank()) {
-            String like = "%" + lastName.trim().toLowerCase(Locale.ROOT) + "%";
-            spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("lastName")), like));
-        }
-        
-        String email = filterDto.email();
-        if (email != null && !email.isBlank()) {
-            String like = "%" + email.trim().toLowerCase(Locale.ROOT) + "%";
-            spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("email")), like));
-        }
-        
-        Boolean isVerified = filterDto.isVerified();
-        if (isVerified != null) {
-            spec = spec.and((root, _, cb) -> cb.equal(root.get("verified"), isVerified));
-        }
-        
-        String roles = filterDto.roles();
-        if (roles != null && !roles.isBlank()) {
-            java.util.List<String> roleNames = java.util.Arrays.stream(roles.split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isBlank())
-                    .map(String::toUpperCase)
-                    .toList();
-            if (!roleNames.isEmpty()) {
-                spec = spec.and((root, _, cb) -> {
-                    var rolesJoin = root.join("roles");
-                    return cb.upper(rolesJoin.get("name")).in(roleNames);
-                });
-            }
-        }
-        
-        String searchTerm = filterDto.search();
-        if (searchTerm != null && !searchTerm.isBlank()) {
-            String like = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
-            spec = spec.and((root, _, cb) -> cb.or(
-                    cb.like(cb.lower(root.get("firstName")), like),
-                    cb.like(cb.lower(root.get("lastName")), like),
-                    cb.like(cb.lower(root.get("email")), like)
-            ));
-        }
-
+        Specification<User> spec = buildEmployeeSpecification(filterDto);
         Page<User> page = userRepository.findAll(spec, pageable);
         return page.map(employeeMapper::toResponseDto);
     }
@@ -165,7 +120,84 @@ class EmployeeServiceImpl implements EmployeeService {
         userRepository.save(user);
     }
 
-    private void assignRolesToUser(User user, java.util.Set<String> roleNames) {
+    private Specification<User> buildEmployeeSpecification(EmployeeFilterDto filterDto) {
+        Specification<User> spec = Specification.where((root, _, cb) -> cb.isTrue(root.get("active")));
+
+        spec = addFirstNameFilter(spec, filterDto.firstName());
+        spec = addLastNameFilter(spec, filterDto.lastName());
+        spec = addEmailFilter(spec, filterDto.email());
+        spec = addVerifiedFilter(spec, filterDto.isVerified());
+        spec = addRolesFilter(spec, filterDto.roles());
+        spec = addSearchFilter(spec, filterDto.search());
+
+        return spec;
+    }
+
+    private Specification<User> addFirstNameFilter(Specification<User> spec, String firstName) {
+        if (firstName == null || firstName.isBlank()) {
+            return spec;
+        }
+        String likePattern = "%" + firstName.trim().toLowerCase(Locale.ROOT) + "%";
+        return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("firstName")), likePattern));
+    }
+
+    private Specification<User> addLastNameFilter(Specification<User> spec, String lastName) {
+        if (lastName == null || lastName.isBlank()) {
+            return spec;
+        }
+        String likePattern = "%" + lastName.trim().toLowerCase(Locale.ROOT) + "%";
+        return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("lastName")), likePattern));
+    }
+
+    private Specification<User> addEmailFilter(Specification<User> spec, String email) {
+        if (email == null || email.isBlank()) {
+            return spec;
+        }
+        String likePattern = "%" + email.trim().toLowerCase(Locale.ROOT) + "%";
+        return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("email")), likePattern));
+    }
+
+    private Specification<User> addVerifiedFilter(Specification<User> spec, Boolean isVerified) {
+        if (isVerified == null) {
+            return spec;
+        }
+        return spec.and((root, _, cb) -> cb.equal(root.get("verified"), isVerified));
+    }
+
+    private Specification<User> addRolesFilter(Specification<User> spec, String roles) {
+        if (roles == null || roles.isBlank()) {
+            return spec;
+        }
+
+        List<String> roleNames = Arrays.stream(roles.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .map(String::toUpperCase)
+                .toList();
+
+        if (roleNames.isEmpty()) {
+            return spec;
+        }
+
+        return spec.and((root, _, cb) -> {
+            Join<User, Role> rolesJoin = root.join("roles");
+            return cb.upper(rolesJoin.get("name")).in(roleNames);
+        });
+    }
+
+    private Specification<User> addSearchFilter(Specification<User> spec, String searchTerm) {
+        if (searchTerm == null || searchTerm.isBlank()) {
+            return spec;
+        }
+        String likePattern = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
+        return spec.and((root, _, cb) -> cb.or(
+                cb.like(cb.lower(root.get("firstName")), likePattern),
+                cb.like(cb.lower(root.get("lastName")), likePattern),
+                cb.like(cb.lower(root.get("email")), likePattern)
+        ));
+    }
+
+    private void assignRolesToUser(User user, Set<String> roleNames) {
         if (roleNames != null && !roleNames.isEmpty()) {
             roleNames.forEach(roleName -> {
                 Role role = roleService.getOrCreateDefaultRole(roleName);

@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.role.entity;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,6 +23,9 @@ import lombok.*;
         }
 )
 public class Role extends BaseEntity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(nullable = false, unique = true)
     private String name;

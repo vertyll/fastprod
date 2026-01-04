@@ -6,13 +6,12 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 class BaseEntityTest {
 
-    private static class TestEntity extends BaseEntity {}
+    private static final class TestEntity extends BaseEntity {}
 
     @Test
     void class_ShouldHaveRequiredAnnotations() {
@@ -22,7 +21,6 @@ class BaseEntityTest {
         // then
         assertTrue(clazz.isAnnotationPresent(MappedSuperclass.class));
         assertTrue(clazz.isAnnotationPresent(EntityListeners.class));
-
         EntityListeners entityListeners = clazz.getAnnotation(EntityListeners.class);
         assertArrayEquals(new Class[] {AuditingEntityListener.class}, entityListeners.value());
     }

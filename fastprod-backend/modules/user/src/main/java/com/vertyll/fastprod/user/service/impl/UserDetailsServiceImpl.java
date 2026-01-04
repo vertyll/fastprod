@@ -17,6 +17,7 @@ class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     @NullUnmarked
+    @SuppressWarnings("PMD.AvoidUncheckedExceptionsInSignatures") // Required by Spring Security interface
     public UserDetails loadUserByUsername(@Nullable String username) throws UsernameNotFoundException {
         return userRepository
                 .findByEmailWithRoles(username)
