@@ -6,6 +6,7 @@ plugins {
     id("com.vaadin") version "24.9.6"
     id("com.diffplug.spotless") version "8.1.0"
     id("net.ltgt.errorprone") version "4.3.0"
+    id("net.ltgt.nullaway") version "2.3.0"
     java
 }
 
@@ -24,6 +25,7 @@ val nullawayVersion = "0.12.14"
 val jspecifyVersion = "1.0.0"
 val googleJavaFormatVersion = "1.33.0"
 val ktlintVersion = "1.8.0"
+val betaCheckerVersion = "1.0"
 
 repositories {
     mavenCentral()
@@ -57,10 +59,11 @@ dependencies {
 
     // Annotation processors
     annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("com.google.guava:guava-beta-checker:$betaCheckerVersion")
 
     // Error Prone dependencies
-    "errorprone"("com.google.errorprone:error_prone_core:$errorProneVersion")
-    "errorprone"("com.uber.nullaway:nullaway:$nullawayVersion")
+    errorprone("com.google.errorprone:error_prone_core:$errorProneVersion")
+    errorprone("com.uber.nullaway:nullaway:$nullawayVersion")
 
     // Test implementation dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -72,9 +75,9 @@ dependencies {
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
 
-    options.errorprone.isEnabled.set(true)
-
     options.errorprone {
+        isEnabled.set(true)
+
         check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
         option("NullAway:OnlyNullMarked", "true")
         option("NullAway:CustomContractAnnotations", "org.springframework.lang.Contract")
