@@ -12,6 +12,10 @@ import org.jspecify.annotations.Nullable;
 @Slf4j
 public class FileUtils {
 
+    private FileUtils() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static byte @Nullable [] readFileFromLocation(@Nullable String fileUrl) {
         if (StringUtils.isBlank(fileUrl)) {
             return null;
@@ -20,7 +24,7 @@ public class FileUtils {
         try {
             Path filePath = new File(fileUrl).toPath();
             return Files.readAllBytes(filePath);
-        } catch (IOException e) {
+        } catch (IOException _) {
             log.warn("No file found in the path {}", fileUrl);
         }
 

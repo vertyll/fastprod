@@ -33,9 +33,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginView extends VerticalLayout {
 
-    private final AuthService authService;
-    private final SecurityService securityService;
-    private final TokenRefreshService tokenRefreshService;
+    private static final String SIGN_IN = "Sign In";
+    private static final String COLOR = "color";
+    private static final String MARGIN_BOTTOM = "margin-bottom";
+    private static final String LUMO_SPACE_M = "var(--lumo-space-m)";
+    private static final String TEXT_ALIGN = "text-align";
+    private static final String CENTER = "center";
+
+    private final transient AuthService authService;
+    private final transient SecurityService securityService;
+    private final transient TokenRefreshService tokenRefreshService;
     private final Binder<FormBuilder> binder;
 
     private EmailField emailField;
@@ -69,56 +76,56 @@ public class LoginView extends VerticalLayout {
                 .set("max-width", "400px")
                 .set("width", "100%");
 
-        H1 title = new H1("Sign In");
+        H1 title = new H1(SIGN_IN);
         title.getStyle()
                 .set("margin", "0")
                 .set("font-size", "var(--lumo-font-size-xxxl)")
                 .set("font-weight", "600")
-                .set("color", "var(--lumo-primary-text-color)");
+                .set(COLOR, "var(--lumo-primary-text-color)");
 
         Paragraph subtitle = new Paragraph("Sign in to your account");
         subtitle.getStyle()
                 .set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0")
-                .set("color", "var(--lumo-secondary-text-color)");
+                .set(COLOR, "var(--lumo-secondary-text-color)");
 
         emailField = new EmailField("Email");
         emailField.setRequiredIndicatorVisible(true);
         emailField.setErrorMessage("Please enter a valid email address");
         emailField.setClearButtonVisible(true);
         emailField.setWidthFull();
-        emailField.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        emailField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         passwordField = new PasswordField("Password");
         passwordField.setRequiredIndicatorVisible(true);
         passwordField.setClearButtonVisible(true);
         passwordField.setWidthFull();
-        passwordField.getStyle().set("margin-bottom", "var(--lumo-space-l)");
+        passwordField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
-        loginButton = new Button("Sign In");
+        loginButton = new Button(SIGN_IN);
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         loginButton.setWidthFull();
         loginButton.addClickListener(_ -> handleLogin());
-        loginButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        loginButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         RouterLink forgotPasswordLink = new RouterLink("Forgot password?", ForgotPasswordView.class);
         forgotPasswordLink.getStyle()
-                .set("color", "var(--lumo-primary-color)")
+                .set(COLOR, "var(--lumo-primary-color)")
                 .set("text-decoration", "none")
                 .set("font-size", "var(--lumo-font-size-s)")
                 .set("display", "block")
-                .set("text-align", "center")
-                .set("margin-bottom", "var(--lumo-space-m)");
+                .set(TEXT_ALIGN, CENTER)
+                .set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         RouterLink registerLink = new RouterLink("Create an account", RegisterView.class);
         registerLink.getStyle()
-                .set("color", "var(--lumo-primary-color)")
+                .set(COLOR, "var(--lumo-primary-color)")
                 .set("text-decoration", "none")
                 .set("font-weight", "500");
 
         Div registerContainer = new Div();
         registerContainer.getStyle()
-                .set("text-align", "center")
-                .set("margin-top", "var(--lumo-space-m)");
+                .set(TEXT_ALIGN, CENTER)
+                .set("margin-top", LUMO_SPACE_M);
         registerContainer.add(new Span("Don't have an account? "), registerLink);
 
         configureBinder();
@@ -181,7 +188,7 @@ public class LoginView extends VerticalLayout {
             log.error("Unexpected error during login", e);
         } finally {
             loginButton.setEnabled(true);
-            loginButton.setText("Sign In");
+            loginButton.setText(SIGN_IN);
         }
     }
 
@@ -196,7 +203,7 @@ public class LoginView extends VerticalLayout {
         text.getStyle()
                 .set("white-space", "normal")
                 .set("max-width", "400px")
-                .set("text-align", "center");
+                .set(TEXT_ALIGN, CENTER);
 
         notification.add(text);
         notification.open();

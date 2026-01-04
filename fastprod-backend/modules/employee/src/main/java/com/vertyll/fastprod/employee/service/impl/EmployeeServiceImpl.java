@@ -27,6 +27,8 @@ import java.util.Locale;
 @RequiredArgsConstructor
 class EmployeeServiceImpl implements EmployeeService {
 
+    private static final String EMPLOYEE_NOT_FOUND_MESSAGE = "Employee not found";
+
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
@@ -52,28 +54,27 @@ class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponseDto updateEmployee(Long id, EmployeeUpdateDto dto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!user.isActive()) {
             throw new ApiException("Cannot update inactive employee", HttpStatus.BAD_REQUEST);
         }
 
-        if (dto.email() != null && !dto.email().equals(user.getEmail())) {
-            if (userRepository.existsByEmail(dto.email())) {
-                throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
-            }
+        if (dto.email() != null && !dto.email().equals(user.getEmail()) && userRepository.existsByEmail(dto.email())) {
+            throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
         employeeMapper.updateUserFromDto(dto, user);
 
-        if (dto.password() != null && !dto.password().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.password()));
+        String password = dto.password();
+        if (password != null && !password.isBlank()) {
+            user.setPassword(passwordEncoder.encode(password));
         }
 
-        if (dto.roleNames() != null && !dto.roleNames().isEmpty()) {
+        java.util.Set<String> roleNames = dto.roleNames();
+        if (roleNames != null && !roleNames.isEmpty()) {
             user.getRoles().clear();
-            assignRolesToUser(user, dto.roleNames());
+            assignRolesToUser(user, roleNames);
         }
 
         User updatedUser = userRepository.save(user);
@@ -83,10 +84,10 @@ class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeResponseDto getEmployeeById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!user.isActive()) {
-            throw new ApiException("Employee not found", HttpStatus.NOT_FOUND);
+            throw new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND);
         }
 
         return employeeMapper.toResponseDto(user);
@@ -96,26 +97,34 @@ class EmployeeServiceImpl implements EmployeeService {
     public Page<EmployeeResponseDto> getAllEmployees(EmployeeFilterDto filterDto) {
         Pageable pageable = filterDto.toPageable();
 
-        Specification<User> spec = Specification.where((root, _, cb) -> cb.isTrue(root.get("isActive")));
+        Specification<User> spec = Specification.where((root, _, cb) -> cb.isTrue(root.get("active")));
 
-        if (filterDto.firstName() != null && !filterDto.firstName().isBlank()) {
-            String like = "%" + filterDto.firstName().trim().toLowerCase(Locale.ROOT) + "%";
+        String firstName = filterDto.firstName();
+        if (firstName != null && !firstName.isBlank()) {
+            String like = "%" + firstName.trim().toLowerCase(Locale.ROOT) + "%";
             spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("firstName")), like));
         }
-        if (filterDto.lastName() != null && !filterDto.lastName().isBlank()) {
-            String like = "%" + filterDto.lastName().trim().toLowerCase(Locale.ROOT) + "%";
+        
+        String lastName = filterDto.lastName();
+        if (lastName != null && !lastName.isBlank()) {
+            String like = "%" + lastName.trim().toLowerCase(Locale.ROOT) + "%";
             spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("lastName")), like));
         }
-        if (filterDto.email() != null && !filterDto.email().isBlank()) {
-            String like = "%" + filterDto.email().trim().toLowerCase(Locale.ROOT) + "%";
+        
+        String email = filterDto.email();
+        if (email != null && !email.isBlank()) {
+            String like = "%" + email.trim().toLowerCase(Locale.ROOT) + "%";
             spec = spec.and((root, _, cb) -> cb.like(cb.lower(root.get("email")), like));
         }
-        if (filterDto.isVerified() != null) {
-            boolean v = filterDto.isVerified();
-            spec = spec.and((root, _, cb) -> cb.equal(root.get("isVerified"), v));
+        
+        Boolean isVerified = filterDto.isVerified();
+        if (isVerified != null) {
+            spec = spec.and((root, _, cb) -> cb.equal(root.get("verified"), isVerified));
         }
-        if (filterDto.roles() != null && !filterDto.roles().isBlank()) {
-            java.util.List<String> roleNames = java.util.Arrays.stream(filterDto.roles().split(","))
+        
+        String roles = filterDto.roles();
+        if (roles != null && !roles.isBlank()) {
+            java.util.List<String> roleNames = java.util.Arrays.stream(roles.split(","))
                     .map(String::trim)
                     .filter(s -> !s.isBlank())
                     .map(String::toUpperCase)
@@ -127,6 +136,7 @@ class EmployeeServiceImpl implements EmployeeService {
                 });
             }
         }
+        
         String searchTerm = filterDto.search();
         if (searchTerm != null && !searchTerm.isBlank()) {
             String like = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
@@ -145,7 +155,7 @@ class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public void deleteEmployee(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!user.isActive()) {
             throw new ApiException("Employee already deleted", HttpStatus.BAD_REQUEST);

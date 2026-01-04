@@ -5,6 +5,7 @@ import com.vertyll.fastprod.modules.auth.dto.*;
 import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
+import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +17,12 @@ public class AuthService extends BaseHttpService {
 
     private static final String AUTH_ENDPOINT = "/auth";
 
-    public AuthService(@Value("${api.backend.url}") String backendUrl, ObjectMapper objectMapper) {
-        super(backendUrl, objectMapper);
+    public AuthService(
+        @Value("${api.backend.url}") String backendUrl, 
+        ObjectMapper objectMapper,
+        AuthTokenProvider authTokenProvider
+    ) {
+        super(backendUrl, objectMapper, authTokenProvider);
     }
 
     public ApiResponse<Void> register(RegisterRequestDto registerRequest) throws Exception {

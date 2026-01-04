@@ -40,7 +40,7 @@ public class VerificationToken extends BaseEntity {
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean isUsed = false;
+    private boolean used = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

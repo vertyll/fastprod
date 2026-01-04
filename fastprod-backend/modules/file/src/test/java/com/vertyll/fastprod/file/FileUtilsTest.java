@@ -11,6 +11,9 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class FileUtilsTest {
 
@@ -19,13 +22,13 @@ class FileUtilsTest {
     Path tempDir;
 
     private Path testFile;
-    private final String TEST_CONTENT = "test content";
+    private final String testContent = "test content";
 
     @BeforeEach
     void setUp() throws IOException {
         assertNotNull(tempDir, "TempDir should be initialized by JUnit");
         testFile = tempDir.resolve("test-file.txt");
-        Files.writeString(testFile, TEST_CONTENT);
+        Files.writeString(testFile, testContent);
     }
 
     @Test
@@ -35,7 +38,7 @@ class FileUtilsTest {
 
         // then
         assertNotNull(result);
-        assertEquals(TEST_CONTENT, new String(result, UTF_8));
+        assertEquals(testContent, new String(result, UTF_8));
     }
 
     @Test
@@ -50,28 +53,12 @@ class FileUtilsTest {
         assertNull(result);
     }
 
-    @Test
-    void readFileFromLocation_WhenPathIsNull_ShouldReturnNull() {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "   "})
+    void readFileFromLocation_WhenPathIsNullOrBlank_ShouldReturnNull(String path) {
         // when
-        byte[] result = FileUtils.readFileFromLocation(null);
-
-        // then
-        assertNull(result);
-    }
-
-    @Test
-    void readFileFromLocation_WhenPathIsEmpty_ShouldReturnNull() {
-        // when
-        byte[] result = FileUtils.readFileFromLocation("");
-
-        // then
-        assertNull(result);
-    }
-
-    @Test
-    void readFileFromLocation_WhenPathIsBlank_ShouldReturnNull() {
-        // when
-        byte[] result = FileUtils.readFileFromLocation("   ");
+        byte[] result = FileUtils.readFileFromLocation(path);
 
         // then
         assertNull(result);

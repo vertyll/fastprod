@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SecurityBeforeEnterListener implements BeforeEnterListener {
 
-    private final SecurityService securityService;
+    private static final String LOGIN_ROUTE = "login";
+    
+    private final transient SecurityService securityService;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -21,7 +23,7 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
         log.debug("Navigation to: {}, authenticated: {}", targetLocation, isAuthenticated);
 
         // Public routes that don't require authentication
-        boolean isPublicRoute = targetLocation.equals("login")
+        boolean isPublicRoute = targetLocation.equals(LOGIN_ROUTE)
                 || targetLocation.equals("register")
                 || targetLocation.equals("verify-account")
                 || targetLocation.startsWith("verify-account/")
@@ -32,31 +34,29 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
         // If trying to access protected route without authentication
         if (!isAuthenticated && !isPublicRoute) {
             log.info("Unauthorized access attempt to: {}. Redirecting to login.", targetLocation);
-            event.rerouteTo("login");
+            event.rerouteTo(LOGIN_ROUTE);
             return;
         }
 
         // If authenticated and trying to access login/register, redirect to home
-        if (isAuthenticated && (targetLocation.equals("login") || targetLocation.equals("register"))) {
+        if (isAuthenticated && (targetLocation.equals(LOGIN_ROUTE) || targetLocation.equals("register"))) {
             log.info("Already authenticated. Redirecting to home.");
             event.rerouteTo("");
             return;
         }
 
         // Check role-based access for employees routes
-        if (isAuthenticated && targetLocation.startsWith("employees")) {
-            if (!securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
-                log.warn("Access denied to {} for user without required roles", targetLocation);
+        if (isAuthenticated && targetLocation.startsWith("employees") && !securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
+            log.warn("Access denied to {} for user without required roles", targetLocation);
 
-                Notification notification = Notification.show(
-                        "You do not have permission to access this page",
-                        5000,
-                        Notification.Position.TOP_CENTER
-                );
-                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notification notification = Notification.show(
+                    "You do not have permission to access this page",
+                    5000,
+                    Notification.Position.TOP_CENTER
+            );
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
 
-                event.rerouteTo("");
-            }
+            event.rerouteTo("");
         }
     }
 }

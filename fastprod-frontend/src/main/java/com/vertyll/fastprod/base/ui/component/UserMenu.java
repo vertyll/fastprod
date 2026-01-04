@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserMenu extends HorizontalLayout {
 
-    private final UserService userService;
-    private final SecurityService securityService;
+    private final transient UserService userService;
+    private final transient SecurityService securityService;
     private final Avatar avatar;
     private final Span userName;
 

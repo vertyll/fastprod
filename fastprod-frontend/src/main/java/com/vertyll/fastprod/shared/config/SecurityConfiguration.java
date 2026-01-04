@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SecurityConfiguration implements VaadinServiceInitListener {
 
-    private final SecurityService securityService;
+    private final transient SecurityService securityService;
 
     @Override
     public void serviceInit(ServiceInitEvent event) {

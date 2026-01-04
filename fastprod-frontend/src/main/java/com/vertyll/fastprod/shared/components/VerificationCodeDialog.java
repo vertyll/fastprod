@@ -18,9 +18,11 @@ import java.util.function.BiConsumer;
 @Slf4j
 public class VerificationCodeDialog extends Dialog {
 
+    private static final String VERIFY_BUTTON_TEXT = "Verify";
+
     private final TextField codeField;
     private final Button verifyButton;
-    private final BiConsumer<String, VerificationCodeDialog> onVerify;
+    private final transient BiConsumer<String, VerificationCodeDialog> onVerify;
 
     public VerificationCodeDialog(String title, String description, BiConsumer<String, VerificationCodeDialog> onVerify) {
         this.onVerify = onVerify;
@@ -55,7 +57,7 @@ public class VerificationCodeDialog extends Dialog {
                 .set("font-size", "var(--lumo-font-size-xl)")
                 .set("text-align", "center");
 
-        verifyButton = new Button("Verify", VaadinIcon.CHECK.create());
+        verifyButton = new Button(VERIFY_BUTTON_TEXT, VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         verifyButton.setWidthFull();
         verifyButton.addClickListener(_ -> handleVerification());
@@ -97,14 +99,14 @@ public class VerificationCodeDialog extends Dialog {
         } catch (Exception e) {
             log.error("Verification failed", e);
             verifyButton.setEnabled(true);
-            verifyButton.setText("Verify");
+            verifyButton.setText(VERIFY_BUTTON_TEXT);
         }
     }
 
     public void showError(String message) {
         showNotification(message, NotificationVariant.LUMO_ERROR);
         verifyButton.setEnabled(true);
-        verifyButton.setText("Verify");
+        verifyButton.setText(VERIFY_BUTTON_TEXT);
         codeField.clear();
         codeField.focus();
     }

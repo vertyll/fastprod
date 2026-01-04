@@ -9,14 +9,17 @@ import java.util.Map;
 
 public class DetailsTableComponent extends Div {
 
+    private static final String DISPLAY = "display";
+    private static final String BORDER_STYLE = "1px solid var(--lumo-contrast-10pct)";
+
     private final Map<String, Component> rows = new LinkedHashMap<>();
 
     public DetailsTableComponent() {
         getStyle()
-                .set("display", "table")
+                .set(DISPLAY, "table")
                 .set("width", "100%")
                 .set("max-width", "600px")
-                .set("border", "1px solid var(--lumo-contrast-10pct)")
+                .set("border", BORDER_STYLE)
                 .set("border-radius", "var(--lumo-border-radius-m)");
     }
 
@@ -50,14 +53,14 @@ public class DetailsTableComponent extends Div {
 
     private Div createTableRow(String label, Component valueComponent) {
         Div row = new Div();
-        row.getStyle().set("display", "table-row");
+        row.getStyle().set(DISPLAY, "table-row");
 
         Div labelCell = new Div();
         labelCell.setText(label);
         labelCell.getStyle()
-                .set("display", "table-cell")
+                .set(DISPLAY, "table-cell")
                 .set("padding", "var(--lumo-space-s)")
-                .set("border-bottom", "1px solid var(--lumo-contrast-10pct)")
+                .set("border-bottom", BORDER_STYLE)
                 .set("font-weight", "500")
                 .set("width", "30%")
                 .set("background", "var(--lumo-contrast-5pct)");
@@ -65,9 +68,9 @@ public class DetailsTableComponent extends Div {
         Div valueCell = new Div();
         valueCell.add(valueComponent);
         valueCell.getStyle()
-                .set("display", "table-cell")
+                .set(DISPLAY, "table-cell")
                 .set("padding", "var(--lumo-space-s)")
-                .set("border-bottom", "1px solid var(--lumo-contrast-10pct)");
+                .set("border-bottom", BORDER_STYLE);
 
         row.add(labelCell, valueCell);
         return row;

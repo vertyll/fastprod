@@ -5,6 +5,8 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 
 public class LoadingSpinner extends Div {
 
+    private static final String CENTER = "center";
+
     public LoadingSpinner() {
         this(false);
     }
@@ -25,8 +27,8 @@ public class LoadingSpinner extends Div {
                     .set("background", "rgba(255, 255, 255, 0.8)")
                     .set("z-index", "9999")
                     .set("display", "flex")
-                    .set("align-items", "center")
-                    .set("justify-content", "center");
+                    .set("align-items", CENTER)
+                    .set("justify-content", CENTER);
         } else {
             overlay.getStyle()
                     .set("position", "absolute")
@@ -37,8 +39,8 @@ public class LoadingSpinner extends Div {
                     .set("background", "rgba(255, 255, 255, 0.8)")
                     .set("z-index", "100")
                     .set("display", "flex")
-                    .set("align-items", "center")
-                    .set("justify-content", "center");
+                    .set("align-items", CENTER)
+                    .set("justify-content", CENTER);
         }
 
         ProgressBar progressBar = new ProgressBar();

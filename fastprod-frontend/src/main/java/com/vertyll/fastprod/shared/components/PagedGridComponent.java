@@ -16,7 +16,7 @@ public class PagedGridComponent<T> extends VerticalLayout {
     private final PaginationComponent pagination;
 
     @Setter
-    private BiConsumer<Integer, Integer> onPageChange;
+    private transient BiConsumer<Integer, Integer> onPageChange;
 
     public PagedGridComponent(Class<T> beanType) {
         this(new Grid<>(beanType, false));

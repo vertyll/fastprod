@@ -26,72 +26,20 @@ public class PaginationComponent extends HorizontalLayout {
     private int totalPages = 0;
     private long totalElements = 0;
     @Setter
-    private Consumer<Integer> onPageChange;
+    private transient Consumer<Integer> onPageChange;
     @Setter
-    private Consumer<Integer> onPageSizeChange;
+    private transient Consumer<Integer> onPageSizeChange;
 
     public PaginationComponent() {
         setSpacing(true);
         setAlignItems(Alignment.CENTER);
 
-        previousButton = new Button(VaadinIcon.ANGLE_LEFT.create());
-        previousButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-        previousButton.addClickListener(_ -> {
-            if (currentPage > 0) {
-                currentPage--;
-                if (onPageChange != null) {
-                    onPageChange.accept(currentPage);
-                }
-                updateControls();
-            }
-        });
-
-        nextButton = new Button(VaadinIcon.ANGLE_RIGHT.create());
-        nextButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-        nextButton.addClickListener(_ -> {
-            if (currentPage < totalPages - 1) {
-                currentPage++;
-                if (onPageChange != null) {
-                    onPageChange.accept(currentPage);
-                }
-                updateControls();
-            }
-        });
-
-        pageField = new TextField();
-        pageField.setWidth("60px");
-        pageField.setValue("1");
-        pageField.addBlurListener(_ -> {
-            try {
-                int page = Integer.parseInt(pageField.getValue()) - 1;
-                if (page >= 0 && page < totalPages) {
-                    currentPage = page;
-                    if (onPageChange != null) {
-                        onPageChange.accept(currentPage);
-                    }
-                    updateControls();
-                } else {
-                    pageField.setValue(String.valueOf(currentPage + 1));
-                }
-            } catch (NumberFormatException ex) {
-                pageField.setValue(String.valueOf(currentPage + 1));
-            }
-        });
-
+        previousButton = createPreviousButton();
+        nextButton = createNextButton();
+        pageField = createPageField();
         pageInfoSpan = new Span("0");
         totalElementsSpan = new Span("0");
-
-        pageSizeSelect = new Select<>();
-        pageSizeSelect.setItems(5, 10, 20, 50, 100);
-        pageSizeSelect.setValue(10);
-        pageSizeSelect.setWidth("80px");
-        pageSizeSelect.addValueChangeListener(e -> {
-            if (e.getValue() != null && onPageSizeChange != null) {
-                currentPage = 0;
-                onPageSizeChange.accept(e.getValue());
-                updateControls();
-            }
-        });
+        pageSizeSelect = createPageSizeSelect();
 
         Span pageSizeLabel = new Span("Items per page:");
         pageSizeLabel.getStyle().set("margin-right", "var(--lumo-space-s)");
@@ -109,6 +57,90 @@ public class PaginationComponent extends HorizontalLayout {
                 pageSizeLabel,
                 pageSizeSelect
         );
+    }
+
+    private Button createPreviousButton() {
+        Button button = new Button(VaadinIcon.ANGLE_LEFT.create());
+        button.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        button.addClickListener(_ -> handlePreviousPage());
+        return button;
+    }
+
+    private Button createNextButton() {
+        Button button = new Button(VaadinIcon.ANGLE_RIGHT.create());
+        button.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        button.addClickListener(_ -> handleNextPage());
+        return button;
+    }
+
+    private TextField createPageField() {
+        TextField field = new TextField();
+        field.setWidth("60px");
+        field.setValue("1");
+        field.addBlurListener(_ -> handlePageFieldChange());
+        return field;
+    }
+
+    private Select<Integer> createPageSizeSelect() {
+        Select<Integer> select = new Select<>();
+        select.setItems(5, 10, 20, 50, 100);
+        select.setValue(10);
+        select.setWidth("80px");
+        select.addValueChangeListener(e -> handlePageSizeChange(e.getValue()));
+        return select;
+    }
+
+    private void handlePreviousPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            notifyPageChange();
+            updateControls();
+        }
+    }
+
+    private void handleNextPage() {
+        if (currentPage < totalPages - 1) {
+            currentPage++;
+            notifyPageChange();
+            updateControls();
+        }
+    }
+
+    private void handlePageFieldChange() {
+        try {
+            int page = Integer.parseInt(pageField.getValue()) - 1;
+            if (isValidPage(page)) {
+                currentPage = page;
+                notifyPageChange();
+                updateControls();
+            } else {
+                resetPageField();
+            }
+        } catch (NumberFormatException _) {
+            resetPageField();
+        }
+    }
+
+    private void handlePageSizeChange(Integer newPageSize) {
+        if (newPageSize != null && onPageSizeChange != null) {
+            currentPage = 0;
+            onPageSizeChange.accept(newPageSize);
+            updateControls();
+        }
+    }
+
+    private boolean isValidPage(int page) {
+        return page >= 0 && page < totalPages;
+    }
+
+    private void resetPageField() {
+        pageField.setValue(String.valueOf(currentPage + 1));
+    }
+
+    private void notifyPageChange() {
+        if (onPageChange != null) {
+            onPageChange.accept(currentPage);
+        }
     }
 
     public void updatePagination(int currentPage, int totalPages, long totalElements) {

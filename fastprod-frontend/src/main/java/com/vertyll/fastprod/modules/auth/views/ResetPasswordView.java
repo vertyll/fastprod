@@ -31,7 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ResetPasswordView extends VerticalLayout implements HasUrlParameter<String> {
 
-    private final AuthService authService;
+    private static final String COLOR = "color";
+    private static final String MARGIN_BOTTOM = "margin-bottom";
+    private static final String LUMO_SPACE_M = "var(--lumo-space-m)";
+
+    private final transient AuthService authService;
     private final Binder<FormData> binder;
     
     private String resetToken;
@@ -78,35 +82,35 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         Icon icon = VaadinIcon.LOCK.create();
         icon.setSize("64px");
         icon.getStyle()
-                .set("color", "var(--lumo-primary-color)")
-                .set("margin-bottom", "var(--lumo-space-m)");
+                .set(COLOR, "var(--lumo-primary-color)")
+                .set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         H1 title = new H1("Reset Your Password");
         title.getStyle()
                 .set("margin", "0")
                 .set("font-size", "var(--lumo-font-size-xxxl)")
                 .set("font-weight", "600")
-                .set("color", "var(--lumo-primary-text-color)");
+                .set(COLOR, "var(--lumo-primary-text-color)");
 
         Paragraph description = new Paragraph(
                 "Enter your new password below. Make sure it's strong and secure."
         );
         description.getStyle()
                 .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
-                .set("color", "var(--lumo-secondary-text-color)");
+                .set(COLOR, "var(--lumo-secondary-text-color)");
 
         newPasswordField = new PasswordField("New Password");
         newPasswordField.setWidthFull();
         newPasswordField.setPrefixComponent(VaadinIcon.LOCK.create());
         newPasswordField.setRequiredIndicatorVisible(true);
         newPasswordField.setHelperText("At least 8 characters with a letter and a digit");
-        newPasswordField.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        newPasswordField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         confirmPasswordField = new PasswordField("Confirm New Password");
         confirmPasswordField.setWidthFull();
         confirmPasswordField.setPrefixComponent(VaadinIcon.LOCK.create());
         confirmPasswordField.setRequiredIndicatorVisible(true);
-        confirmPasswordField.getStyle().set("margin-bottom", "var(--lumo-space-l)");
+        confirmPasswordField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
         binder.forField(newPasswordField)
                 .asRequired("Password is required")
@@ -123,7 +127,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         submitButton.setWidthFull();
         submitButton.addClickListener(_ -> handleSubmit());
-        submitButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        submitButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         Button backButton = new Button("Back to Login", VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);

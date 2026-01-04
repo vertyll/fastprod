@@ -14,9 +14,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(config = MapStructConfig.class)
 public interface RoleMapper {
 
-    @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "name", source = "name")
     @Mapping(target = "description", source = "description")
+    @Mapping(target = "active", ignore = true)
     Role toEntity(RoleCreateDto dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

@@ -31,9 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ChangeEmailView extends VerticalLayout {
 
-    private final SecurityService securityService;
+    private final transient SecurityService securityService;
     private final Binder<ChangeEmailDto> binder;
-    private final AuthService authService;
+    private final transient AuthService authService;
 
     private EmailField newEmailField;
     private PasswordField passwordField;

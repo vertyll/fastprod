@@ -26,7 +26,7 @@ public class HashUtil {
             return HexFormat.of().formatHex(hash);
         } catch (NoSuchAlgorithmException e) {
             log.error("SHA-256 algorithm not available", e);
-            throw new RuntimeException("SHA-256 algorithm not available", e);
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
         }
     }
 }

@@ -12,6 +12,6 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
     Optional<VerificationToken> findByToken(String token);
 
     @Modifying
-    @Query("DELETE FROM VerificationToken v WHERE v.expiryDate < :date AND v.isUsed = :isUsed")
+    @Query("DELETE FROM VerificationToken v WHERE v.expiryDate < :date AND v.used = :isUsed")
     int deleteByExpiryDateBeforeAndIsUsed(LocalDateTime date, boolean isUsed);
 }

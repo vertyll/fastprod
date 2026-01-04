@@ -33,11 +33,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProfileView extends VerticalLayout {
 
-    private final UserService userService;
+    private final transient UserService userService;
     private final Binder<ProfileUpdateDto> binder;
     private final LoadingSpinner loadingSpinner;
 
-    private UserProfileDto currentUser;
+    private transient UserProfileDto currentUser;
     private TextField firstNameField;
     private TextField lastNameField;
     private DetailsTableComponent detailsTable;

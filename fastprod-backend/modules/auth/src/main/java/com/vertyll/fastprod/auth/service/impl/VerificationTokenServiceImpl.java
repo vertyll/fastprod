@@ -22,6 +22,8 @@ import java.util.Random;
 @Slf4j
 class VerificationTokenServiceImpl implements VerificationTokenService {
 
+    private static final Random RANDOM = new Random();
+
     private final VerificationTokenRepository verificationTokenRepository;
 
     /**
@@ -36,7 +38,7 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
                 .token(code)
                 .user(user)
                 .expiryDate(LocalDateTime.now(ZoneOffset.UTC).plusHours(24))
-                .isUsed(false)
+                .used(false)
                 .tokenType(tokenType)
                 .additionalData(additionalData)
                 .build();
@@ -97,8 +99,7 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     private String generateVerificationCode() {
-        Random random = new Random();
-        int code = 100000 + random.nextInt(900000);
+        int code = 100000 + RANDOM.nextInt(900000);
         return String.valueOf(code);
     }
 }

@@ -6,6 +6,7 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.dto.PageResponse;
+import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,12 @@ public class EmployeeService extends BaseHttpService {
 
     private static final String EMPLOYEE_ENDPOINT = "/employees";
 
-    public EmployeeService(@Value("${api.backend.url}") String backendUrl, ObjectMapper objectMapper) {
-        super(backendUrl, objectMapper);
+    public EmployeeService(
+        @Value("${api.backend.url}") String backendUrl, 
+        ObjectMapper objectMapper,
+        AuthTokenProvider authTokenProvider
+    ) {
+        super(backendUrl, objectMapper, authTokenProvider);
     }
 
     public ApiResponse<EmployeeResponseDto> createEmployee(EmployeeCreateDto createDto) throws Exception {

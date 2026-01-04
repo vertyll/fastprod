@@ -14,6 +14,10 @@ public class JwtParser {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private JwtParser() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static List<String> extractRoles(String token) {
         JsonNode jsonNode = parsePayload(token);
         if (jsonNode == null) {

@@ -68,8 +68,8 @@ public class DataSeeder implements ApplicationRunner {
                 .lastName(adminProps.lastName() == null || adminProps.lastName().isBlank() ? DEFAULT_ADMIN_LAST_NAME : adminProps.lastName())
                 .email(email)
                 .password(passwordEncoder.encode(adminProps.password()))
-                .isActive(true)
-                .isVerified(true)
+                .active(true)
+                .verified(true)
                 .build();
 
         admin.setRoles(adminRoleNames.stream()

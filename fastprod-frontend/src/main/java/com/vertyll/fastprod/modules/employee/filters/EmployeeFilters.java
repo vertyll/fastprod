@@ -13,13 +13,21 @@ import java.util.stream.Collectors;
 
 public final class EmployeeFilters {
 
+    private static final String FIRST_NAME = "firstName";
+    private static final String LAST_NAME = "lastName";
+    private static final String EMAIL = "email";
+    private static final String IS_VERIFIED = "isVerified";
+    private static final String ROLES = "roles";
+    private static final String VERIFIED_LABEL = "Verified";
+
     private EmployeeFilters() {
     }
 
+    @SuppressWarnings("java:S1452")
     public static List<FilterFieldConfig<?>> configs() {
         return List.of(
                 FilterFieldConfig.builder(
-                                "firstName",
+                                FIRST_NAME,
                                 "First name",
                                 FilterFieldType.TEXT
                         )
@@ -27,7 +35,7 @@ public final class EmployeeFilters {
                         .build(),
 
                 FilterFieldConfig.builder(
-                                "lastName",
+                                LAST_NAME,
                                 "Last name",
                                 FilterFieldType.TEXT
                         )
@@ -35,7 +43,7 @@ public final class EmployeeFilters {
                         .build(),
 
                 FilterFieldConfig.builder(
-                                "email",
+                                EMAIL,
                                 "Email",
                                 FilterFieldType.TEXT
                         )
@@ -43,21 +51,21 @@ public final class EmployeeFilters {
                         .build(),
 
                 FilterFieldConfig.builder(
-                                "isVerified",
-                                "Verified",
+                                IS_VERIFIED,
+                                VERIFIED_LABEL,
                                 FilterFieldType.SELECT
                         )
                         .items(List.of(Boolean.TRUE, Boolean.FALSE))
                         .itemLabel(v -> {
                             if (v == null) return "";
-                            if (v instanceof Boolean b) return b ? "Verified" : "Not verified";
-                            return Boolean.parseBoolean(String.valueOf(v)) ? "Verified" : "Not verified";
+                            if (v instanceof Boolean b) return Boolean.TRUE.equals(b) ? VERIFIED_LABEL : "Not verified";
+                            return Boolean.parseBoolean(String.valueOf(v)) ? VERIFIED_LABEL : "Not verified";
                         })
                         .placeholder("Any")
                         .build(),
 
                 FilterFieldConfig.<RoleType>builder(
-                                "roles",
+                                ROLES,
                                 "Roles",
                                 FilterFieldType.MULTISELECT
                         )
@@ -75,12 +83,12 @@ public final class EmployeeFilters {
         FiltersValue out = FiltersValue.empty();
         if (raw == null) return out;
 
-        out.set("firstName", raw.get("firstName"));
-        out.set("lastName", raw.get("lastName"));
-        out.set("email", raw.get("email"));
-        out.set("isVerified", raw.get("isVerified"));
+        out.set(FIRST_NAME, raw.get(FIRST_NAME));
+        out.set(LAST_NAME, raw.get(LAST_NAME));
+        out.set(EMAIL, raw.get(EMAIL));
+        out.set(IS_VERIFIED, raw.get(IS_VERIFIED));
 
-        Object rolesVal = raw.get("roles");
+        Object rolesVal = raw.get(ROLES);
         if (rolesVal instanceof Collection<?> col) {
             List<String> names = col.stream()
                     .filter(Objects::nonNull)
@@ -90,12 +98,12 @@ public final class EmployeeFilters {
                     })
                     .filter(s -> !s.isBlank())
                     .collect(Collectors.toCollection(ArrayList::new));
-            out.set("roles", names);
+            out.set(ROLES, names);
         } else if (rolesVal != null) {
             if (rolesVal instanceof RoleType rt) {
-                out.set("roles", List.of(rt.name()));
+                out.set(ROLES, List.of(rt.name()));
             } else {
-                out.set("roles", List.of(String.valueOf(rolesVal)));
+                out.set(ROLES, List.of(String.valueOf(rolesVal)));
             }
         }
 

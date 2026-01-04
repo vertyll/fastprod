@@ -33,7 +33,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RegisterView extends VerticalLayout {
 
-    private final AuthService authService;
+    private static final String CREATE_ACCOUNT = "Create Account";
+    private static final String COLOR = "color";
+    private static final String MARGIN_BOTTOM = "margin-bottom";
+    private static final String LUMO_SPACE_M = "var(--lumo-space-m)";
+
+    private final transient AuthService authService;
     private final Binder<FormBuilder> binder;
 
     private TextField firstNameField;
@@ -68,17 +73,17 @@ public class RegisterView extends VerticalLayout {
                 .set("max-width", "500px")
                 .set("width", "100%");
 
-        H1 title = new H1("Create Account");
+        H1 title = new H1(CREATE_ACCOUNT);
         title.getStyle()
                 .set("margin", "0")
                 .set("font-size", "var(--lumo-font-size-xxxl)")
                 .set("font-weight", "600")
-                .set("color", "var(--lumo-primary-text-color)");
+                .set(COLOR, "var(--lumo-primary-text-color)");
 
         Paragraph subtitle = new Paragraph("Sign up to get started");
         subtitle.getStyle()
                 .set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0")
-                .set("color", "var(--lumo-secondary-text-color)");
+                .set(COLOR, "var(--lumo-secondary-text-color)");
 
         firstNameField = new TextField("First Name");
         firstNameField.setRequiredIndicatorVisible(true);
@@ -92,44 +97,44 @@ public class RegisterView extends VerticalLayout {
 
         HorizontalLayout nameLayout = new HorizontalLayout(firstNameField, lastNameField);
         nameLayout.setWidthFull();
-        nameLayout.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        nameLayout.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         emailField = new EmailField("Email");
         emailField.setRequiredIndicatorVisible(true);
         emailField.setErrorMessage("Please enter a valid email address");
         emailField.setClearButtonVisible(true);
         emailField.setWidthFull();
-        emailField.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        emailField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         passwordField = new PasswordField("Password");
         passwordField.setRequiredIndicatorVisible(true);
         passwordField.setHelperText("At least 8 characters with a letter and a digit");
         passwordField.setClearButtonVisible(true);
         passwordField.setWidthFull();
-        passwordField.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        passwordField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         confirmPasswordField = new PasswordField("Confirm Password");
         confirmPasswordField.setRequiredIndicatorVisible(true);
         confirmPasswordField.setClearButtonVisible(true);
         confirmPasswordField.setWidthFull();
-        confirmPasswordField.getStyle().set("margin-bottom", "var(--lumo-space-l)");
+        confirmPasswordField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
-        registerButton = new Button("Create Account");
+        registerButton = new Button(CREATE_ACCOUNT);
         registerButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         registerButton.setWidthFull();
         registerButton.addClickListener(_ -> handleRegistration());
-        registerButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        registerButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         RouterLink loginLink = new RouterLink("Sign in", LoginView.class);
         loginLink.getStyle()
-                .set("color", "var(--lumo-primary-color)")
+                .set(COLOR, "var(--lumo-primary-color)")
                 .set("text-decoration", "none")
                 .set("font-weight", "500");
 
         Div loginContainer = new Div();
         loginContainer.getStyle()
                 .set("text-align", "center")
-                .set("margin-top", "var(--lumo-space-m)");
+                .set("margin-top", LUMO_SPACE_M);
         loginContainer.add(new Span("Already have an account? "), loginLink);
 
         configureBinder();
@@ -153,7 +158,7 @@ public class RegisterView extends VerticalLayout {
                 .bind(FormBuilder::getEmail, FormBuilder::setEmail);
 
         binder.forField(passwordField)
-                .withValidator(password -> password != null && password.matches("^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$"), "Password must be at least 8 characters long and contain a letter and a digit")
+                .withValidator(password -> password != null && password.matches("^(?=.*\\d)(?=.*[a-zA-Z]).{8,}$"), "Password must be at least 8 characters long and contain a letter and a digit")
                 .bind(FormBuilder::getPassword, FormBuilder::setPassword);
 
         binder.forField(confirmPasswordField).withValidator(confirmPassword -> {
@@ -192,7 +197,7 @@ public class RegisterView extends VerticalLayout {
             log.error("Unexpected error during registration", e);
         } finally {
             registerButton.setEnabled(true);
-            registerButton.setText("Create Account");
+            registerButton.setText(CREATE_ACCOUNT);
         }
     }
 

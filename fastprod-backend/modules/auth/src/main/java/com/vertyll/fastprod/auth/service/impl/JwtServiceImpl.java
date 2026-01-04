@@ -53,7 +53,7 @@ class JwtServiceImpl implements JwtService {
         try {
             final String username = extractUsername(token);
             return username.equals(userDetails.getUsername()) && isTokenUnexpired(token);
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
     }
@@ -89,7 +89,7 @@ class JwtServiceImpl implements JwtService {
         try {
             final String username = extractUsernameFromRefreshToken(token);
             return username.equals(userDetails.getUsername()) && isRefreshTokenUnexpired(token);
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
     }
@@ -103,7 +103,7 @@ class JwtServiceImpl implements JwtService {
     public boolean isRefreshTokenValid(String token) {
         try {
             return isRefreshTokenUnexpired(token);
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
     }

@@ -27,8 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class MainLayout extends AppLayout {
 
-    private final SecurityService securityService;
-    private final UserService userService;
+    private static final String APP_NAME = "FastProd";
+
+    private final transient SecurityService securityService;
+    private final transient UserService userService;
 
     public MainLayout(SecurityService securityService, UserService userService) {
         this.securityService = securityService;
@@ -68,7 +70,7 @@ public final class MainLayout extends AppLayout {
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
 
-        H1 viewTitle = new H1("FastProd");
+        H1 viewTitle = new H1(APP_NAME);
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE, LumoUtility.Margin.Left.MEDIUM);
 
         UserMenu userMenu = new UserMenu(userService, securityService);
@@ -88,7 +90,7 @@ public final class MainLayout extends AppLayout {
      * Create navbar for public users
      */
     private HorizontalLayout createPublicNavbar() {
-        H1 logo = new H1("FastProd");
+        H1 logo = new H1(APP_NAME);
         logo.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
 
         Button loginButton = new Button("Login", VaadinIcon.SIGN_IN.create());
@@ -120,7 +122,7 @@ public final class MainLayout extends AppLayout {
         Icon appIcon = VaadinIcon.FACTORY.create();
         appIcon.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.IconSize.LARGE);
 
-        Span appName = new Span("FastProd");
+        Span appName = new Span(APP_NAME);
         appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
 
         Div header = new Div(appIcon, appName);

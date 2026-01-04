@@ -29,7 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ForgotPasswordView extends VerticalLayout {
 
-    private final AuthService authService;
+    private static final String COLOR = "color";
+    private static final String MARGIN_BOTTOM = "margin-bottom";
+    private static final String LUMO_SPACE_M = "var(--lumo-space-m)";
+    private static final String TEXT_ALIGN = "text-align";
+    private static final String CENTER = "center";
+
+    private final transient AuthService authService;
     private final Binder<FormData> binder;
 
     private EmailField emailField;
@@ -59,34 +65,34 @@ public class ForgotPasswordView extends VerticalLayout {
                 .set("padding", "var(--lumo-space-xl)")
                 .set("max-width", "500px")
                 .set("width", "100%")
-                .set("text-align", "center");
+                .set(TEXT_ALIGN, CENTER);
 
         Icon icon = VaadinIcon.KEY_O.create();
         icon.setSize("64px");
         icon.getStyle()
-                .set("color", "var(--lumo-primary-color)")
-                .set("margin-bottom", "var(--lumo-space-m)");
+                .set(COLOR, "var(--lumo-primary-color)")
+                .set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         H1 title = new H1("Forgot Password?");
         title.getStyle()
                 .set("margin", "0")
                 .set("font-size", "var(--lumo-font-size-xxxl)")
                 .set("font-weight", "600")
-                .set("color", "var(--lumo-primary-text-color)");
+                .set(COLOR, "var(--lumo-primary-text-color)");
 
         Paragraph description = new Paragraph(
                 "Enter your email address and we'll send you instructions to reset your password."
         );
         description.getStyle()
                 .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
-                .set("color", "var(--lumo-secondary-text-color)");
+                .set(COLOR, "var(--lumo-secondary-text-color)");
 
         emailField = new EmailField("Email Address");
         emailField.setWidthFull();
         emailField.setPrefixComponent(VaadinIcon.ENVELOPE.create());
         emailField.setPlaceholder("your.email@example.com");
         emailField.setRequiredIndicatorVisible(true);
-        emailField.getStyle().set("margin-bottom", "var(--lumo-space-l)");
+        emailField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
         binder.forField(emailField)
                 .asRequired("Email is required")
@@ -97,7 +103,7 @@ public class ForgotPasswordView extends VerticalLayout {
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         submitButton.setWidthFull();
         submitButton.addClickListener(_ -> handleSubmit());
-        submitButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        submitButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         Button backButton = new Button("Back to Login", VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -173,7 +179,7 @@ public class ForgotPasswordView extends VerticalLayout {
         text.getStyle()
                 .set("white-space", "normal")
                 .set("max-width", "400px")
-                .set("text-align", "center");
+                .set(TEXT_ALIGN, CENTER);
 
         notification.add(text);
         notification.open();

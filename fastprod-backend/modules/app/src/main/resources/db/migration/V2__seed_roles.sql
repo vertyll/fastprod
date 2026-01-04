@@ -6,7 +6,7 @@
 INSERT INTO role (
     name,
     description,
-    is_active,
+    active,
     created_at,
     updated_at,
     created_by,
@@ -24,7 +24,7 @@ INSERT INTO role (
 INSERT INTO role (
     name,
     description,
-    is_active,
+    active,
     created_at,
     updated_at,
     created_by,
@@ -42,7 +42,7 @@ INSERT INTO role (
 INSERT INTO role (
     name,
     description,
-    is_active,
+    active,
     created_at,
     updated_at,
     created_by,
@@ -60,7 +60,7 @@ INSERT INTO role (
 INSERT INTO role (
     name,
     description,
-    is_active,
+    active,
     created_at,
     updated_at,
     created_by,

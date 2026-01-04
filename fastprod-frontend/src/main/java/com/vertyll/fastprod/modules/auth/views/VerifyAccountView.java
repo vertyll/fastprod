@@ -27,7 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VerifyAccountView extends VerticalLayout implements HasUrlParameter<String> {
 
-    private final AuthService authService;
+    private static final String TEXT_ALIGN = "text-align";
+    private static final String CENTER = "center";
+    private static final String MARGIN_BOTTOM = "margin-bottom";
+    private static final String LUMO_SPACE_M = "var(--lumo-space-m)";
+    private static final String COLOR = "color";
+
+    private final transient AuthService authService;
 
     private TextField codeField;
     private TextField emailField;
@@ -65,20 +71,20 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
                 .set("padding", "var(--lumo-space-xl)")
                 .set("max-width", "500px")
                 .set("width", "100%")
-                .set("text-align", "center");
+                .set(TEXT_ALIGN, CENTER);
 
         Icon icon = VaadinIcon.ENVELOPE_O.create();
         icon.setSize("64px");
         icon.getStyle()
-                .set("color", "var(--lumo-primary-color)")
-                .set("margin-bottom", "var(--lumo-space-m)");
+                .set(COLOR, "var(--lumo-primary-color)")
+                .set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         H1 title = new H1("Verify Your Account");
         title.getStyle()
                 .set("margin", "0")
                 .set("font-size", "var(--lumo-font-size-xxxl)")
                 .set("font-weight", "600")
-                .set("color", "var(--lumo-primary-text-color)");
+                .set(COLOR, "var(--lumo-primary-text-color)");
 
         Paragraph description = new Paragraph(
                 "We've sent a verification code to your email address. " +
@@ -86,13 +92,13 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         );
         description.getStyle()
                 .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
-                .set("color", "var(--lumo-secondary-text-color)");
+                .set(COLOR, "var(--lumo-secondary-text-color)");
 
         emailField = new TextField("Email Address");
         emailField.setWidthFull();
         emailField.setPrefixComponent(VaadinIcon.ENVELOPE.create());
         emailField.setPlaceholder("your.email@example.com");
-        emailField.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        emailField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         codeField = new TextField("Verification Code");
         codeField.setWidthFull();
@@ -101,21 +107,21 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         codeField.setMaxLength(6);
         codeField.setPattern("[0-9]*");
         codeField.getStyle()
-                .set("margin-bottom", "var(--lumo-space-l)")
+                .set(MARGIN_BOTTOM, "var(--lumo-space-l)")
                 .set("font-size", "var(--lumo-font-size-xl)")
-                .set("text-align", "center");
+                .set(TEXT_ALIGN, CENTER);
 
         verifyButton = new Button("Verify Account", VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         verifyButton.setWidthFull();
         verifyButton.addClickListener(_ -> handleVerification());
-        verifyButton.getStyle().set("margin-bottom", "var(--lumo-space-m)");
+        verifyButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         resendButton = new Button("Resend Code", VaadinIcon.REFRESH.create());
         resendButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         resendButton.setWidthFull();
         resendButton.addClickListener(_ -> handleResendCode());
-        resendButton.getStyle().set("margin-bottom", "var(--lumo-space-s)");
+        resendButton.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-s)");
 
         Button backButton = new Button("Back to Login", VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -226,7 +232,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         text.getStyle()
                 .set("white-space", "normal")
                 .set("max-width", "400px")
-                .set("text-align", "center");
+                .set(TEXT_ALIGN, CENTER);
 
         notification.add(text);
         notification.open();

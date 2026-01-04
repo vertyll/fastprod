@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TokenRefreshListener implements VaadinServiceInitListener {
 
-    private final TokenRefreshService tokenRefreshService;
-    private final SecurityService securityService;
+    private final transient TokenRefreshService tokenRefreshService;
+    private final transient SecurityService securityService;
 
     @Override
     public void serviceInit(ServiceInitEvent event) {

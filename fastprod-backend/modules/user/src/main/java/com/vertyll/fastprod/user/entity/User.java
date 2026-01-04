@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import lombok.*;
 import org.jspecify.annotations.NullUnmarked;
@@ -60,18 +59,18 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean isVerified = false;
+    private boolean verified = false;
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean isActive = true;
+    private boolean active = true;
 
     @Override
     @NullUnmarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

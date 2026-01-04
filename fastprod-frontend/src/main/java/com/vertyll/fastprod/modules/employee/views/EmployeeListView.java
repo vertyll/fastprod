@@ -34,10 +34,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmployeeListView extends VerticalLayout {
 
-    private final EmployeeService employeeService;
+    private static final String COLOR = "color";
+    private static final String TITLE = "title";
+    private static final String BACKGROUND = "background";
+    private static final String CONTRAST_COLOR = "var(--lumo-contrast-10pct)";
+    private static final String LUMO_CONTRAST = "var(--lumo-contrast)";
+
+    private final transient EmployeeService employeeService;
     private final PagedGridComponent<EmployeeResponseDto> pagedGrid;
     private final FiltersComponent filtersComponent;
-    private FiltersValue currentFilters = FiltersValue.empty();
+    private transient FiltersValue currentFilters = FiltersValue.empty();
     private final LoadingSpinner loadingSpinner;
 
     public EmployeeListView(EmployeeService employeeService) {
@@ -112,26 +118,26 @@ public class EmployeeListView extends VerticalLayout {
         grid.addComponentColumn(employee -> {
             Button viewButton = new Button(VaadinIcon.EYE.create());
             viewButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-            viewButton.getElement().setAttribute("title", "View");
+            viewButton.getElement().setAttribute(TITLE, "View");
             viewButton.getStyle()
-                    .set("color", "var(--lumo-contrast)")
-                    .set("background", "var(--lumo-contrast-10pct)");
+                    .set(COLOR, LUMO_CONTRAST)
+                    .set(BACKGROUND, CONTRAST_COLOR);
             viewButton.addClickListener(_ -> navigateToDetails(employee.id()));
 
             Button editButton = new Button(VaadinIcon.EDIT.create());
             editButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-            editButton.getElement().setAttribute("title", "Edit");
+            editButton.getElement().setAttribute(TITLE, "Edit");
             editButton.getStyle()
-                    .set("color", "var(--lumo-contrast)")
-                    .set("background", "var(--lumo-contrast-10pct)");
+                    .set(COLOR, LUMO_CONTRAST)
+                    .set(BACKGROUND, CONTRAST_COLOR);
             editButton.addClickListener(_ -> navigateToForm(employee.id()));
 
             Button deleteButton = new Button(VaadinIcon.TRASH.create());
             deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-            deleteButton.getElement().setAttribute("title", "Delete");
+            deleteButton.getElement().setAttribute(TITLE, "Delete");
             deleteButton.getStyle()
-                    .set("color", "var(--lumo-contrast)")
-                    .set("background", "var(--lumo-contrast-10pct)");
+                    .set(COLOR, LUMO_CONTRAST)
+                    .set(BACKGROUND, CONTRAST_COLOR);
             deleteButton.addClickListener(_ -> confirmDelete(employee));
 
             HorizontalLayout actions = new HorizontalLayout(viewButton, editButton, deleteButton);

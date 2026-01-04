@@ -29,5 +29,5 @@ public class Role extends BaseEntity {
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean isActive = true;
+    private boolean active = true;
 }

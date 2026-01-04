@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChangePasswordView extends VerticalLayout {
 
     private final Binder<ChangePasswordDto> binder;
-    private final AuthService authService;
+    private final transient AuthService authService;
 
     private PasswordField currentPasswordField;
     private PasswordField newPasswordField;

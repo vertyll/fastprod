@@ -11,6 +11,7 @@ import com.vertyll.fastprod.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,15 +21,17 @@ import com.google.common.collect.Iterables;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 class RefreshTokenServiceImpl implements RefreshTokenService {
 
+    private static final String UNKNOWN = "unknown";
+
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
+    private final ObjectProvider<RefreshTokenService> selfProvider;
 
     @Override
     @Transactional
@@ -41,7 +44,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
                 .token(hashedToken)
                 .user(user)
                 .expiryDate(Instant.now().plusMillis(jwtService.getRefreshTokenExpirationTime()))
-                .isRevoked(false)
+                .revoked(false)
                 .deviceInfo(deviceInfo)
                 .ipAddress(extractIpAddress(request))
                 .userAgent(extractUserAgent(request))
@@ -95,13 +98,14 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public String rotateRefreshToken(String oldToken, String deviceInfo, HttpServletRequest request) {
-        User user = validateRefreshToken(oldToken);
+        RefreshTokenService self = selfProvider.getObject();
+        User user = self.validateRefreshToken(oldToken);
 
         // Revoke the old token
-        revokeRefreshToken(oldToken);
+        self.revokeRefreshToken(oldToken);
 
         // Create new refresh token
-        return createRefreshToken(user, deviceInfo, request);
+        return self.createRefreshToken(user, deviceInfo, request);
     }
 
     /**
@@ -135,7 +139,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public void revokeAllUserTokens(User user) {
-        List<RefreshToken> tokens = refreshTokenRepository.findByUserAndIsRevoked(user, false);
+        List<RefreshToken> tokens = refreshTokenRepository.findByUserAndRevoked(user, false);
         tokens.forEach(token -> {
             token.setRevoked(true);
             token.setRevokedAt(Instant.now());
@@ -154,10 +158,10 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional(readOnly = true)
     public List<RefreshToken> getUserActiveSessions(User user) {
-        return refreshTokenRepository.findByUserAndIsRevoked(user, false)
+        return refreshTokenRepository.findByUserAndRevoked(user, false)
                 .stream()
                 .filter(token -> token.getExpiryDate().isAfter(Instant.now()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -166,7 +170,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional(readOnly = true)
     public List<SessionInfoDto> getUserSessionDetails(User user) {
-        return getUserActiveSessions(user).stream()
+        return selfProvider.getObject().getUserActiveSessions(user).stream()
                 .map(token -> SessionInfoDto.builder()
                         .id(token.getId())
                         .deviceInfo(token.getDeviceInfo())
@@ -176,7 +180,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
                         .lastUsedAt(token.getLastUsedAt())
                         .expiresAt(token.getExpiryDate())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -191,7 +195,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private String extractIpAddress(HttpServletRequest request) {
         if (request == null) {
-            return "unknown";
+            return UNKNOWN;
         }
 
         String xForwardedFor = request.getHeader("X-Forwarded-For");
@@ -209,18 +213,18 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private String extractUserAgent(HttpServletRequest request) {
         if (request == null) {
-            return "unknown";
+            return UNKNOWN;
         }
 
         String userAgent = request.getHeader("User-Agent");
-        return userAgent != null ? userAgent : "unknown";
+        return userAgent != null ? userAgent : UNKNOWN;
     }
 
     private RefreshToken findTokenByValue(String token, String username) {
         String hashedToken = HashUtil.hashToken(token);
 
         return refreshTokenRepository
-                .findByUserEmailAndTokenAndIsRevoked(username, hashedToken, false)
+                .findByUserEmailAndTokenAndRevoked(username, hashedToken, false)
                 .filter(rt -> rt.getExpiryDate().isAfter(Instant.now()))
                 .orElseThrow(() -> {
                     log.warn("Refresh token not found in database for user: {}", username);

@@ -22,7 +22,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,6 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 class AuthServiceImpl implements AuthService {
+
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
+    private static final String BEARER_TOKEN_TYPE = "Bearer";
 
     private final UserService userService;
     private final VerificationTokenService verificationTokenService;
@@ -88,7 +90,7 @@ class AuthServiceImpl implements AuthService {
         );
 
         User user = userService.findByEmailWithRoles(request.email())
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!user.isVerified()) {
             throw new ApiException("Account not verified", HttpStatus.FORBIDDEN);
@@ -102,7 +104,7 @@ class AuthServiceImpl implements AuthService {
             addRefreshTokenCookie(response, refreshToken);
         }
 
-        return authMapper.toAuthResponseDto(jwtToken, "Bearer");
+        return authMapper.toAuthResponseDto(jwtToken, BEARER_TOKEN_TYPE);
     }
 
     @Override
@@ -121,7 +123,7 @@ class AuthServiceImpl implements AuthService {
 
         addRefreshTokenCookie(response, newRefreshToken);
 
-        return authMapper.toAuthResponseDto(accessToken, "Bearer");
+        return authMapper.toAuthResponseDto(accessToken, BEARER_TOKEN_TYPE);
     }
 
     @Override
@@ -154,12 +156,12 @@ class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public List<SessionResponseDto> getUserActiveSessions(String email) {
         User user = userService.findByEmailWithRoles(email)
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         return refreshTokenService.getUserSessionDetails(user)
                 .stream()
-                .map(session -> authMapper.toSessionResponseDto(session, false)) // TODO: Implement isCurrent logic
-                .collect(Collectors.toList());
+                .map(session -> authMapper.toSessionResponseDto(session, false))
+                .toList();
     }
 
     @Override
@@ -186,7 +188,7 @@ class AuthServiceImpl implements AuthService {
     @Transactional
     public void resendVerificationCode(String email) throws MessagingException {
         User user = userService.findByEmailWithRoles(email)
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (user.isVerified()) {
             throw new ApiException("Account already verified", HttpStatus.BAD_REQUEST);
@@ -211,10 +213,13 @@ class AuthServiceImpl implements AuthService {
     @Transactional
     public void requestEmailChange(ChangeEmailRequestDto request) throws MessagingException {
         Authentication authentication = getCurrentAuthentication();
+        if (authentication == null) {
+            throw new ApiException("User not authenticated", HttpStatus.UNAUTHORIZED);
+        }
         String currentEmail = authentication.getName();
 
         User user = userService.findByEmailWithRoles(currentEmail)
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
             throw new ApiException("Invalid current password", HttpStatus.BAD_REQUEST);
@@ -266,17 +271,20 @@ class AuthServiceImpl implements AuthService {
         String refreshToken = refreshTokenService.createRefreshToken(user, null, httpRequest);
         addRefreshTokenCookie(response, refreshToken);
 
-        return authMapper.toAuthResponseDto(jwtToken, "Bearer");
+        return authMapper.toAuthResponseDto(jwtToken, BEARER_TOKEN_TYPE);
     }
 
     @Override
     @Transactional
     public void requestPasswordChange(ChangePasswordRequestDto request) throws MessagingException {
         Authentication authentication = getCurrentAuthentication();
+        if (authentication == null) {
+            throw new ApiException("User not authenticated", HttpStatus.UNAUTHORIZED);
+        }
         String email = authentication.getName();
 
         User user = userService.findByEmailWithRoles(email)
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
             throw new ApiException("Invalid current password", HttpStatus.BAD_REQUEST);
@@ -326,7 +334,7 @@ class AuthServiceImpl implements AuthService {
     @Transactional
     public void sendPasswordResetEmail(String email) throws MessagingException {
         User user = userService.findByEmailWithRoles(email)
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         String verificationCode = verificationTokenService.createVerificationToken(
                 user,
@@ -405,7 +413,7 @@ class AuthServiceImpl implements AuthService {
         Map<String, Object> claims = new HashMap<>();
         List<String> roles = user.getRoles().stream()
                 .map(Role::getName)
-                .collect(Collectors.toList());
+                .toList();
         claims.put("roles", roles);
         return claims;
     }

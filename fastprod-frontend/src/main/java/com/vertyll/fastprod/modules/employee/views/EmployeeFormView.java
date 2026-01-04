@@ -33,7 +33,7 @@ import java.util.Set;
 @Slf4j
 public class EmployeeFormView extends VerticalLayout implements BeforeEnterObserver {
 
-    private final EmployeeService employeeService;
+    private final transient EmployeeService employeeService;
     private final Binder<EmployeeFormData> binder;
 
     private PasswordField passwordField;

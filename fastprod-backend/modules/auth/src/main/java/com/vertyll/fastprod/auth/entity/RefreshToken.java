@@ -40,7 +40,7 @@ public class RefreshToken extends BaseEntity {
 
     @Builder.Default
     @Column(nullable = false)
-    private boolean isRevoked = false;
+    private boolean revoked = false;
 
     private String deviceInfo;
 

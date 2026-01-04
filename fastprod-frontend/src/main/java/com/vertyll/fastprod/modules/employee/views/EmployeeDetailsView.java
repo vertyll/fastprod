@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterObserver {
 
-    private final EmployeeService employeeService;
+    private final transient EmployeeService employeeService;
     private final H2 titleLabel = new H2();
     private final DetailsTableComponent detailsTable = new DetailsTableComponent();
     private final LoadingSpinner loadingSpinner = new LoadingSpinner();

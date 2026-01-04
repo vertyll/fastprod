@@ -7,7 +7,6 @@ import com.vertyll.fastprod.shared.dto.PaginatedApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.CookieManager;
 import java.net.URI;
@@ -21,17 +20,16 @@ public abstract class BaseHttpService {
     protected final String backendUrl;
     protected final HttpClient httpClient;
     protected final ObjectMapper objectMapper;
+    private final AuthTokenProvider authTokenProvider;
 
-    @Autowired(required = false)
-    private AuthTokenProvider authTokenProvider;
-
-    public BaseHttpService(String backendUrl, ObjectMapper objectMapper) {
+    protected BaseHttpService(String backendUrl, ObjectMapper objectMapper, AuthTokenProvider authTokenProvider) {
         this.backendUrl = backendUrl;
         this.httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .cookieHandler(new CookieManager())
                 .build();
         this.objectMapper = objectMapper;
+        this.authTokenProvider = authTokenProvider;
     }
 
     private void addAuthorizationHeader(HttpRequest.Builder requestBuilder) {

@@ -80,7 +80,7 @@ class UserServiceTest {
                         .email("john@example.com")
                         .password("encodedPassword")
                         .roles(roles)
-                        .isVerified(true)
+                        .verified(true)
                         .build();
     }
 

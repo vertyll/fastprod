@@ -125,14 +125,14 @@ class AuthServiceTest {
                 .email("john@example.com")
                 .password("encodedPassword")
                 .roles(Set.of(userRole))
-                .isVerified(false)
+                .verified(false)
                 .build();
 
         verificationToken = VerificationToken.builder()
                 .token("123456")
                 .user(user)
                 .expiryDate(LocalDateTime.now(ZoneOffset.UTC).plusHours(24))
-                .isUsed(false)
+                .used(false)
                 .tokenType(VerificationTokenType.ACCOUNT_ACTIVATION)
                 .build();
     }
@@ -195,7 +195,7 @@ class AuthServiceTest {
         setupCookieProperties();
         user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("jwt-token");
+        when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
@@ -282,16 +282,16 @@ class AuthServiceTest {
 
         // then
         verify(verificationTokenService).createVerificationToken(
-                eq(user),
-                eq(VerificationTokenType.ACCOUNT_ACTIVATION),
-                eq(null)
+                user,
+                VerificationTokenType.ACCOUNT_ACTIVATION,
+                null
         );
         verify(emailService).sendEmail(
-                eq("john@example.com"),
-                eq("John"),
-                eq(EmailTemplateName.ACTIVATE_ACCOUNT),
-                eq("654321"),
-                eq("Account activation")
+                "john@example.com",
+                "John",
+                EmailTemplateName.ACTIVATE_ACCOUNT,
+                "654321",
+                "Account activation"
         );
     }
 
@@ -330,7 +330,7 @@ class AuthServiceTest {
         setupCookieProperties();
         user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("jwt-token");
+        when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
@@ -351,7 +351,7 @@ class AuthServiceTest {
         setupCookieProperties();
         user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("jwt-token");
+        when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
@@ -372,7 +372,7 @@ class AuthServiceTest {
         // given
         user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("jwt-token");
+        when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
 
         // when
         AuthResponseDto response = authService.authenticate(authRequest, httpServletRequest, null);
@@ -388,7 +388,7 @@ class AuthServiceTest {
         setupCookieProperties();
         user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("jwt-token");
+        when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
@@ -407,7 +407,7 @@ class AuthServiceTest {
         setupCookieProperties();
         user.setVerified(true);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
-        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("generated-jwt-token");
+        when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("generated-jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
@@ -417,7 +417,7 @@ class AuthServiceTest {
         AuthResponseDto response = authService.authenticate(authRequest, httpServletRequest, httpServletResponse);
 
         // then
-        verify(jwtService).generateToken(anyMap(), eq(user));
+        verify(jwtService).generateToken(anyMap(), any(User.class));
         assertEquals("generated-jwt-token", response.token());
         assertEquals("Bearer", response.type());
     }
@@ -430,7 +430,7 @@ class AuthServiceTest {
         when(httpServletRequest.getCookies()).thenReturn(new Cookie[]{refreshCookie});
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(refreshTokenService.validateRefreshToken("valid-refresh-token")).thenReturn(user);
-        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("new-access-token");
+        when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("new-access-token");
         when(refreshTokenService.rotateRefreshToken(anyString(), any(), any(HttpServletRequest.class)))
                 .thenReturn("new-refresh-token");
 
@@ -439,8 +439,8 @@ class AuthServiceTest {
 
         // then
         verify(refreshTokenService).validateRefreshToken("valid-refresh-token");
-        verify(jwtService).generateToken(anyMap(), eq(user));
-        verify(refreshTokenService).rotateRefreshToken("valid-refresh-token", null, httpServletRequest);
+        verify(jwtService).generateToken(anyMap(), any(User.class));
+        verify(refreshTokenService).rotateRefreshToken(eq("valid-refresh-token"), isNull(), eq(httpServletRequest));
         verify(httpServletResponse).addHeader(eq("Set-Cookie"), anyString());
         assertEquals("new-access-token", response.token());
     }
@@ -505,16 +505,16 @@ class AuthServiceTest {
 
         // then
         verify(verificationTokenService).createVerificationToken(
-                eq(user),
-                eq(VerificationTokenType.EMAIL_CHANGE),
-                eq("newemail@example.com")
+                user,
+                VerificationTokenType.EMAIL_CHANGE,
+                "newemail@example.com"
         );
         verify(emailService).sendEmail(
-                eq("newemail@example.com"),
-                eq("John"),
-                eq(EmailTemplateName.CHANGE_EMAIL),
-                eq("123456"),
-                eq("Email Change Verification")
+                "newemail@example.com",
+                "John",
+                EmailTemplateName.CHANGE_EMAIL,
+                "123456",
+                "Email Change Verification"
         );
     }
 
@@ -540,10 +540,10 @@ class AuthServiceTest {
         when(verificationTokenService.getValidToken("123456", VerificationTokenType.EMAIL_CHANGE))
                 .thenReturn(verificationToken);
         when(userService.saveUser(any(User.class))).thenReturn(user);
-        when(jwtService.generateToken(anyMap(), eq(user))).thenReturn("new-jwt-token");
+        when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("new-jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
-        when(refreshTokenService.createRefreshToken(any(User.class), eq(null), any(HttpServletRequest.class)))
+        when(refreshTokenService.createRefreshToken(any(User.class), isNull(), any(HttpServletRequest.class)))
                 .thenReturn("new-refresh-token");
 
         // when
@@ -575,16 +575,16 @@ class AuthServiceTest {
 
         // then
         verify(verificationTokenService).createVerificationToken(
-                eq(user),
-                eq(VerificationTokenType.PASSWORD_CHANGE),
-                eq("encodedNewPassword")
+                user,
+                VerificationTokenType.PASSWORD_CHANGE,
+                "encodedNewPassword"
         );
         verify(emailService).sendEmail(
-                eq("john@example.com"),
-                eq("John"),
-                eq(EmailTemplateName.CHANGE_PASSWORD),
-                eq("123456"),
-                eq("Password Change Verification")
+                "john@example.com",
+                "John",
+                EmailTemplateName.CHANGE_PASSWORD,
+                "123456",
+                "Password Change Verification"
         );
     }
 
@@ -621,16 +621,16 @@ class AuthServiceTest {
 
         // then
         verify(verificationTokenService).createVerificationToken(
-                eq(user),
-                eq(VerificationTokenType.PASSWORD_RESET),
-                eq(null)
+                user,
+                VerificationTokenType.PASSWORD_RESET,
+                null
         );
         verify(emailService).sendEmail(
-                eq("john@example.com"),
-                eq("John"),
-                eq(EmailTemplateName.RESET_PASSWORD),
-                eq("123456"),
-                eq("Password Reset")
+                "john@example.com",
+                "John",
+                EmailTemplateName.RESET_PASSWORD,
+                "123456",
+                "Password Reset"
         );
     }
 

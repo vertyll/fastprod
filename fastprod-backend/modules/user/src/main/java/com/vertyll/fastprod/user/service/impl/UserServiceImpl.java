@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 class UserServiceImpl implements UserService {
 
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
+
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
@@ -40,8 +42,9 @@ class UserServiceImpl implements UserService {
         }
 
         Set<Role> roles = new HashSet<>();
-        if (dto.roleNames() != null && !dto.roleNames().isEmpty()) {
-            for (String roleName : dto.roleNames()) {
+        Set<String> roleNames = dto.roleNames();
+        if (roleNames != null && !roleNames.isEmpty()) {
+            for (String roleName : roleNames) {
                 roles.add(roleService.getOrCreateDefaultRole(roleName));
             }
         } else {
@@ -60,22 +63,23 @@ class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDto updateUser(Long id, UserUpdateDto dto) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
-        if (dto.email() != null && !dto.email().equals(user.getEmail())) {
-            if (userRepository.existsByEmail(dto.email())) {
-                throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
-            }
+        String email = dto.email();
+        if (email != null && !email.equals(user.getEmail()) && userRepository.existsByEmail(email)) {
+            throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
         userMapper.updateFromDto(dto, user);
 
-        if (dto.password() != null) {
-            user.setPassword(passwordEncoder.encode(dto.password()));
+        String password = dto.password();
+        if (password != null) {
+            user.setPassword(passwordEncoder.encode(password));
         }
 
-        if (dto.roleNames() != null) {
-            Set<Role> roles = dto.roleNames().stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet());
+        Set<String> roleNames = dto.roleNames();
+        if (roleNames != null) {
+            Set<Role> roles = roleNames.stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet());
             user.setRoles(roles);
         }
 
@@ -85,7 +89,7 @@ class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
         return userMapper.toResponseDto(user);
     }
 
@@ -108,7 +112,7 @@ class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getCurrentUser(String email) {
         User user = userRepository.findByEmailWithRoles(email)
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
         return userMapper.toResponseDto(user);
     }
 
@@ -116,7 +120,7 @@ class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto updateCurrentUserProfile(String email, ProfileUpdateDto dto) {
         User user = userRepository.findByEmailWithRoles(email)
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
