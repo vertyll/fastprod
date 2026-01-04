@@ -72,6 +72,22 @@ subprojects {
         jvmArgs(
             "-XX:+EnableDynamicAgentLoading", "-Xshare:off"
         )
+
+        testLogging {
+            events("passed", "skipped", "failed")
+            showStandardStreams = false
+            showExceptions = true
+            showCauses = true
+            showStackTraces = true
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
+
+        afterSuite(KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
+            if (desc.parent == null) {
+                println("\nTest Results: ${result.resultType}")
+                println("Tests run: ${result.testCount}, Failures: ${result.failedTestCount}, Skipped: ${result.skippedTestCount}")
+            }
+        }))
     }
 
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
