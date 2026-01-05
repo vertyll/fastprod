@@ -1,13 +1,16 @@
 package com.vertyll.fastprod.shared.security;
 
-import com.vaadin.flow.server.VaadinSession;
-import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
-import com.vertyll.fastprod.modules.auth.service.AuthService;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.vaadin.flow.server.VaadinSession;
+
+import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.modules.auth.service.AuthService;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -27,11 +30,12 @@ public class SecurityService {
             session.setAttribute(TOKEN_SESSION_KEY, authResponse.token());
             session.setAttribute(TOKEN_TYPE_SESSION_KEY, authResponse.type());
             session.setAttribute(USER_SESSION_KEY, authResponse);
-            
+
             List<String> roles = JwtParser.extractRoles(authResponse.token());
             session.setAttribute(ROLES_SESSION_KEY, roles);
-            
-            log.debug("User logged in with token type: {} and roles: {}", authResponse.type(), roles);
+
+            log.debug(
+                    "User logged in with token type: {} and roles: {}", authResponse.type(), roles);
         }
     }
 

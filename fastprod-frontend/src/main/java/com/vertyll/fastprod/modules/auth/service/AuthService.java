@@ -1,15 +1,18 @@
 package com.vertyll.fastprod.modules.auth.service;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.vertyll.fastprod.modules.auth.dto.*;
 import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -18,10 +21,9 @@ public class AuthService extends BaseHttpService {
     private static final String AUTH_ENDPOINT = "/auth";
 
     public AuthService(
-        @Value("${api.backend.url}") String backendUrl, 
-        ObjectMapper objectMapper,
-        AuthTokenProvider authTokenProvider
-    ) {
+            @Value("${api.backend.url}") String backendUrl,
+            ObjectMapper objectMapper,
+            AuthTokenProvider authTokenProvider) {
         super(backendUrl, objectMapper, authTokenProvider);
     }
 
@@ -74,6 +76,7 @@ public class AuthService extends BaseHttpService {
     }
 
     public ApiResponse<AuthResponseDto> verifyEmailChange(String code) throws Exception {
-        return post(AUTH_ENDPOINT + "/verify-email-change?code=" + code, null, AuthResponseDto.class);
+        return post(
+                AUTH_ENDPOINT + "/verify-email-change?code=" + code, null, AuthResponseDto.class);
     }
 }

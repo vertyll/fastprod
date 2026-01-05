@@ -19,9 +19,11 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
 import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
+
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +39,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
 
     private final transient AuthService authService;
     private final Binder<FormData> binder;
-    
+
     private String resetToken;
     private PasswordField newPasswordField;
     private PasswordField confirmPasswordField;
@@ -51,7 +53,9 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
         getStyle()
-                .set("background", "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
+                .set(
+                        "background",
+                        "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
                 .set("padding", "var(--lumo-space-l)");
 
         createView();
@@ -81,9 +85,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
 
         Icon icon = VaadinIcon.LOCK.create();
         icon.setSize("64px");
-        icon.getStyle()
-                .set(COLOR, "var(--lumo-primary-color)")
-                .set(MARGIN_BOTTOM, LUMO_SPACE_M);
+        icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         H1 title = new H1("Reset Your Password");
         title.getStyle()
@@ -92,10 +94,10 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
                 .set("font-weight", "600")
                 .set(COLOR, "var(--lumo-primary-text-color)");
 
-        Paragraph description = new Paragraph(
-                "Enter your new password below. Make sure it's strong and secure."
-        );
-        description.getStyle()
+        Paragraph description =
+                new Paragraph("Enter your new password below. Make sure it's strong and secure.");
+        description
+                .getStyle()
                 .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
                 .set(COLOR, "var(--lumo-secondary-text-color)");
 
@@ -115,7 +117,8 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         binder.forField(newPasswordField)
                 .asRequired("Password is required")
                 .withValidator(pwd -> pwd.length() >= 8, "Password must be at least 8 characters")
-                .withValidator(pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"),
+                .withValidator(
+                        pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"),
                         "Password must contain at least one letter and one digit")
                 .bind(FormData::newPassword, FormData::setNewPassword);
 
@@ -140,8 +143,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
                 newPasswordField,
                 confirmPasswordField,
                 submitButton,
-                backButton
-        );
+                backButton);
 
         add(card);
     }
@@ -174,17 +176,19 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
 
             showNotification(
                     "Password reset successfully! You can now log in with your new password.",
-                    NotificationVariant.LUMO_SUCCESS
-            );
+                    NotificationVariant.LUMO_SUCCESS);
 
             UI ui = UI.getCurrent();
-            java.util.concurrent.CompletableFuture
-                    .runAsync(() -> {}, java.util.concurrent.CompletableFuture.delayedExecutor(2, java.util.concurrent.TimeUnit.SECONDS))
+            java.util.concurrent.CompletableFuture.runAsync(
+                            () -> {},
+                            java.util.concurrent.CompletableFuture.delayedExecutor(
+                                    2, java.util.concurrent.TimeUnit.SECONDS))
                     .thenRun(() -> ui.access(() -> ui.navigate(LoginView.class)))
-                    .exceptionally(ex -> {
-                        log.error("Delayed navigation failed", ex);
-                        return null;
-                    });
+                    .exceptionally(
+                            ex -> {
+                                log.error("Delayed navigation failed", ex);
+                                return null;
+                            });
 
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
@@ -192,8 +196,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         } catch (Exception e) {
             showNotification(
                     "Failed to reset password. The reset link may have expired.",
-                    NotificationVariant.LUMO_ERROR
-            );
+                    NotificationVariant.LUMO_ERROR);
             log.error("Error during password reset", e);
         } finally {
             submitButton.setEnabled(true);
@@ -223,13 +226,12 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         private String newPassword;
         private String confirmPassword;
 
-        public String newPassword() {
+        String newPassword() {
             return newPassword;
         }
 
-        public String confirmPassword() {
+        String confirmPassword() {
             return confirmPassword;
         }
-
     }
 }

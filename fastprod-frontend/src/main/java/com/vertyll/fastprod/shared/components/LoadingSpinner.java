@@ -16,7 +16,7 @@ public class LoadingSpinner extends Div {
 
         Div overlay = new Div();
         overlay.addClassName("loading-overlay");
-        
+
         if (fullScreen) {
             overlay.getStyle()
                     .set("position", "fixed")

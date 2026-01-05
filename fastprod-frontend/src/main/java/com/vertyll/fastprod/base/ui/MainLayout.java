@@ -17,10 +17,12 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import com.vertyll.fastprod.base.ui.component.UserMenu;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.security.RoleType;
 import com.vertyll.fastprod.shared.security.SecurityService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Layout
@@ -43,9 +45,7 @@ public final class MainLayout extends AppLayout {
         }
     }
 
-    /**
-     * Create layout for authenticated users (with side navigation)
-     */
+    /** Create layout for authenticated users (with side navigation) */
     private void createAuthenticatedLayout() {
         setPrimarySection(Section.DRAWER);
 
@@ -55,23 +55,22 @@ public final class MainLayout extends AppLayout {
         addToDrawer(createDrawerHeader(), new Scroller(createSideNav()));
     }
 
-    /**
-     * Create layout for public users (with top navigation only)
-     */
+    /** Create layout for public users (with top navigation only) */
     private void createPublicLayout() {
         HorizontalLayout navbar = createPublicNavbar();
         addToNavbar(navbar);
     }
 
-    /**
-     * Create navbar for authenticated users
-     */
+    /** Create navbar for authenticated users */
     private HorizontalLayout createAuthenticatedNavbar() {
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
 
         H1 viewTitle = new H1(APP_NAME);
-        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE, LumoUtility.Margin.Left.MEDIUM);
+        viewTitle.addClassNames(
+                LumoUtility.FontSize.LARGE,
+                LumoUtility.Margin.NONE,
+                LumoUtility.Margin.Left.MEDIUM);
 
         UserMenu userMenu = new UserMenu(userService, securityService);
 
@@ -86,9 +85,7 @@ public final class MainLayout extends AppLayout {
         return navbar;
     }
 
-    /**
-     * Create navbar for public users
-     */
+    /** Create navbar for public users */
     private HorizontalLayout createPublicNavbar() {
         H1 logo = new H1(APP_NAME);
         logo.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
@@ -115,9 +112,7 @@ public final class MainLayout extends AppLayout {
         return navbar;
     }
 
-    /**
-     * Create drawer header
-     */
+    /** Create drawer header */
     private Div createDrawerHeader() {
         Icon appIcon = VaadinIcon.FACTORY.create();
         appIcon.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.IconSize.LARGE);
@@ -126,14 +121,16 @@ public final class MainLayout extends AppLayout {
         appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
 
         Div header = new Div(appIcon, appName);
-        header.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Padding.MEDIUM, LumoUtility.Gap.MEDIUM, LumoUtility.AlignItems.CENTER);
+        header.addClassNames(
+                LumoUtility.Display.FLEX,
+                LumoUtility.Padding.MEDIUM,
+                LumoUtility.Gap.MEDIUM,
+                LumoUtility.AlignItems.CENTER);
 
         return header;
     }
 
-    /**
-     * Create side navigation menu
-     */
+    /** Create side navigation menu */
     private SideNav createSideNav() {
         SideNav nav = new SideNav();
         nav.addClassNames(LumoUtility.Margin.Horizontal.MEDIUM);
@@ -145,9 +142,11 @@ public final class MainLayout extends AppLayout {
             SideNavItem adminSection = new SideNavItem("Administration");
             adminSection.setPrefixComponent(VaadinIcon.COG.create());
 
-            SideNavItem employeesLink = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
+            SideNavItem employeesLink =
+                    new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
             employeesLink.addItem(new SideNavItem("List", "employees", VaadinIcon.LIST.create()));
-            employeesLink.addItem(new SideNavItem("Add", "employees/form", VaadinIcon.PLUS.create()));
+            employeesLink.addItem(
+                    new SideNavItem("Add", "employees/form", VaadinIcon.PLUS.create()));
 
             adminSection.addItem(employeesLink);
 

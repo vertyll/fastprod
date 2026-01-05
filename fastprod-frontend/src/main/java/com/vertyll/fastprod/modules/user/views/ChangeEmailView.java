@@ -15,6 +15,7 @@ import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
@@ -22,6 +23,7 @@ import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.SecurityService;
+
 import jakarta.annotation.security.PermitAll;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +59,8 @@ public class ChangeEmailView extends VerticalLayout {
         formLayout.setWidth("400px");
         formLayout.setPadding(true);
         formLayout.setSpacing(true);
-        formLayout.getStyle()
+        formLayout
+                .getStyle()
                 .set("background", "var(--lumo-base-color)")
                 .set("border-radius", "var(--lumo-border-radius-m)")
                 .set("box-shadow", "var(--lumo-box-shadow-xl)");
@@ -77,13 +80,11 @@ public class ChangeEmailView extends VerticalLayout {
         binder.forField(newEmailField)
                 .asRequired("Email is required")
                 .withValidator(new EmailValidator("Please enter a valid email address"))
-                .bind(ChangeEmailDto::newEmail, (_, _) -> {
-                });
+                .bind(ChangeEmailDto::newEmail, (_, _) -> {});
 
         binder.forField(passwordField)
                 .asRequired("Password is required")
-                .bind(ChangeEmailDto::currentPassword, (_, _) -> {
-                });
+                .bind(ChangeEmailDto::currentPassword, (_, _) -> {});
 
         Button saveButton = new Button("Request Email Change");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -95,30 +96,21 @@ public class ChangeEmailView extends VerticalLayout {
         cancelButton.setWidthFull();
         cancelButton.addClickListener(_ -> UI.getCurrent().navigate("profile"));
 
-        formLayout.add(
-                title,
-                newEmailField,
-                passwordField,
-                saveButton,
-                cancelButton
-        );
+        formLayout.add(title, newEmailField, passwordField, saveButton, cancelButton);
 
         add(formLayout);
     }
 
     private void handleChangeEmail() {
         try {
-            ChangeEmailDto dto = new ChangeEmailDto(
-                    passwordField.getValue(),
-                    newEmailField.getValue()
-            );
+            ChangeEmailDto dto =
+                    new ChangeEmailDto(passwordField.getValue(), newEmailField.getValue());
 
             if (binder.validate().isOk()) {
                 authService.requestEmailChange(dto);
                 showNotification(
                         "Verification code sent to your new email address. Please check your inbox.",
-                        NotificationVariant.LUMO_SUCCESS
-                );
+                        NotificationVariant.LUMO_SUCCESS);
                 clearFormAndValidation();
                 showVerificationDialog();
             }
@@ -126,8 +118,7 @@ public class ChangeEmailView extends VerticalLayout {
             log.error("Failed to request email change", e);
             showNotification(
                     "Failed to change email. Check your password or ensure the email is not already in use.",
-                    NotificationVariant.LUMO_ERROR
-            );
+                    NotificationVariant.LUMO_ERROR);
         }
     }
 
@@ -142,11 +133,11 @@ public class ChangeEmailView extends VerticalLayout {
     }
 
     private void showVerificationDialog() {
-        VerificationCodeDialog dialog = new VerificationCodeDialog(
-                "Verify Email Change",
-                "Enter the 6-digit verification code sent to your new email address to complete the email change.",
-                this::handleVerifyCode
-        );
+        VerificationCodeDialog dialog =
+                new VerificationCodeDialog(
+                        "Verify Email Change",
+                        "Enter the 6-digit verification code sent to your new email address to complete the email change.",
+                        this::handleVerifyCode);
         dialog.open();
     }
 
@@ -159,7 +150,8 @@ public class ChangeEmailView extends VerticalLayout {
                 securityService.login(response.data());
             }
 
-            dialog.showSuccess("Email changed successfully! Please log in again with your new email.");
+            dialog.showSuccess(
+                    "Email changed successfully! Please log in again with your new email.");
             // After email change, user needs to log in again
             UI.getCurrent().getPage().setLocation("/login");
         } catch (Exception e) {

@@ -12,10 +12,12 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.SecurityService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -51,7 +53,8 @@ public class UserMenu extends HorizontalLayout {
         SubMenu subMenu = menuItem.getSubMenu();
 
         Div profileHeader = new Div();
-        profileHeader.getStyle()
+        profileHeader
+                .getStyle()
                 .set("padding", "var(--lumo-space-m)")
                 .set("border-bottom", "1px solid var(--lumo-contrast-10pct)")
                 .set("background", "var(--lumo-contrast-5pct)")
@@ -63,7 +66,8 @@ public class UserMenu extends HorizontalLayout {
                 .set("color", "var(--lumo-primary-text-color)");
 
         Span userEmailSpan = new Span();
-        userEmailSpan.getStyle()
+        userEmailSpan
+                .getStyle()
                 .set("display", "block")
                 .set("font-size", "var(--lumo-font-size-xs)")
                 .set("color", "var(--lumo-secondary-text-color)")
@@ -72,9 +76,8 @@ public class UserMenu extends HorizontalLayout {
         profileHeader.add(userName, userEmailSpan);
         subMenu.addItem(profileHeader).setEnabled(false);
 
-        MenuItem profileItem = subMenu.addItem("My Profile", _ ->
-                UI.getCurrent().navigate("profile")
-        );
+        MenuItem profileItem =
+                subMenu.addItem("My Profile", _ -> UI.getCurrent().navigate("profile"));
         profileItem.addComponentAsFirst(VaadinIcon.USER.create());
 
         MenuItem logoutItem = subMenu.addItem("Logout", _ -> handleLogout());

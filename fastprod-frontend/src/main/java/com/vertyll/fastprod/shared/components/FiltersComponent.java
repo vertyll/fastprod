@@ -1,5 +1,8 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.util.*;
+import java.util.function.Consumer;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -9,11 +12,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
+
 import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
-
-import java.util.*;
-import java.util.function.Consumer;
 
 public class FiltersComponent extends HorizontalLayout {
 
@@ -54,11 +55,12 @@ public class FiltersComponent extends HorizontalLayout {
         summaryBar.expand(selectedChips);
         summaryBar.getStyle().set("flex-basis", "100%");
 
-        toggleButton.addClickListener(_ -> {
-            expanded = !expanded;
-            updateToggleLabel();
-            updateVisibility();
-        });
+        toggleButton.addClickListener(
+                _ -> {
+                    expanded = !expanded;
+                    updateToggleLabel();
+                    updateVisibility();
+                });
         clearButton.addClickListener(_ -> clear());
     }
 
@@ -142,19 +144,19 @@ public class FiltersComponent extends HorizontalLayout {
         Select<Object> select = new Select<>();
         select.setLabel(cfg.label());
         select.setEmptySelectionAllowed(false);
-        
+
         if (cfg.placeholder() != null) {
             select.setPlaceholder(cfg.placeholder());
         }
 
         List<Object> items = getItemsForConfig(cfg);
         List<Object> menuItems = buildSelectMenuItems(cfg, items);
-        
+
         configureSelectLabels(select, cfg);
         select.setItems(menuItems);
         setSelectInitialValue(select, cfg);
         select.addValueChangeListener(_ -> emitChange());
-        
+
         return select;
     }
 
@@ -173,30 +175,36 @@ public class FiltersComponent extends HorizontalLayout {
     private List<Object> buildSelectMenuItems(FilterFieldConfig<?> cfg, List<Object> items) {
         List<Object> menuItems = new ArrayList<>();
         Object emptyToken = cfg.placeholder() != null ? new Object() : null;
-        
+
         if (emptyToken != null) {
             selectEmptyTokens.put(cfg.id(), emptyToken);
             menuItems.add(emptyToken);
         }
         menuItems.addAll(items);
-        
+
         return menuItems;
     }
 
     private void configureSelectLabels(Select<Object> select, FilterFieldConfig<?> cfg) {
         Object emptyToken = selectEmptyTokens.get(cfg.id());
-        
+
         if (cfg.itemLabelGenerator() != null) {
             @SuppressWarnings("unchecked")
-            var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
-            select.setItemLabelGenerator(item -> generateSelectLabel(item, emptyToken, cfg.placeholder(), gen));
+            var gen =
+                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
+            select.setItemLabelGenerator(
+                    item -> generateSelectLabel(item, emptyToken, cfg.placeholder(), gen));
         } else {
-            select.setItemLabelGenerator(item -> generateDefaultSelectLabel(item, emptyToken, cfg.placeholder()));
+            select.setItemLabelGenerator(
+                    item -> generateDefaultSelectLabel(item, emptyToken, cfg.placeholder()));
         }
     }
 
-    private String generateSelectLabel(Object item, Object emptyToken, String placeholder, 
-                                      com.vaadin.flow.component.ItemLabelGenerator<Object> generator) {
+    private String generateSelectLabel(
+            Object item,
+            Object emptyToken,
+            String placeholder,
+            com.vaadin.flow.component.ItemLabelGenerator<Object> generator) {
         if (emptyToken != null && Objects.equals(item, emptyToken)) {
             return placeholder;
         }
@@ -220,7 +228,7 @@ public class FiltersComponent extends HorizontalLayout {
     private MultiSelectComboBox<Object> createMultiSelect(FilterFieldConfig<?> cfg) {
         MultiSelectComboBox<Object> ms = new MultiSelectComboBox<>();
         ms.setLabel(cfg.label());
-        
+
         if (cfg.placeholder() != null) {
             ms.setPlaceholder(cfg.placeholder());
         }
@@ -230,14 +238,16 @@ public class FiltersComponent extends HorizontalLayout {
         ms.setItems(items);
         ms.setClearButtonVisible(true);
         ms.addValueChangeListener(_ -> emitChange());
-        
+
         return ms;
     }
 
-    private void configureMultiSelectLabels(MultiSelectComboBox<Object> ms, FilterFieldConfig<?> cfg) {
+    private void configureMultiSelectLabels(
+            MultiSelectComboBox<Object> ms, FilterFieldConfig<?> cfg) {
         if (cfg.itemLabelGenerator() != null) {
             @SuppressWarnings("unchecked")
-            var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
+            var gen =
+                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
             ms.setItemLabelGenerator(gen);
         } else {
             ms.setItemLabelGenerator(item -> item == null ? "" : String.valueOf(item));
@@ -313,7 +323,8 @@ public class FiltersComponent extends HorizontalLayout {
     }
 
     public void setValues(FiltersValue values) {
-        controls.forEach((key, component) -> setComponentValue(key, component, values.asMap().get(key)));
+        controls.forEach(
+                (key, component) -> setComponentValue(key, component, values.asMap().get(key)));
         updateSelectedSummary();
     }
 
@@ -334,7 +345,7 @@ public class FiltersComponent extends HorizontalLayout {
     private void setSelectValue(String key, Select<?> select, Object value) {
         @SuppressWarnings("unchecked")
         Select<Object> s = (Select<Object>) select;
-        
+
         if (value == null) {
             Object token = selectEmptyTokens.get(key);
             if (token != null) {
@@ -351,7 +362,7 @@ public class FiltersComponent extends HorizontalLayout {
         @SuppressWarnings("unchecked")
         MultiSelectComboBox<Object> ms = (MultiSelectComboBox<Object>) multiSelect;
         ms.clear();
-        
+
         if (value instanceof Collection<?> col) {
             ms.setValue(new HashSet<>(col));
         }
@@ -420,14 +431,16 @@ public class FiltersComponent extends HorizontalLayout {
     private ChipData extractSelectChipData(String id, Select<?> select) {
         Object value = select.getValue();
         Object token = selectEmptyTokens.get(id);
-        
+
         if (token != null && Objects.equals(value, token)) {
             return null;
         }
-        
+
         if (value != null) {
             @SuppressWarnings("unchecked")
-            var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) select.getItemLabelGenerator();
+            var gen =
+                    (com.vaadin.flow.component.ItemLabelGenerator<Object>)
+                            select.getItemLabelGenerator();
             String valueText = gen != null ? gen.apply(value) : String.valueOf(value);
             return new ChipData(select.getLabel(), valueText);
         }
@@ -436,15 +449,18 @@ public class FiltersComponent extends HorizontalLayout {
 
     private ChipData extractMultiSelectChipData(MultiSelectComboBox<?> multiSelect) {
         Set<?> selected = multiSelect.getSelectedItems();
-        
+
         if (selected != null && !selected.isEmpty()) {
             @SuppressWarnings("unchecked")
-            var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
-            
-            List<String> labels = selected.stream()
-                .map(o -> gen != null ? gen.apply(o) : String.valueOf(o))
-                .toList();
-            
+            var gen =
+                    (com.vaadin.flow.component.ItemLabelGenerator<Object>)
+                            multiSelect.getItemLabelGenerator();
+
+            List<String> labels =
+                    selected.stream()
+                            .map(o -> gen != null ? gen.apply(o) : String.valueOf(o))
+                            .toList();
+
             return new ChipData(multiSelect.getLabel(), String.join(", ", labels));
         }
         return null;

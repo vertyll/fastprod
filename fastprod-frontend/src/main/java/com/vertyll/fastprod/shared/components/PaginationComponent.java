@@ -1,16 +1,17 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.util.function.Consumer;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.function.Consumer;
 
 public class PaginationComponent extends HorizontalLayout {
 
@@ -21,14 +22,11 @@ public class PaginationComponent extends HorizontalLayout {
     private final Span totalElementsSpan;
     private final Select<Integer> pageSizeSelect;
 
-    @Getter
-    private int currentPage = 0;
+    @Getter private int currentPage = 0;
     private int totalPages = 0;
     private long totalElements = 0;
-    @Setter
-    private transient Consumer<Integer> onPageChange;
-    @Setter
-    private transient Consumer<Integer> onPageSizeChange;
+    @Setter private transient Consumer<Integer> onPageChange;
+    @Setter private transient Consumer<Integer> onPageSizeChange;
 
     public PaginationComponent() {
         setSpacing(true);
@@ -55,8 +53,7 @@ public class PaginationComponent extends HorizontalLayout {
                 totalElementsSpan,
                 new Span("total"),
                 pageSizeLabel,
-                pageSizeSelect
-        );
+                pageSizeSelect);
     }
 
     private Button createPreviousButton() {

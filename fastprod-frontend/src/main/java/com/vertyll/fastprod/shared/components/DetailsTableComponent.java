@@ -1,11 +1,11 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class DetailsTableComponent extends Div {
 
@@ -57,7 +57,8 @@ public class DetailsTableComponent extends Div {
 
         Div labelCell = new Div();
         labelCell.setText(label);
-        labelCell.getStyle()
+        labelCell
+                .getStyle()
                 .set(DISPLAY, "table-cell")
                 .set("padding", "var(--lumo-space-s)")
                 .set("border-bottom", BORDER_STYLE)
@@ -67,7 +68,8 @@ public class DetailsTableComponent extends Div {
 
         Div valueCell = new Div();
         valueCell.add(valueComponent);
-        valueCell.getStyle()
+        valueCell
+                .getStyle()
                 .set(DISPLAY, "table-cell")
                 .set("padding", "var(--lumo-space-s)")
                 .set("border-bottom", BORDER_STYLE);

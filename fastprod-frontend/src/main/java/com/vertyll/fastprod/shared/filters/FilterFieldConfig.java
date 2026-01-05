@@ -1,9 +1,9 @@
 package com.vertyll.fastprod.shared.filters;
 
-import com.vaadin.flow.component.ItemLabelGenerator;
-
 import java.util.List;
 import java.util.function.Supplier;
+
+import com.vaadin.flow.component.ItemLabelGenerator;
 
 public class FilterFieldConfig<T> {
     private final String id;

@@ -1,11 +1,12 @@
 package com.vertyll.fastprod.shared.security;
 
-import com.vaadin.flow.server.VaadinSession;
 import org.springframework.stereotype.Component;
 
+import com.vaadin.flow.server.VaadinSession;
+
 /**
- * Provides authentication token from current Vaadin session.
- * Thread-safe as VaadinSession is bound to the current request thread.
+ * Provides authentication token from current Vaadin session. Thread-safe as VaadinSession is bound
+ * to the current request thread.
  */
 @Component
 public class AuthTokenProvider {
@@ -53,4 +54,3 @@ public class AuthTokenProvider {
         return null;
     }
 }
-

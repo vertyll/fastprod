@@ -1,15 +1,15 @@
 package com.vertyll.fastprod.modules.employee.filters;
 
-import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
-import com.vertyll.fastprod.shared.filters.FilterFieldType;
-import com.vertyll.fastprod.shared.filters.FiltersValue;
-import com.vertyll.fastprod.shared.security.RoleType;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
+import com.vertyll.fastprod.shared.filters.FilterFieldType;
+import com.vertyll.fastprod.shared.filters.FiltersValue;
+import com.vertyll.fastprod.shared.security.RoleType;
 
 public final class EmployeeFilters {
 
@@ -20,63 +20,44 @@ public final class EmployeeFilters {
     private static final String ROLES = "roles";
     private static final String VERIFIED_LABEL = "Verified";
 
-    private EmployeeFilters() {
-    }
+    private EmployeeFilters() {}
 
     @SuppressWarnings("java:S1452")
     public static List<FilterFieldConfig<?>> configs() {
         return List.of(
-                FilterFieldConfig.builder(
-                                FIRST_NAME,
-                                "First name",
-                                FilterFieldType.TEXT
-                        )
+                FilterFieldConfig.builder(FIRST_NAME, "First name", FilterFieldType.TEXT)
                         .placeholder("Search first name")
                         .build(),
-
-                FilterFieldConfig.builder(
-                                LAST_NAME,
-                                "Last name",
-                                FilterFieldType.TEXT
-                        )
+                FilterFieldConfig.builder(LAST_NAME, "Last name", FilterFieldType.TEXT)
                         .placeholder("Search last name")
                         .build(),
-
-                FilterFieldConfig.builder(
-                                EMAIL,
-                                "Email",
-                                FilterFieldType.TEXT
-                        )
+                FilterFieldConfig.builder(EMAIL, "Email", FilterFieldType.TEXT)
                         .placeholder("Search email")
                         .build(),
-
-                FilterFieldConfig.builder(
-                                IS_VERIFIED,
-                                VERIFIED_LABEL,
-                                FilterFieldType.SELECT
-                        )
-                        .items(List.of(Boolean.TRUE, Boolean.FALSE))
-                        .itemLabel(v -> {
-                            if (v == null) return "";
-                            if (v instanceof Boolean b) return Boolean.TRUE.equals(b) ? VERIFIED_LABEL : "Not verified";
-                            return Boolean.parseBoolean(String.valueOf(v)) ? VERIFIED_LABEL : "Not verified";
-                        })
+                FilterFieldConfig.builder(IS_VERIFIED, VERIFIED_LABEL, FilterFieldType.SELECT)
+                        .items(List.of(true, false))
+                        .itemLabel(
+                                v -> {
+                                    if (v == null) return "";
+                                    if (v instanceof Boolean b)
+                                        return Boolean.TRUE.equals(b)
+                                                ? VERIFIED_LABEL
+                                                : "Not verified";
+                                    return Boolean.parseBoolean(String.valueOf(v))
+                                            ? VERIFIED_LABEL
+                                            : "Not verified";
+                                })
                         .placeholder("Any")
                         .build(),
-
-                FilterFieldConfig.<RoleType>builder(
-                                ROLES,
-                                "Roles",
-                                FilterFieldType.MULTISELECT
-                        )
+                FilterFieldConfig.<RoleType>builder(ROLES, "Roles", FilterFieldType.MULTISELECT)
                         .items(java.util.Arrays.stream(RoleType.values()).toList())
-                        .itemLabel(v -> {
-                            if (v == null) return "";
-                            return v.name();
-                        })
+                        .itemLabel(
+                                v -> {
+                                    if (v == null) return "";
+                                    return v.name();
+                                })
                         .placeholder("Any roles")
-                        .build()
-        );
+                        .build());
     }
 
     public static FiltersValue normalize(FiltersValue raw) {
@@ -90,14 +71,16 @@ public final class EmployeeFilters {
 
         Object rolesVal = raw.get(ROLES);
         if (rolesVal instanceof Collection<?> col) {
-            List<String> names = col.stream()
-                    .filter(Objects::nonNull)
-                    .map(o -> {
-                        if (o instanceof RoleType rt) return rt.name();
-                        return String.valueOf(o);
-                    })
-                    .filter(s -> !s.isBlank())
-                    .collect(Collectors.toCollection(ArrayList::new));
+            List<String> names =
+                    col.stream()
+                            .filter(Objects::nonNull)
+                            .map(
+                                    o -> {
+                                        if (o instanceof RoleType rt) return rt.name();
+                                        return String.valueOf(o);
+                                    })
+                            .filter(s -> !s.isBlank())
+                            .collect(Collectors.toCollection(ArrayList::new));
             out.set(ROLES, names);
         } else if (rolesVal != null) {
             if (rolesVal instanceof RoleType rt) {

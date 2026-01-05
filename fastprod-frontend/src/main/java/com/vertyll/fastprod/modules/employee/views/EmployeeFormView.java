@@ -1,5 +1,8 @@
 package com.vertyll.fastprod.modules.employee.views;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,17 +19,16 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.*;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Route(value = "employees/form/:id?", layout = MainLayout.class)
 @PageTitle("Employee Form | FastProd")
@@ -54,9 +56,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        employeeId = event.getRouteParameters().get("id")
-                .map(Long::parseLong)
-                .orElse(null);
+        employeeId = event.getRouteParameters().get("id").map(Long::parseLong).orElse(null);
 
         isEditMode = employeeId != null;
 
@@ -77,9 +77,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
     private void createForm() {
         FormLayout formLayout = new FormLayout();
         formLayout.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0", 1),
-                new FormLayout.ResponsiveStep("500px", 2)
-        );
+                new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("500px", 2));
 
         TextField firstNameField = new TextField("First Name");
         firstNameField.setRequiredIndicatorVisible(true);
@@ -102,7 +100,13 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
         confirmPasswordField = new PasswordField("Confirm Password");
         confirmPasswordField.setRequiredIndicatorVisible(true);
 
-        formLayout.add(firstNameField, lastNameField, emailField, rolesField, passwordField, confirmPasswordField);
+        formLayout.add(
+                firstNameField,
+                lastNameField,
+                emailField,
+                rolesField,
+                passwordField,
+                confirmPasswordField);
 
         // Bind fields
         binder.forField(firstNameField)
@@ -119,25 +123,28 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
                 .bind(EmployeeFormData::getEmail, EmployeeFormData::setEmail);
 
         binder.forField(passwordField)
-                .withValidator(pass -> {
-                    if (isEditMode) {
-                        return pass == null || pass.isEmpty() || pass.length() >= 6;
-                    }
-                    return pass != null && pass.length() >= 6;
-                }, "Password must be at least 6 characters")
+                .withValidator(
+                        pass -> {
+                            if (isEditMode) {
+                                return pass == null || pass.isEmpty() || pass.length() >= 6;
+                            }
+                            return pass != null && pass.length() >= 6;
+                        },
+                        "Password must be at least 6 characters")
                 .bind(EmployeeFormData::getPassword, EmployeeFormData::setPassword);
 
         passwordField.addValueChangeListener(_ -> confirmPasswordField.setValue(""));
-        confirmPasswordField.addValueChangeListener(_ -> {
-            String password = passwordField.getValue();
-            String confirm = confirmPasswordField.getValue();
-            if (confirm != null && !confirm.isEmpty() && !confirm.equals(password)) {
-                confirmPasswordField.setErrorMessage("Passwords must match");
-                confirmPasswordField.setInvalid(true);
-            } else {
-                confirmPasswordField.setInvalid(false);
-            }
-        });
+        confirmPasswordField.addValueChangeListener(
+                _ -> {
+                    String password = passwordField.getValue();
+                    String confirm = confirmPasswordField.getValue();
+                    if (confirm != null && !confirm.isEmpty() && !confirm.equals(password)) {
+                        confirmPasswordField.setErrorMessage("Passwords must match");
+                        confirmPasswordField.setInvalid(true);
+                    } else {
+                        confirmPasswordField.setInvalid(false);
+                    }
+                });
 
         binder.forField(rolesField)
                 .bind(EmployeeFormData::getRoleNames, EmployeeFormData::setRoleNames);
@@ -171,7 +178,10 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
             }
         } catch (Exception e) {
             log.error("Failed to load employee", e);
-            Notification.show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show(
+                            "Failed to load employee: " + e.getMessage(),
+                            3000,
+                            Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
         }
@@ -185,7 +195,8 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
             if (formData.getPassword() != null && !formData.getPassword().isEmpty()) {
                 String confirmPass = confirmPasswordField.getValue();
                 if (!formData.getPassword().equals(confirmPass)) {
-                    Notification.show("Passwords must match", 3000, Notification.Position.TOP_CENTER)
+                    Notification.show(
+                                    "Passwords must match", 3000, Notification.Position.TOP_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_ERROR);
                     confirmPasswordField.setInvalid(true);
                     return;
@@ -194,28 +205,37 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
             if (isEditMode) {
                 // Only send password if it's not empty
-                String passwordToSend = (formData.getPassword() != null && !formData.getPassword().isEmpty())
-                        ? formData.getPassword()
-                        : null;
+                String passwordToSend =
+                        (formData.getPassword() != null && !formData.getPassword().isEmpty())
+                                ? formData.getPassword()
+                                : null;
 
-                EmployeeUpdateDto updateDto = new EmployeeUpdateDto(
-                        formData.getFirstName(),
-                        formData.getLastName(),
-                        formData.getEmail(),
-                        passwordToSend,
-                        formData.getRoleNames());
+                EmployeeUpdateDto updateDto =
+                        new EmployeeUpdateDto(
+                                formData.getFirstName(),
+                                formData.getLastName(),
+                                formData.getEmail(),
+                                passwordToSend,
+                                formData.getRoleNames());
                 employeeService.updateEmployee(employeeId, updateDto);
-                Notification.show("Employee updated successfully", 3000, Notification.Position.TOP_CENTER)
+                Notification.show(
+                                "Employee updated successfully",
+                                3000,
+                                Notification.Position.TOP_CENTER)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             } else {
-                EmployeeCreateDto createDto = new EmployeeCreateDto(
-                        formData.getFirstName(),
-                        formData.getLastName(),
-                        formData.getEmail(),
-                        formData.getPassword(),
-                        formData.getRoleNames());
+                EmployeeCreateDto createDto =
+                        new EmployeeCreateDto(
+                                formData.getFirstName(),
+                                formData.getLastName(),
+                                formData.getEmail(),
+                                formData.getPassword(),
+                                formData.getRoleNames());
                 employeeService.createEmployee(createDto);
-                Notification.show("Employee created successfully", 3000, Notification.Position.TOP_CENTER)
+                Notification.show(
+                                "Employee created successfully",
+                                3000,
+                                Notification.Position.TOP_CENTER)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             }
 
@@ -224,7 +244,10 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
             log.error("Validation failed", e);
         } catch (Exception e) {
             log.error("Failed to save employee", e);
-            Notification.show("Failed to save employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show(
+                            "Failed to save employee: " + e.getMessage(),
+                            3000,
+                            Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
@@ -240,6 +263,5 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
         private String email;
         private String password;
         private Set<String> roleNames = new HashSet<>();
-
     }
 }

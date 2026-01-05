@@ -17,9 +17,11 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
 import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Route("verify-account")
@@ -47,7 +49,9 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
         getStyle()
-                .set("background", "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
+                .set(
+                        "background",
+                        "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
                 .set("padding", "var(--lumo-space-l)");
 
         createView();
@@ -75,9 +79,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
 
         Icon icon = VaadinIcon.ENVELOPE_O.create();
         icon.setSize("64px");
-        icon.getStyle()
-                .set(COLOR, "var(--lumo-primary-color)")
-                .set(MARGIN_BOTTOM, LUMO_SPACE_M);
+        icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         H1 title = new H1("Verify Your Account");
         title.getStyle()
@@ -86,11 +88,12 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
                 .set("font-weight", "600")
                 .set(COLOR, "var(--lumo-primary-text-color)");
 
-        Paragraph description = new Paragraph(
-                "We've sent a verification code to your email address. " +
-                        "Please enter the code below to verify your account."
-        );
-        description.getStyle()
+        Paragraph description =
+                new Paragraph(
+                        "We've sent a verification code to your email address. "
+                                + "Please enter the code below to verify your account.");
+        description
+                .getStyle()
                 .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
                 .set(COLOR, "var(--lumo-secondary-text-color)");
 
@@ -106,7 +109,8 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         codeField.setPlaceholder("Enter 6-digit code");
         codeField.setMaxLength(6);
         codeField.setPattern("[0-9]*");
-        codeField.getStyle()
+        codeField
+                .getStyle()
                 .set(MARGIN_BOTTOM, "var(--lumo-space-l)")
                 .set("font-size", "var(--lumo-font-size-xl)")
                 .set(TEXT_ALIGN, CENTER);
@@ -135,8 +139,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
                 codeField,
                 verifyButton,
                 resendButton,
-                backButton
-        );
+                backButton);
 
         add(card);
     }
@@ -161,22 +164,29 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         try {
             VerifyAccountRequestDto verifyAccountRequest = new VerifyAccountRequestDto(code);
             authService.verifyAccount(verifyAccountRequest);
-            showNotification("Account verified successfully! You can now log in.", NotificationVariant.LUMO_SUCCESS);
+            showNotification(
+                    "Account verified successfully! You can now log in.",
+                    NotificationVariant.LUMO_SUCCESS);
 
             UI ui = UI.getCurrent();
-            java.util.concurrent.CompletableFuture
-                    .runAsync(() -> {}, java.util.concurrent.CompletableFuture.delayedExecutor(2, java.util.concurrent.TimeUnit.SECONDS))
+            java.util.concurrent.CompletableFuture.runAsync(
+                            () -> {},
+                            java.util.concurrent.CompletableFuture.delayedExecutor(
+                                    2, java.util.concurrent.TimeUnit.SECONDS))
                     .thenRun(() -> ui.access(() -> ui.navigate(LoginView.class)))
-                    .exceptionally(ex -> {
-                        log.error("Delayed navigation failed", ex);
-                        return null;
-                    });
+                    .exceptionally(
+                            ex -> {
+                                log.error("Delayed navigation failed", ex);
+                                return null;
+                            });
 
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during verification: {}", e.getMessage());
         } catch (Exception e) {
-            showNotification("Verification failed. Please check your code and try again.", NotificationVariant.LUMO_ERROR);
+            showNotification(
+                    "Verification failed. Please check your code and try again.",
+                    NotificationVariant.LUMO_ERROR);
             log.error("Error during verification", e);
         } finally {
             verifyButton.setEnabled(true);
@@ -197,14 +207,15 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
 
         try {
             authService.resendVerificationCode(email);
-            showNotification("Verification code sent! Please check your email.", NotificationVariant.LUMO_SUCCESS);
+            showNotification(
+                    "Verification code sent! Please check your email.",
+                    NotificationVariant.LUMO_SUCCESS);
             codeField.focus();
         } catch (ApiException e) {
             if (e.getStatusCode() == 404) {
                 showNotification(
                         "Resend feature is not yet available. Please contact support if you didn't receive the email.",
-                        NotificationVariant.LUMO_WARNING
-                );
+                        NotificationVariant.LUMO_WARNING);
             } else {
                 showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             }
@@ -212,8 +223,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         } catch (Exception e) {
             showNotification(
                     "Failed to resend code. Please try registering again or contact support.",
-                    NotificationVariant.LUMO_ERROR
-            );
+                    NotificationVariant.LUMO_ERROR);
             log.error("Error during resend", e);
         } finally {
             resendButton.setEnabled(true);

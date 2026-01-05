@@ -36,10 +36,7 @@ public class FiltersValue {
             String k = url(e.getKey());
             Object v = e.getValue();
             if (v instanceof Collection<?> col) {
-                String joined = String.join(
-                        ",",
-                        col.stream().map(String::valueOf).toList()
-                );
+                String joined = String.join(",", col.stream().map(String::valueOf).toList());
                 parts.add(k + "=" + url(joined));
             } else {
                 parts.add(k + "=" + url(String.valueOf(v)));

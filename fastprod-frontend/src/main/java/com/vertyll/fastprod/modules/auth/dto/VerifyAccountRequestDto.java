@@ -1,4 +1,3 @@
 package com.vertyll.fastprod.modules.auth.dto;
 
-public record VerifyAccountRequestDto(String code) {
-}
+public record VerifyAccountRequestDto(String code) {}

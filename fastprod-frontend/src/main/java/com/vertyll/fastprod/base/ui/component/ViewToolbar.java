@@ -1,5 +1,8 @@
 package com.vertyll.fastprod.base.ui.component;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -7,8 +10,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
-import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public final class ViewToolbar extends Composite<Header> {
@@ -21,8 +22,7 @@ public final class ViewToolbar extends Composite<Header> {
                 AlignItems.STRETCH,
                 Gap.MEDIUM,
                 FlexDirection.Breakpoint.Medium.ROW,
-                AlignItems.Breakpoint.Medium.CENTER
-        );
+                AlignItems.Breakpoint.Medium.CENTER);
 
         var drawerToggle = new DrawerToggle();
         drawerToggle.addClassNames(Margin.NONE);
@@ -42,8 +42,7 @@ public final class ViewToolbar extends Composite<Header> {
                     JustifyContent.BETWEEN,
                     Flex.GROW,
                     Gap.SMALL,
-                    FlexDirection.Breakpoint.Medium.ROW
-            );
+                    FlexDirection.Breakpoint.Medium.ROW);
             getContent().add(actions);
         }
     }
@@ -56,8 +55,7 @@ public final class ViewToolbar extends Composite<Header> {
                 AlignItems.STRETCH,
                 Gap.SMALL,
                 FlexDirection.Breakpoint.Medium.ROW,
-                AlignItems.Breakpoint.Medium.CENTER
-        );
+                AlignItems.Breakpoint.Medium.CENTER);
         return group;
     }
 }

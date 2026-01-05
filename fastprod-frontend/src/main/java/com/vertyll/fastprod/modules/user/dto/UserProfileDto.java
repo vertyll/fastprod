@@ -6,6 +6,4 @@ public record UserProfileDto(
         String lastName,
         String email,
         java.util.Set<String> roles,
-        boolean isVerified
-) {
-}
+        boolean isVerified) {}

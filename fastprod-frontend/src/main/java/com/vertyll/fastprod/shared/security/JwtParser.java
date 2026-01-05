@@ -1,13 +1,14 @@
 package com.vertyll.fastprod.shared.security;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
-import java.nio.charset.StandardCharsets;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class JwtParser {
@@ -31,8 +32,11 @@ public class JwtParser {
 
             if (rolesNode != null) {
                 if (rolesNode.isArray()) {
-                    return objectMapper.convertValue(rolesNode,
-                            objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+                    return objectMapper.convertValue(
+                            rolesNode,
+                            objectMapper
+                                    .getTypeFactory()
+                                    .constructCollectionType(List.class, String.class));
                 } else if (rolesNode.isTextual()) {
                     return List.of(rolesNode.asText());
                 }
@@ -69,7 +73,8 @@ public class JwtParser {
                 return null;
             }
 
-            String payload = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+            String payload =
+                    new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
             return objectMapper.readTree(payload);
         } catch (Exception e) {
             log.error("Failed to parse JWT payload", e);

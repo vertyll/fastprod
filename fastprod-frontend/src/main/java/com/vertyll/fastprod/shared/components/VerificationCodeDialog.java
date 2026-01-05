@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.util.function.BiConsumer;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -11,9 +13,8 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.function.BiConsumer;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class VerificationCodeDialog extends Dialog {
@@ -24,7 +25,8 @@ public class VerificationCodeDialog extends Dialog {
     private final Button verifyButton;
     private final transient BiConsumer<String, VerificationCodeDialog> onVerify;
 
-    public VerificationCodeDialog(String title, String description, BiConsumer<String, VerificationCodeDialog> onVerify) {
+    public VerificationCodeDialog(
+            String title, String description, BiConsumer<String, VerificationCodeDialog> onVerify) {
         this.onVerify = onVerify;
 
         setCloseOnEsc(false);
@@ -37,12 +39,14 @@ public class VerificationCodeDialog extends Dialog {
         layout.setAlignItems(FlexComponent.Alignment.STRETCH);
 
         H3 titleHeader = new H3(title);
-        titleHeader.getStyle()
+        titleHeader
+                .getStyle()
                 .set("margin", "0 0 var(--lumo-space-m) 0")
                 .set("color", "var(--lumo-primary-text-color)");
 
         Paragraph descriptionText = new Paragraph(description);
-        descriptionText.getStyle()
+        descriptionText
+                .getStyle()
                 .set("margin", "0 0 var(--lumo-space-l) 0")
                 .set("color", "var(--lumo-secondary-text-color)");
 
@@ -53,7 +57,8 @@ public class VerificationCodeDialog extends Dialog {
         codeField.setMaxLength(6);
         codeField.setPattern("[0-9]*");
         codeField.setAutofocus(true);
-        codeField.getStyle()
+        codeField
+                .getStyle()
                 .set("font-size", "var(--lumo-font-size-xl)")
                 .set("text-align", "center");
 
@@ -67,13 +72,7 @@ public class VerificationCodeDialog extends Dialog {
         cancelButton.setWidthFull();
         cancelButton.addClickListener(_ -> close());
 
-        layout.add(
-                titleHeader,
-                descriptionText,
-                codeField,
-                verifyButton,
-                cancelButton
-        );
+        layout.add(titleHeader, descriptionText, codeField, verifyButton, cancelButton);
 
         add(layout);
     }
@@ -117,7 +116,8 @@ public class VerificationCodeDialog extends Dialog {
     }
 
     private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification(message, 3000, Notification.Position.TOP_CENTER);
+        Notification notification =
+                new Notification(message, 3000, Notification.Position.TOP_CENTER);
         notification.addThemeVariants(variant);
         notification.open();
     }

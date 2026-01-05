@@ -10,6 +10,4 @@ public record PageResponse<T>(
         Integer totalPages,
         Boolean first,
         Boolean last,
-        Boolean empty
-) {
-}
+        Boolean empty) {}

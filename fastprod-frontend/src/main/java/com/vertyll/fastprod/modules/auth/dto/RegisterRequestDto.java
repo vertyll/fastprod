@@ -2,12 +2,7 @@ package com.vertyll.fastprod.modules.auth.dto;
 
 import lombok.Data;
 
-public record RegisterRequestDto(
-        String firstName,
-        String lastName,
-        String email,
-        String password
-) {
+public record RegisterRequestDto(String firstName, String lastName, String email, String password) {
 
     @Data
     public static class FormBuilder {
@@ -17,12 +12,7 @@ public record RegisterRequestDto(
         private String password;
 
         public RegisterRequestDto toDto() {
-            return new RegisterRequestDto(
-                firstName, 
-                lastName, 
-                email, 
-                password
-            );
+            return new RegisterRequestDto(firstName, lastName, email, password);
         }
     }
 }

@@ -21,11 +21,13 @@ import com.vaadin.flow.data.validator.StringLengthValidator;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+
 import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto.FormBuilder;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Route("register")
@@ -56,7 +58,9 @@ public class RegisterView extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
         getStyle()
-                .set("background", "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
+                .set(
+                        "background",
+                        "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
                 .set("padding", "var(--lumo-space-l)");
 
         createForm();
@@ -126,20 +130,27 @@ public class RegisterView extends VerticalLayout {
         registerButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         RouterLink loginLink = new RouterLink("Sign in", LoginView.class);
-        loginLink.getStyle()
+        loginLink
+                .getStyle()
                 .set(COLOR, "var(--lumo-primary-color)")
                 .set("text-decoration", "none")
                 .set("font-weight", "500");
 
         Div loginContainer = new Div();
-        loginContainer.getStyle()
-                .set("text-align", "center")
-                .set("margin-top", LUMO_SPACE_M);
+        loginContainer.getStyle().set("text-align", "center").set("margin-top", LUMO_SPACE_M);
         loginContainer.add(new Span("Already have an account? "), loginLink);
 
         configureBinder();
 
-        card.add(title, subtitle, nameLayout, emailField, passwordField, confirmPasswordField, registerButton, loginContainer);
+        card.add(
+                title,
+                subtitle,
+                nameLayout,
+                emailField,
+                passwordField,
+                confirmPasswordField,
+                registerButton,
+                loginContainer);
 
         add(card);
     }
@@ -158,14 +169,21 @@ public class RegisterView extends VerticalLayout {
                 .bind(FormBuilder::getEmail, FormBuilder::setEmail);
 
         binder.forField(passwordField)
-                .withValidator(password -> password != null && password.matches("^(?=.*\\d)(?=.*[a-zA-Z]).{8,}$"), "Password must be at least 8 characters long and contain a letter and a digit")
+                .withValidator(
+                        password ->
+                                password != null
+                                        && password.matches("^(?=.*\\d)(?=.*[a-zA-Z]).{8,}$"),
+                        "Password must be at least 8 characters long and contain a letter and a digit")
                 .bind(FormBuilder::getPassword, FormBuilder::setPassword);
 
-        binder.forField(confirmPasswordField).withValidator(confirmPassword -> {
-            String password = passwordField.getValue();
-            return password != null && password.equals(confirmPassword);
-        }, "Passwords must match").bind(_ -> passwordField.getValue(), (_, _) -> {
-        });
+        binder.forField(confirmPasswordField)
+                .withValidator(
+                        confirmPassword -> {
+                            String password = passwordField.getValue();
+                            return password != null && password.equals(confirmPassword);
+                        },
+                        "Passwords must match")
+                .bind(_ -> passwordField.getValue(), (_, _) -> {});
     }
 
     private void handleRegistration() {
@@ -180,7 +198,10 @@ public class RegisterView extends VerticalLayout {
 
             ApiResponse<Void> response = authService.register(registerRequest);
 
-            String message = response.message() != null ? response.message() : "Registration successful! Please check your email for verification code.";
+            String message =
+                    response.message() != null
+                            ? response.message()
+                            : "Registration successful! Please check your email for verification code.";
             showNotification(message, NotificationVariant.LUMO_SUCCESS);
 
             String email = registerRequest.email();
@@ -191,9 +212,14 @@ public class RegisterView extends VerticalLayout {
             log.error("Validation error during registration", e);
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
-            log.error("API error during registration: {} (status: {})", e.getMessage(), e.getStatusCode());
+            log.error(
+                    "API error during registration: {} (status: {})",
+                    e.getMessage(),
+                    e.getStatusCode());
         } catch (Exception e) {
-            showNotification("An unexpected error occurred. Please try again.", NotificationVariant.LUMO_ERROR);
+            showNotification(
+                    "An unexpected error occurred. Please try again.",
+                    NotificationVariant.LUMO_ERROR);
             log.error("Unexpected error during registration", e);
         } finally {
             registerButton.setEnabled(true);
