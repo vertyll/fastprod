@@ -11,7 +11,6 @@ errorprone = "2.45.0"
 nullaway = "0.12.15"
 jspecify = "1.0.0"
 google-java-format = "1.33.0"
-ktlint = "1.8.0"
 beta-checker = "1.0"
 
 [libraries]

@@ -97,10 +97,10 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         toggleOffOn()
     }
 
-    kotlinGradle {
+    format("gradle") {
         target("*.gradle.kts", "**/*.gradle.kts")
-        ktlint(rootProject.libs.versions.ktlint.get())
         trimTrailingWhitespace()
+        leadingTabsToSpaces(4)
         endWithNewline()
     }
 }
