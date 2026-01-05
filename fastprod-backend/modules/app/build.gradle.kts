@@ -48,11 +48,9 @@ dependencies {
     testAnnotationProcessor(libs.lombok)
 
     // Test Implementation
-    testImplementation(libs.bundles.spring.boot.test.common)
-    testImplementation(libs.bundles.spring.boot.test.security)
-    testImplementation(libs.spring.boot.starter.flyway.test)
+    testImplementation(libs.bundles.test.starters)
     testImplementation(libs.h2)
-    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.bundles.testcontainers)
 }
 
 tasks.withType<Test> {

@@ -31,5 +31,4 @@ dependencies {
     // Test Implementation
     testImplementation(libs.bundles.spring.boot.test.common)
     testImplementation(libs.bundles.spring.boot.test.security)
-    testImplementation(libs.spring.boot.starter.mail.test)
 }
