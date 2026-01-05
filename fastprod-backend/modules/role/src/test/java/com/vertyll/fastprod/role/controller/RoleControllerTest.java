@@ -25,7 +25,6 @@ import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
-import com.vertyll.fastprod.role.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 
 import tools.jackson.databind.ObjectMapper;
@@ -190,7 +189,8 @@ class RoleControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0]").value(RoleType.values()[0].name()))
+                .andExpect(jsonPath("$.data.length()").value(4))
+                .andExpect(jsonPath("$.data[?(@=='ADMIN')]").exists())
                 .andExpect(jsonPath("$.message").value("Role types retrieved successfully"));
     }
 }
