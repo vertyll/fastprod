@@ -57,8 +57,10 @@ class ApiResponseTest {
 
         // then
         assertNotNull(response.getTimestamp());
-        assertTrue(response.getTimestamp().isBefore(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(1)));
-        assertTrue(response.getTimestamp().isAfter(LocalDateTime.now(ZoneOffset.UTC).minusSeconds(1)));
+        assertTrue(
+                response.getTimestamp().isBefore(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(1)));
+        assertTrue(
+                response.getTimestamp().isAfter(LocalDateTime.now(ZoneOffset.UTC).minusSeconds(1)));
     }
 
     @Test

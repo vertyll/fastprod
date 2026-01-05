@@ -8,15 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import tools.jackson.databind.ObjectMapper;
-import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
 import java.util.Set;
-
-import com.vertyll.fastprod.user.dto.UserCreateDto;
-import com.vertyll.fastprod.user.dto.UserResponseDto;
-import com.vertyll.fastprod.user.dto.UserUpdateDto;
-import com.vertyll.fastprod.user.service.UserService;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +22,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
+import com.vertyll.fastprod.user.dto.UserCreateDto;
+import com.vertyll.fastprod.user.dto.UserResponseDto;
+import com.vertyll.fastprod.user.dto.UserUpdateDto;
+import com.vertyll.fastprod.user.service.UserService;
+
+import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {

@@ -6,9 +6,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-import com.vertyll.fastprod.email.enums.EmailTemplateName;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,24 +20,24 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.vertyll.fastprod.email.enums.EmailTemplateName;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EmailServiceTest {
 
-    @Mock
-    private JavaMailSender mailSender;
+    @Mock private JavaMailSender mailSender;
 
-    @Mock
-    private SpringTemplateEngine templateEngine;
+    @Mock private SpringTemplateEngine templateEngine;
 
-    @InjectMocks
-    private EmailServiceImpl emailService;
+    @InjectMocks private EmailServiceImpl emailService;
 
-    @Mock
-    private MimeMessage mimeMessage;
+    @Mock private MimeMessage mimeMessage;
 
-    @Captor
-    private ArgumentCaptor<Context> contextCaptor;
+    @Captor private ArgumentCaptor<Context> contextCaptor;
 
     private static final String TEST_EMAIL = "test@example.com";
     private static final String TEST_USERNAME = "testUser";
@@ -76,10 +73,12 @@ class EmailServiceTest {
     @Test
     void sendEmail_WhenTemplateNameNull_ShouldThrowException() {
         // when & then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, null, TEST_CODE, TEST_SUBJECT)
-        );
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () ->
+                                emailService.sendEmail(
+                                        TEST_EMAIL, TEST_USERNAME, null, TEST_CODE, TEST_SUBJECT));
 
         assertEquals("Email template cannot be null", exception.getMessage());
         verify(templateEngine, never()).process(anyString(), any(Context.class));
@@ -140,8 +139,7 @@ class EmailServiceTest {
                 TEST_USERNAME,
                 EmailTemplateName.ACTIVATE_ACCOUNT,
                 customCode,
-                TEST_SUBJECT
-        );
+                TEST_SUBJECT);
 
         // then
         verify(templateEngine).process(anyString(), contextCaptor.capture());
@@ -160,8 +158,7 @@ class EmailServiceTest {
                 customUsername,
                 EmailTemplateName.ACTIVATE_ACCOUNT,
                 TEST_CODE,
-                TEST_SUBJECT
-        );
+                TEST_SUBJECT);
 
         // then
         verify(templateEngine).process(anyString(), contextCaptor.capture());

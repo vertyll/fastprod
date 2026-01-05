@@ -1,17 +1,20 @@
 package com.vertyll.fastprod.user.entity;
 
-import com.vertyll.fastprod.common.entity.BaseEntity;
-import com.vertyll.fastprod.role.entity.Role;
-import jakarta.persistence.*;
 import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.*;
+
 import org.jspecify.annotations.NullUnmarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.vertyll.fastprod.common.entity.BaseEntity;
+import com.vertyll.fastprod.role.entity.Role;
+
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter
@@ -19,19 +22,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "\"user\"",
-    indexes = {
-        @Index(name = "idx_user_email", columnList = "email"),
-        @Index(name = "idx_user_is_active", columnList = "is_active"),
-        @Index(name = "idx_user_is_verified", columnList = "is_verified"),
-        @Index(name = "idx_user_created_at", columnList = "created_at"),
-        @Index(name = "idx_user_is_active_is_verified", columnList = "is_active, is_verified"),
-    }
-)
+@Table(
+        name = "\"user\"",
+        indexes = {
+            @Index(name = "idx_user_email", columnList = "email"),
+            @Index(name = "idx_user_is_active", columnList = "is_active"),
+            @Index(name = "idx_user_is_verified", columnList = "is_verified"),
+            @Index(name = "idx_user_created_at", columnList = "created_at"),
+            @Index(name = "idx_user_is_active_is_verified", columnList = "is_active, is_verified"),
+        })
 public class User extends BaseEntity implements UserDetails {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     @Column(nullable = false)
     private String firstName;
@@ -48,15 +50,14 @@ public class User extends BaseEntity implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
-            joinColumns = @JoinColumn(
-                    name = "user_id",
-                    foreignKey = @ForeignKey(name = "fk_user_role_user")
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "role_id",
-                    foreignKey = @ForeignKey(name = "fk_user_role_role")
-            )
-    )
+            joinColumns =
+                    @JoinColumn(
+                            name = "user_id",
+                            foreignKey = @ForeignKey(name = "fk_user_role_user")),
+            inverseJoinColumns =
+                    @JoinColumn(
+                            name = "role_id",
+                            foreignKey = @ForeignKey(name = "fk_user_role_role")))
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
@@ -72,8 +73,8 @@ public class User extends BaseEntity implements UserDetails {
     @NullUnmarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-            .toList();
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .toList();
     }
 
     @Override

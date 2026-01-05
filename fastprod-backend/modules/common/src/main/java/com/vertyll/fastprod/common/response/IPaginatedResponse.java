@@ -1,16 +1,16 @@
 package com.vertyll.fastprod.common.response;
 
-public interface IPaginatedResponse<T> { //NOSONAR - Type parameter used by implementing classes
+public interface IPaginatedResponse<T> { // NOSONAR - Type parameter used by implementing classes
     Integer getPageNumber();
 
     Integer getPageSize();
 
     Long getTotalElements();
-    
+
     Integer getTotalPages();
 
     Boolean isFirst();
-    
+
     Boolean isLast();
 
     Boolean isEmpty();

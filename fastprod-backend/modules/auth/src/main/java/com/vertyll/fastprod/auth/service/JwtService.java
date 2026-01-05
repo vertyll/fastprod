@@ -1,8 +1,8 @@
 package com.vertyll.fastprod.auth.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Map;
+
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface JwtService {
 

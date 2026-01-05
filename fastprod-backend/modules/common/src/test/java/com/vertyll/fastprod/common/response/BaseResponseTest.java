@@ -5,9 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import org.junit.jupiter.api.Test;
+
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.junit.jupiter.api.Test;
 
 class BaseResponseTest {
 

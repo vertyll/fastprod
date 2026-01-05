@@ -1,19 +1,22 @@
 package com.vertyll.fastprod.auth.service;
 
+import java.util.List;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import com.vertyll.fastprod.auth.dto.*;
+
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 public interface AuthService {
     @Transactional
     void register(RegisterRequestDto request) throws MessagingException;
 
     @Transactional
-    AuthResponseDto authenticate(AuthRequestDto request, HttpServletRequest httpRequest, HttpServletResponse response);
+    AuthResponseDto authenticate(
+            AuthRequestDto request, HttpServletRequest httpRequest, HttpServletResponse response);
 
     @Transactional
     AuthResponseDto refreshToken(HttpServletRequest request, HttpServletResponse response);
@@ -37,7 +40,8 @@ public interface AuthService {
     void requestEmailChange(ChangeEmailRequestDto request) throws MessagingException;
 
     @Transactional
-    AuthResponseDto verifyEmailChange(String code, HttpServletRequest httpRequest, HttpServletResponse response);
+    AuthResponseDto verifyEmailChange(
+            String code, HttpServletRequest httpRequest, HttpServletResponse response);
 
     @Transactional
     void requestPasswordChange(ChangePasswordRequestDto request) throws MessagingException;

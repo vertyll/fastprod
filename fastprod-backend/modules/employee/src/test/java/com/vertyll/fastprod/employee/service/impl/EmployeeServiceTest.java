@@ -5,15 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
-import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
-import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
-import com.vertyll.fastprod.employee.mapper.EmployeeMapper;
-import com.vertyll.fastprod.role.entity.Role;
-import com.vertyll.fastprod.role.service.RoleService;
-import com.vertyll.fastprod.user.entity.User;
-import com.vertyll.fastprod.user.repository.UserRepository;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,31 +22,32 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
+import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
+import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
+import com.vertyll.fastprod.employee.mapper.EmployeeMapper;
+import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.role.service.RoleService;
+import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
+    @Mock private UserRepository userRepository;
 
-    @Mock
-    private RoleService roleService;
+    @Mock private RoleService roleService;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @Mock private PasswordEncoder passwordEncoder;
 
     @Spy
     @SuppressWarnings("UnusedVariable")
     private final EmployeeMapper employeeMapper = Mappers.getMapper(EmployeeMapper.class);
 
-    @InjectMocks
-    private EmployeeServiceImpl employeeService;
+    @InjectMocks private EmployeeServiceImpl employeeService;
 
-    @Captor
-    private ArgumentCaptor<User> userCaptor;
+    @Captor private ArgumentCaptor<User> userCaptor;
 
     private EmployeeCreateDto createDto;
     private EmployeeUpdateDto updateDto;
@@ -61,23 +57,13 @@ class EmployeeServiceTest {
 
     @BeforeEach
     void setUp() {
-        employeeRole = Role.builder()
-                .name("EMPLOYEE")
-                .description("Employee role")
-                .build();
+        employeeRole = Role.builder().name("EMPLOYEE").description("Employee role").build();
 
-        adminRole = Role.builder()
-                .name("ADMIN")
-                .description("Admin role")
-                .build();
+        adminRole = Role.builder().name("ADMIN").description("Admin role").build();
 
         createDto =
                 new EmployeeCreateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        "password123",
-                        Set.of("EMPLOYEE"));
+                        "John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
 
         updateDto =
                 new EmployeeUpdateDto(
@@ -90,15 +76,16 @@ class EmployeeServiceTest {
         Set<Role> roles = new HashSet<>();
         roles.add(employeeRole);
 
-        user = User.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@example.com")
-                .password("encodedPassword")
-                .roles(roles)
-                .verified(true)
-                .active(true)
-                .build();
+        user =
+                User.builder()
+                        .firstName("John")
+                        .lastName("Doe")
+                        .email("john@example.com")
+                        .password("encodedPassword")
+                        .roles(roles)
+                        .verified(true)
+                        .active(true)
+                        .build();
     }
 
     @Test
@@ -170,8 +157,7 @@ class EmployeeServiceTest {
         // when & then
         ApiException exception =
                 assertThrows(
-                        ApiException.class,
-                        () -> employeeService.updateEmployee(1L, updateDto));
+                        ApiException.class, () -> employeeService.updateEmployee(1L, updateDto));
 
         assertEquals("Employee not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -186,8 +172,7 @@ class EmployeeServiceTest {
         // when & then
         ApiException exception =
                 assertThrows(
-                        ApiException.class,
-                        () -> employeeService.updateEmployee(1L, updateDto));
+                        ApiException.class, () -> employeeService.updateEmployee(1L, updateDto));
 
         assertEquals("Cannot update inactive employee", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -198,11 +183,7 @@ class EmployeeServiceTest {
         // given
         EmployeeUpdateDto dtoWithDifferentEmail =
                 new EmployeeUpdateDto(
-                        "John",
-                        "Doe",
-                        "different@example.com",
-                        null,
-                        Set.of("EMPLOYEE"));
+                        "John", "Doe", "different@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail("different@example.com")).thenReturn(true);
@@ -313,12 +294,7 @@ class EmployeeServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         EmployeeUpdateDto updateRequest =
-                new EmployeeUpdateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        null,
-                        Set.of("ADMIN"));
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
 
         // when
         EmployeeResponseDto result = employeeService.updateEmployee(1L, updateRequest);
@@ -336,12 +312,7 @@ class EmployeeServiceTest {
     void createEmployee_WhenNoRolesProvided_ShouldCreateEmployeeWithDefaultRole() {
         // given
         EmployeeCreateDto createDtoWithoutRoles =
-                new EmployeeCreateDto(
-                        "Jane",
-                        "Doe",
-                        "jane@example.com",
-                        "password123",
-                        null);
+                new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", null);
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -360,12 +331,7 @@ class EmployeeServiceTest {
     void createEmployee_WhenEmptyRolesProvided_ShouldCreateEmployeeWithDefaultRole() {
         // given
         EmployeeCreateDto createDtoWithEmptyRoles =
-                new EmployeeCreateDto(
-                        "Jane",
-                        "Doe",
-                        "jane@example.com",
-                        "password123",
-                        Set.of());
+                new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -385,11 +351,7 @@ class EmployeeServiceTest {
         // given
         EmployeeUpdateDto updateWithPassword =
                 new EmployeeUpdateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        "newPassword123",
-                        Set.of("EMPLOYEE"));
+                        "John", "Doe", "john@example.com", "newPassword123", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");
@@ -410,12 +372,7 @@ class EmployeeServiceTest {
     void updateEmployee_WhenPasswordNull_ShouldNotEncodePassword() {
         // given
         EmployeeUpdateDto updateWithoutPassword =
-                new EmployeeUpdateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        null,
-                        Set.of("EMPLOYEE"));
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(roleService.getOrCreateDefaultRole("EMPLOYEE")).thenReturn(employeeRole);
@@ -433,12 +390,7 @@ class EmployeeServiceTest {
     void updateEmployee_WhenPasswordBlank_ShouldNotEncodePassword() {
         // given
         EmployeeUpdateDto updateWithBlankPassword =
-                new EmployeeUpdateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        "   ",
-                        Set.of("EMPLOYEE"));
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", "   ", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(roleService.getOrCreateDefaultRole("EMPLOYEE")).thenReturn(employeeRole);

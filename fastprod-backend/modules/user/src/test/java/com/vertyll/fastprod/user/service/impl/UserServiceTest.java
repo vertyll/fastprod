@@ -5,19 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.role.entity.Role;
-import com.vertyll.fastprod.role.service.RoleService;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import com.vertyll.fastprod.user.dto.UserCreateDto;
-import com.vertyll.fastprod.user.dto.UserResponseDto;
-import com.vertyll.fastprod.user.dto.UserUpdateDto;
-import com.vertyll.fastprod.user.entity.User;
-import com.vertyll.fastprod.user.mapper.UserMapper;
-import com.vertyll.fastprod.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +22,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.role.service.RoleService;
+import com.vertyll.fastprod.user.dto.UserCreateDto;
+import com.vertyll.fastprod.user.dto.UserResponseDto;
+import com.vertyll.fastprod.user.dto.UserUpdateDto;
+import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.mapper.UserMapper;
+import com.vertyll.fastprod.user.repository.UserRepository;
+
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -40,8 +41,8 @@ class UserServiceTest {
 
     @Mock private PasswordEncoder passwordEncoder;
 
-    @Spy 
-    @SuppressWarnings("UnusedVariable") 
+    @Spy
+    @SuppressWarnings("UnusedVariable")
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @InjectMocks private UserServiceImpl userService;

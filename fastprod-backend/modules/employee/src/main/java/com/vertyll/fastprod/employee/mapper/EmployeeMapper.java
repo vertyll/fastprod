@@ -1,11 +1,8 @@
 package com.vertyll.fastprod.employee.mapper;
 
-import com.vertyll.fastprod.common.mapper.MapStructConfig;
-import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
-import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
-import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
-import com.vertyll.fastprod.role.entity.Role;
-import com.vertyll.fastprod.user.entity.User;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,8 +10,12 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.vertyll.fastprod.common.mapper.MapStructConfig;
+import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
+import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
+import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
+import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.user.entity.User;
 
 @Mapper(config = MapStructConfig.class)
 public interface EmployeeMapper {
@@ -37,8 +38,6 @@ public interface EmployeeMapper {
         if (roles == null || roles.isEmpty()) {
             return Set.of();
         }
-        return roles.stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
+        return roles.stream().map(Role::getName).collect(Collectors.toSet());
     }
 }

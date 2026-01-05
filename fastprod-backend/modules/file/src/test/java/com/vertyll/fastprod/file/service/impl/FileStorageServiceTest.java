@@ -3,8 +3,6 @@ package com.vertyll.fastprod.file.service.impl;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.vertyll.fastprod.file.config.FileUploadProperties;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,12 +14,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vertyll.fastprod.file.config.FileUploadProperties;
+
 class FileStorageServiceTest {
 
     private FileStorageServiceImpl fileStorageService;
 
-    @TempDir
-    Path tempDir;
+    @TempDir Path tempDir;
 
     private MultipartFile testFile;
     private static final String TEST_USER_ID = "123";
@@ -35,12 +34,12 @@ class FileStorageServiceTest {
         fileStorageService = new FileStorageServiceImpl(properties);
 
         // Prepare test file
-        testFile = new MockMultipartFile(
-                "test-file.txt",
-                "test-file.txt",
-                "text/plain",
-                "test content".getBytes(UTF_8)
-        );
+        testFile =
+                new MockMultipartFile(
+                        "test-file.txt",
+                        "test-file.txt",
+                        "text/plain",
+                        "test content".getBytes(UTF_8));
     }
 
     @Test
@@ -58,12 +57,7 @@ class FileStorageServiceTest {
     void saveFile_WhenEmptyFileName_ShouldSaveWithOnlyDot() {
         // given
         MultipartFile fileWithoutName =
-                new MockMultipartFile(
-                        "test",
-                        "",
-                        "text/plain",
-                        "test content".getBytes(UTF_8)
-                );
+                new MockMultipartFile("test", "", "text/plain", "test content".getBytes(UTF_8));
 
         // when
         String resultPath = fileStorageService.saveFile(fileWithoutName, TEST_USER_ID);
@@ -92,10 +86,7 @@ class FileStorageServiceTest {
         MultipartFile fileWithSpecialChars =
                 new MockMultipartFile(
                         "test-file@#$%.txt",
-                        "test-file@#$%.txt",
-                        "text/plain",
-                        "test content".getBytes(UTF_8)
-                );
+                        "test-file@#$%.txt", "text/plain", "test content".getBytes(UTF_8));
 
         // when
         String resultPath = fileStorageService.saveFile(fileWithSpecialChars, TEST_USER_ID);
@@ -111,11 +102,7 @@ class FileStorageServiceTest {
         // given
         MultipartFile fileWithoutExtension =
                 new MockMultipartFile(
-                        "testfile",
-                        "testfile",
-                        "text/plain",
-                        "test content".getBytes(UTF_8)
-                );
+                        "testfile", "testfile", "text/plain", "test content".getBytes(UTF_8));
 
         // when
         String resultPath = fileStorageService.saveFile(fileWithoutExtension, TEST_USER_ID);

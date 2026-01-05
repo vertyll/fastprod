@@ -4,17 +4,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import tools.jackson.databind.ObjectMapper;
-import com.vertyll.fastprod.auth.service.AuthService;
-import com.vertyll.fastprod.auth.dto.*;
-import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +22,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import com.vertyll.fastprod.auth.dto.*;
+import com.vertyll.fastprod.auth.service.AuthService;
+import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -37,11 +37,9 @@ class AuthControllerTest {
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
-    @Mock
-    private AuthService authService;
+    @Mock private AuthService authService;
 
-    @InjectMocks
-    private AuthController authController;
+    @InjectMocks private AuthController authController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private RegisterRequestDto registerRequest;
@@ -154,7 +152,10 @@ class AuthControllerTest {
     @Test
     void authenticate_WhenValidCredentials_ShouldReturnToken() throws Exception {
         // given
-        when(authService.authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+        when(authService.authenticate(
+                        any(AuthRequestDto.class),
+                        any(HttpServletRequest.class),
+                        any(HttpServletResponse.class)))
                 .thenReturn(authResponse);
 
         // when & then
@@ -172,7 +173,10 @@ class AuthControllerTest {
     @Test
     void authenticate_WhenInvalidCredentials_ShouldReturnUnauthorized() throws Exception {
         // given
-        when(authService.authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+        when(authService.authenticate(
+                        any(AuthRequestDto.class),
+                        any(HttpServletRequest.class),
+                        any(HttpServletResponse.class)))
                 .thenThrow(new ApiException("Invalid credentials", HttpStatus.UNAUTHORIZED));
 
         // when & then
@@ -188,7 +192,8 @@ class AuthControllerTest {
     @Test
     void authenticate_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        AuthRequestDto invalidRequest = new AuthRequestDto("invalid-email", "password123", "web-browser");
+        AuthRequestDto invalidRequest =
+                new AuthRequestDto("invalid-email", "password123", "web-browser");
 
         // when & then
         mockMvc.perform(
@@ -199,7 +204,11 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"));
 
-        verify(authService, never()).authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(authService, never())
+                .authenticate(
+                        any(AuthRequestDto.class),
+                        any(HttpServletRequest.class),
+                        any(HttpServletResponse.class));
     }
 
     @Test
@@ -215,13 +224,18 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"));
 
-        verify(authService, never()).authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(authService, never())
+                .authenticate(
+                        any(AuthRequestDto.class),
+                        any(HttpServletRequest.class),
+                        any(HttpServletResponse.class));
     }
 
     @Test
     void refreshToken_WhenValidRefreshToken_ShouldReturnNewToken() throws Exception {
         // given
-        when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+        when(authService.refreshToken(
+                        any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .thenReturn(authResponse);
 
         // when & then
@@ -236,7 +250,8 @@ class AuthControllerTest {
     @Test
     void refreshToken_WhenInvalidRefreshToken_ShouldReturnUnauthorized() throws Exception {
         // given
-        when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+        when(authService.refreshToken(
+                        any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .thenThrow(new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED));
 
         // when & then
@@ -249,7 +264,9 @@ class AuthControllerTest {
     @Test
     void logout_ShouldReturnSuccess() throws Exception {
         // given
-        doNothing().when(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        doNothing()
+                .when(authService)
+                .logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         // when & then
         mockMvc.perform(post("/auth/logout"))
@@ -263,15 +280,19 @@ class AuthControllerTest {
     @Test
     void logoutAll_ShouldReturnSuccess() throws Exception {
         // given
-        doNothing().when(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        doNothing()
+                .when(authService)
+                .logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         // when & then
         mockMvc.perform(post("/auth/logout-all"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Logged out from all sessions successfully"));
+                .andExpect(
+                        jsonPath("$.message").value("Logged out from all sessions successfully"));
 
-        verify(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(authService)
+                .logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
 
     @Test
@@ -340,7 +361,8 @@ class AuthControllerTest {
     @Test
     void resendVerificationCode_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        ResendVerificationRequestDto request = new ResendVerificationRequestDto("nonexistent@example.com");
+        ResendVerificationRequestDto request =
+                new ResendVerificationRequestDto("nonexistent@example.com");
         doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND))
                 .when(authService)
                 .resendVerificationCode(anyString());
@@ -356,7 +378,8 @@ class AuthControllerTest {
     }
 
     @Test
-    void resendVerificationCode_WhenAccountAlreadyVerified_ShouldReturnBadRequest() throws Exception {
+    void resendVerificationCode_WhenAccountAlreadyVerified_ShouldReturnBadRequest()
+            throws Exception {
         // given
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("john@example.com");
         doThrow(new ApiException("Account already verified", HttpStatus.BAD_REQUEST))
@@ -385,7 +408,8 @@ class AuthControllerTest {
                                 .content(objectMapper.writeValueAsString(changeEmailRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Email change verification sent to new email"));
+                .andExpect(
+                        jsonPath("$.message").value("Email change verification sent to new email"));
 
         verify(authService).requestEmailChange(any(ChangeEmailRequestDto.class));
     }
@@ -393,7 +417,8 @@ class AuthControllerTest {
     @Test
     void requestEmailChange_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        ChangeEmailRequestDto invalidRequest = new ChangeEmailRequestDto("password123", "invalid-email");
+        ChangeEmailRequestDto invalidRequest =
+                new ChangeEmailRequestDto("password123", "invalid-email");
 
         // when & then
         mockMvc.perform(
@@ -411,7 +436,8 @@ class AuthControllerTest {
     @Test
     void verifyEmailChange_WhenValidCode_ShouldReturnSuccess() throws Exception {
         // given
-        when(authService.verifyEmailChange(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+        when(authService.verifyEmailChange(
+                        anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class)))
                 .thenReturn(authResponse);
 
         // when & then
@@ -421,7 +447,11 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("Email changed successfully"))
                 .andExpect(jsonPath("$.data.token").value("jwt-token"));
 
-        verify(authService).verifyEmailChange(eq("123456"), any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(authService)
+                .verifyEmailChange(
+                        eq("123456"),
+                        any(HttpServletRequest.class),
+                        any(HttpServletResponse.class));
     }
 
     @Test
@@ -436,7 +466,8 @@ class AuthControllerTest {
                                 .content(objectMapper.writeValueAsString(changePasswordRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Password change verification sent to email"));
+                .andExpect(
+                        jsonPath("$.message").value("Password change verification sent to email"));
 
         verify(authService).requestPasswordChange(any(ChangePasswordRequestDto.class));
     }
@@ -464,7 +495,8 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/reset-password-request").param("email", "john@example.com"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Password reset instructions sent to email"));
+                .andExpect(
+                        jsonPath("$.message").value("Password reset instructions sent to email"));
 
         verify(authService).sendPasswordResetEmail("john@example.com");
     }
@@ -472,7 +504,9 @@ class AuthControllerTest {
     @Test
     void resetPassword_WhenValidTokenAndRequest_ShouldReturnSuccess() throws Exception {
         // given
-        doNothing().when(authService).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
+        doNothing()
+                .when(authService)
+                .resetPassword(anyString(), any(ResetPasswordRequestDto.class));
 
         // when & then
         mockMvc.perform(

@@ -3,6 +3,7 @@ package com.vertyll.fastprod.role.entity;
 import java.io.Serial;
 
 import com.vertyll.fastprod.common.entity.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,20 +13,17 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "role",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_role_name", columnNames = "name")
-        },
+@Table(
+        name = "role",
+        uniqueConstraints = {@UniqueConstraint(name = "uk_role_name", columnNames = "name")},
         indexes = {
-                @Index(name = "idx_role_is_active", columnList = "is_active"),
-                @Index(name = "idx_role_created_at", columnList = "created_at"),
-                @Index(name = "idx_role_name_is_active", columnList = "name, is_active")
-        }
-)
+            @Index(name = "idx_role_is_active", columnList = "is_active"),
+            @Index(name = "idx_role_created_at", columnList = "created_at"),
+            @Index(name = "idx_role_name_is_active", columnList = "name, is_active")
+        })
 public class Role extends BaseEntity {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     @Column(nullable = false, unique = true)
     private String name;

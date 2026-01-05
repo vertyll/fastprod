@@ -2,12 +2,14 @@ package com.vertyll.fastprod.common.entity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
 
 class BaseEntityTest {
 

@@ -8,6 +8,4 @@ public record UserResponseDto(
         String lastName,
         String email,
         Set<String> roles,
-        boolean isVerified
-) {
-}
+        boolean isVerified) {}

@@ -1,5 +1,8 @@
 package com.vertyll.fastprod.auth.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 import com.vertyll.fastprod.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.auth.dto.RegisterRequestDto;
 import com.vertyll.fastprod.auth.dto.SessionInfoDto;
@@ -7,8 +10,6 @@ import com.vertyll.fastprod.auth.dto.SessionResponseDto;
 import com.vertyll.fastprod.auth.util.UserAgentUtils;
 import com.vertyll.fastprod.common.mapper.MapStructConfig;
 import com.vertyll.fastprod.user.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(config = MapStructConfig.class, imports = UserAgentUtils.class)
 public interface AuthMapper {

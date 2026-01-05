@@ -8,13 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import tools.jackson.databind.ObjectMapper;
-import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
-import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
-import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
-import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
-import com.vertyll.fastprod.employee.service.EmployeeService;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +23,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.util.Set;
+import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
+import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
+import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
+import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
+import com.vertyll.fastprod.employee.service.EmployeeService;
+
+import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeControllerTest {
@@ -37,11 +38,9 @@ class EmployeeControllerTest {
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
-    @Mock
-    private EmployeeService employeeService;
+    @Mock private EmployeeService employeeService;
 
-    @InjectMocks
-    private EmployeeController employeeController;
+    @InjectMocks private EmployeeController employeeController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private EmployeeCreateDto createDto;
@@ -61,11 +60,7 @@ class EmployeeControllerTest {
 
         createDto =
                 new EmployeeCreateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        "password123",
-                        Set.of("EMPLOYEE"));
+                        "John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
 
         updateDto =
                 new EmployeeUpdateDto(
@@ -77,12 +72,7 @@ class EmployeeControllerTest {
 
         responseDto =
                 new EmployeeResponseDto(
-                        1L,
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        Set.of("EMPLOYEE"),
-                        true);
+                        1L, "John", "Doe", "john@example.com", Set.of("EMPLOYEE"), true);
     }
 
     @AfterEach

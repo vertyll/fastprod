@@ -1,9 +1,9 @@
 package com.vertyll.fastprod.auth.dto;
 
-import lombok.Builder;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 
 @Builder
 public record SessionInfoDto(
@@ -13,6 +13,4 @@ public record SessionInfoDto(
         String userAgent,
         LocalDateTime createdAt,
         Instant lastUsedAt,
-        Instant expiresAt
-) {
-}
+        Instant expiresAt) {}

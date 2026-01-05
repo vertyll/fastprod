@@ -1,29 +1,28 @@
 package com.vertyll.fastprod.employee.dto;
 
-import com.vertyll.fastprod.common.dto.BaseFilterDto;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import java.util.Set;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Set;
+import com.vertyll.fastprod.common.dto.BaseFilterDto;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 public record EmployeeFilterDto(
         @Nullable @Min(0) Integer page,
         @Nullable @Min(1) @Max(100) Integer size,
         @Nullable String sortBy,
         @Nullable String sortDirection,
-
         @Nullable String firstName,
         @Nullable String lastName,
         @Nullable String email,
         @Nullable Boolean isVerified,
         @Nullable String roles,
-        @Nullable String search
-) {
-    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
-            "id", "firstName", "lastName", "email", "createdAt", "updatedAt"
-    );
+        @Nullable String search) {
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("id", "firstName", "lastName", "email", "createdAt", "updatedAt");
 
     public EmployeeFilterDto {
         if (sortBy != null && !sortBy.isBlank() && ALLOWED_SORT_FIELDS.contains(sortBy.trim())) {

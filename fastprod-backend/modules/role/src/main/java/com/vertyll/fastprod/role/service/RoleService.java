@@ -1,10 +1,11 @@
 package com.vertyll.fastprod.role.service;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.entity.Role;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface RoleService {
     @Transactional

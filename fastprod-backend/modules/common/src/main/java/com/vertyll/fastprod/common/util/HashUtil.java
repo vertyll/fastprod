@@ -1,20 +1,20 @@
 package com.vertyll.fastprod.common.util;
 
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 @UtilityClass
 @Slf4j
 public class HashUtil {
 
     /**
-     * Hashes a token using SHA-256 algorithm.
-     * This is a deterministic hash function - the same input always produces the same output.
+     * Hashes a token using SHA-256 algorithm. This is a deterministic hash function - the same
+     * input always produces the same output.
      *
      * @param value the value to hash
      * @return hexadecimal representation of the hash
