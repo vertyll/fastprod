@@ -50,4 +50,7 @@ errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
 nullaway = { id = "net.ltgt.nullaway", version.ref = "nullaway-plugin" }
 
 [bundles]
-vaadin = ["vaadin-core", "vaadin-spring-boot-starter"]
+vaadin = [
+    "vaadin-core", 
+    "vaadin-spring-boot-starter"
+]

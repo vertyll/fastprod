@@ -41,16 +41,26 @@ spring-boot-starter-validation-test = { module = "org.springframework.boot:sprin
 spring-boot-starter-flyway-test = { module = "org.springframework.boot:spring-boot-starter-flyway-test" }
 spring-boot-starter-mail-test = { module = "org.springframework.boot:spring-boot-starter-mail-test" }
 spring-boot-starter-thymeleaf-test = { module = "org.springframework.boot:spring-boot-starter-thymeleaf-test" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
 
-# Thymeleaf
-thymeleaf-extras-springsecurity6 = { module = "org.thymeleaf.extras:thymeleaf-extras-springsecurity6" }
+# JWT
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+
+# Database
+postgresql = { module = "org.postgresql:postgresql" }
+h2 = { module = "com.h2database:h2" }
 
 # Flyway
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 
-# OpenAPI/Swagger
-springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+# Thymeleaf
+thymeleaf-extras-springsecurity6 = { module = "org.thymeleaf.extras:thymeleaf-extras-springsecurity6" }
+
+# Apache Commons
+commons-lang3 = { module = "org.apache.commons:commons-lang3" }
 
 # MapStruct
 mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
@@ -60,34 +70,29 @@ mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.re
 lombok = { module = "org.projectlombok:lombok" }
 lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-binding", version.ref = "lombok-mapstruct-binding" }
 
-# JWT
-jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
-jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
-jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
-
 # Guava
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 guava-beta-checker = { module = "com.google.guava:guava-beta-checker", version.ref = "beta-checker" }
 
-# Apache Commons
-commons-lang3 = { module = "org.apache.commons:commons-lang3" }
-
-# Database
-postgresql = { module = "org.postgresql:postgresql" }
-h2 = { module = "com.h2database:h2" }
-
-# Testcontainers
-testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
-
-# JUnit
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
-
 # JSpecify
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+
+# OpenAPI/Swagger
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 
 # Error Prone & NullAway
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
+
+# Testcontainers
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+
+# JUnit
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+# BOMs
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
@@ -107,6 +112,12 @@ spring-boot-starters-security = [
     "spring-boot-starter-security"
 ]
 
+spring-boot-starters-mail = [
+    "spring-boot-starter-mail",
+    "spring-boot-starter-thymeleaf",
+    "thymeleaf-extras-springsecurity6"
+]
+
 spring-boot-test-common = [
     "spring-boot-starter-webmvc-test",
     "spring-boot-starter-data-jpa-test",
@@ -117,9 +128,32 @@ spring-boot-test-security = [
     "spring-boot-starter-security-test"
 ]
 
-flyway = ["flyway-core", "flyway-database-postgresql"]
+jjwt = [
+    "jjwt-api",
+    "jjwt-impl",
+    "jjwt-jackson"
+]
 
-jjwt = ["jjwt-api", "jjwt-impl", "jjwt-jackson"]
+flyway = [
+    "flyway-core", 
+    "flyway-database-postgresql"
+]
+
+test-starters = [
+    "spring-boot-starter-data-jpa-test",
+    "spring-boot-starter-flyway-test",
+    "spring-boot-starter-security-test",
+    "spring-boot-starter-validation-test",
+    "spring-boot-starter-webmvc-test",
+    "spring-boot-starter-thymeleaf-test",
+    "spring-boot-starter-mail-test",
+    "spring-boot-testcontainers"
+]
+
+testcontainers = [
+    "testcontainers-postgresql",
+    "testcontainers-junit-jupiter"
+]
 
 mapstruct-processors = [
     "mapstruct-processor",

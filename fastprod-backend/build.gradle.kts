@@ -39,9 +39,9 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_25
     }
 
-    the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
+    configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
         imports {
-            mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+            mavenBom(rootProject.libs.spring.boot.dependencies.get().toString())
         }
     }
 
