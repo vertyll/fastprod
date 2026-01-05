@@ -83,16 +83,25 @@ tasks.withType<Test> {
 
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     java {
-        target("src/**/*.java")
-        googleJavaFormat(libs.versions.google.java.format.get()).aosp().reflowLongStrings()
+        target("src/main/java/**/*.java", "src/test/java/**/*.java")
+        targetExclude("**/build/generated/**/*.java", "**/*Impl.java")
+
+        googleJavaFormat(rootProject.libs.versions.google.java.format.get()).aosp()
+
         removeUnusedImports()
-        endWithNewline()
+        importOrder("java", "javax", "org", "com", "com.vertyll")
+
         trimTrailingWhitespace()
+        endWithNewline()
+
+        toggleOffOn()
     }
 
-    kotlin {
-        target("**/*.gradle.kts")
-        ktlint(libs.versions.ktlint.get())
+    kotlinGradle {
+        target("*.gradle.kts", "**/*.gradle.kts")
+        ktlint(rootProject.libs.versions.ktlint.get())
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
 
