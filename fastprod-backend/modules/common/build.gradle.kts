@@ -2,37 +2,30 @@ plugins {
     id("java-library")
 }
 
-val mapstructVersion = "1.6.3"
-val guavaVersion = "33.5.0-jre"
-
 dependencies {
-    // API dependencies (exposed to consumers)
-    api("org.springframework.boot:spring-boot-starter-data-jpa")
-    api("org.springframework.boot:spring-boot-starter-validation")
-    api("org.springframework.boot:spring-boot-starter-webmvc")
-    api("org.springframework.boot:spring-boot-starter-security")
-    api("org.mapstruct:mapstruct:$mapstructVersion")
+    // API
+    api(libs.bundles.spring.boot.starters.common)
+    api(libs.bundles.spring.boot.starters.security)
+    api(libs.mapstruct)
 
-    // Implementation dependencies (internal only)
-    implementation("com.google.guava:guava:$guavaVersion")
+    // Implementation
+    implementation(libs.guava)
 
-    // Compile-only dependencies
-    compileOnly("org.projectlombok:lombok")
+    // Compile Only
+    compileOnly(libs.lombok)
 
-    // Annotation processors
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+    // Annotation Processor
+    annotationProcessor(libs.lombok)
+    annotationProcessor(libs.mapstruct.processor)
 
-    // Test compile-only dependencies
-    testCompileOnly("org.projectlombok:lombok")
+    // Test Compile Only
+    testCompileOnly(libs.lombok)
 
-    // Test annotation processors
-    testAnnotationProcessor("org.projectlombok:lombok")
-    testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
+    // Test Annotation Processor
+    testAnnotationProcessor(libs.lombok)
+    testAnnotationProcessor(libs.mapstruct.processor)
 
-    // Test implementation dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    // Test Implementation
+    testImplementation(libs.bundles.spring.boot.test.common)
+    testImplementation(libs.bundles.spring.boot.test.security)
 }

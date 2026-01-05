@@ -2,41 +2,33 @@ plugins {
     id("java-library")
 }
 
-val mapstructVersion = "1.6.3"
-val lombokMapstructBindingVersion = "0.2.0"
-val springdocVersion = "2.3.0"
-
 dependencies {
-    // API dependencies (exposed to consumers)
+    // API - Internal Modules
     api(project(":modules:common"))
     api(project(":modules:role"))
     api(project(":modules:user"))
-    api("org.springframework.boot:spring-boot-starter-data-jpa")
-    api("org.springframework.boot:spring-boot-starter-webmvc")
-    api("org.springframework.boot:spring-boot-starter-validation")
-    api("org.springframework.boot:spring-boot-starter-security")
-    api("org.mapstruct:mapstruct:$mapstructVersion")
 
-    // Compile-only dependencies
-    compileOnly("org.projectlombok:lombok")
-    compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
+    // API
+    api(libs.bundles.spring.boot.starters.common)
+    api(libs.bundles.spring.boot.starters.security)
+    api(libs.mapstruct)
 
-    // Annotation processors
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
+    // Compile Only
+    compileOnly(libs.lombok)
+    compileOnly(libs.springdoc.openapi.starter.webmvc.ui)
 
-    // Test compile-only dependencies
-    testCompileOnly("org.projectlombok:lombok")
+    // Annotation Processor
+    annotationProcessor(libs.lombok)
+    annotationProcessor(libs.bundles.mapstruct.processors)
 
-    // Test annotation processors
-    testAnnotationProcessor("org.projectlombok:lombok")
-    testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
-    testAnnotationProcessor("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
+    // Test Compile Only
+    testCompileOnly(libs.lombok)
 
-    // Test implementation dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    // Test Annotation Processor
+    testAnnotationProcessor(libs.lombok)
+    testAnnotationProcessor(libs.bundles.mapstruct.processors)
+
+    // Test Implementation
+    testImplementation(libs.bundles.spring.boot.test.common)
+    testImplementation(libs.bundles.spring.boot.test.security)
 }

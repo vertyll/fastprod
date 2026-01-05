@@ -1,13 +1,13 @@
 import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
-    id("org.springframework.boot") version "4.0.1" apply false
-    id("io.spring.dependency-management") version "1.1.7" apply false
-    id("com.diffplug.spotless") version "8.1.0" apply false
-    id("net.ltgt.errorprone") version "4.3.0" apply false
-    id("net.ltgt.nullaway") version "2.3.0" apply false
     java
     pmd
+    alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.spring.dependency.management) apply false
+    alias(libs.plugins.spotless) apply false
+    alias(libs.plugins.errorprone) apply false
+    alias(libs.plugins.nullaway) apply false
 }
 
 group = "com.vertyll"
@@ -16,15 +16,6 @@ description = "Production management system - API"
 
 extra["author"] = "Mikołaj Gawron"
 extra["email"] = "gawrmiko@gmail.com"
-
-// Shared dependency versions
-val errorProneVersion = "2.36.0"
-val nullawayVersion = "0.12.14"
-val jspecifyVersion = "1.0.0"
-val googleJavaFormatVersion = "1.33.0"
-val ktlintVersion = "1.8.0"
-val betaCheckerVersion = "1.0"
-val pmdVersion = "7.20.0"
 
 allprojects {
     repositories {
@@ -55,18 +46,18 @@ subprojects {
     }
 
     dependencies {
-        // Test runtime-only dependencies
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        // Compile Only
+        compileOnly(rootProject.libs.jspecify)
 
-        // Error Prone dependencies
-        add("errorprone", "com.google.errorprone:error_prone_core:$errorProneVersion")
-        add("errorprone", "com.uber.nullaway:nullaway:$nullawayVersion")
+        // Annotation Processor
+        annotationProcessor(rootProject.libs.guava.beta.checker)
 
-        // Annotation processor dependencies
-        annotationProcessor("com.google.guava:guava-beta-checker:$betaCheckerVersion")
+        // Error Prone
+        add("errorprone", rootProject.libs.errorprone.core)
+        add("errorprone", rootProject.libs.nullaway)
 
-        // Compile-only dependencies
-        compileOnly("org.jspecify:jspecify:$jspecifyVersion")
+        // Test Runtime Only
+        testRuntimeOnly(rootProject.libs.junit.platform.launcher)
     }
 
     tasks.withType<JavaCompile> {
@@ -99,20 +90,15 @@ subprojects {
             showStackTraces = true
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
             displayGranularity = 2
-            
-            showStandardStreams = false
-            showCauses = true
-            showStackTraces = true
         }
 
         val ANSI_RESET = "\u001B[0m"
         val ANSI_GREEN = "\u001B[32m"
         val ANSI_RED = "\u001B[31m"
         val ANSI_YELLOW = "\u001B[33m"
-        val ANSI_BLUE = "\u001B[34m"
         val ANSI_CYAN = "\u001B[36m"
         val ANSI_BOLD = "\u001B[1m"
-        
+
         val CHECK_MARK = "✓"
         val CROSS_MARK = "✗"
         val SKIP_MARK = "⊘"
@@ -135,7 +121,7 @@ subprojects {
                 val failed = result.failedTestCount
                 val skipped = result.skippedTestCount
                 val duration = result.endTime - result.startTime
-                
+
                 println()
                 println("$ANSI_BOLD═══════════════════════════════════════════════════════════════$ANSI_RESET")
                 println("$ANSI_BOLD                        TEST RESULTS                        $ANSI_RESET")
@@ -148,7 +134,7 @@ subprojects {
                 println()
                 println("  Duration: $ANSI_CYAN${duration}ms$ANSI_RESET")
                 println()
-                
+
                 val statusColor = when (result.resultType) {
                     TestResult.ResultType.SUCCESS -> ANSI_GREEN
                     TestResult.ResultType.FAILURE -> ANSI_RED
@@ -165,24 +151,21 @@ subprojects {
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         java {
             target("src/**/*.java")
-
-            googleJavaFormat(googleJavaFormatVersion).aosp().reflowLongStrings()
-
+            googleJavaFormat(rootProject.libs.versions.google.java.format.get()).aosp().reflowLongStrings()
             removeUnusedImports()
-
             endWithNewline()
             trimTrailingWhitespace()
         }
 
         kotlin {
             target("**/*.gradle.kts")
-            ktlint(ktlintVersion)
+            ktlint(rootProject.libs.versions.ktlint.get())
         }
     }
 
     pmd {
         isConsoleOutput = true
-        toolVersion = pmdVersion
+        toolVersion = rootProject.libs.versions.pmd.get()
         ruleSets = listOf()
         ruleSetFiles = files(rootProject.file("config/pmd/pmd-main-ruleset.xml"))
         isIgnoreFailures = false

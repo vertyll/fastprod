@@ -3,24 +3,27 @@ plugins {
 }
 
 dependencies {
-    // Internal dependencies
+    // API - Internal Modules
     api(project(":modules:common"))
 
-    // Spring dependencies
-    api("org.springframework.boot:spring-boot-starter-mail")
-    api("org.springframework.boot:spring-boot-starter-thymeleaf")
+    // API
+    api(libs.spring.boot.starter.mail)
+    api(libs.spring.boot.starter.thymeleaf)
+    api(libs.thymeleaf.extras.springsecurity6)
 
-    // Thymeleaf and Spring Security integration
-    api("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+    // Compile Only
+    compileOnly(libs.lombok)
 
-    // Lombok
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+    // Annotation Processor
+    annotationProcessor(libs.lombok)
 
-    testCompileOnly("org.projectlombok:lombok")
-    testAnnotationProcessor("org.projectlombok:lombok")
+    // Test Compile Only
+    testCompileOnly(libs.lombok)
 
-    // Test dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-mail-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf-test")
+    // Test Annotation Processor
+    testAnnotationProcessor(libs.lombok)
+
+    // Test Implementation
+    testImplementation(libs.spring.boot.starter.mail.test)
+    testImplementation(libs.spring.boot.starter.thymeleaf.test)
 }

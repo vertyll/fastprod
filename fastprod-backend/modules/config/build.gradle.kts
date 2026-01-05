@@ -2,40 +2,38 @@ plugins {
     id("java-library")
 }
 
-val springdocVersion = "2.3.0"
-val jjwtVersion = "0.12.3"
-
 dependencies {
-    // API dependencies (exposed to consumers)
+    // API - Internal Modules
     api(project(":modules:common"))
     api(project(":modules:auth"))
     api(project(":modules:role"))
-    api("org.springframework.boot:spring-boot-starter-security")
-    api("org.springframework.boot:spring-boot-starter-webmvc")
-    api("org.springframework.boot:spring-boot-starter-data-jpa")
 
-    // Implementation dependencies (internal only)
-    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    // API
+    api(libs.bundles.spring.boot.starters.security)
+    api(libs.spring.boot.starter.webmvc)
+    api(libs.spring.boot.starter.data.jpa)
 
-    // Compile-only dependencies
-    compileOnly("org.projectlombok:lombok")
-    compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
+    // Implementation
+    implementation(libs.jjwt.api)
 
-    // Runtime-only dependencies
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
+    // Compile Only
+    compileOnly(libs.lombok)
+    compileOnly(libs.springdoc.openapi.starter.webmvc.ui)
 
-    // Annotation processors
-    annotationProcessor("org.projectlombok:lombok")
+    // Runtime Only
+    runtimeOnly(libs.bundles.jjwt)
 
-    // Test compile-only dependencies
-    testCompileOnly("org.projectlombok:lombok")
+    // Annotation Processor
+    annotationProcessor(libs.lombok)
 
-    // Test annotation processors
-    testAnnotationProcessor("org.projectlombok:lombok")
+    // Test Compile Only
+    testCompileOnly(libs.lombok)
 
-    // Test implementation dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+    // Test Annotation Processor
+    testAnnotationProcessor(libs.lombok)
+
+    // Test Implementation
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    testImplementation(libs.bundles.spring.boot.test.security)
+    testImplementation(libs.spring.boot.starter.data.jpa.test)
 }

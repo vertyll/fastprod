@@ -1,67 +1,58 @@
 plugins {
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
     java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
 }
 
-val flywayVersion = "11.16.0"
-val mapstructVersion = "1.6.3"
-val lombokMapstructBindingVersion = "0.2.0"
-val springdocVersion = "2.3.0"
-val testcontainersVersion = "1.21.3"
-
 dependencies {
-    // Implementation dependencies - internal modules
+    // Implementation - Internal Modules
     implementation(project(":modules:auth"))
     implementation(project(":modules:config"))
     implementation(project(":modules:employee"))
     implementation(project(":modules:role"))
     implementation(project(":modules:user"))
 
-    // Implementation dependencies - Spring Boot starters
-    implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security")
+    // Implementation - Spring Boot Starters
+    implementation(libs.spring.boot.starter.webmvc)
+    implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.security)
 
-    // Implementation dependencies - Thymeleaf
-    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+    // Implementation - Thymeleaf
+    implementation(libs.thymeleaf.extras.springsecurity6)
 
-    // Implementation dependencies - Database migration
-    implementation("org.springframework.boot:spring-boot-starter-flyway") {
+    // Implementation - Database Migration
+    implementation(libs.spring.boot.starter.flyway) {
         exclude(group = "org.flywaydb", module = "flyway-core")
     }
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
-    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+    implementation(libs.bundles.flyway)
 
-    // Implementation dependencies - OpenAPI/Swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
-    implementation("org.mapstruct:mapstruct:$mapstructVersion")
+    // Implementation - OpenAPI/Swagger
+    implementation(libs.springdoc.openapi.starter.webmvc.ui)
+    implementation(libs.mapstruct)
 
-    // Compile-only dependencies
-    compileOnly("org.projectlombok:lombok")
+    // Compile Only
+    compileOnly(libs.lombok)
 
-    // Runtime-only dependencies
-    runtimeOnly("org.postgresql:postgresql")
-    runtimeOnly("org.springframework.boot:spring-boot-devtools")
+    // Runtime Only
+    runtimeOnly(libs.postgresql)
+    runtimeOnly(libs.spring.boot.devtools)
 
-    // Annotation processors
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion")
+    // Annotation Processor
+    annotationProcessor(libs.lombok)
+    annotationProcessor(libs.bundles.mapstruct.processors)
 
-    // Test compile-only dependencies
-    testCompileOnly("org.projectlombok:lombok")
+    // Test Compile Only
+    testCompileOnly(libs.lombok)
 
-    // Test annotation processors
-    testAnnotationProcessor("org.projectlombok:lombok")
+    // Test Annotation Processor
+    testAnnotationProcessor(libs.lombok)
 
-    // Test implementation dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
-    testImplementation("com.h2database:h2")
-    testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
+    // Test Implementation
+    testImplementation(libs.bundles.spring.boot.test.common)
+    testImplementation(libs.bundles.spring.boot.test.security)
+    testImplementation(libs.spring.boot.starter.flyway.test)
+    testImplementation(libs.h2)
+    testImplementation(libs.testcontainers.postgresql)
 }
 
 tasks.withType<Test> {

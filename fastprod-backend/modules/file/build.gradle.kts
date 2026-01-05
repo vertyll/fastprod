@@ -2,29 +2,29 @@ plugins {
     id("java-library")
 }
 
-val guavaVersion = "33.5.0-jre"
-
 dependencies {
-    // API dependencies (exposed to consumers)
+    // API - Internal Modules
     api(project(":modules:common"))
-    api("org.springframework.boot:spring-boot-starter-webmvc")
 
-    // Implementation dependencies (internal only)
-    implementation("org.apache.commons:commons-lang3")
-    implementation("com.google.guava:guava:$guavaVersion")
+    // API
+    api(libs.spring.boot.starter.webmvc)
 
-    // Compile-only dependencies
-    compileOnly("org.projectlombok:lombok")
+    // Implementation
+    implementation(libs.commons.lang3)
+    implementation(libs.guava)
 
-    // Annotation processors
-    annotationProcessor("org.projectlombok:lombok")
+    // Compile Only
+    compileOnly(libs.lombok)
 
-    // Test compile-only dependencies
-    testCompileOnly("org.projectlombok:lombok")
+    // Annotation Processor
+    annotationProcessor(libs.lombok)
 
-    // Test annotation processors
-    testAnnotationProcessor("org.projectlombok:lombok")
+    // Test Compile Only
+    testCompileOnly(libs.lombok)
 
-    // Test implementation dependencies
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    // Test Annotation Processor
+    testAnnotationProcessor(libs.lombok)
+
+    // Test Implementation
+    testImplementation(libs.spring.boot.starter.webmvc.test)
 }
