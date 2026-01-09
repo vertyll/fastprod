@@ -12,6 +12,7 @@ nullaway = "0.12.15"
 jspecify = "1.0.0"
 google-java-format = "1.33.0"
 beta-checker = "1.0"
+lombok = "1.18.42"
 
 [libraries]
 # Vaadin
@@ -23,7 +24,7 @@ spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-start
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 
 # Lombok & JSpecify
-lombok = { module = "org.projectlombok:lombok" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 
 # Guava

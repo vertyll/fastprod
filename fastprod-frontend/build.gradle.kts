@@ -112,3 +112,7 @@ tasks.named("bootRun").configure {
 tasks.named("build").configure {
     dependsOn("vaadinBuildFrontend")
 }
+
+tasks.named("spotlessGradle").configure {
+    mustRunAfter("vaadinPrepareFrontend")
+}
