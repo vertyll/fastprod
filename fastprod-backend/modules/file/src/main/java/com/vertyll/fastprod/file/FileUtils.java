@@ -1,6 +1,5 @@
 package com.vertyll.fastprod.file;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,18 +16,25 @@ public final class FileUtils {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    public static byte[] readFileFromLocation(@Nullable String fileUrl) {
+    public static byte[] readFileFromLocation(@Nullable String fileUrl, Path baseDir) {
+
         if (StringUtils.isBlank(fileUrl)) {
             return new byte[0];
         }
 
         try {
-            Path filePath = new File(fileUrl).toPath();
-            return Files.readAllBytes(filePath);
-        } catch (IOException _) {
-            log.warn("No file found in the path {}", fileUrl);
-        }
+            Path basePath = baseDir.toRealPath().normalize();
+            Path resolvedPath = basePath.resolve(fileUrl).normalize();
 
-        return new byte[0];
+            if (!resolvedPath.startsWith(basePath)) {
+                log.warn("Blocked path traversal attempt: {}", fileUrl);
+                return new byte[0];
+            }
+
+            return Files.readAllBytes(resolvedPath);
+        } catch (IOException e) {
+            log.warn("No file found in the path {}", fileUrl);
+            return new byte[0];
+        }
     }
 }

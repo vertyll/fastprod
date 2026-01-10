@@ -32,6 +32,12 @@ import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.repository.UserRepository;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings(
+        value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD"},
+        justification =
+                "Test class: employeeMapper is used by Mockito injection; hardcoded test passwords are safe in unit tests")
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
 

@@ -32,6 +32,11 @@ import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.mapper.UserMapper;
 import com.vertyll.fastprod.user.repository.UserRepository;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings(
+        value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD"},
+        justification = "Test class: unused fields and test passwords are safe")
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 

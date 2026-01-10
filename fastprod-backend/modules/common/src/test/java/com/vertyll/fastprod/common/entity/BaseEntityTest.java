@@ -2,6 +2,7 @@ package com.vertyll.fastprod.common.entity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -13,7 +14,9 @@ import jakarta.persistence.MappedSuperclass;
 
 class BaseEntityTest {
 
-    private static final class TestEntity extends BaseEntity {}
+    private static final class TestEntity extends BaseEntity {
+        @Serial private static final long serialVersionUID = 1L;
+    }
 
     @Test
     void class_ShouldHaveRequiredAnnotations() {

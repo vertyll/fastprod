@@ -27,6 +27,11 @@ import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.mapper.RoleMapper;
 import com.vertyll.fastprod.role.repository.RoleRepository;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings(
+        value = {"URF_UNREAD_FIELD"},
+        justification = "Test class: roleMapper is used by Mockito injection")
 @ExtendWith(MockitoExtension.class)
 class RoleServiceTest {
 

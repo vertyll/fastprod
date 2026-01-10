@@ -19,9 +19,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.vertyll.fastprod.common.response.ApiResponse;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 
+@SuppressFBWarnings(
+        value = "XSS_SERVLET",
+        justification = "Only static JSON error responses are written, no user-controlled content")
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity

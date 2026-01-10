@@ -16,6 +16,7 @@ import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.service.UserService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressFBWarnings(
+        value = "COOKIE_USAGE",
+        justification = "Refresh token is stored in Secure, HttpOnly cookie and used only server-side"
+)
 @Service
 @RequiredArgsConstructor
 class AuthServiceImpl implements AuthService {

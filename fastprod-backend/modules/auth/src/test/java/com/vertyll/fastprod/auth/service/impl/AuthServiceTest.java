@@ -46,11 +46,16 @@ import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.service.UserService;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@SuppressFBWarnings(
+        value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD", "HTTPONLY_COOKIE", "INSECURE_COOKIE"},
+        justification =
+                "Test class: authMapper is used by Mockito injection; hardcoded test passwords and cookie configurations are safe in unit tests")
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
@@ -131,7 +136,7 @@ class AuthServiceTest {
 
     private void setupCookieProperties() {
         lenient().when(cookieProperties.httpOnly()).thenReturn(true);
-        lenient().when(cookieProperties.secure()).thenReturn(false);
+        lenient().when(cookieProperties.secure()).thenReturn(true);
         lenient().when(cookieProperties.path()).thenReturn("/");
         lenient().when(cookieProperties.sameSite()).thenReturn("Strict");
     }

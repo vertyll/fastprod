@@ -6,8 +6,8 @@ import static java.lang.System.currentTimeMillis;
 import com.google.common.base.Ascii;
 import com.vertyll.fastprod.file.config.FileUploadProperties;
 import com.vertyll.fastprod.file.service.FileStorageService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.annotation.Nonnull;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,29 +30,50 @@ class FileStorageServiceImpl implements FileStorageService {
         return uploadFile(sourceFile, fileUploadSubPath);
     }
 
-    private String uploadFile(@Nonnull MultipartFile sourceFile, @Nonnull String fileUploadSubPath) {
-        final String finalUploadPath = fileUploadProperties.fileOutputPath() + separator + fileUploadSubPath;
-        File targetFolder = new File(finalUploadPath);
-        if (!targetFolder.exists()) {
-            boolean folderCreated = targetFolder.mkdirs();
-            if (!folderCreated) {
-                log.warn("Failed to create the target folder: {}", targetFolder);
+    @SuppressFBWarnings(
+            value = "PATH_TRAVERSAL_IN",
+            justification = "Path traversal is prevented by normalize() and startsWith() validation")
+    private String uploadFile(@Nonnull MultipartFile sourceFile,
+                              @Nonnull String fileUploadSubPath) {
+
+        try {
+            // Get the base directory and normalize it
+            Path baseDir = Paths.get(fileUploadProperties.fileOutputPath())
+                    .toRealPath()
+                    .normalize();
+
+            // Resolve the user directory and normalize it
+            Path userDir = baseDir.resolve(fileUploadSubPath).normalize();
+
+            // SECURITY: Prevent path traversal attacks
+            // Ensure the resolved path is still within the base directory
+            if (!userDir.startsWith(baseDir)) {
+                log.warn("Blocked path traversal attempt: {}", fileUploadSubPath);
                 return "";
             }
-        }
 
-        final String fileExtension = getFileExtension(sourceFile.getOriginalFilename());
-        String targetFilePath = finalUploadPath + separator + currentTimeMillis() + "." + fileExtension;
-        Path targetPath = Paths.get(targetFilePath);
-        try {
+            // Create the directory if it doesn't exist
+            Files.createDirectories(userDir);
+
+            // Generate a safe filename
+            String extension = getFileExtension(sourceFile.getOriginalFilename());
+            String fileName = currentTimeMillis() + "." + extension;
+
+            // Resolve the final file path and normalize it
+            Path targetPath = userDir.resolve(fileName).normalize();
+
+            // Write the file
             Files.write(targetPath, sourceFile.getBytes());
-            log.info("File saved to: {}", targetFilePath);
-            return targetFilePath;
+
+            log.info("File saved to: {}", targetPath);
+            return targetPath.toString();
+
         } catch (IOException e) {
             log.error("File was not saved", e);
+            return "";
         }
-        return "";
     }
+
 
     private String getFileExtension(String fileName) {
         if (fileName == null || fileName.isEmpty()) {

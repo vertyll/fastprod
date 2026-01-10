@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.errorprone) apply false
     alias(libs.plugins.nullaway) apply false
+    alias(libs.plugins.spotbugs) apply false
 }
 
 group = "com.vertyll"
@@ -31,6 +32,7 @@ subprojects {
         plugin("com.diffplug.spotless")
         plugin("net.ltgt.errorprone")
         plugin("net.ltgt.nullaway")
+        plugin("com.github.spotbugs")
     }
 
     java {
@@ -51,6 +53,9 @@ subprojects {
         // Compile Only
         compileOnly(rootProject.libs.jspecify)
 
+        // SpotBugs Annotations
+        compileOnly(rootProject.libs.spotbugs.annotations)
+
         // Annotation Processor
         annotationProcessor(rootProject.libs.guava.beta.checker)
 
@@ -58,8 +63,88 @@ subprojects {
         add("errorprone", rootProject.libs.errorprone.core)
         add("errorprone", rootProject.libs.nullaway)
 
+        // SpotBugs
+        add("spotbugsPlugins", rootProject.libs.findsecbugs)
+
+        // Test Compile Only
+        testCompileOnly(rootProject.libs.jspecify)
+        testCompileOnly(rootProject.libs.spotbugs.annotations)
+
         // Test Runtime Only
         testRuntimeOnly(rootProject.libs.junit.platform.launcher)
+    }
+
+    configure<com.github.spotbugs.snom.SpotBugsExtension> {
+        ignoreFailures.set(false)
+        effort.set(com.github.spotbugs.snom.Effort.MAX)
+        reportLevel.set(com.github.spotbugs.snom.Confidence.LOW)
+        showProgress.set(true)
+
+        excludeFilter.set(rootProject.file("config/spotbugs/exclude-filter.xml"))
+    }
+
+    tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
+        val projectName = project.name
+        val taskName = name
+        val buildDir = project.layout.buildDirectory.get()
+
+        reports.maybeCreate("html").apply {
+            required.set(true)
+            outputLocation.set(file("${buildDir}/reports/spotbugs/${projectName}-${taskName}.html"))
+            setStylesheet("fancy-hist.xsl")
+        }
+
+        reports.maybeCreate("xml").apply {
+            required.set(true)
+            outputLocation.set(file("${buildDir}/reports/spotbugs/${projectName}-${taskName}.xml"))
+        }
+
+        doLast {
+            val ansiReset = "\u001B[0m"
+            val ansiGreen = "\u001B[32m"
+            val ansiRed = "\u001B[31m"
+            val ansiBold = "\u001B[1m"
+
+            val xmlReport = reports.maybeCreate("xml").outputLocation.get().asFile
+            val htmlReport = reports.maybeCreate("html").outputLocation.get().asFile
+
+            if (xmlReport.exists()) {
+                val xml = xmlReport.readText()
+                val bugCount = xml.substringAfter("<BugInstance", "").let {
+                    if (it.isEmpty()) 0 else xml.split("<BugInstance").size - 1
+                }
+
+                println("\n$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
+                println("$ansiBold  SpotBugs: $projectName - $taskName")
+                println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
+
+                if (bugCount == 0) {
+                    println("  ${ansiGreen}✓ No bugs found!$ansiReset")
+                } else {
+                    println("  ${ansiRed}✗ Found $bugCount bug(s)$ansiReset")
+
+                    val categories = mutableMapOf<String, Int>()
+                    xml.split("<BugInstance").drop(1).forEach { bugXml ->
+                        val category = bugXml.substringAfter("category=\"", "").substringBefore("\"", "UNKNOWN")
+                        categories[category] = categories.getOrDefault(category, 0) + 1
+                    }
+
+                    println("\n  Categories:")
+                    categories.forEach { (category, count) ->
+                        println("    • $category: $count")
+                    }
+
+                    if (htmlReport.exists()) {
+                        println("\n  Detailed report: file://${htmlReport.absolutePath}")
+                    }
+                }
+                println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset\n")
+            }
+        }
+    }
+
+    tasks.named("check") {
+        dependsOn("spotbugsMain")
     }
 
     tasks.withType<JavaCompile> {

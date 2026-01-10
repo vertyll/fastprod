@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.vertyll.fastprod.auth.service.JwtService;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -24,6 +25,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@SuppressFBWarnings(
+        value = "SERVLET_HEADER",
+        justification = "Authorization header is cryptographically validated JWT token")
 @Component
 @RequiredArgsConstructor
 @Slf4j

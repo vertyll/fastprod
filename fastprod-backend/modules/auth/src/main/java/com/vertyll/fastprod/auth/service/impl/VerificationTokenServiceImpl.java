@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Random;
@@ -22,7 +23,7 @@ import java.util.Random;
 @Slf4j
 class VerificationTokenServiceImpl implements VerificationTokenService {
 
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     private final VerificationTokenRepository verificationTokenRepository;
 

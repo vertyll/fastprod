@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.time.Instant;
 import java.util.List;
@@ -28,6 +29,8 @@ import java.util.List;
 class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private static final String UNKNOWN = "unknown";
+    private static final int MAX_IP_LENGTH = 45; // IPv6 max length
+    private static final int MAX_USER_AGENT_LENGTH = 255;
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
@@ -193,31 +196,62 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshTokenRepository.deleteAllExpiredTokens(Instant.now());
     }
 
+    @SuppressFBWarnings(
+            value = "SERVLET_HEADER",
+            justification = "IP address is used only for audit logging, not security decisions. " +
+                    "Value is sanitized before storage to prevent injection attacks.")
     private String extractIpAddress(HttpServletRequest request) {
-        if (request == null) {
-            return UNKNOWN;
-        }
+        if (request == null) return UNKNOWN;
 
+        String ip;
         String xForwardedFor = request.getHeader("X-Forwarded-For");
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            return Iterables.get(Splitter.on(',').split(xForwardedFor), 0).trim();
+            // Take only the first IP from X-Forwarded-For chain
+            ip = Iterables.get(Splitter.on(',').split(xForwardedFor), 0).trim();
+        } else {
+            String xRealIp = request.getHeader("X-Real-IP");
+            ip = (xRealIp != null && !xRealIp.isEmpty()) ? xRealIp : request.getRemoteAddr();
         }
 
-        String xRealIp = request.getHeader("X-Real-IP");
-        if (xRealIp != null && !xRealIp.isEmpty()) {
-            return xRealIp;
-        }
-
-        return request.getRemoteAddr();
+        // Sanitize: limit length and remove newlines/carriage returns to prevent log injection
+        return sanitizeIpAddress(ip);
     }
 
+    @SuppressFBWarnings(
+            value = "SERVLET_HEADER_USER_AGENT",
+            justification = "User-Agent is used only for audit logging and session display, " +
+                    "not security decisions. Value is sanitized before storage.")
     private String extractUserAgent(HttpServletRequest request) {
         if (request == null) {
             return UNKNOWN;
         }
 
         String userAgent = request.getHeader("User-Agent");
-        return userAgent != null ? userAgent : UNKNOWN;
+        if (userAgent == null || userAgent.isEmpty()) {
+            return UNKNOWN;
+        }
+
+        return sanitizeUserAgent(userAgent);
+    }
+
+    private String sanitizeIpAddress(String ip) {
+        if (ip == null || ip.isEmpty()) {
+            return UNKNOWN;
+        }
+
+        String sanitized = ip.replaceAll("\\p{Cntrl}", "_");
+
+        return sanitized.substring(0, Math.min(sanitized.length(), MAX_IP_LENGTH));
+    }
+
+    private String sanitizeUserAgent(String userAgent) {
+        if (userAgent == null || userAgent.isEmpty()) {
+            return UNKNOWN;
+        }
+
+        String sanitized = userAgent.replaceAll("\\p{Cntrl}", "_");
+
+        return sanitized.substring(0, Math.min(sanitized.length(), MAX_USER_AGENT_LENGTH));
     }
 
     private RefreshToken findTokenByValue(String token, String username) {
