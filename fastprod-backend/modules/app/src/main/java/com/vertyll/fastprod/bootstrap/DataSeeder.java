@@ -50,7 +50,10 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     private void seedAdminUser() {
-        String email = adminProps.email().isBlank() ? DEFAULT_ADMIN_EMAIL : adminProps.email();
+        String email =
+                (adminProps.email() == null || adminProps.email().isBlank())
+                        ? DEFAULT_ADMIN_EMAIL
+                        : adminProps.email();
 
         if (userService.existsByEmail(email)) {
             log.info("[DataSeeder] Admin user already exists: {}", email);
@@ -58,7 +61,7 @@ public class DataSeeder implements ApplicationRunner {
         }
 
         String password = adminProps.password();
-        if (password.isBlank()) {
+        if (password == null || password.isBlank()) {
             log.warn(
                     "[DataSeeder] Admin password not provided. Skipping admin creation. Set ADMIN_PASSWORD or admin.password to enable.");
             return;
@@ -71,11 +74,11 @@ public class DataSeeder implements ApplicationRunner {
         User admin =
                 User.builder()
                         .firstName(
-                                adminProps.firstName().isBlank()
+                                (adminProps.firstName() == null || adminProps.firstName().isBlank())
                                         ? DEFAULT_ADMIN_FIRST_NAME
                                         : adminProps.firstName())
                         .lastName(
-                                adminProps.lastName().isBlank()
+                                (adminProps.lastName() == null || adminProps.lastName().isBlank())
                                         ? DEFAULT_ADMIN_LAST_NAME
                                         : adminProps.lastName())
                         .email(email)
