@@ -57,6 +57,8 @@ Production management application.
 
 ### Other:
 - Docker for development environment
+- PMD for static code analysis
+- SpotBugs for static code analysis
 - JSpecify for null-safety annotations
 - NullAway for null-safety checks
 - Error Prone for static code analysis
