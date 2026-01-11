@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
@@ -58,14 +59,12 @@ class ValidationErrorResponseTest {
 
         // then
         assertEquals(1, response.getErrors().size());
-        assertEquals(2, response.getErrors().get("password").size());
+        assertEquals(2, Objects.requireNonNull(response.getErrors().get("password")).size());
         assertTrue(
-                response.getErrors()
-                        .get("password")
+                Objects.requireNonNull(response.getErrors().get("password"))
                         .contains("Password must contain at least 8 characters"));
         assertTrue(
-                response.getErrors()
-                        .get("password")
+                Objects.requireNonNull(response.getErrors().get("password"))
                         .contains("Password must contain at least one uppercase letter"));
     }
 

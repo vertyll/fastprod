@@ -38,9 +38,13 @@ class UserControllerTest {
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
-    @Mock private UserService userService;
+    @SuppressWarnings("NullAway")
+    @Mock
+    private UserService userService;
 
-    @InjectMocks private UserController userController;
+    @SuppressWarnings("NullAway")
+    @InjectMocks
+    private UserController userController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private UserCreateDto createDto;

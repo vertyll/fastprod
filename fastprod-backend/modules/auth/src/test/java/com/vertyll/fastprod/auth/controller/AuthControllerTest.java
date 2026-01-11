@@ -37,9 +37,13 @@ class AuthControllerTest {
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
-    @Mock private AuthService authService;
+    @SuppressWarnings("NullAway")
+    @Mock
+    private AuthService authService;
 
-    @InjectMocks private AuthController authController;
+    @SuppressWarnings("NullAway")
+    @InjectMocks
+    private AuthController authController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private RegisterRequestDto registerRequest;

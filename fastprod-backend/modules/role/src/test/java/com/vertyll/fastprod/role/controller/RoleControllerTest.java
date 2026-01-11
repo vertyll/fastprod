@@ -35,9 +35,13 @@ class RoleControllerTest {
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
-    @Mock private RoleService roleService;
+    @SuppressWarnings("NullAway")
+    @Mock
+    private RoleService roleService;
 
-    @InjectMocks private RoleController roleController;
+    @SuppressWarnings("NullAway")
+    @InjectMocks
+    private RoleController roleController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private RoleCreateDto createDto;
@@ -87,6 +91,7 @@ class RoleControllerTest {
     @Test
     void createRole_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
         // given
+        @SuppressWarnings("NullAway")
         RoleCreateDto invalidCreateDto = new RoleCreateDto(null, "Administrator role");
 
         // when & then
@@ -142,6 +147,7 @@ class RoleControllerTest {
     @Test
     void updateRole_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
         // given
+        @SuppressWarnings("NullAway")
         RoleUpdateDto invalidUpdateDto = new RoleUpdateDto(null, "Administrator role");
 
         // when & then

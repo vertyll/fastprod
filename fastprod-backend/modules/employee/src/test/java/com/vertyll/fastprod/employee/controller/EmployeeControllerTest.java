@@ -38,9 +38,13 @@ class EmployeeControllerTest {
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
-    @Mock private EmployeeService employeeService;
+    @SuppressWarnings("NullAway")
+    @Mock
+    private EmployeeService employeeService;
 
-    @InjectMocks private EmployeeController employeeController;
+    @SuppressWarnings("NullAway")
+    @InjectMocks
+    private EmployeeController employeeController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private EmployeeCreateDto createDto;

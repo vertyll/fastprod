@@ -5,6 +5,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<Void>> handleApiException(ApiException ex) {
-        return ApiResponse.buildResponse(null, ex.getMessage(), ex.getStatus());
+        return ApiResponse.buildResponse(
+                null,
+                Objects.requireNonNullElse(ex.getMessage(), "An unexpected error occurred"),
+                ex.getStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

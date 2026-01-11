@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@SuppressWarnings("PMD.AbstractClassWithoutAnyMethod") // JPA MappedSuperclass pattern
+@SuppressWarnings({"PMD.AbstractClassWithoutAnyMethod", "NullAway"}) // JPA MappedSuperclass pattern
 public abstract class BaseEntity implements Serializable {
 
     @Serial private static final long serialVersionUID = 1L;

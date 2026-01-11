@@ -38,7 +38,7 @@ public record EmployeeFilterDto(
         search = trimOrNull(search);
     }
 
-    private static String trimOrNull(@Nullable String value) {
+    private static @Nullable String trimOrNull(@Nullable String value) {
         return (value != null && !value.isBlank()) ? value.trim() : null;
     }
 
