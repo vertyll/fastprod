@@ -3,11 +3,12 @@ package com.vertyll.fastprod.auth.entity;
 import java.io.Serial;
 import java.time.Instant;
 
+import lombok.*;
+
 import com.vertyll.fastprod.common.entity.BaseEntity;
 import com.vertyll.fastprod.user.entity.User;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

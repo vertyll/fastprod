@@ -13,15 +13,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.vertyll.fastprod.role.enums.RoleType;
-import com.vertyll.fastprod.role.service.RoleService;
-import com.vertyll.fastprod.user.entity.User;
-import com.vertyll.fastprod.user.service.UserService;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import com.vertyll.fastprod.role.enums.RoleType;
+import com.vertyll.fastprod.role.service.RoleService;
+import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.service.UserService;
 
 @Slf4j
 @Component

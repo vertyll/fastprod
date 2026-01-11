@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import lombok.RequiredArgsConstructor;
+
 import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.common.response.PaginatedApiResponse;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
@@ -17,7 +19,6 @@ import com.vertyll.fastprod.employee.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/employees")

@@ -2,10 +2,11 @@ package com.vertyll.fastprod.role.entity;
 
 import java.io.Serial;
 
+import lombok.*;
+
 import com.vertyll.fastprod.common.entity.BaseEntity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

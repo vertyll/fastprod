@@ -9,6 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import lombok.RequiredArgsConstructor;
+
 import com.vertyll.fastprod.auth.dto.*;
 import com.vertyll.fastprod.auth.service.AuthService;
 import com.vertyll.fastprod.common.response.ApiResponse;
@@ -20,7 +22,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")

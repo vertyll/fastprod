@@ -10,11 +10,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.*;
+
 import com.vertyll.fastprod.common.entity.BaseEntity;
 import com.vertyll.fastprod.role.entity.Role;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Getter
 @Setter

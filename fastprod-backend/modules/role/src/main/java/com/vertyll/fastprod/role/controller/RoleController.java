@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import lombok.RequiredArgsConstructor;
+
 import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
@@ -18,7 +20,6 @@ import com.vertyll.fastprod.role.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/roles")
