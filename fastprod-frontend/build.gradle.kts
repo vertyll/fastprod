@@ -72,12 +72,22 @@ tasks.withType<JavaCompile> {
         option("NullAway:CustomContractAnnotations", "org.springframework.lang.Contract")
         option("NullAway:JSpecifyMode", "true")
 
+        option("NullAway:ExcludedFieldAnnotations", "lombok.Generated")
+        option("NullAway:TreatGeneratedAsUnannotated", "true")
+
+        option("NullAway:AcknowledgeRestrictiveAnnotations", "true")
+        option("NullAway:CheckOptionalEmptiness", "true")
+        option("NullAway:HandleTestAssertionLibraries", "true")
+
         excludedPaths.set(".*/build/generated/.*")
     }
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+
     jvmArgs("-XX:+EnableDynamicAgentLoading", "-Xshare:off")
 }
 
@@ -89,7 +99,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         googleJavaFormat(rootProject.libs.versions.google.java.format.get()).aosp()
 
         removeUnusedImports()
-        importOrder("java", "javax", "org", "com", "com.vertyll")
+        importOrder("java", "javax", "org", "com", "lombok", "com.vertyll")
 
         trimTrailingWhitespace()
         endWithNewline()

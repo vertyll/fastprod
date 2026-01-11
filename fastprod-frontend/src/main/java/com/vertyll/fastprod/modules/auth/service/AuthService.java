@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.modules.auth.dto.*;
 import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j

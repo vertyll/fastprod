@@ -18,12 +18,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
 import com.vertyll.fastprod.shared.exception.ApiException;
-
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 @Route("forgot-password")
 @PageTitle("Forgot Password | FastProd")

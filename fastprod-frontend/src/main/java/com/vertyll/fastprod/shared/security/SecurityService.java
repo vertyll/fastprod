@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 
 import com.vaadin.flow.server.VaadinSession;
 
-import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
-import com.vertyll.fastprod.modules.auth.service.AuthService;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.modules.auth.service.AuthService;
 
 @Service
 @Slf4j

@@ -20,12 +20,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
-
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 @Route("reset-password")
 @PageTitle("Reset Password | FastProd")

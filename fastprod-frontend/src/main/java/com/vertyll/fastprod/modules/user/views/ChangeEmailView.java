@@ -16,6 +16,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
@@ -25,7 +27,6 @@ import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
 import jakarta.annotation.security.PermitAll;
-import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "profile/change-email", layout = MainLayout.class)
 @PageTitle("Change Email | FastProd")

@@ -18,12 +18,12 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.base.ui.component.UserMenu;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.security.RoleType;
 import com.vertyll.fastprod.shared.security.SecurityService;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Layout
 @Slf4j

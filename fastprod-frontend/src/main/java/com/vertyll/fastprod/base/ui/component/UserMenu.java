@@ -13,12 +13,12 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.SecurityService;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class UserMenu extends HorizontalLayout {

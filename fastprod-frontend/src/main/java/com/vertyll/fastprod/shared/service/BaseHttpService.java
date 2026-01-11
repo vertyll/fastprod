@@ -8,13 +8,13 @@ import java.net.http.HttpResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.dto.PaginatedApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class BaseHttpService {

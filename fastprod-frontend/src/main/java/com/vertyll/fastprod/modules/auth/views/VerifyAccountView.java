@@ -18,11 +18,11 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Route("verify-account")
 @PageTitle("Verify Account | FastProd")

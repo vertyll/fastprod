@@ -5,10 +5,10 @@ import java.util.function.BiConsumer;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import com.vertyll.fastprod.shared.dto.PageResponse;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import com.vertyll.fastprod.shared.dto.PageResponse;
 
 public class PagedGridComponent<T> extends VerticalLayout {
 

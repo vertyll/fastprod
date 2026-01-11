@@ -18,6 +18,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.user.dto.ProfileUpdateDto;
 import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
@@ -27,7 +29,6 @@ import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 
 import jakarta.annotation.security.PermitAll;
-import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "profile", layout = MainLayout.class)
 @PageTitle("My Profile | FastProd")

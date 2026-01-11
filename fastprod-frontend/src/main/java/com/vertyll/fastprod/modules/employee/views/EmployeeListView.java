@@ -17,6 +17,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.filters.EmployeeFilters;
@@ -28,7 +30,6 @@ import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
 
 import jakarta.annotation.security.RolesAllowed;
-import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees", layout = MainLayout.class)
 @PageTitle("Employees | FastProd")

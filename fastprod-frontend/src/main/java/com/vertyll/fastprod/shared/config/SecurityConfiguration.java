@@ -4,11 +4,11 @@ import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
-import com.vertyll.fastprod.shared.security.SecurityBeforeEnterListener;
-import com.vertyll.fastprod.shared.security.SecurityService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import com.vertyll.fastprod.shared.security.SecurityBeforeEnterListener;
+import com.vertyll.fastprod.shared.security.SecurityService;
 
 @SpringComponent
 @Slf4j

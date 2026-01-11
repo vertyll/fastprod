@@ -12,14 +12,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees/details/:id", layout = MainLayout.class)
 @PageTitle("Employee Details | FastProd")

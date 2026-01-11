@@ -19,6 +19,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto.FormBuilder;
@@ -27,8 +29,6 @@ import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.SecurityService;
 import com.vertyll.fastprod.shared.security.TokenRefreshService;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Route("login")
 @PageTitle("Login | FastProd")

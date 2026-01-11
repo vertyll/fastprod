@@ -22,13 +22,13 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto.FormBuilder;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Route("register")
 @PageTitle("Sign Up | FastProd")
