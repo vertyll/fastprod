@@ -25,11 +25,11 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
 
         // Public routes that don't require authentication
         boolean isPublicRoute =
-                targetLocation.equals(LOGIN_ROUTE)
-                        || targetLocation.equals("register")
-                        || targetLocation.equals("verify-account")
+                LOGIN_ROUTE.equals(targetLocation)
+                        || "register".equals(targetLocation)
+                        || "verify-account".equals(targetLocation)
                         || targetLocation.startsWith("verify-account/")
-                        || targetLocation.equals("forgot-password")
+                        || "forgot-password".equals(targetLocation)
                         || targetLocation.startsWith("reset-password")
                         || targetLocation.isEmpty();
 
@@ -42,7 +42,7 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
 
         // If authenticated and trying to access login/register, redirect to home
         if (isAuthenticated
-                && (targetLocation.equals(LOGIN_ROUTE) || targetLocation.equals("register"))) {
+                && (LOGIN_ROUTE.equals(targetLocation) || "register".equals(targetLocation))) {
             log.info("Already authenticated. Redirecting to home.");
             event.rerouteTo("");
             return;

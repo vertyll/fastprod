@@ -1,4 +1,5 @@
 [versions]
+# Plugins
 spring-boot = "3.5.9"
 spring-dependency-management = "1.1.7"
 vaadin = "24.9.6"
@@ -6,13 +7,18 @@ vaadin-plugin = "24.9.6"
 spotless = "8.1.0"
 errorprone-plugin = "4.3.0"
 nullaway-plugin = "2.3.0"
+pmd = "7.20.0"
 
+# Dependencies
 errorprone = "2.45.0"
 nullaway = "0.12.15"
 jspecify = "1.0.0"
 google-java-format = "1.33.0"
 beta-checker = "1.0"
 lombok = "1.18.42"
+spotbugs = "6.4.8"
+spotbugs-annotations = "4.9.8"
+findsecbugs = "1.14.0"
 
 [libraries]
 # Vaadin
@@ -34,6 +40,9 @@ guava-beta-checker = { module = "com.google.guava:guava-beta-checker", version.r
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
 
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs-annotations" }
+findsecbugs = { module = "com.h3xstream.findsecbugs:findsecbugs-plugin", version.ref = "findsecbugs" }
+
 # JUnit
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
@@ -48,6 +57,7 @@ vaadin = { id = "com.vaadin", version.ref = "vaadin-plugin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
 nullaway = { id = "net.ltgt.nullaway", version.ref = "nullaway-plugin" }
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs" }
 
 [bundles]
 vaadin = [

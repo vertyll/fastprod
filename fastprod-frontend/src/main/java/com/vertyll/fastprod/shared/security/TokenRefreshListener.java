@@ -47,8 +47,8 @@ public class TokenRefreshListener implements VaadinServiceInitListener {
     }
 
     private boolean isPublicRoute(String route) {
-        return route.equals("login")
-                || route.equals("register")
+        return "login".equals(route)
+                || "register".equals(route)
                 || route.startsWith("verify-account")
                 || route.isEmpty();
     }

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude generated code -->
+    <Match>
+        <Package name="~.*\.generated\..*"/>
+    </Match>
+
+    <!-- Exclude MapStruct generated implementations -->
+    <Match>
+        <Class name="~.*MapperImpl"/>
+    </Match>
+
+    <!-- Vaadin components must be Serializable but don't need serialVersionUID -->
+    <Match>
+        <Or>
+            <Class name="~.*View"/>
+            <Class name="~.*Layout"/>
+            <Class name="~.*Component"/>
+            <Class name="~.*Dialog"/>
+            <Class name="~.*Menu"/>
+        </Or>
+        <Bug pattern="SE_NO_SERIALVERSIONID,SE_BAD_FIELD,SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+    </Match>
+
+    <!-- Vaadin security listeners -->
+    <Match>
+        <Or>
+            <Class name="~.*Listener"/>
+            <Class name="~.*BeforeEnterListener"/>
+        </Or>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
+
+    <!-- Vaadin Views and UI components expose internal representation by design -->
+    <Match>
+        <Or>
+            <Package name="~.*\.views\..*"/>
+            <Package name="~.*\.ui\..*"/>
+            <Package name="~.*\.base\..*"/>
+            <Package name="~.*\.components\..*"/>
+            <Package name="~.*\.modules\..*"/>
+        </Or>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- DTOs expose internal representation by design (they're data carriers) -->
+    <Match>
+        <Or>
+            <Package name="~.*\.dto\..*"/>
+            <Class name="~.*Dto"/>
+            <Class name="~.*Response"/>
+            <Class name="~.*Request"/>
+        </Or>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Shared utilities, filters, and components -->
+    <Match>
+        <Package name="~.*\.shared\..*"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Builder pattern classes -->
+    <Match>
+        <Class name="~.*\$Builder"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- JWT Parser utility class - constructor throws for invalid setup -->
+    <Match>
+        <Class name="~.*JwtParser"/>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+
+    <!-- Exclude test serialization and field issues -->
+    <Match>
+        <Class name="~.*Test"/>
+        <Bug pattern="SE_BAD_FIELD,SE_NO_SERIALVERSIONID,UWF_UNWRITTEN_FIELD,URF_UNREAD_FIELD,EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Exception handling that catches Exception is OK in service layer -->
+    <Match>
+        <Or>
+            <Package name="~.*\.service\..*"/>
+            <Class name="~.*ErrorHandler"/>
+            <Class name="~.*ExceptionHandler"/>
+        </Or>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
+
+    <!-- Allow public inner classes in configs -->
+    <Match>
+        <Class name="~.*Configuration"/>
+        <Bug pattern="SIC_INNER_SHOULD_BE_STATIC"/>
+    </Match>
+
+    <!-- FindSecBugs: Ignore informational endpoints detection -->
+    <Match>
+        <Bug pattern="SPRING_ENDPOINT"/>
+    </Match>
+
+    <!-- FindSecBugs: Log injection is low risk in internal apps -->
+    <Match>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+</FindBugsFilter>

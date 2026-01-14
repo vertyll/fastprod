@@ -2,12 +2,14 @@ import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     java
+    pmd
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.vaadin)
     alias(libs.plugins.spotless)
     alias(libs.plugins.errorprone)
     alias(libs.plugins.nullaway)
+    alias(libs.plugins.spotbugs)
 }
 
 group = "com.vertyll.fastprod"
@@ -45,6 +47,7 @@ dependencies {
     // Compile Only
     compileOnly(libs.lombok)
     compileOnly(libs.jspecify)
+    compileOnly(libs.spotbugs.annotations)
 
     // Annotation Processor
     annotationProcessor(libs.lombok)
@@ -54,11 +57,91 @@ dependencies {
     errorprone(libs.errorprone.core)
     errorprone(libs.nullaway)
 
+    // Spotbugs
+    spotbugsPlugins(libs.findsecbugs)
+
     // Test Implementation
     testImplementation(libs.spring.boot.starter.test)
 
+    // Test Compile Only
+    testCompileOnly(libs.jspecify)
+    testCompileOnly(libs.spotbugs.annotations)
+
     // Test Runtime Only
     testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+configure<com.github.spotbugs.snom.SpotBugsExtension> {
+    ignoreFailures.set(false)
+    effort.set(com.github.spotbugs.snom.Effort.MAX)
+    reportLevel.set(com.github.spotbugs.snom.Confidence.MEDIUM)
+    showProgress.set(true)
+
+    excludeFilter.set(file("config/spotbugs/exclude-filter.xml"))
+}
+
+tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
+    val projectName = project.name
+    val taskName = name
+    val buildDir = project.layout.buildDirectory.get()
+
+    reports.maybeCreate("html").apply {
+        required.set(true)
+        outputLocation.set(file("${buildDir}/reports/spotbugs/${projectName}-${taskName}.html"))
+        setStylesheet("fancy-hist.xsl")
+    }
+
+    reports.maybeCreate("xml").apply {
+        required.set(true)
+        outputLocation.set(file("${buildDir}/reports/spotbugs/${projectName}-${taskName}.xml"))
+    }
+
+    doLast {
+        val ansiReset = "\u001B[0m"
+        val ansiGreen = "\u001B[32m"
+        val ansiRed = "\u001B[31m"
+        val ansiBold = "\u001B[1m"
+
+        val xmlReport = reports.maybeCreate("xml").outputLocation.get().asFile
+        val htmlReport = reports.maybeCreate("html").outputLocation.get().asFile
+
+        if (xmlReport.exists()) {
+            val xml = xmlReport.readText()
+            val bugCount = xml.substringAfter("<BugInstance", "").let {
+                if (it.isEmpty()) 0 else xml.split("<BugInstance").size - 1
+            }
+
+            println("\n$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
+            println("$ansiBold  SpotBugs: $projectName - $taskName")
+            println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
+
+            if (bugCount == 0) {
+                println("  ${ansiGreen}✓ No bugs found!$ansiReset")
+            } else {
+                println("  ${ansiRed}✗ Found $bugCount bug(s)$ansiReset")
+
+                val categories = mutableMapOf<String, Int>()
+                xml.split("<BugInstance").drop(1).forEach { bugXml ->
+                    val category = bugXml.substringAfter("category=\"", "").substringBefore("\"", "UNKNOWN")
+                    categories[category] = categories.getOrDefault(category, 0) + 1
+                }
+
+                println("\n  Categories:")
+                categories.forEach { (category, count) ->
+                    println("    • $category: $count")
+                }
+
+                if (htmlReport.exists()) {
+                    println("\n  Detailed report: file://${htmlReport.absolutePath}")
+                }
+            }
+            println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset\n")
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn("spotbugsMain")
 }
 
 tasks.withType<JavaCompile> {
@@ -96,7 +179,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         target("src/main/java/**/*.java", "src/test/java/**/*.java")
         targetExclude("**/build/generated/**/*.java", "**/*Impl.java")
 
-        googleJavaFormat(rootProject.libs.versions.google.java.format.get()).aosp()
+        googleJavaFormat(libs.versions.google.java.format.get()).aosp()
 
         removeUnusedImports()
         importOrder("java", "javax", "org", "com", "lombok", "com.vertyll")
@@ -112,6 +195,20 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         trimTrailingWhitespace()
         leadingTabsToSpaces(4)
         endWithNewline()
+    }
+}
+
+pmd {
+    isConsoleOutput = true
+    toolVersion = libs.versions.pmd.get()
+    ruleSets = listOf()
+    ruleSetFiles = files(file("config/pmd/pmd-main-ruleset.xml"))
+    isIgnoreFailures = false
+}
+
+tasks.withType<Pmd> {
+    if (name == "pmdTest") {
+        ruleSetFiles = files(file("config/pmd/pmd-test-ruleset.xml"))
     }
 }
 
