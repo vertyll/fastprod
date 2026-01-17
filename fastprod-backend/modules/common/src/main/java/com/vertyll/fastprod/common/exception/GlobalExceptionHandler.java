@@ -77,47 +77,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(
-            BadCredentialsException ignoredEx) {
-        return ApiResponse.buildResponse(null, INVALID_EMAIL_OR_PASSWORD, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ApiResponse<Void>> handleDisabledException(DisabledException ignoredEx) {
-        return ApiResponse.buildResponse(null, ACCOUNT_IS_DISABLED, HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(LockedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleLockedException(LockedException ignoredEx) {
-        return ApiResponse.buildResponse(null, ACCOUNT_IS_LOCKED, HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception ignoredEx) {
-        return ApiResponse.buildResponse(
-                null, AN_UNEXPECTED_ERROR_OCCURRED, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(
-            AuthorizationDeniedException ignoredEx) {
-        return ApiResponse.buildResponse(
-                null, NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION, HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(
-            AccessDeniedException ignoredEx) {
-        return ApiResponse.buildResponse(null, ACCESS_DENIED, HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthenticationCredentialsNotFoundException(
-            AuthenticationCredentialsNotFoundException ignoredEx) {
-        return ApiResponse.buildResponse(null, AUTHENTICATION_REQUIRED, HttpStatus.UNAUTHORIZED);
-    }
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
@@ -136,5 +95,46 @@ public class GlobalExceptionHandler {
         }
 
         return ApiResponse.buildResponse(null, message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(
+            BadCredentialsException ignoredEx) {
+        return ApiResponse.buildResponse(null, INVALID_EMAIL_OR_PASSWORD, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDisabledException(DisabledException ignoredEx) {
+        return ApiResponse.buildResponse(null, ACCOUNT_IS_DISABLED, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleLockedException(LockedException ignoredEx) {
+        return ApiResponse.buildResponse(null, ACCOUNT_IS_LOCKED, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationCredentialsNotFoundException(
+            AuthenticationCredentialsNotFoundException ignoredEx) {
+        return ApiResponse.buildResponse(null, AUTHENTICATION_REQUIRED, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(
+            AuthorizationDeniedException ignoredEx) {
+        return ApiResponse.buildResponse(
+                null, NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(
+            AccessDeniedException ignoredEx) {
+        return ApiResponse.buildResponse(null, ACCESS_DENIED, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception ignoredEx) {
+        return ApiResponse.buildResponse(
+                null, AN_UNEXPECTED_ERROR_OCCURRED, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
