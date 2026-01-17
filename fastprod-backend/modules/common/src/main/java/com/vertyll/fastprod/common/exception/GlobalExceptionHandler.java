@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.common.response.ValidationErrorResponse;
+
+import tools.jackson.databind.exc.InvalidFormatException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,6 +39,7 @@ public class GlobalExceptionHandler {
             "You do not have permission to perform this action";
     private static final String ACCESS_DENIED = "Access denied";
     private static final String AUTHENTICATION_REQUIRED = "Authentication required";
+    public static final String INVALID_INPUT_FORMAT = "Invalid input format";
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<Void>> handleApiException(ApiException ex) {
@@ -112,5 +116,25 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleAuthenticationCredentialsNotFoundException(
             AuthenticationCredentialsNotFoundException ignoredEx) {
         return ApiResponse.buildResponse(null, AUTHENTICATION_REQUIRED, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex) {
+
+        String message = INVALID_INPUT_FORMAT;
+
+        if (ex.getCause() instanceof InvalidFormatException ife
+                && ife.getTargetType() != null
+                && ife.getTargetType().isEnum()) {
+            message =
+                    String.format(
+                            "Invalid value '%s' for type %s. Accepted values: %s",
+                            ife.getValue(),
+                            ife.getTargetType().getSimpleName(),
+                            java.util.Arrays.toString(ife.getTargetType().getEnumConstants()));
+        }
+
+        return ApiResponse.buildResponse(null, message, HttpStatus.BAD_REQUEST);
     }
 }
