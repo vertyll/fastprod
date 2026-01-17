@@ -8,7 +8,7 @@ import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.employee.mapper.EmployeeMapper;
 import com.vertyll.fastprod.employee.service.EmployeeService;
 import com.vertyll.fastprod.role.entity.Role;
-import com.vertyll.fastprod.role.enums.RoleType;
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.repository.UserRepository;
@@ -32,6 +32,9 @@ import java.util.Set;
 class EmployeeServiceImpl implements EmployeeService {
 
     private static final String EMPLOYEE_NOT_FOUND_MESSAGE = "Employee not found";
+    private static final String EMAIL_ALREADY_EXISTS = "Email already exists";
+    private static final String CANNOT_UPDATE_INACTIVE_EMPLOYEE = "Cannot update inactive employee";
+    private static final String EMPLOYEE_ALREADY_DELETED = "Employee already deleted";
 
     private final UserRepository userRepository;
     private final RoleService roleService;
@@ -42,7 +45,7 @@ class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public EmployeeResponseDto createEmployee(EmployeeCreateDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
-            throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
+            throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
         User user = employeeMapper.toUserEntity(dto);
@@ -62,11 +65,11 @@ class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!user.isActive()) {
-            throw new ApiException("Cannot update inactive employee", HttpStatus.BAD_REQUEST);
+            throw new ApiException(CANNOT_UPDATE_INACTIVE_EMPLOYEE, HttpStatus.BAD_REQUEST);
         }
 
         if (dto.email() != null && !dto.email().equals(user.getEmail()) && userRepository.existsByEmail(dto.email())) {
-            throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
+            throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
         employeeMapper.updateUserFromDto(dto, user);
@@ -113,7 +116,7 @@ class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!user.isActive()) {
-            throw new ApiException("Employee already deleted", HttpStatus.BAD_REQUEST);
+            throw new ApiException(EMPLOYEE_ALREADY_DELETED, HttpStatus.BAD_REQUEST);
         }
 
         user.setActive(false);
@@ -200,11 +203,11 @@ class EmployeeServiceImpl implements EmployeeService {
     private void assignRolesToUser(User user, Set<String> roleNames) {
         if (roleNames != null && !roleNames.isEmpty()) {
             roleNames.forEach(roleName -> {
-                Role role = roleService.getOrCreateDefaultRole(roleName);
+                Role role = roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName));
                 user.getRoles().add(role);
             });
         } else {
-            Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE.name());
+            Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE);
             user.getRoles().add(employeeRole);
         }
     }

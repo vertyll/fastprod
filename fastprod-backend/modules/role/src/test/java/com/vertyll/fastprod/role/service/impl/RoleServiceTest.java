@@ -2,7 +2,6 @@ package com.vertyll.fastprod.role.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -19,6 +18,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
@@ -52,13 +52,13 @@ class RoleServiceTest {
     void setUp() {
         createDto = new RoleCreateDto("ADMIN", "Administrator role");
 
-        role = Role.builder().name("ADMIN").description("Administrator role").build();
+        role = Role.builder().name(RoleType.ADMIN).description("Administrator role").build();
     }
 
     @Test
     void createRole_WhenValidData_ShouldCreateRole() {
         // given
-        when(roleRepository.existsByName(anyString())).thenReturn(false);
+        when(roleRepository.existsByName(any(RoleType.class))).thenReturn(false);
         when(roleRepository.save(any(Role.class))).thenReturn(role);
 
         // when
@@ -69,7 +69,7 @@ class RoleServiceTest {
         Role capturedRole = roleCaptor.getValue();
 
         assertNotNull(returnedRole);
-        assertEquals(createDto.name(), capturedRole.getName());
+        assertEquals(createDto.name(), capturedRole.getName().name());
         assertEquals(createDto.description(), capturedRole.getDescription());
         assertEquals("ADMIN", returnedRole.name());
         assertEquals("Administrator role", returnedRole.description());
@@ -78,7 +78,7 @@ class RoleServiceTest {
     @Test
     void createRole_WhenRoleExists_ShouldThrowException() {
         // given
-        when(roleRepository.existsByName(anyString())).thenReturn(true);
+        when(roleRepository.existsByName(any(RoleType.class))).thenReturn(true);
 
         // when & then
         ApiException exception =
@@ -92,14 +92,13 @@ class RoleServiceTest {
     @Test
     void updateRole_WhenValidData_ShouldUpdateRole() {
         // given
-        Role existingRole = Role.builder().name("ADMIN").description("Old description").build();
-        existingRole.setId(1L); // Set ID after building
+        Role existingRole =
+                Role.builder().name(RoleType.ADMIN).description("Old description").build();
+        existingRole.setId(1L);
 
         RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
-        when(roleRepository.existsByName(updateDto.name()))
-                .thenReturn(true); // Same name, so it's OK
         when(roleRepository.save(any(Role.class))).thenReturn(existingRole);
 
         // when
@@ -109,8 +108,12 @@ class RoleServiceTest {
         verify(roleRepository).save(roleCaptor.capture());
         Role capturedRole = roleCaptor.getValue();
 
-        assertEquals("ADMIN", capturedRole.getName());
+        // Assertions for the captured entity (Database state)
+        assertEquals(RoleType.ADMIN, capturedRole.getName());
         assertEquals("Updated description", capturedRole.getDescription());
+
+        // Assertions for the 'result' variable (API Response)
+        assertNotNull(result);
         assertEquals(1L, result.id());
         assertEquals("ADMIN", result.name());
         assertEquals("Updated description", result.description());
@@ -135,7 +138,8 @@ class RoleServiceTest {
     @Test
     void updateRole_WhenNameAlreadyExists_ShouldThrowException() {
         // given
-        Role existingRole = Role.builder().name("ADMIN").description("Old description").build();
+        Role existingRole =
+                Role.builder().name(RoleType.ADMIN).description("Old description").build();
         existingRole.setId(1L); // Set ID after building
 
         RoleUpdateDto updateDto =
@@ -143,7 +147,7 @@ class RoleServiceTest {
                         "USER", "Updated description"); // Different name than existing role
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
-        when(roleRepository.existsByName("USER"))
+        when(roleRepository.existsByName(RoleType.USER))
                 .thenReturn(true); // Name conflict with another role
 
         // when & then
@@ -158,10 +162,10 @@ class RoleServiceTest {
     @Test
     void getOrCreateDefaultRole_WhenRoleExists_ShouldReturnExistingRole() {
         // given
-        when(roleRepository.findByName("USER")).thenReturn(Optional.of(role));
+        when(roleRepository.findByName(RoleType.USER)).thenReturn(Optional.of(role));
 
         // when
-        Role returnedRole = roleService.getOrCreateDefaultRole("USER");
+        Role returnedRole = roleService.getOrCreateDefaultRole(RoleType.USER);
 
         // then
         assertNotNull(returnedRole);
@@ -172,18 +176,18 @@ class RoleServiceTest {
     @Test
     void getOrCreateDefaultRole_WhenRoleDoesNotExist_ShouldCreateNewRole() {
         // given
-        when(roleRepository.findByName("USER")).thenReturn(Optional.empty());
+        when(roleRepository.findByName(RoleType.USER)).thenReturn(Optional.empty());
         when(roleRepository.save(any(Role.class))).thenReturn(role);
 
         // when
-        Role returnedRole = roleService.getOrCreateDefaultRole("USER");
+        Role returnedRole = roleService.getOrCreateDefaultRole(RoleType.USER);
 
         // then
         verify(roleRepository).save(roleCaptor.capture());
         Role capturedRole = roleCaptor.getValue();
 
         assertNotNull(returnedRole);
-        assertEquals("USER", capturedRole.getName());
+        assertEquals("USER", capturedRole.getName().name());
         assertTrue(capturedRole.getDescription().contains("USER"));
     }
 
@@ -197,7 +201,7 @@ class RoleServiceTest {
 
         // then
         assertNotNull(returnedRole);
-        assertEquals(role.getName(), returnedRole.name());
+        assertEquals(role.getName().name(), returnedRole.name());
         assertEquals(role.getDescription(), returnedRole.description());
     }
 

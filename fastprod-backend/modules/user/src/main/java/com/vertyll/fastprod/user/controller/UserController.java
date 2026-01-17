@@ -25,6 +25,12 @@ import jakarta.validation.Valid;
 @Tag(name = "Users", description = "User management APIs")
 class UserController {
 
+    private static final String USER_CREATED_SUCCESSFULLY = "User created successfully";
+    private static final String USER_UPDATED_SUCCESSFULLY = "User updated successfully";
+    private static final String USER_RETRIEVED_SUCCESSFULLY = "User retrieved successfully";
+    private static final String PROFILE_RETRIEVED_SUCCESSFULLY = "Profile retrieved successfully";
+    private static final String PROFILE_UPDATED_SUCCESSFULLY = "Profile updated successfully";
+
     private final UserService userService;
 
     @PostMapping
@@ -33,7 +39,7 @@ class UserController {
     public ResponseEntity<ApiResponse<UserResponseDto>> createUser(
             @RequestBody @Valid UserCreateDto dto) {
         UserResponseDto user = userService.createUser(dto);
-        return ApiResponse.buildResponse(user, "User created successfully", HttpStatus.CREATED);
+        return ApiResponse.buildResponse(user, USER_CREATED_SUCCESSFULLY, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -42,7 +48,7 @@ class UserController {
     public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(
             @PathVariable Long id, @RequestBody @Valid UserUpdateDto dto) {
         UserResponseDto user = userService.updateUser(id, dto);
-        return ApiResponse.buildResponse(user, "User updated successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(user, USER_UPDATED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -50,7 +56,7 @@ class UserController {
     @Operation(summary = "Get user by ID")
     public ResponseEntity<ApiResponse<UserResponseDto>> getUser(@PathVariable Long id) {
         UserResponseDto user = userService.getUserById(id);
-        return ApiResponse.buildResponse(user, "User retrieved successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(user, USER_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @GetMapping("/me")
@@ -59,7 +65,7 @@ class UserController {
     public ResponseEntity<ApiResponse<UserResponseDto>> getCurrentUser(
             Authentication authentication) {
         UserResponseDto user = userService.getCurrentUser(authentication.getName());
-        return ApiResponse.buildResponse(user, "Profile retrieved successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(user, PROFILE_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @PutMapping("/me/profile")
@@ -68,6 +74,6 @@ class UserController {
     public ResponseEntity<ApiResponse<UserResponseDto>> updateProfile(
             @RequestBody @Valid ProfileUpdateDto dto, Authentication authentication) {
         UserResponseDto user = userService.updateCurrentUserProfile(authentication.getName(), dto);
-        return ApiResponse.buildResponse(user, "Profile updated successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(user, PROFILE_UPDATED_SUCCESSFULLY, HttpStatus.OK);
     }
 }

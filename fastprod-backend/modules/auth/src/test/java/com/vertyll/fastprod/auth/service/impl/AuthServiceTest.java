@@ -38,6 +38,7 @@ import com.vertyll.fastprod.auth.mapper.AuthMapper;
 import com.vertyll.fastprod.auth.service.JwtService;
 import com.vertyll.fastprod.auth.service.RefreshTokenService;
 import com.vertyll.fastprod.auth.service.VerificationTokenService;
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
 import com.vertyll.fastprod.email.service.EmailService;
@@ -112,7 +113,7 @@ class AuthServiceTest {
                 new ChangePasswordRequestDto("currentPassword123", "newPassword123");
         resetPasswordRequest = new ResetPasswordRequestDto("newPassword123");
 
-        userRole = Role.builder().name("USER").description("Default user role").build();
+        userRole = Role.builder().name(RoleType.USER).description("Default user role").build();
 
         user =
                 User.builder()
@@ -146,7 +147,7 @@ class AuthServiceTest {
         // given
         when(userService.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(roleService.getOrCreateDefaultRole(anyString())).thenReturn(userRole);
+        when(roleService.getOrCreateDefaultRole(any(RoleType.class))).thenReturn(userRole);
         when(userService.saveUser(any(User.class))).thenReturn(user);
         when(verificationTokenService.createVerificationToken(
                         any(User.class), any(VerificationTokenType.class), any()))

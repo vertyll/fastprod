@@ -25,6 +25,11 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
 
     private static final Random RANDOM = new SecureRandom();
 
+    private static final String INVALID_VERIFICATION_CODE = "Invalid verification code";
+    private static final String VERIFICATION_CODE_ALREADY_USED = "Verification code already used";
+    private static final String VERIFICATION_CODE_EXPIRED = "Verification code expired";
+    private static final String INVALID_VERIFICATION_CODE_TYPE = "Invalid verification code type";
+
     private final VerificationTokenRepository verificationTokenRepository;
 
     /**
@@ -59,18 +64,18 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
     @Transactional(readOnly = true)
     public VerificationToken getValidToken(String code, VerificationTokenType expectedType) {
         VerificationToken token = verificationTokenRepository.findByToken(code)
-                .orElseThrow(() -> new ApiException("Invalid verification code", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new ApiException(INVALID_VERIFICATION_CODE, HttpStatus.BAD_REQUEST));
 
         if (token.isUsed()) {
-            throw new ApiException("Verification code already used", HttpStatus.BAD_REQUEST);
+            throw new ApiException(VERIFICATION_CODE_ALREADY_USED, HttpStatus.BAD_REQUEST);
         }
 
         if (token.getExpiryDate().isBefore(LocalDateTime.now(ZoneOffset.UTC))) {
-            throw new ApiException("Verification code expired", HttpStatus.BAD_REQUEST);
+            throw new ApiException(VERIFICATION_CODE_EXPIRED, HttpStatus.BAD_REQUEST);
         }
 
         if (token.getTokenType() != expectedType) {
-            throw new ApiException("Invalid verification code type", HttpStatus.BAD_REQUEST);
+            throw new ApiException(INVALID_VERIFICATION_CODE_TYPE, HttpStatus.BAD_REQUEST);
         }
 
         return token;

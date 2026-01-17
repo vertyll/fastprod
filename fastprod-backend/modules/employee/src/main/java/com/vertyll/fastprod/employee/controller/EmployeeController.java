@@ -26,6 +26,13 @@ import jakarta.validation.Valid;
 @Tag(name = "Employees", description = "Employee management APIs")
 class EmployeeController {
 
+    private static final String EMPLOYEE_CREATED_SUCCESSFULLY = "Employee created successfully";
+    private static final String EMPLOYEE_UPDATED_SUCCESSFULLY = "Employee updated successfully";
+    private static final String EMPLOYEE_RETRIEVED_SUCCESSFULLY = "Employee retrieved successfully";
+    private static final String EMPLOYEES_RETRIEVED_SUCCESSFULLY =
+            "Employees retrieved successfully";
+    private static final String EMPLOYEE_DELETED_SUCCESSFULLY = "Employee deleted successfully";
+
     private final EmployeeService employeeService;
 
     @PostMapping
@@ -35,7 +42,7 @@ class EmployeeController {
             @RequestBody @Valid EmployeeCreateDto dto) {
         EmployeeResponseDto employee = employeeService.createEmployee(dto);
         return ApiResponse.buildResponse(
-                employee, "Employee created successfully", HttpStatus.CREATED);
+                employee, EMPLOYEE_CREATED_SUCCESSFULLY, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -44,7 +51,7 @@ class EmployeeController {
     public ResponseEntity<ApiResponse<EmployeeResponseDto>> updateEmployee(
             @PathVariable Long id, @RequestBody @Valid EmployeeUpdateDto dto) {
         EmployeeResponseDto employee = employeeService.updateEmployee(id, dto);
-        return ApiResponse.buildResponse(employee, "Employee updated successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(employee, EMPLOYEE_UPDATED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -52,8 +59,7 @@ class EmployeeController {
     @Operation(summary = "Get employee by ID")
     public ResponseEntity<ApiResponse<EmployeeResponseDto>> getEmployee(@PathVariable Long id) {
         EmployeeResponseDto employee = employeeService.getEmployeeById(id);
-        return ApiResponse.buildResponse(
-                employee, "Employee retrieved successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(employee, EMPLOYEE_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @GetMapping
@@ -63,7 +69,7 @@ class EmployeeController {
             @Valid @ModelAttribute EmployeeFilterDto filterDto) {
         Page<EmployeeResponseDto> employees = employeeService.getAllEmployees(filterDto);
         return PaginatedApiResponse.buildResponse(
-                employees, "Employees retrieved successfully", HttpStatus.OK);
+                employees, EMPLOYEES_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -71,6 +77,6 @@ class EmployeeController {
     @Operation(summary = "Delete employee")
     public ResponseEntity<ApiResponse<Void>> deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
-        return ApiResponse.buildResponse(null, "Employee deleted successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(null, EMPLOYEE_DELETED_SUCCESSFULLY, HttpStatus.OK);
     }
 }

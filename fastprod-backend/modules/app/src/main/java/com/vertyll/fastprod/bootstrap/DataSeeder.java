@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import com.vertyll.fastprod.role.enums.RoleType;
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.service.UserService;
@@ -70,7 +70,7 @@ public class DataSeeder implements ApplicationRunner {
 
         @SuppressWarnings("NullAway")
         String nonNullPassword = password;
-        Set<String> adminRoleNames = Stream.of(RoleType.ADMIN.name()).collect(Collectors.toSet());
+        Set<RoleType> adminRoleNames = Stream.of(RoleType.ADMIN).collect(Collectors.toSet());
 
         User admin =
                 User.builder()

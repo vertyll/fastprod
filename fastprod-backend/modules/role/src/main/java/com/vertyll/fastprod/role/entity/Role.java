@@ -5,6 +5,7 @@ import java.io.Serial;
 import lombok.*;
 
 import com.vertyll.fastprod.common.entity.BaseEntity;
+import com.vertyll.fastprod.common.enums.RoleType;
 
 import jakarta.persistence.*;
 
@@ -27,7 +28,8 @@ public class Role extends BaseEntity {
     @Serial private static final long serialVersionUID = 1L;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private RoleType name;
 
     private String description;
 

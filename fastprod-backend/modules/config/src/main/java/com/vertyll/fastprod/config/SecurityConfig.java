@@ -33,6 +33,11 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String REQUIRED_TO_ACCESS_THIS_RESOURCE =
+            "Authentication is required to access this resource";
+    private static final String NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE =
+            "You do not have permission to access this resource";
+
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final ObjectMapper objectMapper;
 
@@ -72,7 +77,7 @@ public class SecurityConfig {
                                                             responseEntity =
                                                                     ApiResponse.buildResponse(
                                                                             null,
-                                                                            "Authentication is required to access this resource",
+                                                                            REQUIRED_TO_ACCESS_THIS_RESOURCE,
                                                                             HttpStatus
                                                                                     .UNAUTHORIZED);
 
@@ -93,7 +98,7 @@ public class SecurityConfig {
                                                             responseEntity =
                                                                     ApiResponse.buildResponse(
                                                                             null,
-                                                                            "You do not have permission to access this resource",
+                                                                            NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE,
                                                                             HttpStatus.FORBIDDEN);
 
                                                     response.getWriter()

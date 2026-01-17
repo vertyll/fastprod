@@ -12,10 +12,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.vertyll.fastprod.common.enums.RoleType;
 
 @Service
 @RequiredArgsConstructor
 class RoleServiceImpl implements RoleService {
+
+    private static final String ROLE_ALREADY_EXISTS = "Role already exists";
+    private static final String ROLE_NOT_FOUND = "Role not found";
+    private static final String ROLE_WITH_THIS_NAME_ALREADY_EXISTS = "Role with this name already exists";
+    private static final String DEFAULT_ROLE = "Default role: ";
 
     private final RoleRepository roleRepository;
     private final RoleMapper roleMapper;
@@ -23,8 +29,8 @@ class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public RoleResponseDto createRole(RoleCreateDto dto) {
-        if (roleRepository.existsByName(dto.name())) {
-            throw new ApiException("Role already exists", HttpStatus.BAD_REQUEST);
+        if (roleRepository.existsByName(RoleType.fromValue(dto.name()))) {
+            throw new ApiException(ROLE_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
         Role role = roleMapper.toEntity(dto);
@@ -36,29 +42,31 @@ class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public RoleResponseDto updateRole(Long id, RoleUpdateDto dto) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new ApiException("Role not found", HttpStatus.NOT_FOUND));
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ROLE_NOT_FOUND, HttpStatus.NOT_FOUND));
 
-        if (roleRepository.existsByName(dto.name()) && !role.getName().equals(dto.name())) {
-            throw new ApiException("Role with this name already exists", HttpStatus.BAD_REQUEST);
+        RoleType newName = RoleType.fromValue(dto.name());
+
+        if (role.getName() != newName && roleRepository.existsByName(newName)) {
+            throw new ApiException(ROLE_WITH_THIS_NAME_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
         roleMapper.updateFromDto(dto, role);
-
         Role updatedRole = roleRepository.save(role);
         return roleMapper.toResponseDto(updatedRole);
     }
 
     @Override
-    public Role getOrCreateDefaultRole(String roleName) {
+    public Role getOrCreateDefaultRole(RoleType roleName) {
         return roleRepository.findByName(roleName).orElseGet(() -> {
-            Role role = Role.builder().name(roleName).description("Default role: " + roleName).build();
+            Role role = Role.builder().name(roleName).description(DEFAULT_ROLE + roleName).build();
             return roleRepository.save(role);
         });
     }
 
     @Override
     public RoleResponseDto getRoleById(Long id) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new ApiException("Role not found", HttpStatus.NOT_FOUND));
+        Role role = roleRepository.findById(id).orElseThrow(() -> new ApiException(ROLE_NOT_FOUND, HttpStatus.NOT_FOUND));
 
         return roleMapper.toResponseDto(role);
     }

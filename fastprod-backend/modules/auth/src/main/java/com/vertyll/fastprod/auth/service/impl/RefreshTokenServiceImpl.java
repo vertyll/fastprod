@@ -31,6 +31,12 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     private static final String UNKNOWN = "unknown";
     private static final int MAX_IP_LENGTH = 45; // IPv6 max length
     private static final int MAX_USER_AGENT_LENGTH = 255;
+    private static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
+    private static final String INVALID_REFRESH_TOKEN_SIGNATURE = "Invalid refresh token signature";
+    private static final String X_FORWARDED_FOR = "X-Forwarded-For";
+    private static final String X_REAL_IP = "X-Real-IP";
+    private static final String USER_AGENT = "User-Agent";
+    private static final String REFRESH_TOKEN_NOT_FOUND = "Refresh token not found";
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
@@ -72,7 +78,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         // Validate JWT signature and expiration
         if (!jwtService.isRefreshTokenValid(token)) {
             log.error("Invalid or expired JWT refresh token");
-            throw new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
+            throw new ApiException(INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
         }
 
         // Extract username from token
@@ -85,7 +91,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         if (!jwtService.validateRefreshToken(token, refreshToken.getUser())) {
             log.error("Invalid JWT signature for refresh token, user: {}",
                     refreshToken.getUser().getEmail());
-            throw new ApiException("Invalid refresh token signature", HttpStatus.UNAUTHORIZED);
+            throw new ApiException(INVALID_REFRESH_TOKEN_SIGNATURE, HttpStatus.UNAUTHORIZED);
         }
 
         // Update last used timestamp
@@ -204,12 +210,12 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         if (request == null) return UNKNOWN;
 
         String ip;
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        String xForwardedFor = request.getHeader(X_FORWARDED_FOR);
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
             // Take only the first IP from X-Forwarded-For chain
             ip = Iterables.get(Splitter.on(',').split(xForwardedFor), 0).trim();
         } else {
-            String xRealIp = request.getHeader("X-Real-IP");
+            String xRealIp = request.getHeader(X_REAL_IP);
             ip = (xRealIp != null && !xRealIp.isEmpty()) ? xRealIp : request.getRemoteAddr();
         }
 
@@ -226,7 +232,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
             return UNKNOWN;
         }
 
-        String userAgent = request.getHeader("User-Agent");
+        String userAgent = request.getHeader(USER_AGENT);
         if (userAgent == null || userAgent.isEmpty()) {
             return UNKNOWN;
         }
@@ -262,7 +268,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
                 .filter(rt -> rt.getExpiryDate().isAfter(Instant.now()))
                 .orElseThrow(() -> {
                     log.warn("Refresh token not found in database for user: {}", username);
-                    return new ApiException("Refresh token not found", HttpStatus.UNAUTHORIZED);
+                    return new ApiException(REFRESH_TOKEN_NOT_FOUND, HttpStatus.UNAUTHORIZED);
                 });
     }
 }

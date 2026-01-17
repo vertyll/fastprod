@@ -25,6 +25,11 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @RequiredArgsConstructor
 class EmailServiceImpl implements EmailService {
 
+    private static final String EMAIL_TEMPLATE_CANNOT_BE_NULL = "Email template cannot be null";
+    private static final String FROM = "gawrmiko@gmail.com";
+    private static final String FAILED_TO_PROCESS_EMAIL_TEMPLATE = "Failed to process email template: ";
+    private static final String FAILED_TO_SEND_EMAIL_WITH_TEMPLATE = "Failed to send email with template: ";
+
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
@@ -38,7 +43,7 @@ class EmailServiceImpl implements EmailService {
             String subject
     ) throws MessagingException {
         if (emailTemplate == null) {
-            throw new IllegalArgumentException("Email template cannot be null");
+            throw new IllegalArgumentException(EMAIL_TEMPLATE_CANNOT_BE_NULL);
         }
 
         String templateName = emailTemplate.getName();
@@ -52,7 +57,7 @@ class EmailServiceImpl implements EmailService {
         Context context = new Context();
         context.setVariables(properties);
 
-        helper.setFrom("gawrmiko@gmail.com");
+        helper.setFrom(FROM);
         helper.setTo(to);
         helper.setSubject(subject);
 
@@ -63,10 +68,10 @@ class EmailServiceImpl implements EmailService {
             log.info("Email sent successfully to: {} with template: {}", to, templateName);
         } catch (TemplateEngineException e) {
             log.error("Failed to process email template: {} for recipient: {}", templateName, to, e);
-            throw new MessagingException("Failed to process email template: " + templateName, e);
+            throw new MessagingException(FAILED_TO_PROCESS_EMAIL_TEMPLATE + templateName, e);
         } catch (MailException e) {
             log.error("Failed to send email to: {} with template: {}", to, templateName, e);
-            throw new MessagingException("Failed to send email with template: " + templateName, e);
+            throw new MessagingException(FAILED_TO_SEND_EMAIL_WITH_TEMPLATE + templateName, e);
         } catch (MessagingException e) {
             log.error("Failed to prepare email message for: {} with template: {}", to, templateName, e);
             throw e; // Re-throw since the method already declares this exception

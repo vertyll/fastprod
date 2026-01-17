@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class UserDetailsServiceImpl implements UserDetailsService {
 
+    private static final String USER_NOT_FOUND_WITH_EMAIL = "User not found with email: ";
+
     private final UserRepository userRepository;
 
     @Override
@@ -21,6 +23,6 @@ class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(@Nullable String username) throws UsernameNotFoundException {
         return userRepository
                 .findByEmailWithRoles(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND_WITH_EMAIL + username));
     }
 }

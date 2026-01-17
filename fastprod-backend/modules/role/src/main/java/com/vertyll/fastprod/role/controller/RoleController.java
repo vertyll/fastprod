@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
-import com.vertyll.fastprod.role.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +27,12 @@ import jakarta.validation.Valid;
 @Tag(name = "Roles", description = "Role management APIs")
 class RoleController {
 
+    private static final String ROLE_CREATED_SUCCESSFULLY = "Role created successfully";
+    private static final String ROLE_UPDATED_SUCCESSFULLY = "Role updated successfully";
+    private static final String ROLE_RETRIEVED_SUCCESSFULLY = "Role retrieved successfully";
+    private static final String ROLE_TYPES_RETRIEVED_SUCCESSFULLY =
+            "Role types retrieved successfully";
+
     private final RoleService roleService;
 
     @PostMapping
@@ -35,7 +41,7 @@ class RoleController {
     public ResponseEntity<ApiResponse<RoleResponseDto>> createRole(
             @RequestBody @Valid RoleCreateDto dto) {
         RoleResponseDto role = roleService.createRole(dto);
-        return ApiResponse.buildResponse(role, "Role created successfully", HttpStatus.CREATED);
+        return ApiResponse.buildResponse(role, ROLE_CREATED_SUCCESSFULLY, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -44,7 +50,7 @@ class RoleController {
     public ResponseEntity<ApiResponse<RoleResponseDto>> updateRole(
             @PathVariable Long id, @RequestBody @Valid RoleUpdateDto dto) {
         RoleResponseDto role = roleService.updateRole(id, dto);
-        return ApiResponse.buildResponse(role, "Role updated successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(role, ROLE_UPDATED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -52,13 +58,13 @@ class RoleController {
     @Operation(summary = "Get role by ID")
     public ResponseEntity<ApiResponse<RoleResponseDto>> getRole(@PathVariable Long id) {
         RoleResponseDto role = roleService.getRoleById(id);
-        return ApiResponse.buildResponse(role, "Role retrieved successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(role, ROLE_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @GetMapping("/types")
     @Operation(summary = "Get all available role types")
     public ResponseEntity<ApiResponse<List<RoleType>>> getAllRoleTypes() {
         List<RoleType> types = Arrays.asList(RoleType.values());
-        return ApiResponse.buildResponse(types, "Role types retrieved successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(types, ROLE_TYPES_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }
 }

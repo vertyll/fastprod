@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class JwtServiceImpl implements JwtService {
 
+    private static final String REFRESH = "refresh";
     private final JwtProperties jwtProperties;
 
     @Override
@@ -73,7 +74,7 @@ class JwtServiceImpl implements JwtService {
     public String generateRefreshToken(UserDetails userDetails) {
         Instant now = Instant.now();
         Map<String, Object> claims = new ConcurrentHashMap<>();
-        claims.put("token_type", "refresh");
+        claims.put("token_type", REFRESH);
 
         return Jwts.builder()
                 .claims(claims)

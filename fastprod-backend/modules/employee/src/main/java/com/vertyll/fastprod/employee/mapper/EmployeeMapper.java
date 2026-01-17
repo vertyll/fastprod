@@ -10,6 +10,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.mapper.MapStructConfig;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
@@ -34,7 +35,7 @@ public interface EmployeeMapper {
     EmployeeResponseDto toResponseDto(User user);
 
     @Named("rolesToNames")
-    default Set<String> rolesToNames(Set<Role> roles) {
+    default Set<RoleType> rolesToNames(Set<Role> roles) {
         if (roles == null || roles.isEmpty()) {
             return Set.of();
         }

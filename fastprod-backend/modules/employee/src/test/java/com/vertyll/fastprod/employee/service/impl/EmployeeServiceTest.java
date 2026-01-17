@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
@@ -63,9 +64,9 @@ class EmployeeServiceTest {
 
     @BeforeEach
     void setUp() {
-        employeeRole = Role.builder().name("EMPLOYEE").description("Employee role").build();
+        employeeRole = Role.builder().name(RoleType.EMPLOYEE).description("Employee role").build();
 
-        adminRole = Role.builder().name("ADMIN").description("Admin role").build();
+        adminRole = Role.builder().name(RoleType.ADMIN).description("Admin role").build();
 
         createDto =
                 new EmployeeCreateDto(
@@ -99,7 +100,7 @@ class EmployeeServiceTest {
         // given
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(roleService.getOrCreateDefaultRole(anyString())).thenReturn(employeeRole);
+        when(roleService.getOrCreateDefaultRole(any(RoleType.class))).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
@@ -135,8 +136,8 @@ class EmployeeServiceTest {
     void updateEmployee_WhenValidData_ShouldUpdateEmployee() {
         // given
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(roleService.getOrCreateDefaultRole("EMPLOYEE")).thenReturn(employeeRole);
-        when(roleService.getOrCreateDefaultRole("ADMIN")).thenReturn(adminRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.ADMIN)).thenReturn(adminRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
@@ -151,8 +152,8 @@ class EmployeeServiceTest {
         assertEquals(updateDto.lastName(), capturedUser.getLastName());
         assertEquals(updateDto.email(), capturedUser.getEmail());
 
-        verify(roleService).getOrCreateDefaultRole("EMPLOYEE");
-        verify(roleService).getOrCreateDefaultRole("ADMIN");
+        verify(roleService).getOrCreateDefaultRole(RoleType.EMPLOYEE);
+        verify(roleService).getOrCreateDefaultRole(RoleType.ADMIN);
     }
 
     @Test
@@ -219,7 +220,7 @@ class EmployeeServiceTest {
         assertEquals(user.getEmail(), result.email());
         assertTrue(result.isVerified());
         assertEquals(1, result.roles().size());
-        assertTrue(result.roles().contains("EMPLOYEE"));
+        assertTrue(result.roles().contains(RoleType.EMPLOYEE));
     }
 
     @Test
@@ -296,7 +297,7 @@ class EmployeeServiceTest {
     void updateEmployee_WhenAddingAdminRole_ShouldUpdateEmployeeRoles() {
         // given
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(roleService.getOrCreateDefaultRole("ADMIN")).thenReturn(adminRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.ADMIN)).thenReturn(adminRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         EmployeeUpdateDto updateRequest =
@@ -310,7 +311,7 @@ class EmployeeServiceTest {
         User capturedUser = userCaptor.getValue();
 
         assertNotNull(result);
-        verify(roleService).getOrCreateDefaultRole("ADMIN");
+        verify(roleService).getOrCreateDefaultRole(RoleType.ADMIN);
         assertTrue(capturedUser.getRoles().contains(adminRole));
     }
 
@@ -322,14 +323,14 @@ class EmployeeServiceTest {
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(roleService.getOrCreateDefaultRole("EMPLOYEE")).thenReturn(employeeRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
         EmployeeResponseDto result = employeeService.createEmployee(createDtoWithoutRoles);
 
         // then
-        verify(roleService).getOrCreateDefaultRole("EMPLOYEE");
+        verify(roleService).getOrCreateDefaultRole(RoleType.EMPLOYEE);
         assertNotNull(result);
     }
 
@@ -341,14 +342,14 @@ class EmployeeServiceTest {
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(roleService.getOrCreateDefaultRole("EMPLOYEE")).thenReturn(employeeRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
         EmployeeResponseDto result = employeeService.createEmployee(createDtoWithEmptyRoles);
 
         // then
-        verify(roleService).getOrCreateDefaultRole("EMPLOYEE");
+        verify(roleService).getOrCreateDefaultRole(RoleType.EMPLOYEE);
         assertNotNull(result);
     }
 
@@ -361,7 +362,7 @@ class EmployeeServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");
-        when(roleService.getOrCreateDefaultRole("EMPLOYEE")).thenReturn(employeeRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
@@ -381,7 +382,7 @@ class EmployeeServiceTest {
                 new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(roleService.getOrCreateDefaultRole("EMPLOYEE")).thenReturn(employeeRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
@@ -399,7 +400,7 @@ class EmployeeServiceTest {
                 new EmployeeUpdateDto("John", "Doe", "john@example.com", "   ", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(roleService.getOrCreateDefaultRole("EMPLOYEE")).thenReturn(employeeRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when

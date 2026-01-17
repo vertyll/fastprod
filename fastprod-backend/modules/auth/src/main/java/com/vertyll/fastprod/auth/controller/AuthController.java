@@ -31,6 +31,24 @@ import jakarta.validation.constraints.Email;
 class AuthController {
 
     private static final String IS_AUTHENTICATED = "isAuthenticated()";
+    private static final String USER_REGISTERED_SUCCESSFULLY = "User registered successfully";
+    private static final String AUTHENTICATION_SUCCESSFUL = "Authentication successful";
+    private static final String TOKEN_REFRESHED_SUCCESSFULLY = "Token refreshed successfully";
+    private static final String LOGGED_OUT_SUCCESSFULLY = "Logged out successfully";
+    private static final String LOGGED_OUT_FROM_ALL_SESSIONS_SUCCESSFULLY =
+            "Logged out from all sessions successfully";
+    private static final String ACTIVE_SESSIONS_RETRIEVED_SUCCESSFULLY =
+            "Active sessions retrieved successfully";
+    private static final String ACCOUNT_VERIFIED_SUCCESSFULLY = "Account verified successfully";
+    private static final String EMAIL_CHANGE_VERIFICATION_SENT_TO_NEW_EMAIL =
+            "Email change verification sent to new email";
+    private static final String EMAIL_CHANGED_SUCCESSFULLY = "Email changed successfully";
+    private static final String PASSWORD_CHANGE_VERIFICATION_SENT_TO_EMAIL =
+            "Password change verification sent to email";
+    private static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password changed successfully";
+    private static final String PASSWORD_RESET_INSTRUCTIONS_SENT_TO_EMAIL =
+            "Password reset instructions sent to email";
+    private static final String PASSWORD_RESET_SUCCESSFULLY = "Password reset successfully";
 
     private final AuthService authService;
 
@@ -39,7 +57,7 @@ class AuthController {
     public ResponseEntity<ApiResponse<Void>> register(
             @RequestBody @Valid RegisterRequestDto request) throws MessagingException {
         authService.register(request);
-        return ApiResponse.buildResponse(null, "User registered successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(null, USER_REGISTERED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @PostMapping("/authenticate")
@@ -49,7 +67,7 @@ class AuthController {
             HttpServletRequest httpRequest,
             HttpServletResponse response) {
         AuthResponseDto authResponse = authService.authenticate(request, httpRequest, response);
-        return ApiResponse.buildResponse(authResponse, "Authentication successful", HttpStatus.OK);
+        return ApiResponse.buildResponse(authResponse, AUTHENTICATION_SUCCESSFUL, HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token")
@@ -57,8 +75,7 @@ class AuthController {
     public ResponseEntity<ApiResponse<AuthResponseDto>> refreshToken(
             HttpServletRequest request, HttpServletResponse response) {
         AuthResponseDto authResponse = authService.refreshToken(request, response);
-        return ApiResponse.buildResponse(
-                authResponse, "Token refreshed successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(authResponse, TOKEN_REFRESHED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @PostMapping("/logout")
@@ -66,7 +83,7 @@ class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout(
             HttpServletRequest request, HttpServletResponse response) {
         authService.logout(request, response);
-        return ApiResponse.buildResponse(null, "Logged out successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(null, LOGGED_OUT_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @PostMapping("/logout-all")
@@ -75,7 +92,7 @@ class AuthController {
             HttpServletRequest request, HttpServletResponse response) {
         authService.logoutAllSessions(request, response);
         return ApiResponse.buildResponse(
-                null, "Logged out from all sessions successfully", HttpStatus.OK);
+                null, LOGGED_OUT_FROM_ALL_SESSIONS_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @GetMapping("/sessions")
@@ -85,14 +102,14 @@ class AuthController {
             @AuthenticationPrincipal String email) {
         List<SessionResponseDto> sessions = authService.getUserActiveSessions(email);
         return ApiResponse.buildResponse(
-                sessions, "Active sessions retrieved successfully", HttpStatus.OK);
+                sessions, ACTIVE_SESSIONS_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @PostMapping("/verify")
     @Operation(summary = "Verify user account with code")
     public ResponseEntity<ApiResponse<Void>> verifyAccount(@RequestParam String code) {
         authService.verifyAccount(code);
-        return ApiResponse.buildResponse(null, "Account verified successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(null, ACCOUNT_VERIFIED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @PostMapping("/resend-verification-code")
@@ -111,7 +128,7 @@ class AuthController {
             @RequestBody @Valid ChangeEmailRequestDto request) throws MessagingException {
         authService.requestEmailChange(request);
         return ApiResponse.buildResponse(
-                null, "Email change verification sent to new email", HttpStatus.OK);
+                null, EMAIL_CHANGE_VERIFICATION_SENT_TO_NEW_EMAIL, HttpStatus.OK);
     }
 
     @PostMapping("/verify-email-change")
@@ -120,7 +137,7 @@ class AuthController {
     public ResponseEntity<ApiResponse<AuthResponseDto>> verifyEmailChange(
             @RequestParam String code, HttpServletRequest request, HttpServletResponse response) {
         AuthResponseDto authResponse = authService.verifyEmailChange(code, request, response);
-        return ApiResponse.buildResponse(authResponse, "Email changed successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(authResponse, EMAIL_CHANGED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @PostMapping("/change-password-request")
@@ -130,7 +147,7 @@ class AuthController {
             @RequestBody @Valid ChangePasswordRequestDto request) throws MessagingException {
         authService.requestPasswordChange(request);
         return ApiResponse.buildResponse(
-                null, "Password change verification sent to email", HttpStatus.OK);
+                null, PASSWORD_CHANGE_VERIFICATION_SENT_TO_EMAIL, HttpStatus.OK);
     }
 
     @PostMapping("/verify-password-change")
@@ -138,7 +155,7 @@ class AuthController {
     @Operation(summary = "Verify password change with code")
     public ResponseEntity<ApiResponse<Void>> verifyPasswordChange(@RequestParam String code) {
         authService.verifyPasswordChange(code);
-        return ApiResponse.buildResponse(null, "Password changed successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(null, PASSWORD_CHANGED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @PostMapping("/reset-password-request")
@@ -148,7 +165,7 @@ class AuthController {
             throws MessagingException {
         authService.sendPasswordResetEmail(email);
         return ApiResponse.buildResponse(
-                null, "Password reset instructions sent to email", HttpStatus.OK);
+                null, PASSWORD_RESET_INSTRUCTIONS_SENT_TO_EMAIL, HttpStatus.OK);
     }
 
     @PostMapping("/reset-password")
@@ -156,6 +173,6 @@ class AuthController {
     public ResponseEntity<ApiResponse<Void>> resetPassword(
             @RequestParam String token, @RequestBody @Valid ResetPasswordRequestDto request) {
         authService.resetPassword(token, request);
-        return ApiResponse.buildResponse(null, "Password reset successfully", HttpStatus.OK);
+        return ApiResponse.buildResponse(null, PASSWORD_RESET_SUCCESSFULLY, HttpStatus.OK);
     }
 }

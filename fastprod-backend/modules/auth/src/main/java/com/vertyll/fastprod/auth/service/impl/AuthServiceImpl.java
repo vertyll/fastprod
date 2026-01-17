@@ -9,6 +9,7 @@ import com.vertyll.fastprod.auth.service.AuthService;
 import com.vertyll.fastprod.auth.service.JwtService;
 import com.vertyll.fastprod.auth.service.RefreshTokenService;
 import com.vertyll.fastprod.auth.service.VerificationTokenService;
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.email.service.EmailService;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
@@ -45,6 +46,20 @@ class AuthServiceImpl implements AuthService {
 
     private static final String USER_NOT_FOUND_MESSAGE = "User not found";
     private static final String BEARER_TOKEN_TYPE = "Bearer";
+    private static final String EMAIL_ALREADY_REGISTERED = "Email already registered";
+    private static final String ACCOUNT_ACTIVATION = "Account activation";
+    private static final String ACCOUNT_NOT_VERIFIED = "Account not verified";
+    private static final String REFRESH_TOKEN_NOT_FOUND = "Refresh token not found";
+    private static final String ACCOUNT_ALREADY_VERIFIED = "Account already verified";
+    private static final String USER_NOT_AUTHENTICATED = "User not authenticated";
+    private static final String INVALID_CURRENT_PASSWORD = "Invalid current password";
+    private static final String EMAIL_ALREADY_IN_USE = "Email already in use";
+    private static final String EMAIL_CHANGE_VERIFICATION = "Email Change Verification";
+    private static final String NEW_EMAIL_NOT_FOUND = "New email not found";
+    private static final String PASSWORD_CHANGE_VERIFICATION = "Password Change Verification";
+    private static final String NEW_PASSWORD_NOT_FOUND = "New password not found";
+    private static final String PASSWORD_RESET = "Password Reset";
+    private static final String SET_COOKIE = "Set-Cookie";
 
     private final UserService userService;
     private final VerificationTokenService verificationTokenService;
@@ -61,13 +76,13 @@ class AuthServiceImpl implements AuthService {
     @Transactional
     public void register(RegisterRequestDto request) throws MessagingException {
         if (userService.existsByEmail(request.email())) {
-            throw new ApiException("Email already registered", HttpStatus.BAD_REQUEST);
+            throw new ApiException(EMAIL_ALREADY_REGISTERED, HttpStatus.BAD_REQUEST);
         }
 
         User user = authMapper.toUserEntity(request);
                
         user.setPassword(passwordEncoder.encode(request.password()));
-        user.setRoles(Set.of(roleService.getOrCreateDefaultRole("USER")));
+        user.setRoles(Set.of(roleService.getOrCreateDefaultRole(RoleType.USER)));
         user.setVerified(false);
 
         userService.saveUser(user);
@@ -83,7 +98,7 @@ class AuthServiceImpl implements AuthService {
                 user.getFirstName(),
                 EmailTemplateName.ACTIVATE_ACCOUNT,
                 verificationCode,
-                "Account activation"
+                ACCOUNT_ACTIVATION
         );
     }
 
@@ -98,7 +113,7 @@ class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!user.isVerified()) {
-            throw new ApiException("Account not verified", HttpStatus.FORBIDDEN);
+            throw new ApiException(ACCOUNT_NOT_VERIFIED, HttpStatus.FORBIDDEN);
         }
 
         Map<String, Object> claims = createClaimsWithRoles(user);
@@ -117,7 +132,7 @@ class AuthServiceImpl implements AuthService {
     public AuthResponseDto refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = extractRefreshTokenFromCookies(request);
         if (refreshToken == null) {
-            throw new ApiException("Refresh token not found", HttpStatus.UNAUTHORIZED);
+            throw new ApiException(REFRESH_TOKEN_NOT_FOUND, HttpStatus.UNAUTHORIZED);
         }
 
         User user = refreshTokenService.validateRefreshToken(refreshToken);
@@ -153,7 +168,7 @@ class AuthServiceImpl implements AuthService {
             refreshTokenService.revokeAllUserTokens(user);
             deleteRefreshTokenCookie(response);
         } else {
-            throw new ApiException("Refresh token not found", HttpStatus.UNAUTHORIZED);
+            throw new ApiException(REFRESH_TOKEN_NOT_FOUND, HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -180,7 +195,7 @@ class AuthServiceImpl implements AuthService {
         User user = verificationToken.getUser();
 
         if (user.isVerified()) {
-            throw new ApiException("Account already verified", HttpStatus.BAD_REQUEST);
+            throw new ApiException(ACCOUNT_ALREADY_VERIFIED, HttpStatus.BAD_REQUEST);
         }
 
         user.setVerified(true);
@@ -196,7 +211,7 @@ class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (user.isVerified()) {
-            throw new ApiException("Account already verified", HttpStatus.BAD_REQUEST);
+            throw new ApiException(ACCOUNT_ALREADY_VERIFIED, HttpStatus.BAD_REQUEST);
         }
 
         String verificationCode = verificationTokenService.createVerificationToken(
@@ -210,7 +225,7 @@ class AuthServiceImpl implements AuthService {
                 user.getFirstName(),
                 EmailTemplateName.ACTIVATE_ACCOUNT,
                 verificationCode,
-                "Account activation"
+                ACCOUNT_ACTIVATION
         );
     }
 
@@ -219,7 +234,7 @@ class AuthServiceImpl implements AuthService {
     public void requestEmailChange(ChangeEmailRequestDto request) throws MessagingException {
         Authentication authentication = getCurrentAuthentication();
         if (authentication == null) {
-            throw new ApiException("User not authenticated", HttpStatus.UNAUTHORIZED);
+            throw new ApiException(USER_NOT_AUTHENTICATED, HttpStatus.UNAUTHORIZED);
         }
         String currentEmail = authentication.getName();
 
@@ -227,11 +242,11 @@ class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new ApiException("Invalid current password", HttpStatus.BAD_REQUEST);
+            throw new ApiException(INVALID_CURRENT_PASSWORD, HttpStatus.BAD_REQUEST);
         }
 
         if (userService.existsByEmail(request.newEmail())) {
-            throw new ApiException("Email already in use", HttpStatus.BAD_REQUEST);
+            throw new ApiException(EMAIL_ALREADY_IN_USE, HttpStatus.BAD_REQUEST);
         }
 
         String verificationCode = verificationTokenService.createVerificationToken(
@@ -245,7 +260,7 @@ class AuthServiceImpl implements AuthService {
                 user.getFirstName(),
                 EmailTemplateName.CHANGE_EMAIL,
                 verificationCode,
-                "Email Change Verification"
+                EMAIL_CHANGE_VERIFICATION
         );
     }
 
@@ -259,7 +274,7 @@ class AuthServiceImpl implements AuthService {
 
         String newEmail = verificationToken.getAdditionalData();
         if (newEmail == null) {
-            throw new ApiException("New email not found", HttpStatus.BAD_REQUEST);
+            throw new ApiException(NEW_EMAIL_NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
 
         User user = verificationToken.getUser();
@@ -283,7 +298,7 @@ class AuthServiceImpl implements AuthService {
     public void requestPasswordChange(ChangePasswordRequestDto request) throws MessagingException {
         Authentication authentication = getCurrentAuthentication();
         if (authentication == null) {
-            throw new ApiException("User not authenticated", HttpStatus.UNAUTHORIZED);
+            throw new ApiException(USER_NOT_AUTHENTICATED, HttpStatus.UNAUTHORIZED);
         }
         String email = authentication.getName();
 
@@ -291,7 +306,7 @@ class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new ApiException("Invalid current password", HttpStatus.BAD_REQUEST);
+            throw new ApiException(INVALID_CURRENT_PASSWORD, HttpStatus.BAD_REQUEST);
         }
 
         String encodedNewPassword = passwordEncoder.encode(request.newPassword());
@@ -307,7 +322,7 @@ class AuthServiceImpl implements AuthService {
                 user.getFirstName(),
                 EmailTemplateName.CHANGE_PASSWORD,
                 verificationCode,
-                "Password Change Verification"
+                PASSWORD_CHANGE_VERIFICATION
         );
     }
 
@@ -321,7 +336,7 @@ class AuthServiceImpl implements AuthService {
 
         String newPasswordHash = verificationToken.getAdditionalData();
         if (newPasswordHash == null) {
-            throw new ApiException("New password not found", HttpStatus.BAD_REQUEST);
+            throw new ApiException(NEW_PASSWORD_NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
 
         User user = verificationToken.getUser();
@@ -350,7 +365,7 @@ class AuthServiceImpl implements AuthService {
                 user.getFirstName(),
                 EmailTemplateName.RESET_PASSWORD,
                 verificationCode,
-                "Password Reset"
+                PASSWORD_RESET
         );
     }
 
@@ -382,7 +397,7 @@ class AuthServiceImpl implements AuthService {
                 .sameSite(cookieProperties.sameSite())
                 .build();
 
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.addHeader(SET_COOKIE, cookie.toString());
     }
 
     private void deleteRefreshTokenCookie(HttpServletResponse response) {
@@ -394,7 +409,7 @@ class AuthServiceImpl implements AuthService {
                 .sameSite(cookieProperties.sameSite())
                 .build();
 
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.addHeader(SET_COOKIE, cookie.toString());
     }
 
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {
@@ -414,7 +429,7 @@ class AuthServiceImpl implements AuthService {
 
     private Map<String, Object> createClaimsWithRoles(User user) {
         Map<String, Object> claims = new ConcurrentHashMap<>();
-        List<String> roles = user.getRoles().stream()
+        List<RoleType> roles = user.getRoles().stream()
                 .map(Role::getName)
                 .toList();
         claims.put("roles", roles);

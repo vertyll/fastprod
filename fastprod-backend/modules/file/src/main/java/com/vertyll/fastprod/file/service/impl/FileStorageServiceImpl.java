@@ -22,11 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 class FileStorageServiceImpl implements FileStorageService {
 
+    private static final String USERS = "users";
+
     private final FileUploadProperties fileUploadProperties;
 
     @Override
     public String saveFile(@Nonnull MultipartFile sourceFile, @Nonnull String userId) {
-        final String fileUploadSubPath = "users" + separator + userId;
+        final String fileUploadSubPath = USERS + separator + userId;
         return uploadFile(sourceFile, fileUploadSubPath);
     }
 

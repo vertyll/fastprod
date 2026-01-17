@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.mapper.MapStructConfig;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.user.dto.UserCreateDto;
@@ -29,7 +30,7 @@ public interface UserMapper {
     @Mapping(target = "isVerified", source = "verified")
     UserResponseDto toResponseDto(User user);
 
-    default @Nullable String roleToName(Role role) {
+    default @Nullable RoleType roleToName(Role role) {
         return role != null ? role.getName() : null;
     }
 }

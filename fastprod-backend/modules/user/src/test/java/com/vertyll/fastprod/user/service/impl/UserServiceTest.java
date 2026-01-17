@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.service.RoleService;
@@ -62,9 +63,9 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userRole = Role.builder().name("USER").description("Default user role").build();
+        userRole = Role.builder().name(RoleType.USER).description("Default user role").build();
 
-        adminRole = Role.builder().name("ADMIN").description("Admin role").build();
+        adminRole = Role.builder().name(RoleType.ADMIN).description("Admin role").build();
 
         createDto =
                 new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
@@ -96,7 +97,7 @@ class UserServiceTest {
         // given
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(roleService.getOrCreateDefaultRole(anyString())).thenReturn(userRole);
+        when(roleService.getOrCreateDefaultRole(any(RoleType.class))).thenReturn(userRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
@@ -132,8 +133,8 @@ class UserServiceTest {
     void updateUser_WhenValidData_ShouldUpdateUser() {
         // given
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(roleService.getOrCreateDefaultRole("USER")).thenReturn(userRole);
-        when(roleService.getOrCreateDefaultRole("ADMIN")).thenReturn(adminRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.USER)).thenReturn(userRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.ADMIN)).thenReturn(adminRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
@@ -148,8 +149,8 @@ class UserServiceTest {
         assertEquals(updateDto.lastName(), capturedUser.getLastName());
         assertEquals(updateDto.email(), capturedUser.getEmail());
 
-        verify(roleService).getOrCreateDefaultRole("USER");
-        verify(roleService).getOrCreateDefaultRole("ADMIN");
+        verify(roleService).getOrCreateDefaultRole(RoleType.USER);
+        verify(roleService).getOrCreateDefaultRole(RoleType.ADMIN);
     }
 
     @Test
@@ -180,7 +181,7 @@ class UserServiceTest {
         assertEquals(user.getEmail(), result.email());
         assertTrue(result.isVerified());
         assertEquals(1, result.roles().size());
-        assertTrue(result.roles().contains("USER"));
+        assertTrue(result.roles().contains(RoleType.USER));
     }
 
     @Test
@@ -200,7 +201,7 @@ class UserServiceTest {
     void updateUser_WhenAddingAdminRole_ShouldUpdateUserRoles() {
         // given
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(roleService.getOrCreateDefaultRole("ADMIN")).thenReturn(adminRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.ADMIN)).thenReturn(adminRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         UserUpdateDto updateRequest =
@@ -214,7 +215,7 @@ class UserServiceTest {
         User capturedUser = userCaptor.getValue();
 
         assertNotNull(result);
-        verify(roleService).getOrCreateDefaultRole("ADMIN");
+        verify(roleService).getOrCreateDefaultRole(RoleType.ADMIN);
         assertTrue(capturedUser.getRoles().contains(adminRole));
     }
 
@@ -226,14 +227,14 @@ class UserServiceTest {
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(roleService.getOrCreateDefaultRole("USER")).thenReturn(userRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.USER)).thenReturn(userRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
         UserResponseDto result = userService.createUser(createDtoWithoutRoles);
 
         // then
-        verify(roleService).getOrCreateDefaultRole("USER");
+        verify(roleService).getOrCreateDefaultRole(RoleType.USER);
         assertNotNull(result);
     }
 
@@ -245,14 +246,14 @@ class UserServiceTest {
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(roleService.getOrCreateDefaultRole("USER")).thenReturn(userRole);
+        when(roleService.getOrCreateDefaultRole(RoleType.USER)).thenReturn(userRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
         UserResponseDto result = userService.createUser(createDtoWithEmptyRoles);
 
         // then
-        verify(roleService).getOrCreateDefaultRole("USER");
+        verify(roleService).getOrCreateDefaultRole(RoleType.USER);
         assertNotNull(result);
     }
 

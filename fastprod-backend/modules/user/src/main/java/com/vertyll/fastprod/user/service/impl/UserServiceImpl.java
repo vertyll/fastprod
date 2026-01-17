@@ -22,12 +22,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.vertyll.fastprod.common.enums.RoleType;
 
 @Service
 @RequiredArgsConstructor
 class UserServiceImpl implements UserService {
 
     private static final String USER_NOT_FOUND_MESSAGE = "User not found";
+    private static final String EMAIL_ALREADY_EXISTS = "Email already exists";
 
     private final UserRepository userRepository;
     private final RoleService roleService;
@@ -38,17 +40,17 @@ class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto createUser(UserCreateDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
-            throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
+            throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
         Set<Role> roles = new HashSet<>();
         Set<String> roleNames = dto.roleNames();
         if (roleNames != null && !roleNames.isEmpty()) {
             for (String roleName : roleNames) {
-                roles.add(roleService.getOrCreateDefaultRole(roleName));
+                roles.add(roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName)));
             }
         } else {
-            roles.add(roleService.getOrCreateDefaultRole("USER"));
+            roles.add(roleService.getOrCreateDefaultRole(RoleType.USER));
         }
 
         User user = userMapper.toEntity(dto);
@@ -67,7 +69,7 @@ class UserServiceImpl implements UserService {
 
         String email = dto.email();
         if (email != null && !email.equals(user.getEmail()) && userRepository.existsByEmail(email)) {
-            throw new ApiException("Email already exists", HttpStatus.BAD_REQUEST);
+            throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
         userMapper.updateFromDto(dto, user);
@@ -79,7 +81,9 @@ class UserServiceImpl implements UserService {
 
         Set<String> roleNames = dto.roleNames();
         if (roleNames != null) {
-            Set<Role> roles = roleNames.stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet());
+            Set<Role> roles = roleNames.stream()
+                    .map(name -> roleService.getOrCreateDefaultRole(RoleType.fromValue(name)))
+                    .collect(Collectors.toSet());
             user.setRoles(roles);
         }
 
