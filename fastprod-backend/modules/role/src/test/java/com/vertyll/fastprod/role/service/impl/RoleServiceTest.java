@@ -69,9 +69,9 @@ class RoleServiceTest {
         Role capturedRole = roleCaptor.getValue();
 
         assertNotNull(returnedRole);
-        assertEquals(createDto.name(), capturedRole.getName().name());
+        assertEquals(createDto.name(), capturedRole.getName()); // Enum == Enum
         assertEquals(createDto.description(), capturedRole.getDescription());
-        assertEquals("ADMIN", returnedRole.name());
+        assertEquals(RoleType.ADMIN, returnedRole.name());
         assertEquals("Administrator role", returnedRole.description());
     }
 
@@ -115,7 +115,7 @@ class RoleServiceTest {
         // Assertions for the 'result' variable (API Response)
         assertNotNull(result);
         assertEquals(1L, result.id());
-        assertEquals("ADMIN", result.name());
+        assertEquals(RoleType.ADMIN, result.name());
         assertEquals("Updated description", result.description());
     }
 
@@ -201,7 +201,7 @@ class RoleServiceTest {
 
         // then
         assertNotNull(returnedRole);
-        assertEquals(role.getName().name(), returnedRole.name());
+        assertEquals(role.getName(), returnedRole.name());
         assertEquals(role.getDescription(), returnedRole.description());
     }
 
