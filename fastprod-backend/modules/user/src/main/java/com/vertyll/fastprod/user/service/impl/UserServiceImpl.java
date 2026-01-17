@@ -44,10 +44,10 @@ class UserServiceImpl implements UserService {
         }
 
         Set<Role> roles = new HashSet<>();
-        Set<String> roleNames = dto.roleNames();
+        Set<RoleType> roleNames = dto.roleNames();
         if (roleNames != null && !roleNames.isEmpty()) {
-            for (String roleName : roleNames) {
-                roles.add(roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName)));
+            for (RoleType roleName : roleNames) {
+                roles.add(roleService.getOrCreateDefaultRole(roleName));
             }
         } else {
             roles.add(roleService.getOrCreateDefaultRole(RoleType.USER));
@@ -79,10 +79,10 @@ class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(password));
         }
 
-        Set<String> roleNames = dto.roleNames();
+        Set<RoleType> roleNames = dto.roleNames();
         if (roleNames != null) {
             Set<Role> roles = roleNames.stream()
-                    .map(name -> roleService.getOrCreateDefaultRole(RoleType.fromValue(name)))
+                    .map(roleService::getOrCreateDefaultRole)
                     .collect(Collectors.toSet());
             user.setRoles(roles);
         }

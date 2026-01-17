@@ -79,7 +79,7 @@ class EmployeeServiceImpl implements EmployeeService {
             user.setPassword(passwordEncoder.encode(password));
         }
 
-        Set<String> roleNames = dto.roleNames();
+        Set<RoleType> roleNames = dto.roleNames();
         if (roleNames != null && !roleNames.isEmpty()) {
             user.getRoles().clear();
             assignRolesToUser(user, roleNames);
@@ -200,10 +200,10 @@ class EmployeeServiceImpl implements EmployeeService {
         ));
     }
 
-    private void assignRolesToUser(User user, Set<String> roleNames) {
+    private void assignRolesToUser(User user, Set<RoleType> roleNames) {
         if (roleNames != null && !roleNames.isEmpty()) {
             roleNames.forEach(roleName -> {
-                Role role = roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName));
+                Role role = roleService.getOrCreateDefaultRole(roleName);
                 user.getRoles().add(role);
             });
         } else {

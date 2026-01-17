@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
+import com.vertyll.fastprod.common.enums.RoleType;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -13,4 +15,4 @@ public record EmployeeCreateDto(
         @NotBlank(message = "Email is required") @Email(message = "Email should be valid")
                 String email,
         @NotBlank(message = "Password is required") String password,
-        @Nullable Set<String> roleNames) {}
+        @Nullable Set<RoleType> roleNames) {}

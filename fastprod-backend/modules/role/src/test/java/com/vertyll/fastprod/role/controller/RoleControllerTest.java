@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import com.vertyll.fastprod.common.enums.RoleType;
 import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
@@ -58,9 +59,9 @@ class RoleControllerTest {
                         .setValidator(validator)
                         .build();
 
-        createDto = new RoleCreateDto("ADMIN", "Administrator role");
+        createDto = new RoleCreateDto(RoleType.ADMIN, "Administrator role");
 
-        responseDto = new RoleResponseDto(1L, "ADMIN", "Administrator role");
+        responseDto = new RoleResponseDto(1L, RoleType.ADMIN, "Administrator role");
     }
 
     @AfterEach
@@ -109,7 +110,7 @@ class RoleControllerTest {
     @Test
     void updateRole_WhenValidInput_ShouldReturnUpdated() throws Exception {
         // given
-        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Administrator role");
+        RoleUpdateDto updateDto = new RoleUpdateDto(RoleType.ADMIN, "Administrator role");
 
         when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class))).thenReturn(responseDto);
 
@@ -129,7 +130,7 @@ class RoleControllerTest {
     @Test
     void updateRole_WhenNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Administrator role");
+        RoleUpdateDto updateDto = new RoleUpdateDto(RoleType.ADMIN, "Administrator role");
 
         when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class)))
                 .thenThrow(new ApiException("Role not found", HttpStatus.NOT_FOUND));

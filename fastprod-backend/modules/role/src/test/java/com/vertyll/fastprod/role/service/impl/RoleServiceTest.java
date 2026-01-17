@@ -50,7 +50,7 @@ class RoleServiceTest {
 
     @BeforeEach
     void setUp() {
-        createDto = new RoleCreateDto("ADMIN", "Administrator role");
+        createDto = new RoleCreateDto(RoleType.ADMIN, "Administrator role");
 
         role = Role.builder().name(RoleType.ADMIN).description("Administrator role").build();
     }
@@ -96,7 +96,7 @@ class RoleServiceTest {
                 Role.builder().name(RoleType.ADMIN).description("Old description").build();
         existingRole.setId(1L);
 
-        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
+        RoleUpdateDto updateDto = new RoleUpdateDto(RoleType.ADMIN, "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
         when(roleRepository.save(any(Role.class))).thenReturn(existingRole);
@@ -122,7 +122,7 @@ class RoleServiceTest {
     @Test
     void updateRole_WhenRoleNotFound_ShouldThrowException() {
         // given
-        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
+        RoleUpdateDto updateDto = new RoleUpdateDto(RoleType.ADMIN, "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -144,7 +144,7 @@ class RoleServiceTest {
 
         RoleUpdateDto updateDto =
                 new RoleUpdateDto(
-                        "USER", "Updated description"); // Different name than existing role
+                        RoleType.USER, "Updated description"); // Different name than existing role
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
         when(roleRepository.existsByName(RoleType.USER))
