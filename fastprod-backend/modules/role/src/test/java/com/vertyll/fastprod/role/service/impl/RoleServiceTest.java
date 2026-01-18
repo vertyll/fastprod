@@ -50,7 +50,7 @@ class RoleServiceTest {
 
     @BeforeEach
     void setUp() {
-        createDto = new RoleCreateDto(RoleType.ADMIN, "Administrator role");
+        createDto = new RoleCreateDto("ADMIN", "Administrator role");
 
         role = Role.builder().name(RoleType.ADMIN).description("Administrator role").build();
     }
@@ -69,9 +69,9 @@ class RoleServiceTest {
         Role capturedRole = roleCaptor.getValue();
 
         assertNotNull(returnedRole);
-        assertEquals(createDto.name(), capturedRole.getName()); // Enum == Enum
+        assertEquals(createDto.name(), capturedRole.getName().name());
         assertEquals(createDto.description(), capturedRole.getDescription());
-        assertEquals(RoleType.ADMIN, returnedRole.name());
+        assertEquals("ADMIN", returnedRole.name());
         assertEquals("Administrator role", returnedRole.description());
     }
 
@@ -96,7 +96,7 @@ class RoleServiceTest {
                 Role.builder().name(RoleType.ADMIN).description("Old description").build();
         existingRole.setId(1L);
 
-        RoleUpdateDto updateDto = new RoleUpdateDto(RoleType.ADMIN, "Updated description");
+        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
         when(roleRepository.save(any(Role.class))).thenReturn(existingRole);
@@ -115,14 +115,14 @@ class RoleServiceTest {
         // Assertions for the 'result' variable (API Response)
         assertNotNull(result);
         assertEquals(1L, result.id());
-        assertEquals(RoleType.ADMIN, result.name());
+        assertEquals("ADMIN", result.name());
         assertEquals("Updated description", result.description());
     }
 
     @Test
     void updateRole_WhenRoleNotFound_ShouldThrowException() {
         // given
-        RoleUpdateDto updateDto = new RoleUpdateDto(RoleType.ADMIN, "Updated description");
+        RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -144,7 +144,7 @@ class RoleServiceTest {
 
         RoleUpdateDto updateDto =
                 new RoleUpdateDto(
-                        RoleType.USER, "Updated description"); // Different name than existing role
+                        "USER", "Updated description"); // Different name than existing role
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
         when(roleRepository.existsByName(RoleType.USER))
@@ -201,7 +201,7 @@ class RoleServiceTest {
 
         // then
         assertNotNull(returnedRole);
-        assertEquals(role.getName(), returnedRole.name());
+        assertEquals(role.getName().name(), returnedRole.name());
         assertEquals(role.getDescription(), returnedRole.description());
     }
 

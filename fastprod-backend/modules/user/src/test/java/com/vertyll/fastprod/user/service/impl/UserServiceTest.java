@@ -68,8 +68,7 @@ class UserServiceTest {
         adminRole = Role.builder().name(RoleType.ADMIN).description("Admin role").build();
 
         createDto =
-                new UserCreateDto(
-                        "John", "Doe", "john@example.com", "password123", Set.of(RoleType.USER));
+                new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
 
         updateDto =
                 new UserUpdateDto(
@@ -77,7 +76,7 @@ class UserServiceTest {
                         "Doe Updated",
                         "john.updated@example.com",
                         null,
-                        Set.of(RoleType.USER, RoleType.ADMIN));
+                        Set.of("USER", "ADMIN"));
 
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
@@ -206,7 +205,7 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         UserUpdateDto updateRequest =
-                new UserUpdateDto("John", "Doe", "john@example.com", null, Set.of(RoleType.ADMIN));
+                new UserUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
 
         // when
         UserResponseDto result = userService.updateUser(1L, updateRequest);

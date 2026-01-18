@@ -64,8 +64,7 @@ class UserControllerTest {
                         .build();
 
         createDto =
-                new UserCreateDto(
-                        "John", "Doe", "john@example.com", "password123", Set.of(RoleType.USER));
+                new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
 
         updateDto =
                 new UserUpdateDto(
@@ -73,7 +72,7 @@ class UserControllerTest {
                         "Doe Updated",
                         "john.updated@example.com",
                         null, // password can be null for updates
-                        Set.of(RoleType.USER, RoleType.ADMIN));
+                        Set.of("USER", "ADMIN"));
 
         responseDto =
                 new UserResponseDto(
@@ -115,7 +114,7 @@ class UserControllerTest {
                         "Doe",
                         "invalid-email", // invalid email format
                         "password123",
-                        Set.of(RoleType.USER));
+                        Set.of("USER"));
 
         // when & then
         mockMvc.perform(

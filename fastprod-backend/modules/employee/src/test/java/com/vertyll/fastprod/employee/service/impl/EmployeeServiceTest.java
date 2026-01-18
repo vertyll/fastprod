@@ -70,11 +70,7 @@ class EmployeeServiceTest {
 
         createDto =
                 new EmployeeCreateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        "password123",
-                        Set.of(RoleType.EMPLOYEE));
+                        "John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
 
         updateDto =
                 new EmployeeUpdateDto(
@@ -82,7 +78,7 @@ class EmployeeServiceTest {
                         "Doe Updated",
                         "john.updated@example.com",
                         null,
-                        Set.of(RoleType.EMPLOYEE, RoleType.ADMIN));
+                        Set.of("EMPLOYEE", "ADMIN"));
 
         Set<Role> roles = new HashSet<>();
         roles.add(employeeRole);
@@ -194,7 +190,7 @@ class EmployeeServiceTest {
         // given
         EmployeeUpdateDto dtoWithDifferentEmail =
                 new EmployeeUpdateDto(
-                        "John", "Doe", "different@example.com", null, Set.of(RoleType.EMPLOYEE));
+                        "John", "Doe", "different@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail("different@example.com")).thenReturn(true);
@@ -305,8 +301,7 @@ class EmployeeServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         EmployeeUpdateDto updateRequest =
-                new EmployeeUpdateDto(
-                        "John", "Doe", "john@example.com", null, Set.of(RoleType.ADMIN));
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
 
         // when
         EmployeeResponseDto result = employeeService.updateEmployee(1L, updateRequest);
@@ -363,11 +358,7 @@ class EmployeeServiceTest {
         // given
         EmployeeUpdateDto updateWithPassword =
                 new EmployeeUpdateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        "newPassword123",
-                        Set.of(RoleType.EMPLOYEE));
+                        "John", "Doe", "john@example.com", "newPassword123", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");
@@ -388,8 +379,7 @@ class EmployeeServiceTest {
     void updateEmployee_WhenPasswordNull_ShouldNotEncodePassword() {
         // given
         EmployeeUpdateDto updateWithoutPassword =
-                new EmployeeUpdateDto(
-                        "John", "Doe", "john@example.com", null, Set.of(RoleType.EMPLOYEE));
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
@@ -407,8 +397,7 @@ class EmployeeServiceTest {
     void updateEmployee_WhenPasswordBlank_ShouldNotEncodePassword() {
         // given
         EmployeeUpdateDto updateWithBlankPassword =
-                new EmployeeUpdateDto(
-                        "John", "Doe", "john@example.com", "   ", Set.of(RoleType.EMPLOYEE));
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", "   ", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);

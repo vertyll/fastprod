@@ -65,11 +65,7 @@ class EmployeeControllerTest {
 
         createDto =
                 new EmployeeCreateDto(
-                        "John",
-                        "Doe",
-                        "john@example.com",
-                        "password123",
-                        Set.of(RoleType.EMPLOYEE));
+                        "John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
 
         updateDto =
                 new EmployeeUpdateDto(
@@ -77,7 +73,7 @@ class EmployeeControllerTest {
                         "Doe Updated",
                         "john.updated@example.com",
                         null,
-                        Set.of(RoleType.EMPLOYEE, RoleType.ADMIN));
+                        Set.of("EMPLOYEE", "ADMIN"));
 
         responseDto =
                 new EmployeeResponseDto(
@@ -119,7 +115,7 @@ class EmployeeControllerTest {
                         "Doe",
                         "invalid-email", // invalid email format
                         "password123",
-                        Set.of(RoleType.EMPLOYEE));
+                        Set.of("EMPLOYEE"));
 
         // when & then
         mockMvc.perform(

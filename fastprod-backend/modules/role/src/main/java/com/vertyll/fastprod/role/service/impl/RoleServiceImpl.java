@@ -29,7 +29,7 @@ class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public RoleResponseDto createRole(RoleCreateDto dto) {
-        if (roleRepository.existsByName(dto.name())) {
+        if (roleRepository.existsByName(RoleType.fromValue(dto.name()))) {
             throw new ApiException(ROLE_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
@@ -45,7 +45,7 @@ class RoleServiceImpl implements RoleService {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ApiException(ROLE_NOT_FOUND, HttpStatus.NOT_FOUND));
 
-        RoleType newName = dto.name();
+        RoleType newName = RoleType.fromValue(dto.name());
 
         if (role.getName() != newName && roleRepository.existsByName(newName)) {
             throw new ApiException(ROLE_WITH_THIS_NAME_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
