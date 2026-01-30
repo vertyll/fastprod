@@ -11,7 +11,7 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
 @Configuration
-class MainErrorHandler {
+public class MainErrorHandler {
 
     private static final Logger log = LoggerFactory.getLogger(MainErrorHandler.class);
 

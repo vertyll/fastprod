@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/roles")
 @RequiredArgsConstructor
 @Tag(name = "Roles", description = "Role management APIs")
-class RoleController {
+public class RoleController {
 
     private static final String ROLE_CREATED_SUCCESSFULLY = "Role created successfully";
     private static final String ROLE_UPDATED_SUCCESSFULLY = "Role updated successfully";

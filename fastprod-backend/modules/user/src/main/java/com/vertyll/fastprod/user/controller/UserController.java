@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Tag(name = "Users", description = "User management APIs")
-class UserController {
+public class UserController {
 
     private static final String USER_CREATED_SUCCESSFULLY = "User created successfully";
     private static final String USER_UPDATED_SUCCESSFULLY = "User updated successfully";

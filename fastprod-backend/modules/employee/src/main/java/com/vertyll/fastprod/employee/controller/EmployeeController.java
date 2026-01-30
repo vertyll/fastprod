@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/employees")
 @RequiredArgsConstructor
 @Tag(name = "Employees", description = "Employee management APIs")
-class EmployeeController {
+public class EmployeeController {
 
     private static final String EMPLOYEE_CREATED_SUCCESSFULLY = "Employee created successfully";
     private static final String EMPLOYEE_UPDATED_SUCCESSFULLY = "Employee updated successfully";

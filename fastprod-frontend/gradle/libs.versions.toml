@@ -7,7 +7,7 @@ vaadin-plugin = "24.9.6"
 spotless = "8.2.1"
 errorprone-plugin = "5.0.0"
 nullaway-plugin = "3.0.0"
-pmd = "7.20.0"
+pmd = "7.21.0"
 
 # Dependencies
 errorprone = "2.45.0"

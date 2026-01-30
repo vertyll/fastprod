@@ -28,7 +28,7 @@ import jakarta.validation.constraints.Email;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Authentication", description = "Auth management APIs")
-class AuthController {
+public class AuthController {
 
     private static final String IS_AUTHENTICATED = "isAuthenticated()";
     private static final String USER_REGISTERED_SUCCESSFULLY = "User registered successfully";
