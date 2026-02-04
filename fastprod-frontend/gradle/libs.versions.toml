@@ -1,6 +1,6 @@
 [versions]
 # Plugins
-spring-boot = "3.5.9"
+spring-boot = "3.5.10"
 spring-dependency-management = "1.1.7"
 vaadin = "24.9.6"
 vaadin-plugin = "24.9.6"
