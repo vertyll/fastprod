@@ -8,13 +8,13 @@ WORKDIR /app
 # Vaadin requires Node.js for building the production packagege
 RUN apk add --no-cache nodejs npm
 
-# Kopiujemy całą zawartość folderu frontend
+# Copy the entire frontend folder
 COPY fastprod-frontend/ .
 
 RUN chmod +x gradlew
 
 # Build the application (Vaadin + Spring Boot Jar)
-RUN ./gradlew :fastprod-frontend:vaadinBuildFrontend :fastprod-frontend:bootJar --no-daemon --parallel
+RUN ./gradlew vaadinBuildFrontend bootJar --no-daemon --parallel
 
 # Production stage
 FROM eclipse-temurin:${JAVA_VERSION}-jre-alpine AS production

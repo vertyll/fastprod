@@ -12,7 +12,7 @@ COPY fastprod-backend/ .
 RUN chmod +x gradlew
 
 # Build application JAR
-RUN ./gradlew :fastprod-backend:bootJar --no-daemon --parallel
+RUN ./gradlew bootJar --no-daemon --parallel
 
 # Production stage
 FROM eclipse-temurin:${JAVA_VERSION}-jre-alpine AS production
