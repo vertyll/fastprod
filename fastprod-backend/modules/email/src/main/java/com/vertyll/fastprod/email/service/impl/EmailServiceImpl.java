@@ -3,6 +3,7 @@ package com.vertyll.fastprod.email.service.impl;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.mail.javamail.MimeMessageHelper.MULTIPART_MODE_MIXED;
 
+import com.vertyll.fastprod.common.config.MailProperties;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
 import com.vertyll.fastprod.email.service.EmailService;
 import jakarta.mail.MessagingException;
@@ -26,12 +27,12 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 class EmailServiceImpl implements EmailService {
 
     private static final String EMAIL_TEMPLATE_CANNOT_BE_NULL = "Email template cannot be null";
-    private static final String FROM = "gawrmiko@gmail.com";
     private static final String FAILED_TO_PROCESS_EMAIL_TEMPLATE = "Failed to process email template: ";
     private static final String FAILED_TO_SEND_EMAIL_WITH_TEMPLATE = "Failed to send email with template: ";
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
+    private final MailProperties mailProperties;
 
     @Override
     @Async
@@ -57,7 +58,7 @@ class EmailServiceImpl implements EmailService {
         Context context = new Context();
         context.setVariables(properties);
 
-        helper.setFrom(FROM);
+        helper.setFrom(mailProperties.from());
         helper.setTo(to);
         helper.setSubject(subject);
 

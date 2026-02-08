@@ -20,6 +20,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.vertyll.fastprod.common.config.MailProperties;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
 
 import jakarta.mail.MessagingException;
@@ -32,6 +33,8 @@ class EmailServiceTest {
     @Mock private JavaMailSender mailSender;
 
     @Mock private SpringTemplateEngine templateEngine;
+
+    @Mock private MailProperties mailProperties;
 
     @InjectMocks private EmailServiceImpl emailService;
 
@@ -46,6 +49,7 @@ class EmailServiceTest {
 
     @BeforeEach
     void setUp() {
+        when(mailProperties.from()).thenReturn("test@example.com");
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         when(templateEngine.process(anyString(), any(Context.class)))
                 .thenReturn("<html>Test Template</html>");
