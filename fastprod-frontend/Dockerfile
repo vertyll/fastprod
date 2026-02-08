@@ -9,7 +9,7 @@ WORKDIR /app
 RUN apk add --no-cache nodejs npm
 
 # Copy Gradle configuration files
-COPY fastprod-frontend/build.gradle.kts fastprod-frontend/settings.gradle.kts fastprod-frontend/gradle.properties ./
+COPY fastprod-frontend/build.gradle.kts fastprod-frontend/settings.gradle.kts fastprod-frontend/gradle/gradle.properties ./
 COPY fastprod-frontend/gradle ./gradle
 
 # Copy source code
