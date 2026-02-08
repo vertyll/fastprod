@@ -15,7 +15,7 @@ RUN chmod +x gradlew
 RUN ./gradlew bootJar --no-daemon --parallel
 
 # Production stage
-FROM eclipse-temurin:${JAVA_VERSION}-jre-alpine AS production
+FROM azul/zulu-openjdk-alpine:${JAVA_VERSION}-jre AS production
 WORKDIR /app
 
 # Install system dependencies, create a non-root user, and set permissions for uploads directory

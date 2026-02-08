@@ -17,7 +17,7 @@ RUN chmod +x gradlew
 RUN ./gradlew vaadinBuildFrontend bootJar --no-daemon --parallel
 
 # Production stage
-FROM eclipse-temurin:${JAVA_VERSION}-jre-alpine AS production
+FROM azul/zulu-openjdk-alpine:${JAVA_VERSION}-jre AS production
 WORKDIR /app
 
 RUN apk add --no-cache bash curl && \
