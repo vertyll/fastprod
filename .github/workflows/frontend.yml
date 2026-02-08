@@ -5,15 +5,13 @@ on:
     branches: [main]
     paths:
       - 'fastprod-frontend/**'
-      - 'build.gradle.kts'
-      - 'settings.gradle.kts'
+      - 'fastprod-frontend/build.gradle.kts'
+      - 'fastprod-frontend/settings.gradle.kts'
       - '.github/workflows/frontend.yml'
   pull_request:
     branches: [main]
     paths:
       - 'fastprod-frontend/**'
-      - 'build.gradle.kts'
-      - 'settings.gradle.kts'
   workflow_dispatch:
 
 env:

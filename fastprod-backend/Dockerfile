@@ -6,8 +6,8 @@ FROM gradle:${GRADLE_VERSION}-jdk${JAVA_VERSION}-alpine AS build
 WORKDIR /app
 
 # Copy Gradle configuration files
-COPY build.gradle.kts settings.gradle.kts gradle.properties ./
-COPY gradle ./gradle
+COPY fastprod-backend/build.gradle.kts fastprod-backend/settings.gradle.kts fastprod-backend/gradle.properties ./
+COPY fastprod-backend/gradle ./gradle
 
 # Copy source code
 COPY fastprod-backend ./fastprod-backend

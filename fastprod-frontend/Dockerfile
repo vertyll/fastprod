@@ -5,12 +5,12 @@ ARG JAVA_VERSION=25
 FROM gradle:${GRADLE_VERSION}-jdk${JAVA_VERSION}-alpine AS build
 WORKDIR /app
 
-# Install Node.js dla Vaadin frontend build
+# Install Node.js for Vaadin frontend build
 RUN apk add --no-cache nodejs npm
 
 # Copy Gradle configuration files
-COPY build.gradle.kts settings.gradle.kts gradle.properties ./
-COPY gradle ./gradle
+COPY fastprod-frontend/build.gradle.kts fastprod-frontend/settings.gradle.kts fastprod-frontend/gradle.properties ./
+COPY fastprod-frontend/gradle ./gradle
 
 # Copy source code
 COPY fastprod-frontend ./fastprod-frontend

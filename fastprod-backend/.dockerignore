@@ -44,7 +44,7 @@
 **/test-results/
 **/coverage/
 
-# Node modules (if any)
+# Node modules
 **/node_modules/
 
 # Temporary files
