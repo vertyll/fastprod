@@ -5,23 +5,20 @@ ARG JAVA_VERSION=25
 FROM gradle:${GRADLE_VERSION}-jdk${JAVA_VERSION}-alpine AS build
 WORKDIR /app
 
-# Copy Gradle configuration files
-COPY fastprod-backend/build.gradle.kts fastprod-backend/settings.gradle.kts ./
-COPY fastprod-backend/gradle ./gradle
-COPY fastprod-backend/gradlew ./
-COPY fastprod-backend/gradlew.bat ./
+# Copy the entire backend folder (including modules, gradlew, and kts files)
+COPY fastprod-backend/ .
 
-# Copy source code
-COPY fastprod-backend ./fastprod-backend
+# Add execute permissions to gradlew
+RUN chmod +x gradlew
 
-# Build the application
-RUN gradle :fastprod-backend:bootJar --no-daemon --parallel
+# Build application JAR
+RUN ./gradlew :fastprod-backend:bootJar --no-daemon --parallel
 
 # Production stage
 FROM eclipse-temurin:${JAVA_VERSION}-jre-alpine AS production
 WORKDIR /app
 
-# Install runtime dependencies, create user, and prepare directories in single layer
+# Install system dependencies, create a non-root user, and set permissions for uploads directory
 RUN apk add --no-cache \
     bash \
     netcat-openbsd \
@@ -33,10 +30,10 @@ RUN apk add --no-cache \
     mkdir -p /var/app/uploads && \
     chown -R appuser:appuser /var/app/uploads
 
-# Copy built JAR
-COPY --from=build /app/fastprod-backend/build/libs/*.jar app.jar
+# Copy the built JAR from the build stage
+COPY --from=build /app/build/libs/*.jar app.jar
 
-# Copy entrypoint script and set permissions
+# Copy the entrypoint script and set permissions
 COPY fastprod-backend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN dos2unix /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-entrypoint.sh

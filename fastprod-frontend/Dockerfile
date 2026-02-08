@@ -5,34 +5,27 @@ ARG JAVA_VERSION=25
 FROM gradle:${GRADLE_VERSION}-jdk${JAVA_VERSION}-alpine AS build
 WORKDIR /app
 
-# Install Node.js for Vaadin frontend build
+# Vaadin requires Node.js for building the production packagege
 RUN apk add --no-cache nodejs npm
 
-# Copy Gradle configuration files
-COPY fastprod-frontend/build.gradle.kts fastprod-frontend/settings.gradle.kts ./
-COPY fastprod-frontend/gradle ./gradle
-COPY fastprod-frontend/gradlew ./
-COPY fastprod-frontend/gradlew.bat ./
+# Kopiujemy całą zawartość folderu frontend
+COPY fastprod-frontend/ .
 
-# Copy source code
-COPY fastprod-frontend ./fastprod-frontend
+RUN chmod +x gradlew
 
-# Build the application with Vaadin production build
-RUN gradle :fastprod-frontend:vaadinBuildFrontend :fastprod-frontend:bootJar --no-daemon --parallel
+# Build the application (Vaadin + Spring Boot Jar)
+RUN ./gradlew :fastprod-frontend:vaadinBuildFrontend :fastprod-frontend:bootJar --no-daemon --parallel
 
 # Production stage
 FROM eclipse-temurin:${JAVA_VERSION}-jre-alpine AS production
 WORKDIR /app
 
-# Install runtime dependencies and create user in single layer
-RUN apk add --no-cache \
-    bash \
-    curl && \
+RUN apk add --no-cache bash curl && \
     addgroup --system --gid 1001 appuser && \
     adduser --system --uid 1001 --ingroup appuser appuser
 
-# Copy built JAR
-COPY --from=build /app/fastprod-frontend/build/libs/*.jar app.jar
+# Copy the built JAR from the build stage
+COPY --from=build /app/build/libs/*.jar app.jar
 
 USER appuser
 
@@ -45,4 +38,5 @@ EXPOSE 8001
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8001/actuator/health || exit 1
 
-CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+# Use exec form to ensure signals are received properly
+CMD ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
