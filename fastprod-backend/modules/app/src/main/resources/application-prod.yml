@@ -16,7 +16,6 @@ spring:
     properties:
       hibernate:
         format_sql: false
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
     validate-on-migrate: true
@@ -38,6 +37,12 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
 
 security:
   jwt:
