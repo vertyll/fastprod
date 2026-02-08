@@ -30,7 +30,7 @@ spring:
     properties:
       mail:
         smtp:
-          trust: "*"
+          trust: ${MAIL_SMTP_TRUST}
           auth: true
           starttls:
             enable: true
