@@ -43,6 +43,7 @@ dependencies {
     // Implementation
     implementation(libs.bundles.vaadin)
     implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.actuator)
 
     // Compile Only
     compileOnly(libs.lombok)

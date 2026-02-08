@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.spring.boot.starter.webmvc)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.actuator)
 
     // Implementation - Thymeleaf
     implementation(libs.thymeleaf.extras.springsecurity6)

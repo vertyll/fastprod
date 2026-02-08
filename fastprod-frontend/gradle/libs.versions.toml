@@ -27,6 +27,7 @@ vaadin-spring-boot-starter = { module = "com.vaadin:vaadin-spring-boot-starter" 
 
 # Spring Boot
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 
 # Lombok & JSpecify
