@@ -31,7 +31,7 @@ RUN apk add --no-cache \
     chown -R appuser:appuser /var/app/uploads
 
 # Copy the built JAR from the build stage
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/modules/app/build/libs/*.jar app.jar
 
 # Copy the entrypoint script and set permissions
 COPY fastprod-backend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
