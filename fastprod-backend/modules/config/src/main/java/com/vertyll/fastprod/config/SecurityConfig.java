@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,9 +43,9 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-        http
-                .cors(org.springframework.security.config.Customizer.withDefaults())
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth ->
