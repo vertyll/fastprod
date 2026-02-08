@@ -7,7 +7,7 @@ include(
     "modules:email",
     "modules:file",
     "modules:auth",
-    "modules:config",
+    "modules:security",
     "modules:app",
     "modules:employee"
 )

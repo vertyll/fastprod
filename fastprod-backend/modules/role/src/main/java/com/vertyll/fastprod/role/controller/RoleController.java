@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
-import com.vertyll.fastprod.common.enums.RoleType;
-import com.vertyll.fastprod.common.response.ApiResponse;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.service.RoleService;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

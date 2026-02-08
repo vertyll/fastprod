@@ -4,8 +4,8 @@ import java.io.Serial;
 
 import lombok.*;
 
-import com.vertyll.fastprod.common.entity.BaseEntity;
-import com.vertyll.fastprod.common.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
 import jakarta.persistence.*;
 

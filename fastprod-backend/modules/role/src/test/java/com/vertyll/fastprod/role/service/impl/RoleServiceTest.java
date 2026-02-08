@@ -18,14 +18,14 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import com.vertyll.fastprod.common.enums.RoleType;
-import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.mapper.RoleMapper;
 import com.vertyll.fastprod.role.repository.RoleRepository;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

@@ -10,12 +10,12 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import com.vertyll.fastprod.common.enums.RoleType;
-import com.vertyll.fastprod.common.mapper.MapStructConfig;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.mapper.MapStructConfig;
 import com.vertyll.fastprod.user.entity.User;
 
 @Mapper(config = MapStructConfig.class)

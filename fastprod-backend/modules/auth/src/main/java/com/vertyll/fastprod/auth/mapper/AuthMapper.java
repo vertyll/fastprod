@@ -8,7 +8,7 @@ import com.vertyll.fastprod.auth.dto.RegisterRequestDto;
 import com.vertyll.fastprod.auth.dto.SessionInfoDto;
 import com.vertyll.fastprod.auth.dto.SessionResponseDto;
 import com.vertyll.fastprod.auth.util.UserAgentUtils;
-import com.vertyll.fastprod.common.mapper.MapStructConfig;
+import com.vertyll.fastprod.sharedinfrastructure.mapper.MapStructConfig;
 import com.vertyll.fastprod.user.entity.User;
 
 @Mapper(config = MapStructConfig.class, imports = UserAgentUtils.class)

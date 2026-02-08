@@ -1,6 +1,6 @@
 package com.vertyll.fastprod.role.service.impl;
 
-import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.vertyll.fastprod.common.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
 @Service
 @RequiredArgsConstructor

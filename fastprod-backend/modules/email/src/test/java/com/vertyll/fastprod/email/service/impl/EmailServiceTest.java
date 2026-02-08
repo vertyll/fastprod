@@ -20,8 +20,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import com.vertyll.fastprod.common.config.MailProperties;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
+import com.vertyll.fastprod.sharedinfrastructure.config.MailProperties;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

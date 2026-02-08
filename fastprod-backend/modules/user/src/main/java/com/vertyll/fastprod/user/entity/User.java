@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.*;
 
-import com.vertyll.fastprod.common.entity.BaseEntity;
 import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 
 import jakarta.persistence.*;
 

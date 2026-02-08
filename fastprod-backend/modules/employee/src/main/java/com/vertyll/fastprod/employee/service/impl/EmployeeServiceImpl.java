@@ -1,6 +1,6 @@
 package com.vertyll.fastprod.employee.service.impl;
 
-import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeFilterDto;
@@ -8,7 +8,7 @@ import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.employee.mapper.EmployeeMapper;
 import com.vertyll.fastprod.employee.service.EmployeeService;
 import com.vertyll.fastprod.role.entity.Role;
-import com.vertyll.fastprod.common.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.repository.UserRepository;

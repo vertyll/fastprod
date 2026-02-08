@@ -24,8 +24,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.vertyll.fastprod.auth.dto.*;
 import com.vertyll.fastprod.auth.service.AuthService;
-import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
+import com.vertyll.fastprod.sharedinfrastructure.exception.GlobalExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

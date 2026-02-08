@@ -6,11 +6,11 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import com.vertyll.fastprod.common.mapper.MapStructConfig;
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
 import com.vertyll.fastprod.role.dto.RoleUpdateDto;
 import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.sharedinfrastructure.mapper.MapStructConfig;
 
 @Mapper(config = MapStructConfig.class)
 public interface RoleMapper {

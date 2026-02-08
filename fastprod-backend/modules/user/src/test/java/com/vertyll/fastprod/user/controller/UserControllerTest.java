@@ -23,9 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import com.vertyll.fastprod.common.enums.RoleType;
-import com.vertyll.fastprod.common.exception.ApiException;
-import com.vertyll.fastprod.common.exception.GlobalExceptionHandler;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
+import com.vertyll.fastprod.sharedinfrastructure.exception.GlobalExceptionHandler;
 import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.dto.UserUpdateDto;

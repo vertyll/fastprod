@@ -30,7 +30,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.vertyll.fastprod.auth.config.CookieProperties;
 import com.vertyll.fastprod.auth.dto.*;
 import com.vertyll.fastprod.auth.entity.VerificationToken;
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
@@ -38,12 +37,13 @@ import com.vertyll.fastprod.auth.mapper.AuthMapper;
 import com.vertyll.fastprod.auth.service.JwtService;
 import com.vertyll.fastprod.auth.service.RefreshTokenService;
 import com.vertyll.fastprod.auth.service.VerificationTokenService;
-import com.vertyll.fastprod.common.enums.RoleType;
-import com.vertyll.fastprod.common.exception.ApiException;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
 import com.vertyll.fastprod.email.service.EmailService;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.service.RoleService;
+import com.vertyll.fastprod.sharedinfrastructure.config.CookieProperties;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.service.UserService;
 

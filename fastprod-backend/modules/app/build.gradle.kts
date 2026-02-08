@@ -7,7 +7,7 @@ plugins {
 dependencies {
     // Implementation - Internal Modules
     implementation(project(":modules:auth"))
-    implementation(project(":modules:config"))
+    implementation(project(":modules:security"))
     implementation(project(":modules:employee"))
     implementation(project(":modules:role"))
     implementation(project(":modules:user"))

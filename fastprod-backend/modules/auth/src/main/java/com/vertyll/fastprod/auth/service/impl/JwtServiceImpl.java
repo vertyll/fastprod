@@ -1,7 +1,7 @@
 package com.vertyll.fastprod.auth.service.impl;
 
-import com.vertyll.fastprod.auth.config.JwtProperties;
 import com.vertyll.fastprod.auth.service.JwtService;
+import com.vertyll.fastprod.sharedinfrastructure.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

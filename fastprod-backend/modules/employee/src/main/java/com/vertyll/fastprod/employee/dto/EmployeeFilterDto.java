@@ -5,7 +5,7 @@ import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 
-import com.vertyll.fastprod.common.dto.BaseFilterDto;
+import com.vertyll.fastprod.sharedinfrastructure.dto.BaseFilterDto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

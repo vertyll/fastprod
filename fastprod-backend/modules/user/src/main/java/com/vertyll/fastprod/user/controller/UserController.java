@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
-import com.vertyll.fastprod.common.response.ApiResponse;
+import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
 import com.vertyll.fastprod.user.dto.ProfileUpdateDto;
 import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;

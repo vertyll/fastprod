@@ -2,7 +2,7 @@ package com.vertyll.fastprod.user.dto;
 
 import java.util.Set;
 
-import com.vertyll.fastprod.common.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
 public record UserResponseDto(
         Long id,

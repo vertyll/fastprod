@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.vertyll.fastprod.auth.dto.*;
 import com.vertyll.fastprod.auth.service.AuthService;
-import com.vertyll.fastprod.common.response.ApiResponse;
+import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

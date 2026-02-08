@@ -3,7 +3,7 @@ package com.vertyll.fastprod.email.service.impl;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.mail.javamail.MimeMessageHelper.MULTIPART_MODE_MIXED;
 
-import com.vertyll.fastprod.common.config.MailProperties;
+import com.vertyll.fastprod.sharedinfrastructure.config.MailProperties;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
 import com.vertyll.fastprod.email.service.EmailService;
 import jakarta.mail.MessagingException;

@@ -15,6 +15,7 @@ dependencies {
 
     // Compile Only
     compileOnly(libs.lombok)
+    compileOnly(libs.springdoc.openapi.starter.webmvc.ui)
 
     // Annotation Processor
     annotationProcessor(libs.lombok)

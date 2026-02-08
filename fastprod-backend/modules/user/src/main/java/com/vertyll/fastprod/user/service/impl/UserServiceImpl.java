@@ -1,6 +1,6 @@
 package com.vertyll.fastprod.user.service.impl;
 
-import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.role.service.RoleService;
 
@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.vertyll.fastprod.common.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
 @Service
 @RequiredArgsConstructor

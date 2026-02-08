@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
-import com.vertyll.fastprod.common.response.ApiResponse;
-import com.vertyll.fastprod.common.response.PaginatedApiResponse;
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeFilterDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.employee.service.EmployeeService;
+import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
+import com.vertyll.fastprod.sharedinfrastructure.response.PaginatedApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

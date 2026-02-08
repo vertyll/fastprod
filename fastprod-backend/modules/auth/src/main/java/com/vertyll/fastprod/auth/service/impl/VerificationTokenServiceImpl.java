@@ -4,7 +4,7 @@ import com.vertyll.fastprod.auth.entity.VerificationToken;
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
 import com.vertyll.fastprod.auth.repository.VerificationTokenRepository;
 import com.vertyll.fastprod.auth.service.VerificationTokenService;
-import com.vertyll.fastprod.common.exception.ApiException;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
