@@ -89,13 +89,15 @@ jobs:
             podman-compose -f fastprod.yml up -d --force-recreate --no-deps fastprod-frontend > /dev/null 2>&1
             
             echo "Waiting for container to start..."
-            sleep 10
+            sleep 15
             
             echo "=== Container status ==="
             podman ps | grep fastprod-frontend || echo "Container is not running!"
             
             echo "=== Last logs ==="
             podman logs --tail 50 fastprod-frontend
+            
+            sleep 5
             
             echo "=== Health check ==="
             podman exec fastprod-frontend curl -f http://localhost:8001/actuator/health && \

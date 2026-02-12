@@ -17,7 +17,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,metrics,info
+        include: health
   endpoint:
     health:
       probes:
