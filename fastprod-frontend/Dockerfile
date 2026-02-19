@@ -5,7 +5,7 @@ ARG JAVA_VERSION=25
 FROM gradle:${GRADLE_VERSION}-jdk${JAVA_VERSION}-alpine AS build
 WORKDIR /app
 
-# Vaadin requires Node.js for building the production packagege
+# Vaadin requires Node.js for building the production package
 RUN apk add --no-cache nodejs npm
 
 # Copy the entire frontend folder

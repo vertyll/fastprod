@@ -12,6 +12,7 @@ LICENSE
 **/bin/
 **/out/
 **/*.jar
+!**/gradle/
 **/*.war
 
 ### Development & IDEs ###
