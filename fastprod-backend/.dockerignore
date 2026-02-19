@@ -12,6 +12,7 @@ LICENSE
 **/bin/
 **/out/
 **/*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
 !**/gradle/
 **/*.war
 
