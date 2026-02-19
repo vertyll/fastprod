@@ -1,38 +1,55 @@
-### Global ###
-.git
+### Global / Git ###
+.git/
 .gitignore
 .dockerignore
-Dockerfile
-docker-compose*.yml
-docker/
+.github/
 README.md
 LICENSE
 
 ### Build outputs ###
-**/target/
 **/build/
+**/target/
 **/bin/
 **/out/
-*.jar
-*.war
+**/*.jar
+**/*.war
 
-### Development ###
+### Development & IDEs ###
 **/.idea/
 **/.vscode/
 **/.settings/
+**/*.iml
+**/*.ipr
+**/*.iws
+**/.project
+**/.classpath
 **/*.log
 **/logs/
+**/.env*
 
-### Cache ###
+### Cache & Package Managers ###
 **/.gradle/
 **/.mvn/
 **/.m2/
-
-### Vaadin ###
 **/node_modules/
+**/.npm/
+**/.pnpm-store/
+
+### Frontend / Vaadin / Vite ###
 **/src/main/frontend/generated/
+**/frontend/generated/
+**/frontend-generated/
 **/vite.generated.ts
+**/webpack.generated.js
+**/package-lock.json
+**/pnpm-lock.yaml
+**/types.d.ts
 
 ### OS ###
 **/.DS_Store
 **/Thumbs.db
+
+### Docker ###
+**/Dockerfile
+**/docker-compose*.yml
+**/docker/

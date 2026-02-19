@@ -1,62 +1,44 @@
-# Build artifacts
+### Global / Git ###
+.git/
+.gitignore
+.dockerignore
+.github/
+README.md
+LICENSE
+
+### Build outputs ###
 **/build/
 **/target/
-**/.gradle/
-**/out/
 **/bin/
+**/out/
+**/*.jar
+**/*.war
 
-# IDE files
+### Development & IDEs ###
 **/.idea/
 **/.vscode/
+**/.settings/
 **/*.iml
 **/*.ipr
 **/*.iws
 **/.project
 **/.classpath
-**/.settings/
+**/*.log
+**/logs/
+**/.env*
 
-# OS files
+### Cache & Package Managers ###
+**/.gradle/
+**/.mvn/
+**/.m2/
+**/node_modules/
+
+### OS ###
 **/.DS_Store
 **/Thumbs.db
 
-# Logs
-**/*.log
-**/logs/
-
-# Local env files
-**/.env
-**/.env.local
-**/.env*.local
-
-# Git
-**/.git/
-**/.gitignore
-
-# GitHub
-**/.github/
-
-# Documentation
-**/README.md
-**/docs/
-**/*.md
-
-# Test files
-**/test-results/
-**/coverage/
-
-# Node modules
-**/node_modules/
-
-# Temporary files
-**/tmp/
-**/temp/
-**/*.tmp
-**/*.temp
-**/*.swp
-**/*.swo
-**/*~
-
-# Docker files
+### Docker ###
 **/Dockerfile
 **/docker-compose*.yml
-**/.dockerignore
+**/docker/
+**/docker-entrypoint.sh
