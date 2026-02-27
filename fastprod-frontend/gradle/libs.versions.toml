@@ -7,10 +7,10 @@ vaadin-plugin = "24.9.6"
 spotless = "8.2.1"
 errorprone-plugin = "5.0.0"
 nullaway-plugin = "3.0.0"
-pmd = "7.21.0"
+pmd = "7.22.0"
 
 # Dependencies
-errorprone = "2.47.0"
+errorprone = "2.48.0"
 nullaway = "0.13.1"
 jspecify = "1.0.0"
 google-java-format = "1.33.0"
