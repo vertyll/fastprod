@@ -54,7 +54,8 @@ public class ForgotPasswordView extends VerticalLayout {
                 .set(
                         "background",
                         "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
-                .set("padding", "var(--lumo-space-l)");
+                .set("padding", LUMO_SPACE_M)
+                .set("box-sizing", "border-box");
 
         createView();
     }
@@ -69,6 +70,7 @@ public class ForgotPasswordView extends VerticalLayout {
                 .set("padding", "var(--lumo-space-xl)")
                 .set("max-width", "500px")
                 .set("width", "100%")
+                .set("box-sizing", "border-box")
                 .set(TEXT_ALIGN, CENTER);
 
         Icon icon = VaadinIcon.KEY_O.create();

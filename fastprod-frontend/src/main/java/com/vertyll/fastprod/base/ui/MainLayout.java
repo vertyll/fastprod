@@ -100,6 +100,7 @@ public final class MainLayout extends AppLayout {
 
         HorizontalLayout authButtons = new HorizontalLayout(loginButton, registerButton);
         authButtons.setSpacing(true);
+        authButtons.getStyle().set("flex-shrink", "0");
 
         HorizontalLayout navbar = new HorizontalLayout(logo, authButtons);
         navbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -108,6 +109,8 @@ public final class MainLayout extends AppLayout {
         navbar.setPadding(true);
         navbar.setSpacing(true);
         navbar.addClassNames(LumoUtility.BoxShadow.SMALL, LumoUtility.Background.BASE);
+        navbar.addClassName("public-navbar");
+        navbar.getStyle().set("flex-wrap", "wrap");
 
         return navbar;
     }

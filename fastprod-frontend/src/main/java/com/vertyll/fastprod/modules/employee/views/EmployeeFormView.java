@@ -159,6 +159,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
         HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, cancelButton);
         buttonLayout.setSpacing(true);
+        buttonLayout.getStyle().set("flex-wrap", "wrap");
 
         add(formLayout, buttonLayout);
     }

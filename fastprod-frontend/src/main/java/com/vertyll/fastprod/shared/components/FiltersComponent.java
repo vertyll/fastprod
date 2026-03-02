@@ -35,6 +35,7 @@ public class FiltersComponent extends HorizontalLayout {
         setWidthFull();
         setSpacing(true);
         setPadding(false);
+        addClassName("filters-bar");
         getStyle().set(FLEX_WRAP, "wrap");
         getStyle().set("gap", "var(--lumo-space-s)");
 

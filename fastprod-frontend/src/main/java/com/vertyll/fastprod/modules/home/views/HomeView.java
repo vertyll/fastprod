@@ -63,6 +63,7 @@ public class HomeView extends VerticalLayout {
 
         HorizontalLayout buttonLayout = new HorizontalLayout(loginButton, registerButton);
         buttonLayout.setSpacing(true);
+        buttonLayout.getStyle().set("flex-wrap", "wrap").set("justify-content", "center");
         buttonLayout.addClassNames(LumoUtility.Margin.Top.MEDIUM);
 
         add(title, tagline, buttonLayout);

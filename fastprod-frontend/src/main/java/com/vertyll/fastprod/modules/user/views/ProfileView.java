@@ -84,11 +84,14 @@ public class ProfileView extends VerticalLayout {
 
         HorizontalLayout actions = new HorizontalLayout(changePasswordBtn, changeEmailBtn, editBtn);
         actions.setSpacing(true);
+        actions.getStyle().set("flex-wrap", "wrap");
 
         HorizontalLayout header = new HorizontalLayout(title, actions);
         header.setWidthFull();
         header.setJustifyContentMode(JustifyContentMode.BETWEEN);
         header.setAlignItems(Alignment.CENTER);
+        header.getStyle().set("flex-wrap", "wrap");
+        header.addClassName("page-header");
 
         add(header);
     }

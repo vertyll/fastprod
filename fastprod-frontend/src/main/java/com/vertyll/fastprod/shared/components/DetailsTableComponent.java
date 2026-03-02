@@ -9,18 +9,16 @@ import com.vaadin.flow.component.html.Span;
 
 public class DetailsTableComponent extends Div {
 
-    private static final String DISPLAY = "display";
     private static final String BORDER_STYLE = "1px solid var(--lumo-contrast-10pct)";
 
     private final Map<String, Component> rows = new LinkedHashMap<>();
 
     public DetailsTableComponent() {
+        addClassName("details-table");
         getStyle()
-                .set(DISPLAY, "table")
-                .set("width", "100%")
-                .set("max-width", "600px")
                 .set("border", BORDER_STYLE)
-                .set("border-radius", "var(--lumo-border-radius-m)");
+                .set("border-radius", "var(--lumo-border-radius-m)")
+                .set("overflow", "hidden");
     }
 
     public void addRow(String label, String value) {
@@ -53,26 +51,15 @@ public class DetailsTableComponent extends Div {
 
     private Div createTableRow(String label, Component valueComponent) {
         Div row = new Div();
-        row.getStyle().set(DISPLAY, "table-row");
+        row.addClassName("details-table-row");
 
         Div labelCell = new Div();
         labelCell.setText(label);
-        labelCell
-                .getStyle()
-                .set(DISPLAY, "table-cell")
-                .set("padding", "var(--lumo-space-s)")
-                .set("border-bottom", BORDER_STYLE)
-                .set("font-weight", "500")
-                .set("width", "30%")
-                .set("background", "var(--lumo-contrast-5pct)");
+        labelCell.addClassName("details-table-label");
 
         Div valueCell = new Div();
         valueCell.add(valueComponent);
-        valueCell
-                .getStyle()
-                .set(DISPLAY, "table-cell")
-                .set("padding", "var(--lumo-space-s)")
-                .set("border-bottom", BORDER_STYLE);
+        valueCell.addClassName("details-table-value");
 
         row.add(labelCell, valueCell);
         return row;

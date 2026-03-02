@@ -51,14 +51,16 @@ public class ChangePasswordView extends VerticalLayout {
 
     private void createForm() {
         VerticalLayout formLayout = new VerticalLayout();
-        formLayout.setWidth("400px");
+        formLayout.setMaxWidth("420px");
+        formLayout.setWidth("100%");
         formLayout.setPadding(true);
         formLayout.setSpacing(true);
         formLayout
                 .getStyle()
                 .set("background", "var(--lumo-base-color)")
                 .set("border-radius", "var(--lumo-border-radius-m)")
-                .set("box-shadow", "var(--lumo-box-shadow-xl)");
+                .set("box-shadow", "var(--lumo-box-shadow-xl)")
+                .set("box-sizing", "border-box");
 
         H2 title = new H2("Change Password");
         title.addClassNames(LumoUtility.Margin.Bottom.LARGE);

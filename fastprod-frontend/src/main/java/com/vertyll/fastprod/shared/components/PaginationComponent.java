@@ -31,6 +31,8 @@ public class PaginationComponent extends HorizontalLayout {
     public PaginationComponent() {
         setSpacing(true);
         setAlignItems(Alignment.CENTER);
+        addClassName("pagination-bar");
+        getStyle().set("flex-wrap", "wrap").set("justify-content", "center");
 
         previousButton = createPreviousButton();
         nextButton = createNextButton();

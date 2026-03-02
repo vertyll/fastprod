@@ -84,6 +84,8 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         buttonLayout.setSpacing(true);
         buttonLayout.setWidthFull();
         buttonLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+        buttonLayout.getStyle().set("flex-wrap", "wrap");
+        buttonLayout.addClassName("page-header");
         buttonLayout.add(backButton, new HorizontalLayout(editButton, deleteButton));
 
         titleLabel

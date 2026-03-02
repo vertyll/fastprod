@@ -94,6 +94,8 @@ public class EmployeeListView extends VerticalLayout {
         toolbar.setSpacing(true);
         toolbar.setWidthFull();
         toolbar.setJustifyContentMode(JustifyContentMode.BETWEEN);
+        toolbar.getStyle().set("flex-wrap", "wrap");
+        toolbar.addClassName("employee-toolbar");
         toolbar.add(refreshButton, addButton);
 
         add(toolbar);

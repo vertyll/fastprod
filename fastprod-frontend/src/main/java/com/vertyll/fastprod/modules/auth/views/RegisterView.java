@@ -61,7 +61,8 @@ public class RegisterView extends VerticalLayout {
                 .set(
                         "background",
                         "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
-                .set("padding", "var(--lumo-space-l)");
+                .set("padding", LUMO_SPACE_M)
+                .set("box-sizing", "border-box");
 
         createForm();
     }
@@ -75,7 +76,8 @@ public class RegisterView extends VerticalLayout {
                 .set("box-shadow", "var(--lumo-box-shadow-xl)")
                 .set("padding", "var(--lumo-space-xl)")
                 .set("max-width", "500px")
-                .set("width", "100%");
+                .set("width", "100%")
+                .set("box-sizing", "border-box");
 
         H1 title = new H1(CREATE_ACCOUNT);
         title.getStyle()
@@ -101,7 +103,7 @@ public class RegisterView extends VerticalLayout {
 
         HorizontalLayout nameLayout = new HorizontalLayout(firstNameField, lastNameField);
         nameLayout.setWidthFull();
-        nameLayout.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
+        nameLayout.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M).set("flex-wrap", "wrap");
 
         emailField = new EmailField("Email");
         emailField.setRequiredIndicatorVisible(true);

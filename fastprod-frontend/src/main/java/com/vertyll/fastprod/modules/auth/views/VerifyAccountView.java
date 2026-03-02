@@ -52,7 +52,8 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
                 .set(
                         "background",
                         "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
-                .set("padding", "var(--lumo-space-l)");
+                .set("padding", LUMO_SPACE_M)
+                .set("box-sizing", "border-box");
 
         createView();
     }
@@ -75,6 +76,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
                 .set("padding", "var(--lumo-space-xl)")
                 .set("max-width", "500px")
                 .set("width", "100%")
+                .set("box-sizing", "border-box")
                 .set(TEXT_ALIGN, CENTER);
 
         Icon icon = VaadinIcon.ENVELOPE_O.create();
@@ -112,7 +114,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         codeField
                 .getStyle()
                 .set(MARGIN_BOTTOM, "var(--lumo-space-l)")
-                .set("font-size", "var(--lumo-font-size-xl)")
+                .set("letter-spacing", "0.3em")
                 .set(TEXT_ALIGN, CENTER);
 
         verifyButton = new Button("Verify Account", VaadinIcon.CHECK.create());
