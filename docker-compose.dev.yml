@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:${POSTGRES_VERSION:-17}-alpine
+    image: postgres:17-alpine
     container_name: fastprod-postgre-sql
     restart: always
     ports:
@@ -21,7 +21,7 @@ services:
       start_period: 10s
 
   test-db:
-    image: postgres:${POSTGRES_VERSION:-17}-alpine
+    image: postgres:17-alpine
     container_name: fastprod-postgre-sql-test
     restart: always
     ports:
@@ -40,7 +40,7 @@ services:
       start_period: 10s
 
   mail-dev:
-    image: maildev/maildev:${MAILDEV_VERSION:-latest}
+    image: maildev/maildev:latest
     container_name: fastprod-mail-dev
     restart: always
     ports:
