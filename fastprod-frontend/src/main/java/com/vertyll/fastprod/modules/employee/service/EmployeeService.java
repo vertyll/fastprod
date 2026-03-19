@@ -3,8 +3,6 @@ package com.vertyll.fastprod.modules.employee.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 
 import com.vertyll.fastprod.modules.employee.dto.EmployeeCreateDto;
@@ -15,6 +13,8 @@ import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
+
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j

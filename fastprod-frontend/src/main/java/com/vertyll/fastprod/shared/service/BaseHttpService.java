@@ -6,8 +6,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 
 import com.vertyll.fastprod.shared.dto.ApiResponse;
@@ -15,6 +13,8 @@ import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.dto.PaginatedApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
+
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 public abstract class BaseHttpService {

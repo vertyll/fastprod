@@ -3,12 +3,12 @@ package com.vertyll.fastprod.modules.user.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.vertyll.fastprod.modules.user.dto.*;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
+
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class UserService extends BaseHttpService {

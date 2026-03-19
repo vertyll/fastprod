@@ -5,10 +5,10 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 public class JwtParser {
@@ -37,8 +37,8 @@ public class JwtParser {
                             objectMapper
                                     .getTypeFactory()
                                     .constructCollectionType(List.class, String.class));
-                } else if (rolesNode.isTextual()) {
-                    return List.of(rolesNode.asText());
+                } else if (rolesNode.isString()) {
+                    return List.of(rolesNode.asString());
                 }
             }
             return Collections.emptyList();
@@ -58,7 +58,7 @@ public class JwtParser {
         if (emailNode == null) {
             emailNode = jsonNode.get("email");
         }
-        return emailNode != null ? emailNode.asText() : null;
+        return emailNode != null ? emailNode.asString() : null;
     }
 
     private static JsonNode parsePayload(String token) {
