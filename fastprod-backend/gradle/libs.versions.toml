@@ -8,7 +8,7 @@ nullaway-plugin = "3.0.0"
 pmd = "7.23.0"
 
 # Dependencies
-flyway = "12.2.0"
+flyway = "12.4.0"
 mapstruct = "1.6.3"
 lombok = "1.18.42"
 lombok-mapstruct-binding = "0.2.0"
