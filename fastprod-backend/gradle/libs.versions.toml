@@ -1,14 +1,14 @@
 [versions]
 # Plugins
-spring-boot = "4.0.5"
+spring-boot = "4.0.6"
 spring-dependency-management = "1.1.7"
 spotless = "8.4.0"
 errorprone-plugin = "5.1.0"
 nullaway-plugin = "3.0.0"
-pmd = "7.23.0"
+pmd = "7.24.0"
 
 # Dependencies
-flyway = "12.4.0"
+flyway = "12.5.0"
 mapstruct = "1.6.3"
 lombok = "1.18.42"
 lombok-mapstruct-binding = "0.2.0"
