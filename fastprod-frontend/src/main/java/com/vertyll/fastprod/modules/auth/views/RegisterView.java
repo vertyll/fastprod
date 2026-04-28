@@ -54,14 +54,13 @@ public class RegisterView extends VerticalLayout {
         this.authService = authService;
         this.binder = new Binder<>(FormBuilder.class);
 
-        setSizeFull();
+        setWidthFull();
+        setMinHeight("100vh");
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
         getStyle()
-                .set(
-                        "background",
-                        "linear-gradient(135deg, var(--lumo-contrast-5pct), var(--lumo-contrast-10pct))")
-                .set("padding", LUMO_SPACE_M)
+                .set("background", "var(--lumo-base-color)")
+                .set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
                 .set("box-sizing", "border-box");
 
         createForm();
@@ -73,7 +72,7 @@ public class RegisterView extends VerticalLayout {
         card.getStyle()
                 .set("background", "var(--lumo-base-color)")
                 .set("border-radius", "var(--lumo-border-radius-l)")
-                .set("box-shadow", "var(--lumo-box-shadow-xl)")
+                .set("border", "1px solid var(--lumo-contrast-10pct)")
                 .set("padding", "var(--lumo-space-xl)")
                 .set("max-width", "500px")
                 .set("width", "100%")

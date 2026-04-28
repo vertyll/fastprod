@@ -45,6 +45,9 @@ dependencies {
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.actuator)
 
+    // Development Only
+    developmentOnly("com.vaadin:vaadin-dev")
+
     // Compile Only
     compileOnly(libs.lombok)
     compileOnly(libs.jspecify)
