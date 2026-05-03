@@ -32,7 +32,7 @@ public final class FileUtils {
             }
 
             return Files.readAllBytes(resolvedPath);
-        } catch (IOException e) {
+        } catch (IOException _) {
             log.warn("No file found in the path {}", fileUrl);
             return new byte[0];
         }
