@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.sharedinfrastructure.exception;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -8,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,13 +102,13 @@ class GlobalExceptionHandlerTest {
 
         Map<String, List<String>> errors = body.getErrors();
         assertEquals(2, errors.size());
-        assertEquals(2, Objects.requireNonNull(errors.get("password")).size());
-        assertEquals(1, Objects.requireNonNull(errors.get("email")).size());
+        assertEquals(2, requireNonNull(errors.get("password")).size());
+        assertEquals(1, requireNonNull(errors.get("email")).size());
         assertTrue(
-                Objects.requireNonNull(errors.get("password"))
+                requireNonNull(errors.get("password"))
                         .contains("Password must be at least 8 characters"));
         assertTrue(
-                Objects.requireNonNull(errors.get("password"))
+                requireNonNull(errors.get("password"))
                         .contains("Password must contain an uppercase letter"));
         assertEquals(List.of("Invalid email format"), errors.get("email"));
     }

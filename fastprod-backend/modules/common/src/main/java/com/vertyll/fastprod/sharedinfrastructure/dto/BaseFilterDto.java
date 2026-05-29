@@ -1,6 +1,6 @@
 package com.vertyll.fastprod.sharedinfrastructure.dto;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
@@ -39,13 +39,11 @@ public record BaseFilterDto(
     }
 
     public Pageable toPageable() {
-        int pageValue = Objects.requireNonNull(page, "page cannot be null after normalization");
-        int sizeValue = Objects.requireNonNull(size, "size cannot be null after normalization");
-        String sortByValue =
-                Objects.requireNonNull(sortBy, "sortBy cannot be null after normalization");
+        int pageValue = requireNonNull(page, "page cannot be null after normalization");
+        int sizeValue = requireNonNull(size, "size cannot be null after normalization");
+        String sortByValue = requireNonNull(sortBy, "sortBy cannot be null after normalization");
         String sortDirectionValue =
-                Objects.requireNonNull(
-                        sortDirection, "sortDirection cannot be null after normalization");
+                requireNonNull(sortDirection, "sortDirection cannot be null after normalization");
 
         Sort.Direction direction =
                 "DESC".equals(sortDirectionValue) ? Sort.Direction.DESC : Sort.Direction.ASC;

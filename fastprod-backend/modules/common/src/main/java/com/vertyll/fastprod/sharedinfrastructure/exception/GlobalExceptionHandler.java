@@ -1,11 +1,12 @@
 package com.vertyll.fastprod.sharedinfrastructure.exception;
 
+import static java.util.Objects.requireNonNullElse;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleApiException(ApiException ex) {
         return ApiResponse.buildResponse(
                 null,
-                Objects.requireNonNullElse(ex.getMessage(), AN_UNEXPECTED_ERROR_OCCURRED),
+                requireNonNullElse(ex.getMessage(), AN_UNEXPECTED_ERROR_OCCURRED),
                 ex.getStatus());
     }
 
@@ -60,7 +61,7 @@ public class GlobalExceptionHandler {
                                             ? error.getDefaultMessage()
                                             : INVALID_VALUE;
 
-                            errors.computeIfAbsent(field, k -> new ArrayList<>()).add(message);
+                            errors.computeIfAbsent(field, _ -> new ArrayList<>()).add(message);
                         });
 
         ValidationErrorResponse response =

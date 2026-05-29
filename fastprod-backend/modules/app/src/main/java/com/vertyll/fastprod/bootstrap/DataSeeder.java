@@ -1,6 +1,7 @@
 package com.vertyll.fastprod.bootstrap;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -83,7 +84,7 @@ public class DataSeeder implements ApplicationRunner {
                                         ? DEFAULT_ADMIN_LAST_NAME
                                         : adminProps.lastName())
                         .email(email)
-                        .password(Objects.requireNonNull(passwordEncoder.encode(nonNullPassword)))
+                        .password(requireNonNull(passwordEncoder.encode(nonNullPassword)))
                         .active(true)
                         .verified(true)
                         .build();
