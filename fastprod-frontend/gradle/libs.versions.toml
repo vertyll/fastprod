@@ -16,7 +16,7 @@ jspecify = "1.0.0"
 google-java-format = "1.33.0"
 beta-checker = "1.0"
 lombok = "1.18.42"
-spotbugs = "6.4.8"
+spotbugs = "6.5.5"
 spotbugs-annotations = "4.9.8"
 findsecbugs = "1.14.0"
 
