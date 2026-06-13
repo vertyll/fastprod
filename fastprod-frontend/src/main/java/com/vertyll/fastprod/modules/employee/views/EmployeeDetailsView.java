@@ -101,8 +101,8 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         loadingSpinner.show();
         try {
             ApiResponse<EmployeeResponseDto> response = employeeService.getEmployee(id);
-            if (response.data() != null) {
-                EmployeeResponseDto employee = response.data();
+            EmployeeResponseDto employee = response.data();
+            if (employee != null) {
                 displayEmployee(employee);
             }
         } catch (Exception e) {

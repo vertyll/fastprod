@@ -167,8 +167,8 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
     private void loadEmployee(Long id) {
         try {
             ApiResponse<EmployeeResponseDto> response = employeeService.getEmployee(id);
-            if (response.data() != null) {
-                EmployeeResponseDto employee = response.data();
+            EmployeeResponseDto employee = response.data();
+            if (employee != null) {
                 EmployeeFormData formData = new EmployeeFormData();
                 formData.setFirstName(employee.firstName());
                 formData.setLastName(employee.lastName());

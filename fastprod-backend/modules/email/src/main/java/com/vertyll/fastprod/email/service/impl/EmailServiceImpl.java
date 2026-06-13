@@ -47,7 +47,6 @@ class EmailServiceImpl implements EmailService {
             throw new IllegalArgumentException(EMAIL_TEMPLATE_CANNOT_BE_NULL);
         }
 
-        String templateName = emailTemplate.getName();
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MULTIPART_MODE_MIXED, UTF_8.name());
 
@@ -61,6 +60,8 @@ class EmailServiceImpl implements EmailService {
         helper.setFrom(mailProperties.from());
         helper.setTo(to);
         helper.setSubject(subject);
+
+        String templateName = emailTemplate.getName();
 
         try {
             String template = templateEngine.process(templateName, context);

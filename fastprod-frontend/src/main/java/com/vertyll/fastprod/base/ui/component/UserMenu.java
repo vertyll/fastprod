@@ -91,8 +91,8 @@ public class UserMenu extends HorizontalLayout {
     private void loadUserData(Span emailSpan) {
         try {
             ApiResponse<UserProfileDto> response = userService.getCurrentUser();
-            if (response.data() != null) {
-                UserProfileDto user = response.data();
+            UserProfileDto user = response.data();
+            if (user != null) {
                 String fullName = user.firstName() + " " + user.lastName();
                 avatar.setName(fullName);
                 userName.setText(fullName);
