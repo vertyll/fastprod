@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.modules.auth.service.AuthService;
+
 import com.vaadin.flow.server.VaadinSession;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
-import com.vertyll.fastprod.modules.auth.service.AuthService;
 
 @Service
 @Slf4j
@@ -34,8 +34,7 @@ public class SecurityService {
             List<String> roles = JwtParser.extractRoles(authResponse.token());
             session.setAttribute(ROLES_SESSION_KEY, roles);
 
-            log.debug(
-                    "User logged in with token type: {} and roles: {}", authResponse.type(), roles);
+            log.debug("User logged in with token type: {} and roles: {}", authResponse.type(), roles);
         }
     }
 

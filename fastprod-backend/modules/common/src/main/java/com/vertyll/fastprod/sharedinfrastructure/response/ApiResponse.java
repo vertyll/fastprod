@@ -14,14 +14,8 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class ApiResponse<T> extends BaseResponse<T> {
 
-    public static <T> ResponseEntity<ApiResponse<T>> buildResponse(
-            @Nullable T data, String message, HttpStatus status) {
-        ApiResponse<T> response =
-                ApiResponse.<T>builder()
-                        .data(data)
-                        .message(message)
-                        .timestamp(LocalDateTime.now(ZoneOffset.UTC))
-                        .build();
+    public static <T> ResponseEntity<ApiResponse<T>> buildResponse(@Nullable T data, String message, HttpStatus status) {
+        ApiResponse<T> response = ApiResponse.<T>builder().data(data).message(message).timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
 
         return new ResponseEntity<>(response, status);
     }

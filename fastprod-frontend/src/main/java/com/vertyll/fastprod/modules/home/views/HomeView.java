@@ -1,5 +1,8 @@
 package com.vertyll.fastprod.modules.home.views;
 
+import com.vertyll.fastprod.base.ui.MainLayout;
+import com.vertyll.fastprod.shared.security.SecurityService;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
@@ -11,9 +14,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-
-import com.vertyll.fastprod.base.ui.MainLayout;
-import com.vertyll.fastprod.shared.security.SecurityService;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Dashboard | FastProd")
@@ -36,9 +36,7 @@ public class HomeView extends VerticalLayout {
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
 
         H3 welcome = new H3("Welcome to FastProd!");
-        Paragraph description =
-                new Paragraph(
-                        "This is your main dashboard. Navigate using the side menu to access different features.");
+        Paragraph description = new Paragraph("This is your main dashboard. Navigate using the side menu to access different features.");
 
         add(title, welcome, description);
     }

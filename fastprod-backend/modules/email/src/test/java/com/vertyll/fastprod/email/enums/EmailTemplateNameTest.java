@@ -1,8 +1,8 @@
 package com.vertyll.fastprod.email.enums;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class EmailTemplateNameTest {
 
@@ -68,9 +68,7 @@ class EmailTemplateNameTest {
     @Test
     void valueOf_WithInvalidName_ShouldThrowException() {
         // when & then
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> EmailTemplateName.valueOf("INVALID_TEMPLATE"));
+        assertThrows(IllegalArgumentException.class, () -> EmailTemplateName.valueOf("INVALID_TEMPLATE"));
     }
 
     @Test
@@ -86,9 +84,7 @@ class EmailTemplateNameTest {
     void allTemplates_ShouldHaveUnderscoreInName() {
         // when & then
         for (EmailTemplateName template : EmailTemplateName.values()) {
-            assertTrue(
-                    template.getName().contains("_"),
-                    "Template name should contain underscore: " + template.getName());
+            assertTrue(template.getName().contains("_"), "Template name should contain underscore: " + template.getName());
         }
     }
 

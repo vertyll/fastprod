@@ -1,10 +1,7 @@
 package com.vertyll.fastprod.email.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,24 +20,33 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import com.vertyll.fastprod.email.enums.EmailTemplateName;
 import com.vertyll.fastprod.sharedinfrastructure.config.MailProperties;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EmailServiceTest {
 
-    @Mock private JavaMailSender mailSender;
+    @Mock
+    private JavaMailSender mailSender;
 
-    @Mock private SpringTemplateEngine templateEngine;
+    @Mock
+    private SpringTemplateEngine templateEngine;
 
-    @Mock private MailProperties mailProperties;
+    @Mock
+    private MailProperties mailProperties;
 
-    @InjectMocks private EmailServiceImpl emailService;
+    @InjectMocks
+    private EmailServiceImpl emailService;
 
-    @Mock private MimeMessage mimeMessage;
+    @Mock
+    private MimeMessage mimeMessage;
 
-    @Captor private ArgumentCaptor<Context> contextCaptor;
+    @Captor
+    private ArgumentCaptor<Context> contextCaptor;
 
     private static final String TEST_EMAIL = "test@example.com";
     private static final String TEST_USERNAME = "testUser";
@@ -51,8 +57,7 @@ class EmailServiceTest {
     void setUp() {
         when(mailProperties.from()).thenReturn("test@example.com");
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
-        when(templateEngine.process(anyString(), any(Context.class)))
-                .thenReturn("<html>Test Template</html>");
+        when(templateEngine.process(anyString(), any(Context.class))).thenReturn("<html>Test Template</html>");
     }
 
     @Test
@@ -77,12 +82,10 @@ class EmailServiceTest {
     @Test
     void sendEmail_WhenTemplateNameNull_ShouldThrowException() {
         // when & then
-        IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () ->
-                                emailService.sendEmail(
-                                        TEST_EMAIL, TEST_USERNAME, null, TEST_CODE, TEST_SUBJECT));
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, null, TEST_CODE, TEST_SUBJECT)
+        );
 
         assertEquals("Email template cannot be null", exception.getMessage());
         verify(templateEngine, never()).process(anyString(), any(Context.class));
@@ -138,12 +141,7 @@ class EmailServiceTest {
         String customCode = "CUSTOM123";
 
         // when
-        emailService.sendEmail(
-                TEST_EMAIL,
-                TEST_USERNAME,
-                EmailTemplateName.ACTIVATE_ACCOUNT,
-                customCode,
-                TEST_SUBJECT);
+        emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, EmailTemplateName.ACTIVATE_ACCOUNT, customCode, TEST_SUBJECT);
 
         // then
         verify(templateEngine).process(anyString(), contextCaptor.capture());
@@ -157,12 +155,7 @@ class EmailServiceTest {
         String customUsername = "customUser";
 
         // when
-        emailService.sendEmail(
-                TEST_EMAIL,
-                customUsername,
-                EmailTemplateName.ACTIVATE_ACCOUNT,
-                TEST_CODE,
-                TEST_SUBJECT);
+        emailService.sendEmail(TEST_EMAIL, customUsername, EmailTemplateName.ACTIVATE_ACCOUNT, TEST_CODE, TEST_SUBJECT);
 
         // then
         verify(templateEngine).process(anyString(), contextCaptor.capture());

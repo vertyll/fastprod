@@ -7,10 +7,12 @@ import lombok.Builder;
 
 @Builder
 public record SessionInfoDto(
-        Long id,
-        String deviceInfo,
-        String ipAddress,
-        String userAgent,
-        LocalDateTime createdAt,
-        Instant lastUsedAt,
-        Instant expiresAt) {}
+    Long id,
+    String deviceInfo,
+    String ipAddress,
+    String userAgent,
+    LocalDateTime createdAt,
+    Instant lastUsedAt,
+    Instant expiresAt
+) {
+}

@@ -18,29 +18,31 @@ public class LoadingSpinner extends Div {
         overlay.addClassName("loading-overlay");
 
         if (fullScreen) {
-            overlay.getStyle()
-                    .set("position", "fixed")
-                    .set("top", "0")
-                    .set("left", "0")
-                    .set("width", "100vw")
-                    .set("height", "100vh")
-                    .set("background", "rgba(255, 255, 255, 0.8)")
-                    .set("z-index", "9999")
-                    .set("display", "flex")
-                    .set("align-items", CENTER)
-                    .set("justify-content", CENTER);
+            overlay
+                .getStyle()
+                .set("position", "fixed")
+                .set("top", "0")
+                .set("left", "0")
+                .set("width", "100vw")
+                .set("height", "100vh")
+                .set("background", "rgba(255, 255, 255, 0.8)")
+                .set("z-index", "9999")
+                .set("display", "flex")
+                .set("align-items", CENTER)
+                .set("justify-content", CENTER);
         } else {
-            overlay.getStyle()
-                    .set("position", "absolute")
-                    .set("top", "0")
-                    .set("left", "0")
-                    .set("width", "100%")
-                    .set("height", "100%")
-                    .set("background", "rgba(255, 255, 255, 0.8)")
-                    .set("z-index", "100")
-                    .set("display", "flex")
-                    .set("align-items", CENTER)
-                    .set("justify-content", CENTER);
+            overlay
+                .getStyle()
+                .set("position", "absolute")
+                .set("top", "0")
+                .set("left", "0")
+                .set("width", "100%")
+                .set("height", "100%")
+                .set("background", "rgba(255, 255, 255, 0.8)")
+                .set("z-index", "100")
+                .set("display", "flex")
+                .set("align-items", CENTER)
+                .set("justify-content", CENTER);
         }
 
         ProgressBar progressBar = new ProgressBar();

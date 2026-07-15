@@ -1,8 +1,8 @@
 package com.vertyll.fastprod.file.service;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.annotation.Nonnull;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @FunctionalInterface
 public interface FileStorageService {

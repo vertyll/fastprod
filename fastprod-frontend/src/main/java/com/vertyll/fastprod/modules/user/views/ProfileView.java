@@ -1,5 +1,15 @@
 package com.vertyll.fastprod.modules.user.views;
 
+import jakarta.annotation.security.PermitAll;
+
+import com.vertyll.fastprod.base.ui.MainLayout;
+import com.vertyll.fastprod.modules.user.dto.ProfileUpdateDto;
+import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
+import com.vertyll.fastprod.modules.user.service.UserService;
+import com.vertyll.fastprod.shared.components.DetailsTableComponent;
+import com.vertyll.fastprod.shared.components.LoadingSpinner;
+import com.vertyll.fastprod.shared.dto.ApiResponse;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -19,16 +29,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.base.ui.MainLayout;
-import com.vertyll.fastprod.modules.user.dto.ProfileUpdateDto;
-import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
-import com.vertyll.fastprod.modules.user.service.UserService;
-import com.vertyll.fastprod.shared.components.DetailsTableComponent;
-import com.vertyll.fastprod.shared.components.LoadingSpinner;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
-
-import jakarta.annotation.security.PermitAll;
 
 @Route(value = "profile", layout = MainLayout.class)
 @PageTitle("My Profile | FastProd")
@@ -71,8 +71,7 @@ public class ProfileView extends VerticalLayout {
 
         Button changePasswordBtn = new Button("Change Password", VaadinIcon.KEY.create());
         changePasswordBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        changePasswordBtn.addClickListener(
-                _ -> UI.getCurrent().navigate("profile/change-password"));
+        changePasswordBtn.addClickListener(_ -> UI.getCurrent().navigate("profile/change-password"));
 
         Button changeEmailBtn = new Button("Change Email", VaadinIcon.ENVELOPE.create());
         changeEmailBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
@@ -104,10 +103,10 @@ public class ProfileView extends VerticalLayout {
         detailsLayout.setSpacing(true);
         detailsLayout.setPadding(true);
         detailsLayout
-                .getStyle()
-                .set("background", "var(--lumo-base-color)")
-                .set("border-radius", "var(--lumo-border-radius-m)")
-                .set("box-shadow", "var(--lumo-box-shadow-s)");
+            .getStyle()
+            .set("background", "var(--lumo-base-color)")
+            .set("border-radius", "var(--lumo-border-radius-m)")
+            .set("box-shadow", "var(--lumo-box-shadow-s)");
 
         detailsContainer = new Div(detailsLayout);
         detailsContainer.setWidthFull();
@@ -121,8 +120,7 @@ public class ProfileView extends VerticalLayout {
 
     private Div createEditForm() {
         FormLayout formLayout = new FormLayout();
-        formLayout.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("500px", 2));
+        formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("500px", 2));
 
         firstNameField = new TextField("First Name");
         firstNameField.setRequiredIndicatorVisible(true);
@@ -130,13 +128,11 @@ public class ProfileView extends VerticalLayout {
         lastNameField = new TextField("Last Name");
         lastNameField.setRequiredIndicatorVisible(true);
 
-        binder.forField(firstNameField)
-                .asRequired("First name is required")
-                .bind(ProfileUpdateDto::firstName, (_, _) -> {});
+        binder.forField(firstNameField).asRequired("First name is required").bind(ProfileUpdateDto::firstName, (_, _) -> {
+        });
 
-        binder.forField(lastNameField)
-                .asRequired("Last name is required")
-                .bind(ProfileUpdateDto::lastName, (_, _) -> {});
+        binder.forField(lastNameField).asRequired("Last name is required").bind(ProfileUpdateDto::lastName, (_, _) -> {
+        });
 
         formLayout.add(firstNameField, lastNameField);
 
@@ -154,10 +150,11 @@ public class ProfileView extends VerticalLayout {
         VerticalLayout form = new VerticalLayout(formLayout, buttons);
         form.setSpacing(true);
         form.setPadding(true);
-        form.getStyle()
-                .set("background", "var(--lumo-base-color)")
-                .set("border-radius", "var(--lumo-border-radius-m)")
-                .set("box-shadow", "var(--lumo-box-shadow-s)");
+        form
+            .getStyle()
+            .set("background", "var(--lumo-base-color)")
+            .set("border-radius", "var(--lumo-border-radius-m)")
+            .set("box-shadow", "var(--lumo-box-shadow-s)");
 
         Div container = new Div(form);
         container.setWidthFull();
@@ -187,10 +184,7 @@ public class ProfileView extends VerticalLayout {
         detailsTable.addRow("Roles", rolesText);
 
         Span verifiedBadge = new Span(currentUser.isVerified() ? "Verified" : "Not Verified");
-        verifiedBadge
-                .getElement()
-                .getThemeList()
-                .add(currentUser.isVerified() ? "badge success" : "badge error");
+        verifiedBadge.getElement().getThemeList().add(currentUser.isVerified() ? "badge success" : "badge error");
         detailsTable.addRow("Status", verifiedBadge);
     }
 
@@ -210,8 +204,7 @@ public class ProfileView extends VerticalLayout {
     private void handleSave() {
         loadingSpinner.show();
         try {
-            ProfileUpdateDto dto =
-                    new ProfileUpdateDto(firstNameField.getValue(), lastNameField.getValue());
+            ProfileUpdateDto dto = new ProfileUpdateDto(firstNameField.getValue(), lastNameField.getValue());
 
             if (binder.validate().isOk()) {
                 ApiResponse<UserProfileDto> response = userService.updateProfile(dto);
@@ -219,8 +212,7 @@ public class ProfileView extends VerticalLayout {
                     currentUser = response.data();
                     updateDetailsView();
                     hideEditForm();
-                    showNotification(
-                            "Profile updated successfully", NotificationVariant.LUMO_SUCCESS);
+                    showNotification("Profile updated successfully", NotificationVariant.LUMO_SUCCESS);
                 }
             }
         } catch (Exception e) {
@@ -239,10 +231,7 @@ public class ProfileView extends VerticalLayout {
 
         Div text = new Div();
         text.setText(message);
-        text.getStyle()
-                .set("white-space", "normal")
-                .set("max-width", "400px")
-                .set("text-align", "center");
+        text.getStyle().set("white-space", "normal").set("max-width", "400px").set("text-align", "center");
 
         notification.add(text);
         notification.open();

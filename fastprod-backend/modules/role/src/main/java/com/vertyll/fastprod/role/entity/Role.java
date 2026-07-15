@@ -2,12 +2,12 @@ package com.vertyll.fastprod.role.entity;
 
 import java.io.Serial;
 
-import lombok.*;
+import jakarta.persistence.*;
 
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
-import jakarta.persistence.*;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,16 +16,16 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "role",
-        uniqueConstraints = {@UniqueConstraint(name = "uk_role_name", columnNames = "name")},
-        indexes = {
-            @Index(name = "idx_role_is_active", columnList = "is_active"),
+    name = "role",
+    uniqueConstraints = {@UniqueConstraint(name = "uk_role_name", columnNames = "name")},
+    indexes = {@Index(name = "idx_role_is_active", columnList = "is_active"),
             @Index(name = "idx_role_created_at", columnList = "created_at"),
-            @Index(name = "idx_role_name_is_active", columnList = "name, is_active")
-        })
+            @Index(name = "idx_role_name_is_active", columnList = "name, is_active")}
+)
 public class Role extends BaseEntity {
 
-    @Serial private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Column(nullable = false, unique = true)
     @Enumerated(EnumType.STRING)

@@ -5,4 +5,5 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(FileUploadProperties.class)
-public class FileConfig {}
+public class FileConfig {
+}

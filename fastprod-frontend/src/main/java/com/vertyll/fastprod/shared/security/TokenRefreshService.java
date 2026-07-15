@@ -4,13 +4,13 @@ import java.time.Instant;
 
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.config.SecurityProperties;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -39,9 +39,7 @@ public class TokenRefreshService {
         boolean shouldRefresh = refreshThreshold.isAfter(tokenExpirationTime);
 
         if (shouldRefresh) {
-            log.debug(
-                    "Token should be refreshed. Current time + {}ms is after expiration time",
-                    refreshBeforeMs);
+            log.debug("Token should be refreshed. Current time + {}ms is after expiration time", refreshBeforeMs);
         }
 
         return shouldRefresh;

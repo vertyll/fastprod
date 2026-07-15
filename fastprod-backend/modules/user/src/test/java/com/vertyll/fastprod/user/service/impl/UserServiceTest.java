@@ -1,10 +1,5 @@
 package com.vertyll.fastprod.user.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -35,25 +30,36 @@ import com.vertyll.fastprod.user.repository.UserRepository;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 @SuppressFBWarnings(
-        value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD"},
-        justification = "Test class: unused fields and test passwords are safe")
+    value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD"},
+    justification = "Test class: unused fields and test passwords are safe"
+)
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock private UserRepository userRepository;
+    @Mock
+    private UserRepository userRepository;
 
-    @Mock private RoleService roleService;
+    @Mock
+    private RoleService roleService;
 
-    @Mock private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Spy
     @SuppressWarnings("UnusedVariable")
     private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
-    @InjectMocks private UserServiceImpl userService;
+    @InjectMocks
+    private UserServiceImpl userService;
 
-    @Captor private ArgumentCaptor<User> userCaptor;
+    @Captor
+    private ArgumentCaptor<User> userCaptor;
 
     private UserCreateDto createDto;
     private UserUpdateDto updateDto;
@@ -67,29 +73,22 @@ class UserServiceTest {
 
         adminRole = Role.builder().name(RoleType.ADMIN).description("Admin role").build();
 
-        createDto =
-                new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
+        createDto = new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
 
-        updateDto =
-                new UserUpdateDto(
-                        "John Updated",
-                        "Doe Updated",
-                        "john.updated@example.com",
-                        null,
-                        Set.of("USER", "ADMIN"));
+        updateDto = new UserUpdateDto("John Updated", "Doe Updated", "john.updated@example.com", null, Set.of("USER", "ADMIN"));
 
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
 
-        user =
-                User.builder()
-                        .firstName("John")
-                        .lastName("Doe")
-                        .email("john@example.com")
-                        .password("encodedPassword")
-                        .roles(roles)
-                        .verified(true)
-                        .build();
+        user = User
+            .builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john@example.com")
+            .password("encodedPassword")
+            .roles(roles)
+            .verified(true)
+            .build();
     }
 
     @Test
@@ -121,8 +120,7 @@ class UserServiceTest {
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> userService.createUser(createDto));
+        ApiException exception = assertThrows(ApiException.class, () -> userService.createUser(createDto));
 
         assertEquals("Email already exists", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -159,8 +157,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> userService.updateUser(1L, updateDto));
+        ApiException exception = assertThrows(ApiException.class, () -> userService.updateUser(1L, updateDto));
 
         assertEquals("User not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -190,8 +187,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> userService.getUserById(1L));
+        ApiException exception = assertThrows(ApiException.class, () -> userService.getUserById(1L));
 
         assertEquals("User not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -204,8 +200,7 @@ class UserServiceTest {
         when(roleService.getOrCreateDefaultRole(RoleType.ADMIN)).thenReturn(adminRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        UserUpdateDto updateRequest =
-                new UserUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
+        UserUpdateDto updateRequest = new UserUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
 
         // when
         UserResponseDto result = userService.updateUser(1L, updateRequest);
@@ -222,8 +217,7 @@ class UserServiceTest {
     @Test
     void createUser_WhenNoRolesProvided_ShouldCreateUserWithDefaultRole() {
         // given
-        UserCreateDto createDtoWithoutRoles =
-                new UserCreateDto("Jane", "Doe", "jane@example.com", "password123", null);
+        UserCreateDto createDtoWithoutRoles = new UserCreateDto("Jane", "Doe", "jane@example.com", "password123", null);
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -241,8 +235,7 @@ class UserServiceTest {
     @Test
     void createUser_WhenEmptyRolesProvided_ShouldCreateUserWithDefaultRole() {
         // given
-        UserCreateDto createDtoWithEmptyRoles =
-                new UserCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
+        UserCreateDto createDtoWithEmptyRoles = new UserCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -331,8 +324,7 @@ class UserServiceTest {
     @Test
     void findByEmailWithRoles_WhenUserDoesNotExist_ShouldReturnEmpty() {
         // given
-        when(userRepository.findByEmailWithRoles("nonexistent@example.com"))
-                .thenReturn(Optional.empty());
+        when(userRepository.findByEmailWithRoles("nonexistent@example.com")).thenReturn(Optional.empty());
 
         // when
         Optional<User> result = userService.findByEmailWithRoles("nonexistent@example.com");

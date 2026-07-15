@@ -24,14 +24,9 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
         log.debug("Navigation to: {}, authenticated: {}", targetLocation, isAuthenticated);
 
         // Public routes that don't require authentication
-        boolean isPublicRoute =
-                LOGIN_ROUTE.equals(targetLocation)
-                        || "register".equals(targetLocation)
-                        || "verify-account".equals(targetLocation)
-                        || targetLocation.startsWith("verify-account/")
-                        || "forgot-password".equals(targetLocation)
-                        || targetLocation.startsWith("reset-password")
-                        || targetLocation.isEmpty();
+        boolean isPublicRoute = LOGIN_ROUTE.equals(targetLocation) || "register".equals(targetLocation)
+                || "verify-account".equals(targetLocation) || targetLocation.startsWith("verify-account/")
+                || "forgot-password".equals(targetLocation) || targetLocation.startsWith("reset-password") || targetLocation.isEmpty();
 
         // If trying to access protected route without authentication
         if (!isAuthenticated && !isPublicRoute) {
@@ -41,24 +36,18 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
         }
 
         // If authenticated and trying to access login/register, redirect to home
-        if (isAuthenticated
-                && (LOGIN_ROUTE.equals(targetLocation) || "register".equals(targetLocation))) {
+        if (isAuthenticated && (LOGIN_ROUTE.equals(targetLocation) || "register".equals(targetLocation))) {
             log.info("Already authenticated. Redirecting to home.");
             event.rerouteTo("");
             return;
         }
 
         // Check role-based access for employees routes
-        if (isAuthenticated
-                && targetLocation.startsWith("employees")
-                && !securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
+        if (isAuthenticated && targetLocation.startsWith("employees") && !securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
             log.warn("Access denied to {} for user without required roles", targetLocation);
 
             Notification notification =
-                    Notification.show(
-                            "You do not have permission to access this page",
-                            5000,
-                            Notification.Position.TOP_CENTER);
+                    Notification.show("You do not have permission to access this page", 5000, Notification.Position.TOP_CENTER);
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
 
             event.rerouteTo("");

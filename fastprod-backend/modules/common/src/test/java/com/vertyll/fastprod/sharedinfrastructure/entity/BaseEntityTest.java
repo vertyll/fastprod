@@ -1,21 +1,22 @@
 package com.vertyll.fastprod.sharedinfrastructure.entity;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.Serial;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BaseEntityTest {
 
     private static final class TestEntity extends BaseEntity {
-        @Serial private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = 1L;
     }
 
     @Test
@@ -27,7 +28,7 @@ class BaseEntityTest {
         assertTrue(clazz.isAnnotationPresent(MappedSuperclass.class));
         assertTrue(clazz.isAnnotationPresent(EntityListeners.class));
         EntityListeners entityListeners = clazz.getAnnotation(EntityListeners.class);
-        assertArrayEquals(new Class[] {AuditingEntityListener.class}, entityListeners.value());
+        assertArrayEquals(new Class[]{AuditingEntityListener.class}, entityListeners.value());
     }
 
     @Test

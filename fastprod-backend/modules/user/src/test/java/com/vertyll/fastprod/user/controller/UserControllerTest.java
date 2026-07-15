@@ -1,13 +1,5 @@
 package com.vertyll.fastprod.user.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -33,6 +25,14 @@ import com.vertyll.fastprod.user.service.UserService;
 
 import tools.jackson.databind.ObjectMapper;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
@@ -57,26 +57,23 @@ class UserControllerTest {
         validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
-        mockMvc =
-                MockMvcBuilders.standaloneSetup(userController)
-                        .setControllerAdvice(new GlobalExceptionHandler())
-                        .setValidator(validator)
-                        .build();
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(userController)
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .setValidator(validator)
+            .build();
 
-        createDto =
-                new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
+        createDto = new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
 
-        updateDto =
-                new UserUpdateDto(
-                        "John Updated",
-                        "Doe Updated",
-                        "john.updated@example.com",
-                        null, // password can be null for updates
-                        Set.of("USER", "ADMIN"));
+        updateDto = new UserUpdateDto(
+            "John Updated",
+            "Doe Updated",
+            "john.updated@example.com",
+            null, // password can be null for updates
+            Set.of("USER", "ADMIN")
+        );
 
-        responseDto =
-                new UserResponseDto(
-                        1L, "John", "Doe", "john@example.com", Set.of(RoleType.USER), true);
+        responseDto = new UserResponseDto(1L, "John", "Doe", "john@example.com", Set.of(RoleType.USER), true);
     }
 
     @AfterEach
@@ -92,15 +89,13 @@ class UserControllerTest {
         when(userService.createUser(any(UserCreateDto.class))).thenReturn(responseDto);
 
         // when & then
-        mockMvc.perform(
-                        post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(createDto)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.firstName").value("John"))
-                .andExpect(jsonPath("$.message").value("User created successfully"));
+        mockMvc
+            .perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createDto)))
+            .andDo(print())
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.id").value(1))
+            .andExpect(jsonPath("$.data.firstName").value("John"))
+            .andExpect(jsonPath("$.message").value("User created successfully"));
 
         verify(userService).createUser(any(UserCreateDto.class));
     }
@@ -108,22 +103,20 @@ class UserControllerTest {
     @Test
     void createUser_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
         // given
-        UserCreateDto invalidCreateDto =
-                new UserCreateDto(
-                        "John",
-                        "Doe",
-                        "invalid-email", // invalid email format
-                        "password123",
-                        Set.of("USER"));
+        UserCreateDto invalidCreateDto = new UserCreateDto(
+            "John",
+            "Doe",
+            "invalid-email", // invalid email format
+            "password123",
+            Set.of("USER")
+        );
 
         // when & then
-        mockMvc.perform(
-                        post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidCreateDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidCreateDto)))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(userService, never()).createUser(any(UserCreateDto.class));
     }
@@ -134,13 +127,11 @@ class UserControllerTest {
         when(userService.updateUser(anyLong(), any(UserUpdateDto.class))).thenReturn(responseDto);
 
         // when & then
-        mockMvc.perform(
-                        put("/users/1")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(updateDto)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("User updated successfully"));
+        mockMvc
+            .perform(put("/users/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("User updated successfully"));
 
         verify(userService).updateUser(eq(1L), any(UserUpdateDto.class));
     }
@@ -148,18 +139,14 @@ class UserControllerTest {
     @Test
     void updateUser_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND))
-                .when(userService)
-                .updateUser(anyLong(), any(UserUpdateDto.class));
+        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND)).when(userService).updateUser(anyLong(), any(UserUpdateDto.class));
 
         // when & then
-        mockMvc.perform(
-                        put("/users/1")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(updateDto)))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("User not found"));
+        mockMvc
+            .perform(put("/users/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("User not found"));
     }
 
     @Test
@@ -168,12 +155,13 @@ class UserControllerTest {
         when(userService.getUserById(1L)).thenReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/users/1"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.firstName").value("John"))
-                .andExpect(jsonPath("$.message").value("User retrieved successfully"));
+        mockMvc
+            .perform(get("/users/1"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.id").value(1))
+            .andExpect(jsonPath("$.data.firstName").value("John"))
+            .andExpect(jsonPath("$.message").value("User retrieved successfully"));
 
         verify(userService).getUserById(1L);
     }
@@ -181,13 +169,13 @@ class UserControllerTest {
     @Test
     void getUser_WhenNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        when(userService.getUserById(1L))
-                .thenThrow(new ApiException("User not found", HttpStatus.NOT_FOUND));
+        when(userService.getUserById(1L)).thenThrow(new ApiException("User not found", HttpStatus.NOT_FOUND));
 
         // when & then
-        mockMvc.perform(get("/users/1"))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("User not found"));
+        mockMvc
+            .perform(get("/users/1"))
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("User not found"));
     }
 }

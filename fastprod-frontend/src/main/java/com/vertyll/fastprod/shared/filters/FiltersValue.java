@@ -30,7 +30,8 @@ public class FiltersValue {
     }
 
     public String toQueryString() {
-        if (values.isEmpty()) return "";
+        if (values.isEmpty())
+            return "";
         List<String> parts = new ArrayList<>();
         for (Map.Entry<String, Object> e : values.entrySet()) {
             String k = url(e.getKey());

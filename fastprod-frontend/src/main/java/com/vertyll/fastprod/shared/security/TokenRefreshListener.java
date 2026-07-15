@@ -17,39 +17,26 @@ public class TokenRefreshListener implements VaadinServiceInitListener {
 
     @Override
     public void serviceInit(ServiceInitEvent event) {
-        event.getSource()
-                .addUIInitListener(
-                        uiEvent ->
-                                uiEvent.getUI()
-                                        .addBeforeEnterListener(
-                                                enterEvent -> {
-                                                    String location =
-                                                            enterEvent.getLocation().getPath();
-                                                    if (isPublicRoute(location)) {
-                                                        return;
-                                                    }
+        event.getSource().addUIInitListener(uiEvent -> uiEvent.getUI().addBeforeEnterListener(enterEvent -> {
+            String location = enterEvent.getLocation().getPath();
+            if (isPublicRoute(location)) {
+                return;
+            }
 
-                                                    if (securityService.isAuthenticated()) {
-                                                        boolean tokenValid =
-                                                                tokenRefreshService
-                                                                        .ensureValidToken();
+            if (securityService.isAuthenticated()) {
+                boolean tokenValid = tokenRefreshService.ensureValidToken();
 
-                                                        if (!tokenValid) {
-                                                            log.warn(
-                                                                    "Token refresh failed, redirecting to login");
-                                                            securityService.logout();
-                                                            tokenRefreshService
-                                                                    .clearTokenExpiration();
-                                                            enterEvent.forwardTo("login");
-                                                        }
-                                                    }
-                                                }));
+                if (!tokenValid) {
+                    log.warn("Token refresh failed, redirecting to login");
+                    securityService.logout();
+                    tokenRefreshService.clearTokenExpiration();
+                    enterEvent.forwardTo("login");
+                }
+            }
+        }));
     }
 
     private boolean isPublicRoute(String route) {
-        return "login".equals(route)
-                || "register".equals(route)
-                || route.startsWith("verify-account")
-                || route.isEmpty();
+        return "login".equals(route) || "register".equals(route) || route.startsWith("verify-account") || route.isEmpty();
     }
 }

@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
-
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -27,16 +26,15 @@ public class JwtParser {
 
         try {
             JsonNode rolesNode = jsonNode.get("roles");
-            if (rolesNode == null) rolesNode = jsonNode.get("authorities");
-            if (rolesNode == null) rolesNode = jsonNode.get("role");
+            if (rolesNode == null)
+                rolesNode = jsonNode.get("authorities");
+            if (rolesNode == null)
+                rolesNode = jsonNode.get("role");
 
             if (rolesNode != null) {
                 if (rolesNode.isArray()) {
-                    return objectMapper.convertValue(
-                            rolesNode,
-                            objectMapper
-                                    .getTypeFactory()
-                                    .constructCollectionType(List.class, String.class));
+                    return objectMapper
+                        .convertValue(rolesNode, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
                 } else if (rolesNode.isString()) {
                     return List.of(rolesNode.asString());
                 }
@@ -73,8 +71,7 @@ public class JwtParser {
                 return null;
             }
 
-            String payload =
-                    new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
+            String payload = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
             return objectMapper.readTree(payload);
         } catch (Exception e) {
             log.error("Failed to parse JWT payload", e);

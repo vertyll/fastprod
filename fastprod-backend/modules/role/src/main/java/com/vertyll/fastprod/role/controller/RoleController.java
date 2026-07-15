@@ -3,12 +3,12 @@ package com.vertyll.fastprod.role.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import lombok.RequiredArgsConstructor;
 
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
@@ -19,7 +19,7 @@ import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/roles")
@@ -30,16 +30,14 @@ public class RoleController {
     private static final String ROLE_CREATED_SUCCESSFULLY = "Role created successfully";
     private static final String ROLE_UPDATED_SUCCESSFULLY = "Role updated successfully";
     private static final String ROLE_RETRIEVED_SUCCESSFULLY = "Role retrieved successfully";
-    private static final String ROLE_TYPES_RETRIEVED_SUCCESSFULLY =
-            "Role types retrieved successfully";
+    private static final String ROLE_TYPES_RETRIEVED_SUCCESSFULLY = "Role types retrieved successfully";
 
     private final RoleService roleService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create new role")
-    public ResponseEntity<ApiResponse<RoleResponseDto>> createRole(
-            @RequestBody @Valid RoleCreateDto dto) {
+    public ResponseEntity<ApiResponse<RoleResponseDto>> createRole(@RequestBody @Valid RoleCreateDto dto) {
         RoleResponseDto role = roleService.createRole(dto);
         return ApiResponse.buildResponse(role, ROLE_CREATED_SUCCESSFULLY, HttpStatus.CREATED);
     }
@@ -47,8 +45,7 @@ public class RoleController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update existing role")
-    public ResponseEntity<ApiResponse<RoleResponseDto>> updateRole(
-            @PathVariable Long id, @RequestBody @Valid RoleUpdateDto dto) {
+    public ResponseEntity<ApiResponse<RoleResponseDto>> updateRole(@PathVariable Long id, @RequestBody @Valid RoleUpdateDto dto) {
         RoleResponseDto role = roleService.updateRole(id, dto);
         return ApiResponse.buildResponse(role, ROLE_UPDATED_SUCCESSFULLY, HttpStatus.OK);
     }

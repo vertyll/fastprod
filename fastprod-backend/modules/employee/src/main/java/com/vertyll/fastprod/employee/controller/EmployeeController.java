@@ -1,12 +1,12 @@
 package com.vertyll.fastprod.employee.controller;
 
+import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import lombok.RequiredArgsConstructor;
 
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeFilterDto;
@@ -18,7 +18,7 @@ import com.vertyll.fastprod.sharedinfrastructure.response.PaginatedApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/employees")
@@ -29,8 +29,7 @@ public class EmployeeController {
     private static final String EMPLOYEE_CREATED_SUCCESSFULLY = "Employee created successfully";
     private static final String EMPLOYEE_UPDATED_SUCCESSFULLY = "Employee updated successfully";
     private static final String EMPLOYEE_RETRIEVED_SUCCESSFULLY = "Employee retrieved successfully";
-    private static final String EMPLOYEES_RETRIEVED_SUCCESSFULLY =
-            "Employees retrieved successfully";
+    private static final String EMPLOYEES_RETRIEVED_SUCCESSFULLY = "Employees retrieved successfully";
     private static final String EMPLOYEE_DELETED_SUCCESSFULLY = "Employee deleted successfully";
 
     private final EmployeeService employeeService;
@@ -38,18 +37,18 @@ public class EmployeeController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create new employee")
-    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(
-            @RequestBody @Valid EmployeeCreateDto dto) {
+    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@RequestBody @Valid EmployeeCreateDto dto) {
         EmployeeResponseDto employee = employeeService.createEmployee(dto);
-        return ApiResponse.buildResponse(
-                employee, EMPLOYEE_CREATED_SUCCESSFULLY, HttpStatus.CREATED);
+        return ApiResponse.buildResponse(employee, EMPLOYEE_CREATED_SUCCESSFULLY, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update existing employee")
     public ResponseEntity<ApiResponse<EmployeeResponseDto>> updateEmployee(
-            @PathVariable Long id, @RequestBody @Valid EmployeeUpdateDto dto) {
+        @PathVariable Long id,
+        @RequestBody @Valid EmployeeUpdateDto dto
+    ) {
         EmployeeResponseDto employee = employeeService.updateEmployee(id, dto);
         return ApiResponse.buildResponse(employee, EMPLOYEE_UPDATED_SUCCESSFULLY, HttpStatus.OK);
     }
@@ -65,11 +64,9 @@ public class EmployeeController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Get all employees with pagination and filters")
-    public ResponseEntity<PaginatedApiResponse<EmployeeResponseDto>> getAllEmployees(
-            @Valid @ModelAttribute EmployeeFilterDto filterDto) {
+    public ResponseEntity<PaginatedApiResponse<EmployeeResponseDto>> getAllEmployees(@Valid @ModelAttribute EmployeeFilterDto filterDto) {
         Page<EmployeeResponseDto> employees = employeeService.getAllEmployees(filterDto);
-        return PaginatedApiResponse.buildResponse(
-                employees, EMPLOYEES_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
+        return PaginatedApiResponse.buildResponse(employees, EMPLOYEES_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

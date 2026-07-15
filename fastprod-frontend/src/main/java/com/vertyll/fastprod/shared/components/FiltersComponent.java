@@ -3,6 +3,9 @@ package com.vertyll.fastprod.shared.components;
 import java.util.*;
 import java.util.function.Consumer;
 
+import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
+import com.vertyll.fastprod.shared.filters.FiltersValue;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -12,9 +15,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
-
-import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
-import com.vertyll.fastprod.shared.filters.FiltersValue;
 
 public class FiltersComponent extends HorizontalLayout {
 
@@ -56,12 +56,11 @@ public class FiltersComponent extends HorizontalLayout {
         summaryBar.expand(selectedChips);
         summaryBar.getStyle().set("flex-basis", "100%");
 
-        toggleButton.addClickListener(
-                _ -> {
-                    expanded = !expanded;
-                    updateToggleLabel();
-                    updateVisibility();
-                });
+        toggleButton.addClickListener(_ -> {
+            expanded = !expanded;
+            updateToggleLabel();
+            updateVisibility();
+        });
         clearButton.addClickListener(_ -> clear());
     }
 
@@ -85,7 +84,8 @@ public class FiltersComponent extends HorizontalLayout {
     }
 
     public void setMaxVisible(int maxVisible) {
-        if (maxVisible < 1) maxVisible = 1;
+        if (maxVisible < 1)
+            maxVisible = 1;
         this.maxVisible = maxVisible;
         updateVisibility();
     }
@@ -190,22 +190,19 @@ public class FiltersComponent extends HorizontalLayout {
         Object emptyToken = selectEmptyTokens.get(cfg.id());
 
         if (cfg.itemLabelGenerator() != null) {
-            @SuppressWarnings("unchecked")
-            var gen =
-                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
-            select.setItemLabelGenerator(
-                    item -> generateSelectLabel(item, emptyToken, cfg.placeholder(), gen));
+            @SuppressWarnings("unchecked") var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
+            select.setItemLabelGenerator(item -> generateSelectLabel(item, emptyToken, cfg.placeholder(), gen));
         } else {
-            select.setItemLabelGenerator(
-                    item -> generateDefaultSelectLabel(item, emptyToken, cfg.placeholder()));
+            select.setItemLabelGenerator(item -> generateDefaultSelectLabel(item, emptyToken, cfg.placeholder()));
         }
     }
 
     private String generateSelectLabel(
-            Object item,
-            Object emptyToken,
-            String placeholder,
-            com.vaadin.flow.component.ItemLabelGenerator<Object> generator) {
+        Object item,
+        Object emptyToken,
+        String placeholder,
+        com.vaadin.flow.component.ItemLabelGenerator<Object> generator
+    ) {
         if (emptyToken != null && Objects.equals(item, emptyToken)) {
             return placeholder;
         }
@@ -243,12 +240,9 @@ public class FiltersComponent extends HorizontalLayout {
         return ms;
     }
 
-    private void configureMultiSelectLabels(
-            MultiSelectComboBox<Object> ms, FilterFieldConfig<?> cfg) {
+    private void configureMultiSelectLabels(MultiSelectComboBox<Object> ms, FilterFieldConfig<?> cfg) {
         if (cfg.itemLabelGenerator() != null) {
-            @SuppressWarnings("unchecked")
-            var gen =
-                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
+            @SuppressWarnings("unchecked") var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
             ms.setItemLabelGenerator(gen);
         } else {
             ms.setItemLabelGenerator(item -> item == null ? "" : String.valueOf(item));
@@ -324,8 +318,7 @@ public class FiltersComponent extends HorizontalLayout {
     }
 
     public void setValues(FiltersValue values) {
-        controls.forEach(
-                (key, component) -> setComponentValue(key, component, values.asMap().get(key)));
+        controls.forEach((key, component) -> setComponentValue(key, component, values.asMap().get(key)));
         updateSelectedSummary();
     }
 
@@ -344,8 +337,7 @@ public class FiltersComponent extends HorizontalLayout {
     }
 
     private void setSelectValue(String key, Select<?> select, Object value) {
-        @SuppressWarnings("unchecked")
-        Select<Object> s = (Select<Object>) select;
+        @SuppressWarnings("unchecked") Select<Object> s = (Select<Object>) select;
 
         if (value == null) {
             Object token = selectEmptyTokens.get(key);
@@ -360,8 +352,7 @@ public class FiltersComponent extends HorizontalLayout {
     }
 
     private void setMultiSelectValue(MultiSelectComboBox<?> multiSelect, Object value) {
-        @SuppressWarnings("unchecked")
-        MultiSelectComboBox<Object> ms = (MultiSelectComboBox<Object>) multiSelect;
+        @SuppressWarnings("unchecked") MultiSelectComboBox<Object> ms = (MultiSelectComboBox<Object>) multiSelect;
         ms.clear();
 
         if (value instanceof Collection<?> col) {
@@ -372,10 +363,10 @@ public class FiltersComponent extends HorizontalLayout {
     public void clear() {
         for (Map.Entry<String, Component> e : controls.entrySet()) {
             Component c = e.getValue();
-            if (c instanceof TextField tf) tf.clear();
+            if (c instanceof TextField tf)
+                tf.clear();
             if (c instanceof Select<?> sel) {
-                @SuppressWarnings("unchecked")
-                Select<Object> s = (Select<Object>) sel;
+                @SuppressWarnings("unchecked") Select<Object> s = (Select<Object>) sel;
                 Object token = selectEmptyTokens.get(e.getKey());
                 if (token != null) {
                     s.setValue(token);
@@ -383,7 +374,8 @@ public class FiltersComponent extends HorizontalLayout {
                     s.clear();
                 }
             }
-            if (c instanceof MultiSelectComboBox<?> ms) ms.clear();
+            if (c instanceof MultiSelectComboBox<?> ms)
+                ms.clear();
         }
         emitChange();
     }
@@ -438,10 +430,7 @@ public class FiltersComponent extends HorizontalLayout {
         }
 
         if (value != null) {
-            @SuppressWarnings("unchecked")
-            var gen =
-                    (com.vaadin.flow.component.ItemLabelGenerator<Object>)
-                            select.getItemLabelGenerator();
+            @SuppressWarnings("unchecked") var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) select.getItemLabelGenerator();
             String valueText = gen != null ? gen.apply(value) : String.valueOf(value);
             return new ChipData(select.getLabel(), valueText);
         }
@@ -452,15 +441,10 @@ public class FiltersComponent extends HorizontalLayout {
         Set<?> selected = multiSelect.getSelectedItems();
 
         if (selected != null && !selected.isEmpty()) {
-            @SuppressWarnings("unchecked")
-            var gen =
-                    (com.vaadin.flow.component.ItemLabelGenerator<Object>)
-                            multiSelect.getItemLabelGenerator();
+            @SuppressWarnings("unchecked") var gen =
+                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
 
-            List<String> labels =
-                    selected.stream()
-                            .map(o -> gen != null ? gen.apply(o) : String.valueOf(o))
-                            .toList();
+            List<String> labels = selected.stream().map(o -> gen != null ? gen.apply(o) : String.valueOf(o)).toList();
 
             return new ChipData(multiSelect.getLabel(), String.join(", ", labels));
         }
@@ -473,5 +457,6 @@ public class FiltersComponent extends HorizontalLayout {
         selectedChips.add(chip);
     }
 
-    private record ChipData(String label, String value) {}
+    private record ChipData(String label, String value) {
+    }
 }

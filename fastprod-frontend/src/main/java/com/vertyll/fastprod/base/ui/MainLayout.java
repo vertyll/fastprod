@@ -1,5 +1,10 @@
 package com.vertyll.fastprod.base.ui;
 
+import com.vertyll.fastprod.base.ui.component.UserMenu;
+import com.vertyll.fastprod.modules.user.service.UserService;
+import com.vertyll.fastprod.shared.security.RoleType;
+import com.vertyll.fastprod.shared.security.SecurityService;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -19,11 +24,6 @@ import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.base.ui.component.UserMenu;
-import com.vertyll.fastprod.modules.user.service.UserService;
-import com.vertyll.fastprod.shared.security.RoleType;
-import com.vertyll.fastprod.shared.security.SecurityService;
 
 @Layout
 @Slf4j
@@ -67,10 +67,7 @@ public final class MainLayout extends AppLayout {
         toggle.setAriaLabel("Menu toggle");
 
         H1 viewTitle = new H1(APP_NAME);
-        viewTitle.addClassNames(
-                LumoUtility.FontSize.LARGE,
-                LumoUtility.Margin.NONE,
-                LumoUtility.Margin.Left.MEDIUM);
+        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE, LumoUtility.Margin.Left.MEDIUM);
 
         UserMenu userMenu = new UserMenu(userService, securityService);
 
@@ -124,11 +121,7 @@ public final class MainLayout extends AppLayout {
         appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
 
         Div header = new Div(appIcon, appName);
-        header.addClassNames(
-                LumoUtility.Display.FLEX,
-                LumoUtility.Padding.MEDIUM,
-                LumoUtility.Gap.MEDIUM,
-                LumoUtility.AlignItems.CENTER);
+        header.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Padding.MEDIUM, LumoUtility.Gap.MEDIUM, LumoUtility.AlignItems.CENTER);
 
         return header;
     }
@@ -145,11 +138,9 @@ public final class MainLayout extends AppLayout {
             SideNavItem adminSection = new SideNavItem("Administration");
             adminSection.setPrefixComponent(VaadinIcon.COG.create());
 
-            SideNavItem employeesLink =
-                    new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
+            SideNavItem employeesLink = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
             employeesLink.addItem(new SideNavItem("List", "employees", VaadinIcon.LIST.create()));
-            employeesLink.addItem(
-                    new SideNavItem("Add", "employees/form", VaadinIcon.PLUS.create()));
+            employeesLink.addItem(new SideNavItem("Add", "employees/form", VaadinIcon.PLUS.create()));
 
             adminSection.addItem(employeesLink);
 

@@ -3,13 +3,13 @@ package com.vertyll.fastprod.auth.entity;
 import java.io.Serial;
 import java.time.LocalDateTime;
 
-import lombok.*;
+import jakarta.persistence.*;
 
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 import com.vertyll.fastprod.user.entity.User;
 
-import jakarta.persistence.*;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -18,17 +18,17 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "verification_token",
-        indexes = {
-            @Index(name = "idx_verification_token_user_id", columnList = "user_id"),
+    name = "verification_token",
+    indexes = {@Index(name = "idx_verification_token_user_id", columnList = "user_id"),
             @Index(name = "idx_verification_token_expiry_date", columnList = "expiry_date"),
             @Index(name = "idx_verification_token_is_used", columnList = "is_used"),
             @Index(name = "idx_verification_token_token_type", columnList = "token_type"),
-            @Index(name = "idx_verification_token_token", columnList = "token")
-        })
+            @Index(name = "idx_verification_token_token", columnList = "token")}
+)
 public class VerificationToken extends BaseEntity {
 
-    @Serial private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private String token;
 
@@ -46,5 +46,6 @@ public class VerificationToken extends BaseEntity {
     @Column(nullable = false)
     private VerificationTokenType tokenType;
 
-    @Column private String additionalData;
+    @Column
+    private String additionalData;
 }

@@ -25,8 +25,7 @@ public class VerificationCodeDialog extends Dialog {
     private final Button verifyButton;
     private final transient BiConsumer<String, VerificationCodeDialog> onVerify;
 
-    public VerificationCodeDialog(
-            String title, String description, BiConsumer<String, VerificationCodeDialog> onVerify) {
+    public VerificationCodeDialog(String title, String description, BiConsumer<String, VerificationCodeDialog> onVerify) {
         this.onVerify = onVerify;
 
         setCloseOnEsc(false);
@@ -39,16 +38,10 @@ public class VerificationCodeDialog extends Dialog {
         layout.setAlignItems(FlexComponent.Alignment.STRETCH);
 
         H3 titleHeader = new H3(title);
-        titleHeader
-                .getStyle()
-                .set("margin", "0 0 var(--lumo-space-m) 0")
-                .set("color", "var(--lumo-primary-text-color)");
+        titleHeader.getStyle().set("margin", "0 0 var(--lumo-space-m) 0").set("color", "var(--lumo-primary-text-color)");
 
         Paragraph descriptionText = new Paragraph(description);
-        descriptionText
-                .getStyle()
-                .set("margin", "0 0 var(--lumo-space-l) 0")
-                .set("color", "var(--lumo-secondary-text-color)");
+        descriptionText.getStyle().set("margin", "0 0 var(--lumo-space-l) 0").set("color", "var(--lumo-secondary-text-color)");
 
         codeField = new TextField("Verification Code");
         codeField.setWidthFull();
@@ -57,10 +50,7 @@ public class VerificationCodeDialog extends Dialog {
         codeField.setMaxLength(6);
         codeField.setPattern("[0-9]*");
         codeField.setAutofocus(true);
-        codeField
-                .getStyle()
-                .set("font-size", "var(--lumo-font-size-xl)")
-                .set("text-align", "center");
+        codeField.getStyle().set("font-size", "var(--lumo-font-size-xl)").set("text-align", "center");
 
         verifyButton = new Button(VERIFY_BUTTON_TEXT, VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -116,8 +106,7 @@ public class VerificationCodeDialog extends Dialog {
     }
 
     private void showNotification(String message, NotificationVariant variant) {
-        Notification notification =
-                new Notification(message, 3000, Notification.Position.TOP_CENTER);
+        Notification notification = new Notification(message, 3000, Notification.Position.TOP_CENTER);
         notification.addThemeVariants(variant);
         notification.open();
     }

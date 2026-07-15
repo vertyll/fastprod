@@ -2,20 +2,23 @@ package com.vertyll.fastprod.shared.components;
 
 import java.util.function.BiConsumer;
 
+import com.vertyll.fastprod.shared.dto.PageResponse;
+
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import com.vertyll.fastprod.shared.dto.PageResponse;
-
 public class PagedGridComponent<T> extends VerticalLayout {
 
-    @Getter private final Grid<T> grid;
-    @Getter private final PaginationComponent pagination;
+    @Getter
+    private final Grid<T> grid;
+    @Getter
+    private final PaginationComponent pagination;
 
-    @Setter private transient BiConsumer<Integer, Integer> onPageChange;
+    @Setter
+    private transient BiConsumer<Integer, Integer> onPageChange;
 
     public PagedGridComponent(Class<T> beanType) {
         this(new Grid<>(beanType, false));
@@ -31,19 +34,17 @@ public class PagedGridComponent<T> extends VerticalLayout {
 
         grid.setSizeFull();
 
-        pagination.setOnPageChange(
-                page -> {
-                    if (onPageChange != null) {
-                        onPageChange.accept(page, pagination.getPageSize());
-                    }
-                });
+        pagination.setOnPageChange(page -> {
+            if (onPageChange != null) {
+                onPageChange.accept(page, pagination.getPageSize());
+            }
+        });
 
-        pagination.setOnPageSizeChange(
-                pageSize -> {
-                    if (onPageChange != null) {
-                        onPageChange.accept(0, pageSize);
-                    }
-                });
+        pagination.setOnPageSizeChange(pageSize -> {
+            if (onPageChange != null) {
+                onPageChange.accept(0, pageSize);
+            }
+        });
 
         add(grid);
         add(pagination);
@@ -51,8 +52,7 @@ public class PagedGridComponent<T> extends VerticalLayout {
 
     public void updateData(PageResponse<T> pageResponse) {
         grid.setItems(pageResponse.content());
-        pagination.updatePagination(
-                pageResponse.pageNumber(), pageResponse.totalPages(), pageResponse.totalElements());
+        pagination.updatePagination(pageResponse.pageNumber(), pageResponse.totalPages(), pageResponse.totalElements());
     }
 
     public void setInitialPageSize(int pageSize) {

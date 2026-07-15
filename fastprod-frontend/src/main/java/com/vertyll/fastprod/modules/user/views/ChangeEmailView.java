@@ -1,5 +1,15 @@
 package com.vertyll.fastprod.modules.user.views;
 
+import jakarta.annotation.security.PermitAll;
+
+import com.vertyll.fastprod.base.ui.MainLayout;
+import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.modules.auth.service.AuthService;
+import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
+import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
+import com.vertyll.fastprod.shared.dto.ApiResponse;
+import com.vertyll.fastprod.shared.security.SecurityService;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -17,16 +27,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.base.ui.MainLayout;
-import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
-import com.vertyll.fastprod.modules.auth.service.AuthService;
-import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
-import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
-import com.vertyll.fastprod.shared.security.SecurityService;
-
-import jakarta.annotation.security.PermitAll;
 
 @Route(value = "profile/change-email", layout = MainLayout.class)
 @PageTitle("Change Email | FastProd")
@@ -62,11 +62,11 @@ public class ChangeEmailView extends VerticalLayout {
         formLayout.setPadding(true);
         formLayout.setSpacing(true);
         formLayout
-                .getStyle()
-                .set("background", "var(--lumo-base-color)")
-                .set("border-radius", "var(--lumo-border-radius-m)")
-                .set("box-shadow", "var(--lumo-box-shadow-xl)")
-                .set("box-sizing", "border-box");
+            .getStyle()
+            .set("background", "var(--lumo-base-color)")
+            .set("border-radius", "var(--lumo-border-radius-m)")
+            .set("box-shadow", "var(--lumo-box-shadow-xl)")
+            .set("box-sizing", "border-box");
 
         H2 title = new H2("Change Email");
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
@@ -80,14 +80,15 @@ public class ChangeEmailView extends VerticalLayout {
         passwordField.setRequiredIndicatorVisible(true);
         passwordField.setHelperText("Enter your current password to confirm the change");
 
-        binder.forField(newEmailField)
-                .asRequired("Email is required")
-                .withValidator(new EmailValidator("Please enter a valid email address"))
-                .bind(ChangeEmailDto::newEmail, (_, _) -> {});
+        binder
+            .forField(newEmailField)
+            .asRequired("Email is required")
+            .withValidator(new EmailValidator("Please enter a valid email address"))
+            .bind(ChangeEmailDto::newEmail, (_, _) -> {
+            });
 
-        binder.forField(passwordField)
-                .asRequired("Password is required")
-                .bind(ChangeEmailDto::currentPassword, (_, _) -> {});
+        binder.forField(passwordField).asRequired("Password is required").bind(ChangeEmailDto::currentPassword, (_, _) -> {
+        });
 
         Button saveButton = new Button("Request Email Change");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -106,22 +107,23 @@ public class ChangeEmailView extends VerticalLayout {
 
     private void handleChangeEmail() {
         try {
-            ChangeEmailDto dto =
-                    new ChangeEmailDto(passwordField.getValue(), newEmailField.getValue());
+            ChangeEmailDto dto = new ChangeEmailDto(passwordField.getValue(), newEmailField.getValue());
 
             if (binder.validate().isOk()) {
                 authService.requestEmailChange(dto);
                 showNotification(
-                        "Verification code sent to your new email address. Please check your inbox.",
-                        NotificationVariant.LUMO_SUCCESS);
+                    "Verification code sent to your new email address. Please check your inbox.",
+                    NotificationVariant.LUMO_SUCCESS
+                );
                 clearFormAndValidation();
                 showVerificationDialog();
             }
         } catch (Exception e) {
             log.error("Failed to request email change", e);
             showNotification(
-                    "Failed to change email. Check your password or ensure the email is not already in use.",
-                    NotificationVariant.LUMO_ERROR);
+                "Failed to change email. Check your password or ensure the email is not already in use.",
+                NotificationVariant.LUMO_ERROR
+            );
         }
     }
 
@@ -136,11 +138,11 @@ public class ChangeEmailView extends VerticalLayout {
     }
 
     private void showVerificationDialog() {
-        VerificationCodeDialog dialog =
-                new VerificationCodeDialog(
-                        "Verify Email Change",
-                        "Enter the 6-digit verification code sent to your new email address to complete the email change.",
-                        this::handleVerifyCode);
+        VerificationCodeDialog dialog = new VerificationCodeDialog(
+            "Verify Email Change",
+            "Enter the 6-digit verification code sent to your new email address to complete the email change.",
+            this::handleVerifyCode
+        );
         dialog.open();
     }
 
@@ -153,8 +155,7 @@ public class ChangeEmailView extends VerticalLayout {
                 securityService.login(response.data());
             }
 
-            dialog.showSuccess(
-                    "Email changed successfully! Please log in again with your new email.");
+            dialog.showSuccess("Email changed successfully! Please log in again with your new email.");
             // After email change, user needs to log in again
             UI.getCurrent().getPage().setLocation("/login");
         } catch (Exception e) {
@@ -171,10 +172,7 @@ public class ChangeEmailView extends VerticalLayout {
 
         Div text = new Div();
         text.setText(message);
-        text.getStyle()
-                .set("white-space", "normal")
-                .set("max-width", "400px")
-                .set("text-align", "center");
+        text.getStyle().set("white-space", "normal").set("max-width", "400px").set("text-align", "center");
 
         notification.add(text);
         notification.open();

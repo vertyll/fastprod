@@ -1,5 +1,12 @@
 package com.vertyll.fastprod.modules.user.views;
 
+import jakarta.annotation.security.PermitAll;
+
+import com.vertyll.fastprod.base.ui.MainLayout;
+import com.vertyll.fastprod.modules.auth.service.AuthService;
+import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
+import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,13 +22,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.base.ui.MainLayout;
-import com.vertyll.fastprod.modules.auth.service.AuthService;
-import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
-import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
-
-import jakarta.annotation.security.PermitAll;
 
 @Route(value = "profile/change-password", layout = MainLayout.class)
 @PageTitle("Change Password | FastProd")
@@ -56,11 +56,11 @@ public class ChangePasswordView extends VerticalLayout {
         formLayout.setPadding(true);
         formLayout.setSpacing(true);
         formLayout
-                .getStyle()
-                .set("background", "var(--lumo-base-color)")
-                .set("border-radius", "var(--lumo-border-radius-m)")
-                .set("box-shadow", "var(--lumo-box-shadow-xl)")
-                .set("box-sizing", "border-box");
+            .getStyle()
+            .set("background", "var(--lumo-base-color)")
+            .set("border-radius", "var(--lumo-border-radius-m)")
+            .set("box-shadow", "var(--lumo-box-shadow-xl)")
+            .set("box-sizing", "border-box");
 
         H2 title = new H2("Change Password");
         title.addClassNames(LumoUtility.Margin.Bottom.LARGE);
@@ -78,17 +78,19 @@ public class ChangePasswordView extends VerticalLayout {
         confirmPasswordField.setWidthFull();
         confirmPasswordField.setRequiredIndicatorVisible(true);
 
-        binder.forField(currentPasswordField)
-                .asRequired("Current password is required")
-                .bind(ChangePasswordDto::currentPassword, (_, _) -> {});
+        binder
+            .forField(currentPasswordField)
+            .asRequired("Current password is required")
+            .bind(ChangePasswordDto::currentPassword, (_, _) -> {
+            });
 
-        binder.forField(newPasswordField)
-                .asRequired("New password is required")
-                .withValidator(pwd -> pwd.length() >= 8, "Password must be at least 8 characters")
-                .withValidator(
-                        pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"),
-                        "Password must contain at least one letter and one digit")
-                .bind(ChangePasswordDto::newPassword, (_, _) -> {});
+        binder
+            .forField(newPasswordField)
+            .asRequired("New password is required")
+            .withValidator(pwd -> pwd.length() >= 8, "Password must be at least 8 characters")
+            .withValidator(pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"), "Password must contain at least one letter and one digit")
+            .bind(ChangePasswordDto::newPassword, (_, _) -> {
+            });
 
         Button saveButton = new Button("Change Password");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -100,13 +102,7 @@ public class ChangePasswordView extends VerticalLayout {
         cancelButton.setWidthFull();
         cancelButton.addClickListener(_ -> UI.getCurrent().navigate("profile"));
 
-        formLayout.add(
-                title,
-                currentPasswordField,
-                newPasswordField,
-                confirmPasswordField,
-                saveButton,
-                cancelButton);
+        formLayout.add(title, currentPasswordField, newPasswordField, confirmPasswordField, saveButton, cancelButton);
 
         add(formLayout);
     }
@@ -125,17 +121,13 @@ public class ChangePasswordView extends VerticalLayout {
 
             if (binder.validate().isOk()) {
                 authService.requestPasswordChange(dto);
-                showNotification(
-                        "Verification code sent to your email. Please check your inbox.",
-                        NotificationVariant.LUMO_SUCCESS);
+                showNotification("Verification code sent to your email. Please check your inbox.", NotificationVariant.LUMO_SUCCESS);
                 clearFormAndValidation();
                 showVerificationDialog();
             }
         } catch (Exception e) {
             log.error("Failed to request password change", e);
-            showNotification(
-                    "Failed to change password. Check your current password.",
-                    NotificationVariant.LUMO_ERROR);
+            showNotification("Failed to change password. Check your current password.", NotificationVariant.LUMO_ERROR);
         }
     }
 
@@ -152,11 +144,11 @@ public class ChangePasswordView extends VerticalLayout {
     }
 
     private void showVerificationDialog() {
-        VerificationCodeDialog dialog =
-                new VerificationCodeDialog(
-                        "Verify Password Change",
-                        "Enter the 6-digit verification code sent to your email to complete the password change.",
-                        this::handleVerifyCode);
+        VerificationCodeDialog dialog = new VerificationCodeDialog(
+            "Verify Password Change",
+            "Enter the 6-digit verification code sent to your email to complete the password change.",
+            this::handleVerifyCode
+        );
         dialog.open();
     }
 
@@ -179,10 +171,7 @@ public class ChangePasswordView extends VerticalLayout {
 
         Div text = new Div();
         text.setText(message);
-        text.getStyle()
-                .set("white-space", "normal")
-                .set("max-width", "400px")
-                .set("text-align", "center");
+        text.getStyle().set("white-space", "normal").set("max-width", "400px").set("text-align", "center");
 
         notification.add(text);
         notification.open();

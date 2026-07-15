@@ -1,5 +1,9 @@
 package com.vertyll.fastprod.modules.auth.views;
 
+import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
+import com.vertyll.fastprod.modules.auth.service.AuthService;
+import com.vertyll.fastprod.shared.exception.ApiException;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -22,10 +26,6 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
-import com.vertyll.fastprod.modules.auth.service.AuthService;
-import com.vertyll.fastprod.shared.exception.ApiException;
 
 @Route("reset-password")
 @PageTitle("Reset Password | FastProd")
@@ -54,9 +54,9 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
         getStyle()
-                .set("background", "var(--lumo-base-color)")
-                .set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
-                .set("box-sizing", "border-box");
+            .set("background", "var(--lumo-base-color)")
+            .set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
+            .set("box-sizing", "border-box");
 
         createView();
     }
@@ -74,33 +74,31 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
     private void createView() {
         Div card = new Div();
         card.addClassName("reset-password-card");
-        card.getStyle()
-                .set("background", "var(--lumo-base-color)")
-                .set("border-radius", "var(--lumo-border-radius-l)")
-                .set("border", "1px solid var(--lumo-contrast-10pct)")
-                .set("padding", "var(--lumo-space-xl)")
-                .set("max-width", "500px")
-                .set("width", "100%")
-                .set("box-sizing", "border-box")
-                .set("text-align", "center");
+        card
+            .getStyle()
+            .set("background", "var(--lumo-base-color)")
+            .set("border-radius", "var(--lumo-border-radius-l)")
+            .set("border", "1px solid var(--lumo-contrast-10pct)")
+            .set("padding", "var(--lumo-space-xl)")
+            .set("max-width", "500px")
+            .set("width", "100%")
+            .set("box-sizing", "border-box")
+            .set("text-align", "center");
 
         Icon icon = VaadinIcon.LOCK.create();
         icon.setSize("64px");
         icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         H1 title = new H1("Reset Your Password");
-        title.getStyle()
-                .set("margin", "0")
-                .set("font-size", "var(--lumo-font-size-xxxl)")
-                .set("font-weight", "600")
-                .set(COLOR, "var(--lumo-primary-text-color)");
+        title
+            .getStyle()
+            .set("margin", "0")
+            .set("font-size", "var(--lumo-font-size-xxxl)")
+            .set("font-weight", "600")
+            .set(COLOR, "var(--lumo-primary-text-color)");
 
-        Paragraph description =
-                new Paragraph("Enter your new password below. Make sure it's strong and secure.");
-        description
-                .getStyle()
-                .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
-                .set(COLOR, "var(--lumo-secondary-text-color)");
+        Paragraph description = new Paragraph("Enter your new password below. Make sure it's strong and secure.");
+        description.getStyle().set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0").set(COLOR, "var(--lumo-secondary-text-color)");
 
         newPasswordField = new PasswordField("New Password");
         newPasswordField.setWidthFull();
@@ -115,17 +113,17 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         confirmPasswordField.setRequiredIndicatorVisible(true);
         confirmPasswordField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
-        binder.forField(newPasswordField)
-                .asRequired("Password is required")
-                .withValidator(pwd -> pwd.length() >= 8, "Password must be at least 8 characters")
-                .withValidator(
-                        pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"),
-                        "Password must contain at least one letter and one digit")
-                .bind(FormData::newPassword, FormData::setNewPassword);
+        binder
+            .forField(newPasswordField)
+            .asRequired("Password is required")
+            .withValidator(pwd -> pwd.length() >= 8, "Password must be at least 8 characters")
+            .withValidator(pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"), "Password must contain at least one letter and one digit")
+            .bind(FormData::newPassword, FormData::setNewPassword);
 
-        binder.forField(confirmPasswordField)
-                .asRequired("Please confirm your password")
-                .bind(FormData::confirmPassword, FormData::setConfirmPassword);
+        binder
+            .forField(confirmPasswordField)
+            .asRequired("Please confirm your password")
+            .bind(FormData::confirmPassword, FormData::setConfirmPassword);
 
         submitButton = new Button("Reset Password", VaadinIcon.CHECK.create());
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
@@ -137,14 +135,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         backButton.addClickListener(_ -> UI.getCurrent().navigate(LoginView.class));
 
-        card.add(
-                icon,
-                title,
-                description,
-                newPasswordField,
-                confirmPasswordField,
-                submitButton,
-                backButton);
+        card.add(icon, title, description, newPasswordField, confirmPasswordField, submitButton, backButton);
 
         add(card);
     }
@@ -175,29 +166,22 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
             ResetPasswordRequestDto request = new ResetPasswordRequestDto(newPwd);
             authService.resetPassword(resetToken, request);
 
-            showNotification(
-                    "Password reset successfully! You can now log in with your new password.",
-                    NotificationVariant.LUMO_SUCCESS);
+            showNotification("Password reset successfully! You can now log in with your new password.", NotificationVariant.LUMO_SUCCESS);
 
             UI ui = UI.getCurrent();
-            java.util.concurrent.CompletableFuture.runAsync(
-                            () -> {},
-                            java.util.concurrent.CompletableFuture.delayedExecutor(
-                                    2, java.util.concurrent.TimeUnit.SECONDS))
-                    .thenRun(() -> ui.access(() -> ui.navigate(LoginView.class)))
-                    .exceptionally(
-                            ex -> {
-                                log.error("Delayed navigation failed", ex);
-                                return null;
-                            });
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+            }, java.util.concurrent.CompletableFuture.delayedExecutor(2, java.util.concurrent.TimeUnit.SECONDS))
+                .thenRun(() -> ui.access(() -> ui.navigate(LoginView.class)))
+                .exceptionally(ex -> {
+                    log.error("Delayed navigation failed", ex);
+                    return null;
+                });
 
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during password reset: {}", e.getMessage());
         } catch (Exception e) {
-            showNotification(
-                    "Failed to reset password. The reset link may have expired.",
-                    NotificationVariant.LUMO_ERROR);
+            showNotification("Failed to reset password. The reset link may have expired.", NotificationVariant.LUMO_ERROR);
             log.error("Error during password reset", e);
         } finally {
             submitButton.setEnabled(true);
@@ -213,10 +197,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
 
         Div text = new Div();
         text.setText(message);
-        text.getStyle()
-                .set("white-space", "normal")
-                .set("max-width", "400px")
-                .set("text-align", "center");
+        text.getStyle().set("white-space", "normal").set("max-width", "400px").set("text-align", "center");
 
         notification.add(text);
         notification.open();

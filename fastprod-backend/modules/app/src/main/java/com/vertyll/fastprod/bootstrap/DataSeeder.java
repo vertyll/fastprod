@@ -1,7 +1,5 @@
 package com.vertyll.fastprod.bootstrap;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,15 +13,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vertyll.fastprod.role.service.RoleService;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
+import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.service.UserService;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import com.vertyll.fastprod.role.service.RoleService;
-import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
-import com.vertyll.fastprod.user.entity.User;
-import com.vertyll.fastprod.user.service.UserService;
+import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Component
@@ -52,10 +52,7 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     private void seedAdminUser() {
-        String email =
-                (adminProps.email() == null || adminProps.email().isBlank())
-                        ? DEFAULT_ADMIN_EMAIL
-                        : adminProps.email();
+        String email = (adminProps.email() == null || adminProps.email().isBlank()) ? DEFAULT_ADMIN_EMAIL : adminProps.email();
 
         if (userService.existsByEmail(email)) {
             log.info("[DataSeeder] Admin user already exists: {}", email);
@@ -64,42 +61,34 @@ public class DataSeeder implements ApplicationRunner {
 
         String password = adminProps.password();
         if (password == null || password.isBlank()) {
-            log.warn(
-                    "[DataSeeder] Admin password not provided. Skipping admin creation. Set ADMIN_PASSWORD or admin.password to enable.");
+            log.warn("[DataSeeder] Admin password not provided. Skipping admin creation. Set ADMIN_PASSWORD or admin.password to enable.");
             return;
         }
 
-        @SuppressWarnings("NullAway")
-        String nonNullPassword = password;
+        @SuppressWarnings("NullAway") String nonNullPassword = password;
         Set<RoleType> adminRoleNames = Stream.of(RoleType.ADMIN).collect(Collectors.toSet());
 
-        User admin =
-                User.builder()
-                        .firstName(
-                                (adminProps.firstName() == null || adminProps.firstName().isBlank())
-                                        ? DEFAULT_ADMIN_FIRST_NAME
-                                        : adminProps.firstName())
-                        .lastName(
-                                (adminProps.lastName() == null || adminProps.lastName().isBlank())
-                                        ? DEFAULT_ADMIN_LAST_NAME
-                                        : adminProps.lastName())
-                        .email(email)
-                        .password(requireNonNull(passwordEncoder.encode(nonNullPassword)))
-                        .active(true)
-                        .verified(true)
-                        .build();
+        User admin = User
+            .builder()
+            .firstName(
+                (adminProps.firstName() == null || adminProps.firstName().isBlank()) ? DEFAULT_ADMIN_FIRST_NAME : adminProps.firstName()
+            )
+            .lastName((adminProps.lastName() == null || adminProps.lastName().isBlank()) ? DEFAULT_ADMIN_LAST_NAME : adminProps.lastName())
+            .email(email)
+            .password(requireNonNull(passwordEncoder.encode(nonNullPassword)))
+            .active(true)
+            .verified(true)
+            .build();
 
-        admin.setRoles(
-                adminRoleNames.stream()
-                        .map(roleService::getOrCreateDefaultRole)
-                        .collect(Collectors.toSet()));
+        admin.setRoles(adminRoleNames.stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet()));
 
         userService.saveUser(admin);
         log.info("[DataSeeder] Admin user created: {}", email);
     }
 
     @ConfigurationProperties(prefix = "admin")
-    public record AdminProps(String email, String password, String firstName, String lastName) {}
+    public record AdminProps(String email, String password, String firstName, String lastName) {
+    }
 
     @Getter
     @Setter

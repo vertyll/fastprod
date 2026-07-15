@@ -1,10 +1,5 @@
 package com.vertyll.fastprod.employee.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -35,26 +30,36 @@ import com.vertyll.fastprod.user.repository.UserRepository;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 @SuppressFBWarnings(
-        value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD"},
-        justification =
-                "Test class: employeeMapper is used by Mockito injection; hardcoded test passwords are safe in unit tests")
+    value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD"},
+    justification = "Test class: employeeMapper is used by Mockito injection; hardcoded test passwords are safe in unit tests"
+)
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
 
-    @Mock private UserRepository userRepository;
+    @Mock
+    private UserRepository userRepository;
 
-    @Mock private RoleService roleService;
+    @Mock
+    private RoleService roleService;
 
-    @Mock private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Spy
     @SuppressWarnings("UnusedVariable")
     private final EmployeeMapper employeeMapper = Mappers.getMapper(EmployeeMapper.class);
 
-    @InjectMocks private EmployeeServiceImpl employeeService;
+    @InjectMocks
+    private EmployeeServiceImpl employeeService;
 
-    @Captor private ArgumentCaptor<User> userCaptor;
+    @Captor
+    private ArgumentCaptor<User> userCaptor;
 
     private EmployeeCreateDto createDto;
     private EmployeeUpdateDto updateDto;
@@ -68,31 +73,23 @@ class EmployeeServiceTest {
 
         adminRole = Role.builder().name(RoleType.ADMIN).description("Admin role").build();
 
-        createDto =
-                new EmployeeCreateDto(
-                        "John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
+        createDto = new EmployeeCreateDto("John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
 
-        updateDto =
-                new EmployeeUpdateDto(
-                        "John Updated",
-                        "Doe Updated",
-                        "john.updated@example.com",
-                        null,
-                        Set.of("EMPLOYEE", "ADMIN"));
+        updateDto = new EmployeeUpdateDto("John Updated", "Doe Updated", "john.updated@example.com", null, Set.of("EMPLOYEE", "ADMIN"));
 
         Set<Role> roles = new HashSet<>();
         roles.add(employeeRole);
 
-        user =
-                User.builder()
-                        .firstName("John")
-                        .lastName("Doe")
-                        .email("john@example.com")
-                        .password("encodedPassword")
-                        .roles(roles)
-                        .verified(true)
-                        .active(true)
-                        .build();
+        user = User
+            .builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john@example.com")
+            .password("encodedPassword")
+            .roles(roles)
+            .verified(true)
+            .active(true)
+            .build();
     }
 
     @Test
@@ -124,8 +121,7 @@ class EmployeeServiceTest {
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> employeeService.createEmployee(createDto));
+        ApiException exception = assertThrows(ApiException.class, () -> employeeService.createEmployee(createDto));
 
         assertEquals("Email already exists", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -162,9 +158,7 @@ class EmployeeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when & then
-        ApiException exception =
-                assertThrows(
-                        ApiException.class, () -> employeeService.updateEmployee(1L, updateDto));
+        ApiException exception = assertThrows(ApiException.class, () -> employeeService.updateEmployee(1L, updateDto));
 
         assertEquals("Employee not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -177,9 +171,7 @@ class EmployeeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when & then
-        ApiException exception =
-                assertThrows(
-                        ApiException.class, () -> employeeService.updateEmployee(1L, updateDto));
+        ApiException exception = assertThrows(ApiException.class, () -> employeeService.updateEmployee(1L, updateDto));
 
         assertEquals("Cannot update inactive employee", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -188,18 +180,13 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_WhenEmailAlreadyExists_ShouldThrowException() {
         // given
-        EmployeeUpdateDto dtoWithDifferentEmail =
-                new EmployeeUpdateDto(
-                        "John", "Doe", "different@example.com", null, Set.of("EMPLOYEE"));
+        EmployeeUpdateDto dtoWithDifferentEmail = new EmployeeUpdateDto("John", "Doe", "different@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail("different@example.com")).thenReturn(true);
 
         // when & then
-        ApiException exception =
-                assertThrows(
-                        ApiException.class,
-                        () -> employeeService.updateEmployee(1L, dtoWithDifferentEmail));
+        ApiException exception = assertThrows(ApiException.class, () -> employeeService.updateEmployee(1L, dtoWithDifferentEmail));
 
         assertEquals("Email already exists", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -229,8 +216,7 @@ class EmployeeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> employeeService.getEmployeeById(1L));
+        ApiException exception = assertThrows(ApiException.class, () -> employeeService.getEmployeeById(1L));
 
         assertEquals("Employee not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -243,8 +229,7 @@ class EmployeeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> employeeService.getEmployeeById(1L));
+        ApiException exception = assertThrows(ApiException.class, () -> employeeService.getEmployeeById(1L));
 
         assertEquals("Employee not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -272,8 +257,7 @@ class EmployeeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> employeeService.deleteEmployee(1L));
+        ApiException exception = assertThrows(ApiException.class, () -> employeeService.deleteEmployee(1L));
 
         assertEquals("Employee not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
@@ -286,8 +270,7 @@ class EmployeeServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> employeeService.deleteEmployee(1L));
+        ApiException exception = assertThrows(ApiException.class, () -> employeeService.deleteEmployee(1L));
 
         assertEquals("Employee already deleted", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -300,8 +283,7 @@ class EmployeeServiceTest {
         when(roleService.getOrCreateDefaultRole(RoleType.ADMIN)).thenReturn(adminRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        EmployeeUpdateDto updateRequest =
-                new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
+        EmployeeUpdateDto updateRequest = new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
 
         // when
         EmployeeResponseDto result = employeeService.updateEmployee(1L, updateRequest);
@@ -318,8 +300,7 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_WhenNoRolesProvided_ShouldCreateEmployeeWithDefaultRole() {
         // given
-        EmployeeCreateDto createDtoWithoutRoles =
-                new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", null);
+        EmployeeCreateDto createDtoWithoutRoles = new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", null);
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -337,8 +318,7 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_WhenEmptyRolesProvided_ShouldCreateEmployeeWithDefaultRole() {
         // given
-        EmployeeCreateDto createDtoWithEmptyRoles =
-                new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
+        EmployeeCreateDto createDtoWithEmptyRoles = new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -357,8 +337,7 @@ class EmployeeServiceTest {
     void updateEmployee_WhenPasswordProvided_ShouldEncodePassword() {
         // given
         EmployeeUpdateDto updateWithPassword =
-                new EmployeeUpdateDto(
-                        "John", "Doe", "john@example.com", "newPassword123", Set.of("EMPLOYEE"));
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", "newPassword123", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");
@@ -378,8 +357,7 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_WhenPasswordNull_ShouldNotEncodePassword() {
         // given
-        EmployeeUpdateDto updateWithoutPassword =
-                new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("EMPLOYEE"));
+        EmployeeUpdateDto updateWithoutPassword = new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
@@ -396,8 +374,7 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_WhenPasswordBlank_ShouldNotEncodePassword() {
         // given
-        EmployeeUpdateDto updateWithBlankPassword =
-                new EmployeeUpdateDto("John", "Doe", "john@example.com", "   ", Set.of("EMPLOYEE"));
+        EmployeeUpdateDto updateWithBlankPassword = new EmployeeUpdateDto("John", "Doe", "john@example.com", "   ", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);

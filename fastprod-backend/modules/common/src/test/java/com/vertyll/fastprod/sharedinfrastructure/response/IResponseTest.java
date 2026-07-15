@@ -1,11 +1,11 @@
 package com.vertyll.fastprod.sharedinfrastructure.response;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class IResponseTest {
 

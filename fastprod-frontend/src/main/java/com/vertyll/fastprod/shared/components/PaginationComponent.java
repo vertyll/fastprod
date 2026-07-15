@@ -22,11 +22,14 @@ public class PaginationComponent extends HorizontalLayout {
     private final Span totalElementsSpan;
     private final Select<Integer> pageSizeSelect;
 
-    @Getter private int currentPage = 0;
+    @Getter
+    private int currentPage = 0;
     private int totalPages = 0;
     private long totalElements = 0;
-    @Setter private transient Consumer<Integer> onPageChange;
-    @Setter private transient Consumer<Integer> onPageSizeChange;
+    @Setter
+    private transient Consumer<Integer> onPageChange;
+    @Setter
+    private transient Consumer<Integer> onPageSizeChange;
 
     public PaginationComponent() {
         setSpacing(true);
@@ -45,17 +48,18 @@ public class PaginationComponent extends HorizontalLayout {
         pageSizeLabel.getStyle().set("margin-right", "var(--lumo-space-s)");
 
         add(
-                previousButton,
-                new Span("Page"),
-                pageField,
-                new Span("of"),
-                pageInfoSpan,
-                nextButton,
-                new Span("·"),
-                totalElementsSpan,
-                new Span("total"),
-                pageSizeLabel,
-                pageSizeSelect);
+            previousButton,
+            new Span("Page"),
+            pageField,
+            new Span("of"),
+            pageInfoSpan,
+            nextButton,
+            new Span("·"),
+            totalElementsSpan,
+            new Span("total"),
+            pageSizeLabel,
+            pageSizeSelect
+        );
     }
 
     private Button createPreviousButton() {

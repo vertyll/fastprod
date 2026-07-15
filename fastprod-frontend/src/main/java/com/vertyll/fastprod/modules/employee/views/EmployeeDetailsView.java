@@ -1,5 +1,12 @@
 package com.vertyll.fastprod.modules.employee.views;
 
+import com.vertyll.fastprod.base.ui.MainLayout;
+import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
+import com.vertyll.fastprod.modules.employee.service.EmployeeService;
+import com.vertyll.fastprod.shared.components.DetailsTableComponent;
+import com.vertyll.fastprod.shared.components.LoadingSpinner;
+import com.vertyll.fastprod.shared.dto.ApiResponse;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -13,13 +20,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.base.ui.MainLayout;
-import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
-import com.vertyll.fastprod.modules.employee.service.EmployeeService;
-import com.vertyll.fastprod.shared.components.DetailsTableComponent;
-import com.vertyll.fastprod.shared.components.LoadingSpinner;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 
 @Route(value = "employees/details/:id", layout = MainLayout.class)
 @PageTitle("Employee Details | FastProd")
@@ -51,8 +51,9 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         if (employeeId != null) {
             loadEmployee(employeeId);
         } else {
-            Notification.show("Invalid employee ID", 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notification
+                .show("Invalid employee ID", 3000, Notification.Position.TOP_CENTER)
+                .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
         }
     }
@@ -88,10 +89,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         buttonLayout.addClassName("page-header");
         buttonLayout.add(backButton, new HorizontalLayout(editButton, deleteButton));
 
-        titleLabel
-                .getStyle()
-                .set("margin-top", "var(--lumo-space-m)")
-                .set("margin-bottom", "var(--lumo-space-s)");
+        titleLabel.getStyle().set("margin-top", "var(--lumo-space-m)").set("margin-bottom", "var(--lumo-space-s)");
 
         header.add(buttonLayout, titleLabel);
         return header;
@@ -107,11 +105,9 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
             }
         } catch (Exception e) {
             log.error("Failed to load employee", e);
-            Notification.show(
-                            "Failed to load employee: " + e.getMessage(),
-                            3000,
-                            Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notification
+                .show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+                .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
         } finally {
             loadingSpinner.hide();
@@ -144,11 +140,9 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     }
 
     private void confirmDelete() {
-        com.vaadin.flow.component.confirmdialog.ConfirmDialog dialog =
-                new com.vaadin.flow.component.confirmdialog.ConfirmDialog();
+        com.vaadin.flow.component.confirmdialog.ConfirmDialog dialog = new com.vaadin.flow.component.confirmdialog.ConfirmDialog();
         dialog.setHeader("Delete Employee");
-        dialog.setText(
-                "Are you sure you want to delete this employee? This action cannot be undone.");
+        dialog.setText("Are you sure you want to delete this employee? This action cannot be undone.");
         dialog.setCancelable(true);
         dialog.setConfirmText("Delete");
         dialog.setConfirmButtonTheme("error primary");
@@ -159,17 +153,15 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     private void deleteEmployee() {
         try {
             employeeService.deleteEmployee(employeeId);
-            Notification.show(
-                            "Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            Notification
+                .show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
+                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             navigateToList();
         } catch (Exception e) {
             log.error("Failed to delete employee", e);
-            Notification.show(
-                            "Failed to delete employee: " + e.getMessage(),
-                            3000,
-                            Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notification
+                .show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+                .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 

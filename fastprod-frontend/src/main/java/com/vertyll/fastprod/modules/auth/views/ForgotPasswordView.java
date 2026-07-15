@@ -1,5 +1,9 @@
 package com.vertyll.fastprod.modules.auth.views;
 
+import com.vertyll.fastprod.modules.auth.service.AuthService;
+import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
+import com.vertyll.fastprod.shared.exception.ApiException;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -20,10 +24,6 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.modules.auth.service.AuthService;
-import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
-import com.vertyll.fastprod.shared.exception.ApiException;
 
 @Route("forgot-password")
 @PageTitle("Forgot Password | FastProd")
@@ -52,9 +52,9 @@ public class ForgotPasswordView extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
         getStyle()
-                .set("background", "var(--lumo-base-color)")
-                .set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
-                .set("box-sizing", "border-box");
+            .set("background", "var(--lumo-base-color)")
+            .set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
+            .set("box-sizing", "border-box");
 
         createView();
     }
@@ -62,34 +62,31 @@ public class ForgotPasswordView extends VerticalLayout {
     private void createView() {
         Div card = new Div();
         card.addClassName("forgot-password-card");
-        card.getStyle()
-                .set("background", "var(--lumo-base-color)")
-                .set("border-radius", "var(--lumo-border-radius-l)")
-                .set("border", "1px solid var(--lumo-contrast-10pct)")
-                .set("padding", "var(--lumo-space-xl)")
-                .set("max-width", "500px")
-                .set("width", "100%")
-                .set("box-sizing", "border-box")
-                .set(TEXT_ALIGN, CENTER);
+        card
+            .getStyle()
+            .set("background", "var(--lumo-base-color)")
+            .set("border-radius", "var(--lumo-border-radius-l)")
+            .set("border", "1px solid var(--lumo-contrast-10pct)")
+            .set("padding", "var(--lumo-space-xl)")
+            .set("max-width", "500px")
+            .set("width", "100%")
+            .set("box-sizing", "border-box")
+            .set(TEXT_ALIGN, CENTER);
 
         Icon icon = VaadinIcon.KEY_O.create();
         icon.setSize("64px");
         icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         H1 title = new H1("Forgot Password?");
-        title.getStyle()
-                .set("margin", "0")
-                .set("font-size", "var(--lumo-font-size-xxxl)")
-                .set("font-weight", "600")
-                .set(COLOR, "var(--lumo-primary-text-color)");
+        title
+            .getStyle()
+            .set("margin", "0")
+            .set("font-size", "var(--lumo-font-size-xxxl)")
+            .set("font-weight", "600")
+            .set(COLOR, "var(--lumo-primary-text-color)");
 
-        Paragraph description =
-                new Paragraph(
-                        "Enter your email address and we'll send you instructions to reset your password.");
-        description
-                .getStyle()
-                .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
-                .set(COLOR, "var(--lumo-secondary-text-color)");
+        Paragraph description = new Paragraph("Enter your email address and we'll send you instructions to reset your password.");
+        description.getStyle().set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0").set(COLOR, "var(--lumo-secondary-text-color)");
 
         emailField = new EmailField("Email Address");
         emailField.setWidthFull();
@@ -98,10 +95,11 @@ public class ForgotPasswordView extends VerticalLayout {
         emailField.setRequiredIndicatorVisible(true);
         emailField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
-        binder.forField(emailField)
-                .asRequired("Email is required")
-                .withValidator(new EmailValidator("Please enter a valid email address"))
-                .bind(FormData::email, FormData::setEmail);
+        binder
+            .forField(emailField)
+            .asRequired("Email is required")
+            .withValidator(new EmailValidator("Please enter a valid email address"))
+            .bind(FormData::email, FormData::setEmail);
 
         submitButton = new Button("Send Reset Instructions", VaadinIcon.ENVELOPE_OPEN.create());
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
@@ -129,9 +127,7 @@ public class ForgotPasswordView extends VerticalLayout {
 
         try {
             authService.requestPasswordReset(email);
-            showNotification(
-                    "Password reset code sent! Please check your email.",
-                    NotificationVariant.LUMO_SUCCESS);
+            showNotification("Password reset code sent! Please check your email.", NotificationVariant.LUMO_SUCCESS);
             emailField.setEnabled(false);
             showVerificationDialog();
 
@@ -139,9 +135,7 @@ public class ForgotPasswordView extends VerticalLayout {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during password reset request: {}", e.getMessage());
         } catch (Exception e) {
-            showNotification(
-                    "Failed to send reset instructions. Please try again.",
-                    NotificationVariant.LUMO_ERROR);
+            showNotification("Failed to send reset instructions. Please try again.", NotificationVariant.LUMO_ERROR);
             log.error("Error during password reset request", e);
         } finally {
             submitButton.setEnabled(true);
@@ -151,10 +145,7 @@ public class ForgotPasswordView extends VerticalLayout {
 
     private void showVerificationDialog() {
         VerificationCodeDialog dialog =
-                new VerificationCodeDialog(
-                        "Enter Reset Code",
-                        "Please enter the 6-digit code sent to your email.",
-                        this::handleVerifyCode);
+                new VerificationCodeDialog("Enter Reset Code", "Please enter the 6-digit code sent to your email.", this::handleVerifyCode);
         dialog.open();
     }
 
@@ -171,10 +162,7 @@ public class ForgotPasswordView extends VerticalLayout {
 
         Div text = new Div();
         text.setText(message);
-        text.getStyle()
-                .set("white-space", "normal")
-                .set("max-width", "400px")
-                .set(TEXT_ALIGN, CENTER);
+        text.getStyle().set("white-space", "normal").set("max-width", "400px").set(TEXT_ALIGN, CENTER);
 
         notification.add(text);
         notification.open();

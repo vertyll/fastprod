@@ -1,13 +1,5 @@
 package com.vertyll.fastprod.employee.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -33,6 +25,14 @@ import com.vertyll.fastprod.sharedinfrastructure.exception.GlobalExceptionHandle
 
 import tools.jackson.databind.ObjectMapper;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @ExtendWith(MockitoExtension.class)
 class EmployeeControllerTest {
 
@@ -57,27 +57,17 @@ class EmployeeControllerTest {
         validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
-        mockMvc =
-                MockMvcBuilders.standaloneSetup(employeeController)
-                        .setControllerAdvice(new GlobalExceptionHandler())
-                        .setValidator(validator)
-                        .build();
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(employeeController)
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .setValidator(validator)
+            .build();
 
-        createDto =
-                new EmployeeCreateDto(
-                        "John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
+        createDto = new EmployeeCreateDto("John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
 
-        updateDto =
-                new EmployeeUpdateDto(
-                        "John Updated",
-                        "Doe Updated",
-                        "john.updated@example.com",
-                        null,
-                        Set.of("EMPLOYEE", "ADMIN"));
+        updateDto = new EmployeeUpdateDto("John Updated", "Doe Updated", "john.updated@example.com", null, Set.of("EMPLOYEE", "ADMIN"));
 
-        responseDto =
-                new EmployeeResponseDto(
-                        1L, "John", "Doe", "john@example.com", Set.of(RoleType.EMPLOYEE), true);
+        responseDto = new EmployeeResponseDto(1L, "John", "Doe", "john@example.com", Set.of(RoleType.EMPLOYEE), true);
     }
 
     @AfterEach
@@ -93,15 +83,13 @@ class EmployeeControllerTest {
         when(employeeService.createEmployee(any(EmployeeCreateDto.class))).thenReturn(responseDto);
 
         // when & then
-        mockMvc.perform(
-                        post("/employees")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(createDto)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.firstName").value("John"))
-                .andExpect(jsonPath("$.message").value("Employee created successfully"));
+        mockMvc
+            .perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createDto)))
+            .andDo(print())
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.data.id").value(1))
+            .andExpect(jsonPath("$.data.firstName").value("John"))
+            .andExpect(jsonPath("$.message").value("Employee created successfully"));
 
         verify(employeeService).createEmployee(any(EmployeeCreateDto.class));
     }
@@ -109,22 +97,20 @@ class EmployeeControllerTest {
     @Test
     void createEmployee_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
         // given
-        EmployeeCreateDto invalidCreateDto =
-                new EmployeeCreateDto(
-                        "John",
-                        "Doe",
-                        "invalid-email", // invalid email format
-                        "password123",
-                        Set.of("EMPLOYEE"));
+        EmployeeCreateDto invalidCreateDto = new EmployeeCreateDto(
+            "John",
+            "Doe",
+            "invalid-email", // invalid email format
+            "password123",
+            Set.of("EMPLOYEE")
+        );
 
         // when & then
-        mockMvc.perform(
-                        post("/employees")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidCreateDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidCreateDto)))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(employeeService, never()).createEmployee(any(EmployeeCreateDto.class));
     }
@@ -132,17 +118,14 @@ class EmployeeControllerTest {
     @Test
     void updateEmployee_WhenValidInput_ShouldReturnSuccess() throws Exception {
         // given
-        when(employeeService.updateEmployee(anyLong(), any(EmployeeUpdateDto.class)))
-                .thenReturn(responseDto);
+        when(employeeService.updateEmployee(anyLong(), any(EmployeeUpdateDto.class))).thenReturn(responseDto);
 
         // when & then
-        mockMvc.perform(
-                        put("/employees/1")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(updateDto)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Employee updated successfully"));
+        mockMvc
+            .perform(put("/employees/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Employee updated successfully"));
 
         verify(employeeService).updateEmployee(eq(1L), any(EmployeeUpdateDto.class));
     }
@@ -151,17 +134,15 @@ class EmployeeControllerTest {
     void updateEmployee_WhenEmployeeNotFound_ShouldReturnNotFound() throws Exception {
         // given
         doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND))
-                .when(employeeService)
-                .updateEmployee(anyLong(), any(EmployeeUpdateDto.class));
+            .when(employeeService)
+            .updateEmployee(anyLong(), any(EmployeeUpdateDto.class));
 
         // when & then
-        mockMvc.perform(
-                        put("/employees/1")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(updateDto)))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Employee not found"));
+        mockMvc
+            .perform(put("/employees/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("Employee not found"));
     }
 
     @Test
@@ -170,12 +151,13 @@ class EmployeeControllerTest {
         when(employeeService.getEmployeeById(1L)).thenReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/employees/1"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.firstName").value("John"))
-                .andExpect(jsonPath("$.message").value("Employee retrieved successfully"));
+        mockMvc
+            .perform(get("/employees/1"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.id").value(1))
+            .andExpect(jsonPath("$.data.firstName").value("John"))
+            .andExpect(jsonPath("$.message").value("Employee retrieved successfully"));
 
         verify(employeeService).getEmployeeById(1L);
     }
@@ -183,14 +165,14 @@ class EmployeeControllerTest {
     @Test
     void getEmployee_WhenNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        when(employeeService.getEmployeeById(1L))
-                .thenThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+        when(employeeService.getEmployeeById(1L)).thenThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND));
 
         // when & then
-        mockMvc.perform(get("/employees/1"))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Employee not found"));
+        mockMvc
+            .perform(get("/employees/1"))
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("Employee not found"));
     }
 
     @Test
@@ -199,10 +181,11 @@ class EmployeeControllerTest {
         doNothing().when(employeeService).deleteEmployee(1L);
 
         // when & then
-        mockMvc.perform(delete("/employees/1"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Employee deleted successfully"));
+        mockMvc
+            .perform(delete("/employees/1"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Employee deleted successfully"));
 
         verify(employeeService).deleteEmployee(1L);
     }
@@ -210,14 +193,13 @@ class EmployeeControllerTest {
     @Test
     void deleteEmployee_WhenNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND))
-                .when(employeeService)
-                .deleteEmployee(1L);
+        doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND)).when(employeeService).deleteEmployee(1L);
 
         // when & then
-        mockMvc.perform(delete("/employees/1"))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Employee not found"));
+        mockMvc
+            .perform(delete("/employees/1"))
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("Employee not found"));
     }
 }

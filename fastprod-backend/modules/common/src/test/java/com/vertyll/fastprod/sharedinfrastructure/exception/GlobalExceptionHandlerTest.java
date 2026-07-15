@@ -1,10 +1,5 @@
 package com.vertyll.fastprod.sharedinfrastructure.exception;
 
-import static java.util.Objects.requireNonNull;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +18,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
 import com.vertyll.fastprod.sharedinfrastructure.response.ValidationErrorResponse;
+
+import static java.util.Objects.requireNonNull;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GlobalExceptionHandlerTest {
 
@@ -81,15 +82,12 @@ class GlobalExceptionHandlerTest {
         // given
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         BindingResult bindingResult = mock(BindingResult.class);
-        FieldError passwordError1 =
-                new FieldError("object", "password", "Password must be at least 8 characters");
-        FieldError passwordError2 =
-                new FieldError("object", "password", "Password must contain an uppercase letter");
+        FieldError passwordError1 = new FieldError("object", "password", "Password must be at least 8 characters");
+        FieldError passwordError2 = new FieldError("object", "password", "Password must contain an uppercase letter");
         FieldError emailError = new FieldError("object", "email", "Invalid email format");
 
         when(ex.getBindingResult()).thenReturn(bindingResult);
-        when(bindingResult.getFieldErrors())
-                .thenReturn(Arrays.asList(passwordError1, passwordError2, emailError));
+        when(bindingResult.getFieldErrors()).thenReturn(Arrays.asList(passwordError1, passwordError2, emailError));
 
         // when
         ResponseEntity<ValidationErrorResponse> response = handler.handleValidationException(ex);
@@ -104,12 +102,8 @@ class GlobalExceptionHandlerTest {
         assertEquals(2, errors.size());
         assertEquals(2, requireNonNull(errors.get("password")).size());
         assertEquals(1, requireNonNull(errors.get("email")).size());
-        assertTrue(
-                requireNonNull(errors.get("password"))
-                        .contains("Password must be at least 8 characters"));
-        assertTrue(
-                requireNonNull(errors.get("password"))
-                        .contains("Password must contain an uppercase letter"));
+        assertTrue(requireNonNull(errors.get("password")).contains("Password must be at least 8 characters"));
+        assertTrue(requireNonNull(errors.get("password")).contains("Password must contain an uppercase letter"));
         assertEquals(List.of("Invalid email format"), errors.get("email"));
     }
 

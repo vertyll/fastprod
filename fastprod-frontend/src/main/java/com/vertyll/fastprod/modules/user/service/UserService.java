@@ -15,10 +15,7 @@ public class UserService extends BaseHttpService {
 
     private static final String USER_ENDPOINT = "/users";
 
-    public UserService(
-            @Value("${api.backend.url}") String backendUrl,
-            ObjectMapper objectMapper,
-            AuthTokenProvider authTokenProvider) {
+    public UserService(@Value("${api.backend.url}") String backendUrl, ObjectMapper objectMapper, AuthTokenProvider authTokenProvider) {
         super(backendUrl, objectMapper, authTokenProvider);
     }
 

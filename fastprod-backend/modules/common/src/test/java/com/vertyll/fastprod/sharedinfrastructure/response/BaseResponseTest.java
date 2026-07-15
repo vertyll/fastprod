@@ -1,7 +1,5 @@
 package com.vertyll.fastprod.sharedinfrastructure.response;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -10,11 +8,14 @@ import org.junit.jupiter.api.Test;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class BaseResponseTest {
 
     @SuperBuilder
     @NoArgsConstructor
-    private static class TestBaseResponse<T> extends BaseResponse<T> {}
+    private static class TestBaseResponse<T> extends BaseResponse<T> {
+    }
 
     @Test
     void builderShouldSetAllFields() {
@@ -24,12 +25,7 @@ class BaseResponseTest {
         LocalDateTime testTime = LocalDateTime.now(ZoneOffset.UTC);
 
         // when
-        BaseResponse<String> response =
-                TestBaseResponse.<String>builder()
-                        .data(testData)
-                        .message(testMessage)
-                        .timestamp(testTime)
-                        .build();
+        BaseResponse<String> response = TestBaseResponse.<String>builder().data(testData).message(testMessage).timestamp(testTime).build();
 
         // then
         assertEquals(testData, response.getData());

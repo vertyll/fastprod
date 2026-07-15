@@ -180,13 +180,43 @@ tasks.withType<Test> {
 
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     java {
-        target("src/main/java/**/*.java", "src/test/java/**/*.java")
-        targetExclude("**/build/generated/**/*.java", "**/*Impl.java")
+        target(
+            "src/main/java/**/*.java",
+            "src/test/java/**/*.java",
+        )
 
-        googleJavaFormat(libs.versions.google.java.format.get()).aosp()
+        targetExclude(
+            "**/build/generated/**/*.java",
+            "**/*Impl.java",
+        )
 
         removeUnusedImports()
-        importOrder("java", "javax", "org", "com", "lombok", "com.vertyll")
+
+        importOrder(
+            "java",
+            "javax",
+            "jakarta",
+            "org",
+            "com.vertyll",
+            "com",
+            "",
+            "\\#java",
+            "\\#javax",
+            "\\#jakarta",
+            "\\#org",
+            "\\#com.vertyll",
+            "\\#com",
+            "\\#",
+        )
+
+        eclipse(rootProject.libs.versions.eclipse.jdt.get())
+            .configFile(
+                rootProject.file(
+                    "config/formatter/eclipse-java-custom-style.xml",
+                ),
+            )
+
+        formatAnnotations()
 
         trimTrailingWhitespace()
         endWithNewline()
@@ -195,7 +225,11 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     }
 
     format("gradle") {
-        target("*.gradle.kts", "**/*.gradle.kts")
+        target(
+            "*.gradle.kts",
+            "**/*.gradle.kts",
+        )
+
         trimTrailingWhitespace()
         leadingTabsToSpaces(4)
         endWithNewline()

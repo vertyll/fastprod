@@ -1,7 +1,5 @@
 package com.vertyll.fastprod.sharedinfrastructure.exception;
 
-import static java.util.Objects.requireNonNullElse;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -24,6 +22,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
 import com.vertyll.fastprod.sharedinfrastructure.response.ValidationErrorResponse;
 
+import static java.util.Objects.requireNonNullElse;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -33,50 +33,38 @@ public class GlobalExceptionHandler {
     private static final String INVALID_EMAIL_OR_PASSWORD = "Invalid email or password";
     private static final String ACCOUNT_IS_DISABLED = "Account is disabled";
     private static final String ACCOUNT_IS_LOCKED = "Account is locked";
-    private static final String NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION =
-            "You do not have permission to perform this action";
+    private static final String NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION = "You do not have permission to perform this action";
     private static final String ACCESS_DENIED = "Access denied";
     private static final String AUTHENTICATION_REQUIRED = "Authentication required";
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<Void>> handleApiException(ApiException ex) {
-        return ApiResponse.buildResponse(
-                null,
-                requireNonNullElse(ex.getMessage(), AN_UNEXPECTED_ERROR_OCCURRED),
-                ex.getStatus());
+        return ApiResponse.buildResponse(null, requireNonNullElse(ex.getMessage(), AN_UNEXPECTED_ERROR_OCCURRED), ex.getStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationException(
-            MethodArgumentNotValidException ex) {
+    public ResponseEntity<ValidationErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, List<String>> errors = new ConcurrentHashMap<>();
 
-        ex.getBindingResult()
-                .getFieldErrors()
-                .forEach(
-                        error -> {
-                            String field = error.getField();
-                            String message =
-                                    error.getDefaultMessage() != null
-                                            ? error.getDefaultMessage()
-                                            : INVALID_VALUE;
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            String field = error.getField();
+            String message = error.getDefaultMessage() != null ? error.getDefaultMessage() : INVALID_VALUE;
 
-                            errors.computeIfAbsent(field, _ -> new ArrayList<>()).add(message);
-                        });
+            errors.computeIfAbsent(field, _ -> new ArrayList<>()).add(message);
+        });
 
-        ValidationErrorResponse response =
-                ValidationErrorResponse.builder()
-                        .message(VALIDATION_FAILED)
-                        .errors(errors)
-                        .timestamp(LocalDateTime.now(ZoneOffset.UTC))
-                        .build();
+        ValidationErrorResponse response = ValidationErrorResponse
+            .builder()
+            .message(VALIDATION_FAILED)
+            .errors(errors)
+            .timestamp(LocalDateTime.now(ZoneOffset.UTC))
+            .build();
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(
-            BadCredentialsException ignoredEx) {
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException ignoredEx) {
         return ApiResponse.buildResponse(null, INVALID_EMAIL_OR_PASSWORD, HttpStatus.UNAUTHORIZED);
     }
 
@@ -92,26 +80,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception ignoredEx) {
-        return ApiResponse.buildResponse(
-                null, AN_UNEXPECTED_ERROR_OCCURRED, HttpStatus.INTERNAL_SERVER_ERROR);
+        return ApiResponse.buildResponse(null, AN_UNEXPECTED_ERROR_OCCURRED, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(
-            AuthorizationDeniedException ignoredEx) {
-        return ApiResponse.buildResponse(
-                null, NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION, HttpStatus.FORBIDDEN);
+    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(AuthorizationDeniedException ignoredEx) {
+        return ApiResponse.buildResponse(null, NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(
-            AccessDeniedException ignoredEx) {
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ignoredEx) {
         return ApiResponse.buildResponse(null, ACCESS_DENIED, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleAuthenticationCredentialsNotFoundException(
-            AuthenticationCredentialsNotFoundException ignoredEx) {
+        AuthenticationCredentialsNotFoundException ignoredEx
+    ) {
         return ApiResponse.buildResponse(null, AUTHENTICATION_REQUIRED, HttpStatus.UNAUTHORIZED);
     }
 }

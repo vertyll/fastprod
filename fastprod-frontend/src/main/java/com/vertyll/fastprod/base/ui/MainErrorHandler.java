@@ -21,42 +21,18 @@ public class MainErrorHandler {
     @Bean
     @SuppressWarnings("FutureReturnValueIgnored")
     public VaadinServiceInitListener errorHandlerInitializer() {
-        return event ->
-                event.getSource()
-                        .addSessionInitListener(
-                                sessionInitEvent ->
-                                        sessionInitEvent
-                                                .getSession()
-                                                .setErrorHandler(
-                                                        errorEvent -> {
-                                                            log.error(
-                                                                    "An unexpected error occurred",
-                                                                    errorEvent.getThrowable());
-                                                            errorEvent
-                                                                    .getComponent()
-                                                                    .flatMap(Component::getUI)
-                                                                    .ifPresent(
-                                                                            ui -> {
-                                                                                var notification =
-                                                                                        new Notification(
-                                                                                                AN_UNEXPECTED_ERROR_HAS_OCCURRED_PLEASE_TRY_AGAIN_LATER);
-                                                                                notification
-                                                                                        .addThemeVariants(
-                                                                                                NotificationVariant
-                                                                                                        .LUMO_ERROR);
-                                                                                notification
-                                                                                        .setPosition(
-                                                                                                Notification
-                                                                                                        .Position
-                                                                                                        .TOP_CENTER);
-                                                                                notification
-                                                                                        .setDuration(
-                                                                                                3000);
+        return event -> event
+            .getSource()
+            .addSessionInitListener(sessionInitEvent -> sessionInitEvent.getSession().setErrorHandler(errorEvent -> {
+                log.error("An unexpected error occurred", errorEvent.getThrowable());
+                errorEvent.getComponent().flatMap(Component::getUI).ifPresent(ui -> {
+                    var notification = new Notification(AN_UNEXPECTED_ERROR_HAS_OCCURRED_PLEASE_TRY_AGAIN_LATER);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.setPosition(Notification.Position.TOP_CENTER);
+                    notification.setDuration(3000);
 
-                                                                                ui.access(
-                                                                                        notification
-                                                                                                ::open);
-                                                                            });
-                                                        }));
+                    ui.access(notification::open);
+                });
+            }));
     }
 }

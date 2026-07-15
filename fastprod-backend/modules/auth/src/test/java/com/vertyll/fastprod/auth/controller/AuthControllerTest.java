@@ -1,13 +1,7 @@
 package com.vertyll.fastprod.auth.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +21,16 @@ import com.vertyll.fastprod.auth.service.AuthService;
 import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.sharedinfrastructure.exception.GlobalExceptionHandler;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import tools.jackson.databind.ObjectMapper;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -58,11 +59,11 @@ class AuthControllerTest {
         validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
-        mockMvc =
-                MockMvcBuilders.standaloneSetup(authController)
-                        .setControllerAdvice(new GlobalExceptionHandler())
-                        .setValidator(validator)
-                        .build();
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(authController)
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .setValidator(validator)
+            .build();
 
         registerRequest = new RegisterRequestDto("John", "Doe", "john@example.com", "password123");
 
@@ -90,14 +91,14 @@ class AuthControllerTest {
         doNothing().when(authService).register(any(RegisterRequestDto.class));
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(registerRequest)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("User registered successfully"))
-                .andExpect(jsonPath("$.data").doesNotExist());
+        mockMvc
+            .perform(
+                post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("User registered successfully"))
+            .andExpect(jsonPath("$.data").doesNotExist());
 
         verify(authService).register(any(RegisterRequestDto.class));
     }
@@ -105,17 +106,16 @@ class AuthControllerTest {
     @Test
     void register_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        RegisterRequestDto invalidRequest =
-                new RegisterRequestDto("John", "Doe", "invalid-email", "password123");
+        RegisterRequestDto invalidRequest = new RegisterRequestDto("John", "Doe", "invalid-email", "password123");
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(
+                post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).register(any(RegisterRequestDto.class));
     }
@@ -125,13 +125,13 @@ class AuthControllerTest {
         RegisterRequestDto invalidRequest = new RegisterRequestDto("", "", "", "");
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(
+                post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).register(any(RegisterRequestDto.class));
     }
@@ -140,79 +140,68 @@ class AuthControllerTest {
     void register_WhenEmailAlreadyExists_ShouldReturnBadRequest() throws Exception {
         // given
         doThrow(new ApiException("Email already registered", HttpStatus.BAD_REQUEST))
-                .when(authService)
-                .register(any(RegisterRequestDto.class));
+            .when(authService)
+            .register(any(RegisterRequestDto.class));
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(registerRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email already registered"));
+        mockMvc
+            .perform(
+                post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Email already registered"));
     }
 
     @Test
     void authenticate_WhenValidCredentials_ShouldReturnToken() throws Exception {
         // given
-        when(authService.authenticate(
-                        any(AuthRequestDto.class),
-                        any(HttpServletRequest.class),
-                        any(HttpServletResponse.class)))
-                .thenReturn(authResponse);
+        when(authService.authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+            .thenReturn(authResponse);
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/authenticate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(authRequest)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.token").value("jwt-token"))
-                .andExpect(jsonPath("$.data.type").value("Bearer"))
-                .andExpect(jsonPath("$.message").value("Authentication successful"));
+        mockMvc
+            .perform(
+                post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(authRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.token").value("jwt-token"))
+            .andExpect(jsonPath("$.data.type").value("Bearer"))
+            .andExpect(jsonPath("$.message").value("Authentication successful"));
     }
 
     @Test
     void authenticate_WhenInvalidCredentials_ShouldReturnUnauthorized() throws Exception {
         // given
-        when(authService.authenticate(
-                        any(AuthRequestDto.class),
-                        any(HttpServletRequest.class),
-                        any(HttpServletResponse.class)))
-                .thenThrow(new ApiException("Invalid credentials", HttpStatus.UNAUTHORIZED));
+        when(authService.authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+            .thenThrow(new ApiException("Invalid credentials", HttpStatus.UNAUTHORIZED));
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/authenticate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(authRequest)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Invalid credentials"));
+        mockMvc
+            .perform(
+                post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(authRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.message").value("Invalid credentials"));
     }
 
     @Test
     void authenticate_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        AuthRequestDto invalidRequest =
-                new AuthRequestDto("invalid-email", "password123", "web-browser");
+        AuthRequestDto invalidRequest = new AuthRequestDto("invalid-email", "password123", "web-browser");
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/authenticate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(
+                post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
-        verify(authService, never())
-                .authenticate(
-                        any(AuthRequestDto.class),
-                        any(HttpServletRequest.class),
-                        any(HttpServletResponse.class));
+        verify(authService, never()).authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
 
     @Test
@@ -220,63 +209,57 @@ class AuthControllerTest {
         AuthRequestDto invalidRequest = new AuthRequestDto("", "", "web-browser");
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/authenticate")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(
+                post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
-        verify(authService, never())
-                .authenticate(
-                        any(AuthRequestDto.class),
-                        any(HttpServletRequest.class),
-                        any(HttpServletResponse.class));
+        verify(authService, never()).authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
 
     @Test
     void refreshToken_WhenValidRefreshToken_ShouldReturnNewToken() throws Exception {
         // given
-        when(authService.refreshToken(
-                        any(HttpServletRequest.class), any(HttpServletResponse.class)))
-                .thenReturn(authResponse);
+        when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(authResponse);
 
         // when & then
-        mockMvc.perform(post("/auth/refresh-token"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.token").value("jwt-token"))
-                .andExpect(jsonPath("$.data.type").value("Bearer"))
-                .andExpect(jsonPath("$.message").value("Token refreshed successfully"));
+        mockMvc
+            .perform(post("/auth/refresh-token"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.token").value("jwt-token"))
+            .andExpect(jsonPath("$.data.type").value("Bearer"))
+            .andExpect(jsonPath("$.message").value("Token refreshed successfully"));
     }
 
     @Test
     void refreshToken_WhenInvalidRefreshToken_ShouldReturnUnauthorized() throws Exception {
         // given
-        when(authService.refreshToken(
-                        any(HttpServletRequest.class), any(HttpServletResponse.class)))
-                .thenThrow(new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED));
+        when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+            .thenThrow(new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED));
 
         // when & then
-        mockMvc.perform(post("/auth/refresh-token"))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Invalid refresh token"));
+        mockMvc
+            .perform(post("/auth/refresh-token"))
+            .andDo(print())
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.message").value("Invalid refresh token"));
     }
 
     @Test
     void logout_ShouldReturnSuccess() throws Exception {
         // given
-        doNothing()
-                .when(authService)
-                .logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        doNothing().when(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         // when & then
-        mockMvc.perform(post("/auth/logout"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Logged out successfully"));
+        mockMvc
+            .perform(post("/auth/logout"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Logged out successfully"));
 
         verify(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
@@ -284,19 +267,16 @@ class AuthControllerTest {
     @Test
     void logoutAll_ShouldReturnSuccess() throws Exception {
         // given
-        doNothing()
-                .when(authService)
-                .logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        doNothing().when(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         // when & then
-        mockMvc.perform(post("/auth/logout-all"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.message").value("Logged out from all sessions successfully"));
+        mockMvc
+            .perform(post("/auth/logout-all"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Logged out from all sessions successfully"));
 
-        verify(authService)
-                .logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
 
     @Test
@@ -305,10 +285,11 @@ class AuthControllerTest {
         doNothing().when(authService).verifyAccount(anyString());
 
         // when & then
-        mockMvc.perform(post("/auth/verify").param("code", "123456"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Account verified successfully"));
+        mockMvc
+            .perform(post("/auth/verify").param("code", "123456"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Account verified successfully"));
 
         verify(authService).verifyAccount("123456");
     }
@@ -316,15 +297,14 @@ class AuthControllerTest {
     @Test
     void verifyAccount_WhenInvalidCode_ShouldReturnBadRequest() throws Exception {
         // given
-        doThrow(new ApiException("Invalid verification code", HttpStatus.BAD_REQUEST))
-                .when(authService)
-                .verifyAccount(anyString());
+        doThrow(new ApiException("Invalid verification code", HttpStatus.BAD_REQUEST)).when(authService).verifyAccount(anyString());
 
         // when & then
-        mockMvc.perform(post("/auth/verify").param("code", "invalid"))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Invalid verification code"));
+        mockMvc
+            .perform(post("/auth/verify").param("code", "invalid"))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Invalid verification code"));
     }
 
     @Test
@@ -334,13 +314,15 @@ class AuthControllerTest {
         doNothing().when(authService).resendVerificationCode(anyString());
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/resend-verification-code")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Verification code sent successfully"));
+        mockMvc
+            .perform(
+                post("/auth/resend-verification-code")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Verification code sent successfully"));
 
         verify(authService).resendVerificationCode("john@example.com");
     }
@@ -351,13 +333,15 @@ class AuthControllerTest {
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("invalid-email");
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/resend-verification-code")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(
+                post("/auth/resend-verification-code")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).resendVerificationCode(anyString());
     }
@@ -365,39 +349,37 @@ class AuthControllerTest {
     @Test
     void resendVerificationCode_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        ResendVerificationRequestDto request =
-                new ResendVerificationRequestDto("nonexistent@example.com");
-        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND))
-                .when(authService)
-                .resendVerificationCode(anyString());
+        ResendVerificationRequestDto request = new ResendVerificationRequestDto("nonexistent@example.com");
+        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND)).when(authService).resendVerificationCode(anyString());
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/resend-verification-code")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("User not found"));
+        mockMvc
+            .perform(
+                post("/auth/resend-verification-code")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))
+            )
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message").value("User not found"));
     }
 
     @Test
-    void resendVerificationCode_WhenAccountAlreadyVerified_ShouldReturnBadRequest()
-            throws Exception {
+    void resendVerificationCode_WhenAccountAlreadyVerified_ShouldReturnBadRequest() throws Exception {
         // given
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("john@example.com");
-        doThrow(new ApiException("Account already verified", HttpStatus.BAD_REQUEST))
-                .when(authService)
-                .resendVerificationCode(anyString());
+        doThrow(new ApiException("Account already verified", HttpStatus.BAD_REQUEST)).when(authService).resendVerificationCode(anyString());
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/resend-verification-code")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Account already verified"));
+        mockMvc
+            .perform(
+                post("/auth/resend-verification-code")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Account already verified"));
     }
 
     @Test
@@ -405,15 +387,16 @@ class AuthControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/change-email-request")
-                                .with(user("john@example.com").roles("USER"))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(changeEmailRequest)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.message").value("Email change verification sent to new email"));
+        mockMvc
+            .perform(
+                post("/auth/change-email-request")
+                    .with(user("john@example.com").roles("USER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(changeEmailRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Email change verification sent to new email"));
 
         verify(authService).requestEmailChange(any(ChangeEmailRequestDto.class));
     }
@@ -421,18 +404,19 @@ class AuthControllerTest {
     @Test
     void requestEmailChange_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
         // given
-        ChangeEmailRequestDto invalidRequest =
-                new ChangeEmailRequestDto("password123", "invalid-email");
+        ChangeEmailRequestDto invalidRequest = new ChangeEmailRequestDto("password123", "invalid-email");
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/change-email-request")
-                                .with(user("john@example.com").roles("USER"))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(
+                post("/auth/change-email-request")
+                    .with(user("john@example.com").roles("USER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).requestEmailChange(any(ChangeEmailRequestDto.class));
     }
@@ -440,22 +424,18 @@ class AuthControllerTest {
     @Test
     void verifyEmailChange_WhenValidCode_ShouldReturnSuccess() throws Exception {
         // given
-        when(authService.verifyEmailChange(
-                        anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class)))
-                .thenReturn(authResponse);
+        when(authService.verifyEmailChange(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+            .thenReturn(authResponse);
 
         // when & then
-        mockMvc.perform(post("/auth/verify-email-change").param("code", "123456"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Email changed successfully"))
-                .andExpect(jsonPath("$.data.token").value("jwt-token"));
+        mockMvc
+            .perform(post("/auth/verify-email-change").param("code", "123456"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Email changed successfully"))
+            .andExpect(jsonPath("$.data.token").value("jwt-token"));
 
-        verify(authService)
-                .verifyEmailChange(
-                        eq("123456"),
-                        any(HttpServletRequest.class),
-                        any(HttpServletResponse.class));
+        verify(authService).verifyEmailChange(eq("123456"), any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
 
     @Test
@@ -463,15 +443,16 @@ class AuthControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/change-password-request")
-                                .with(user("john@example.com").roles("USER"))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(changePasswordRequest)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.message").value("Password change verification sent to email"));
+        mockMvc
+            .perform(
+                post("/auth/change-password-request")
+                    .with(user("john@example.com").roles("USER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(changePasswordRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Password change verification sent to email"));
 
         verify(authService).requestPasswordChange(any(ChangePasswordRequestDto.class));
     }
@@ -482,10 +463,11 @@ class AuthControllerTest {
         doNothing().when(authService).verifyPasswordChange(anyString());
 
         // when & then
-        mockMvc.perform(post("/auth/verify-password-change").param("code", "123456"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Password changed successfully"));
+        mockMvc
+            .perform(post("/auth/verify-password-change").param("code", "123456"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Password changed successfully"));
 
         verify(authService).verifyPasswordChange("123456");
     }
@@ -496,11 +478,11 @@ class AuthControllerTest {
         doNothing().when(authService).sendPasswordResetEmail(anyString());
 
         // when & then
-        mockMvc.perform(post("/auth/reset-password-request").param("email", "john@example.com"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.message").value("Password reset instructions sent to email"));
+        mockMvc
+            .perform(post("/auth/reset-password-request").param("email", "john@example.com"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Password reset instructions sent to email"));
 
         verify(authService).sendPasswordResetEmail("john@example.com");
     }
@@ -508,19 +490,19 @@ class AuthControllerTest {
     @Test
     void resetPassword_WhenValidTokenAndRequest_ShouldReturnSuccess() throws Exception {
         // given
-        doNothing()
-                .when(authService)
-                .resetPassword(anyString(), any(ResetPasswordRequestDto.class));
+        doNothing().when(authService).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/reset-password")
-                                .param("token", "valid-token")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(resetPasswordRequest)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Password reset successfully"));
+        mockMvc
+            .perform(
+                post("/auth/reset-password")
+                    .param("token", "valid-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(resetPasswordRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value("Password reset successfully"));
 
         verify(authService).resetPassword(eq("valid-token"), any(ResetPasswordRequestDto.class));
     }
@@ -531,14 +513,16 @@ class AuthControllerTest {
         ResetPasswordRequestDto invalidRequest = new ResetPasswordRequestDto("");
 
         // when & then
-        mockMvc.perform(
-                        post("/auth/reset-password")
-                                .param("token", "valid-token")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+        mockMvc
+            .perform(
+                post("/auth/reset-password")
+                    .param("token", "valid-token")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Validation failed"));
 
         verify(authService, never()).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
     }

@@ -2,12 +2,12 @@ package com.vertyll.fastprod.auth.service;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+
 import com.vertyll.fastprod.auth.dto.SessionInfoDto;
 import com.vertyll.fastprod.auth.entity.RefreshToken;
 import com.vertyll.fastprod.user.entity.User;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
 
 public interface RefreshTokenService {
     @Transactional

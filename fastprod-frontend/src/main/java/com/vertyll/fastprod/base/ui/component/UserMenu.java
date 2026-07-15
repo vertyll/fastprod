@@ -1,5 +1,10 @@
 package com.vertyll.fastprod.base.ui.component;
 
+import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
+import com.vertyll.fastprod.modules.user.service.UserService;
+import com.vertyll.fastprod.shared.dto.ApiResponse;
+import com.vertyll.fastprod.shared.security.SecurityService;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -14,11 +19,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
-import com.vertyll.fastprod.modules.user.service.UserService;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
-import com.vertyll.fastprod.shared.security.SecurityService;
 
 @Slf4j
 public class UserMenu extends HorizontalLayout {
@@ -54,30 +54,26 @@ public class UserMenu extends HorizontalLayout {
 
         Div profileHeader = new Div();
         profileHeader
-                .getStyle()
-                .set("padding", "var(--lumo-space-m)")
-                .set("border-bottom", "1px solid var(--lumo-contrast-10pct)")
-                .set("background", "var(--lumo-contrast-5pct)")
-                .set("min-width", "250px");
+            .getStyle()
+            .set("padding", "var(--lumo-space-m)")
+            .set("border-bottom", "1px solid var(--lumo-contrast-10pct)")
+            .set("background", "var(--lumo-contrast-5pct)")
+            .set("min-width", "250px");
 
-        userName.getStyle()
-                .set("display", "block")
-                .set("font-weight", "600")
-                .set("color", "var(--lumo-primary-text-color)");
+        userName.getStyle().set("display", "block").set("font-weight", "600").set("color", "var(--lumo-primary-text-color)");
 
         Span userEmailSpan = new Span();
         userEmailSpan
-                .getStyle()
-                .set("display", "block")
-                .set("font-size", "var(--lumo-font-size-xs)")
-                .set("color", "var(--lumo-secondary-text-color)")
-                .set("margin-top", "var(--lumo-space-xs)");
+            .getStyle()
+            .set("display", "block")
+            .set("font-size", "var(--lumo-font-size-xs)")
+            .set("color", "var(--lumo-secondary-text-color)")
+            .set("margin-top", "var(--lumo-space-xs)");
 
         profileHeader.add(userName, userEmailSpan);
         subMenu.addItem(profileHeader).setEnabled(false);
 
-        MenuItem profileItem =
-                subMenu.addItem("My Profile", _ -> UI.getCurrent().navigate("profile"));
+        MenuItem profileItem = subMenu.addItem("My Profile", _ -> UI.getCurrent().navigate("profile"));
         profileItem.addComponentAsFirst(VaadinIcon.USER.create());
 
         MenuItem logoutItem = subMenu.addItem("Logout", _ -> handleLogout());
