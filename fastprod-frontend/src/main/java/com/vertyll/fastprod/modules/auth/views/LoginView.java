@@ -51,7 +51,11 @@ public class LoginView extends VerticalLayout {
     private PasswordField passwordField;
     private Button loginButton;
 
-    public LoginView(AuthService authService, SecurityService securityService, TokenRefreshService tokenRefreshService) {
+    public LoginView(
+        AuthService authService,
+        SecurityService securityService,
+        TokenRefreshService tokenRefreshService
+    ) {
         this.authService = authService;
         this.securityService = securityService;
         this.tokenRefreshService = tokenRefreshService;
@@ -61,8 +65,7 @@ public class LoginView extends VerticalLayout {
         setMinHeight("100vh");
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        getStyle()
-            .set("background", "var(--lumo-base-color)")
+        getStyle().set("background", "var(--lumo-base-color)")
             .set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
             .set("box-sizing", "border-box");
 
@@ -72,8 +75,7 @@ public class LoginView extends VerticalLayout {
     private void createForm() {
         Div card = new Div();
         card.addClassName("login-card");
-        card
-            .getStyle()
+        card.getStyle()
             .set("background", "var(--lumo-base-color)")
             .set("border-radius", "var(--lumo-border-radius-l)")
             .set("border", "1px solid var(--lumo-contrast-10pct)")
@@ -83,15 +85,16 @@ public class LoginView extends VerticalLayout {
             .set("box-sizing", "border-box");
 
         H1 title = new H1(SIGN_IN);
-        title
-            .getStyle()
+        title.getStyle()
             .set("margin", "0")
             .set("font-size", "var(--lumo-font-size-xxxl)")
             .set("font-weight", "600")
             .set(COLOR, "var(--lumo-primary-text-color)");
 
         Paragraph subtitle = new Paragraph("Sign in to your account");
-        subtitle.getStyle().set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0").set(COLOR, "var(--lumo-secondary-text-color)");
+        subtitle.getStyle()
+            .set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0")
+            .set(COLOR, "var(--lumo-secondary-text-color)");
 
         emailField = new EmailField("Email");
         emailField.setRequiredIndicatorVisible(true);
@@ -113,8 +116,7 @@ public class LoginView extends VerticalLayout {
         loginButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         RouterLink forgotPasswordLink = new RouterLink("Forgot password?", ForgotPasswordView.class);
-        forgotPasswordLink
-            .getStyle()
+        forgotPasswordLink.getStyle()
             .set(COLOR, "var(--lumo-primary-color)")
             .set("text-decoration", "none")
             .set("font-size", "var(--lumo-font-size-s)")
@@ -123,7 +125,10 @@ public class LoginView extends VerticalLayout {
             .set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         RouterLink registerLink = new RouterLink("Create an account", RegisterView.class);
-        registerLink.getStyle().set(COLOR, "var(--lumo-primary-color)").set("text-decoration", "none").set("font-weight", "500");
+        registerLink.getStyle()
+            .set(COLOR, "var(--lumo-primary-color)")
+            .set("text-decoration", "none")
+            .set("font-weight", "500");
 
         Div registerContainer = new Div();
         registerContainer.getStyle().set(TEXT_ALIGN, CENTER).set("margin-top", LUMO_SPACE_M);
@@ -137,12 +142,13 @@ public class LoginView extends VerticalLayout {
     }
 
     private void configureBinder() {
-        binder
-            .forField(emailField)
+        binder.forField(emailField)
             .withValidator(new EmailValidator("Please enter a valid email address"))
             .bind(FormBuilder::getEmail, FormBuilder::setEmail);
 
-        binder.forField(passwordField).asRequired("Password is required").bind(FormBuilder::getPassword, FormBuilder::setPassword);
+        binder.forField(passwordField)
+            .asRequired("Password is required")
+            .bind(FormBuilder::getPassword, FormBuilder::setPassword);
     }
 
     private void handleLogin() {

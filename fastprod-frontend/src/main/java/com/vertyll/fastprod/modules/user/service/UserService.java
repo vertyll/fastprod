@@ -3,7 +3,8 @@ package com.vertyll.fastprod.modules.user.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.vertyll.fastprod.modules.user.dto.*;
+import com.vertyll.fastprod.modules.user.dto.ProfileUpdateDto;
+import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
@@ -15,7 +16,11 @@ public class UserService extends BaseHttpService {
 
     private static final String USER_ENDPOINT = "/users";
 
-    public UserService(@Value("${api.backend.url}") String backendUrl, ObjectMapper objectMapper, AuthTokenProvider authTokenProvider) {
+    public UserService(
+        @Value("${api.backend.url}") String backendUrl,
+        ObjectMapper objectMapper,
+        AuthTokenProvider authTokenProvider
+    ) {
         super(backendUrl, objectMapper, authTokenProvider);
     }
 

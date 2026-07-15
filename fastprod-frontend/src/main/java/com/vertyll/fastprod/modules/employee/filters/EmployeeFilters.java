@@ -25,29 +25,35 @@ public final class EmployeeFilters {
 
     @SuppressWarnings("java:S1452")
     public static List<FilterFieldConfig<?>> configs() {
-        return List
-            .of(
-                FilterFieldConfig.builder(FIRST_NAME, "First name", FilterFieldType.TEXT).placeholder("Search first name").build(),
-                FilterFieldConfig.builder(LAST_NAME, "Last name", FilterFieldType.TEXT).placeholder("Search last name").build(),
-                FilterFieldConfig.builder(EMAIL, "Email", FilterFieldType.TEXT).placeholder("Search email").build(),
-                FilterFieldConfig.builder(IS_VERIFIED, VERIFIED_LABEL, FilterFieldType.SELECT).items(List.of(true, false)).itemLabel(v -> {
+        return List.of(
+            FilterFieldConfig.builder(FIRST_NAME, "First name", FilterFieldType.TEXT)
+                .placeholder("Search first name")
+                .build(),
+            FilterFieldConfig.builder(LAST_NAME, "Last name", FilterFieldType.TEXT)
+                .placeholder("Search last name")
+                .build(),
+            FilterFieldConfig.builder(EMAIL, "Email", FilterFieldType.TEXT).placeholder("Search email").build(),
+            FilterFieldConfig.builder(IS_VERIFIED, VERIFIED_LABEL, FilterFieldType.SELECT)
+                .items(List.of(true, false))
+                .itemLabel(v -> {
                     if (v == null)
                         return "";
                     if (v instanceof Boolean b)
                         return Boolean.TRUE.equals(b) ? VERIFIED_LABEL : "Not verified";
                     return Boolean.parseBoolean(String.valueOf(v)) ? VERIFIED_LABEL : "Not verified";
-                }).placeholder("Any").build(),
-                FilterFieldConfig
-                    .<RoleType>builder(ROLES, "Roles", FilterFieldType.MULTISELECT)
-                    .items(java.util.Arrays.stream(RoleType.values()).toList())
-                    .itemLabel(v -> {
-                        if (v == null)
-                            return "";
-                        return v.name();
-                    })
-                    .placeholder("Any roles")
-                    .build()
-            );
+                })
+                .placeholder("Any")
+                .build(),
+            FilterFieldConfig.<RoleType>builder(ROLES, "Roles", FilterFieldType.MULTISELECT)
+                .items(java.util.Arrays.stream(RoleType.values()).toList())
+                .itemLabel(v -> {
+                    if (v == null)
+                        return "";
+                    return v.name();
+                })
+                .placeholder("Any roles")
+                .build()
+        );
     }
 
     public static FiltersValue normalize(FiltersValue raw) {

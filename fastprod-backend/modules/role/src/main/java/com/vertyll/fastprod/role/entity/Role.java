@@ -17,10 +17,14 @@ import lombok.*;
 @Entity
 @Table(
     name = "role",
-    uniqueConstraints = {@UniqueConstraint(name = "uk_role_name", columnNames = "name")},
-    indexes = {@Index(name = "idx_role_is_active", columnList = "is_active"),
-            @Index(name = "idx_role_created_at", columnList = "created_at"),
-            @Index(name = "idx_role_name_is_active", columnList = "name, is_active")}
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_role_name", columnNames = "name")
+    },
+    indexes = {
+        @Index(name = "idx_role_is_active", columnList = "is_active"),
+        @Index(name = "idx_role_created_at", columnList = "created_at"),
+        @Index(name = "idx_role_name_is_active", columnList = "name, is_active")
+    }
 )
 public class Role extends BaseEntity {
 

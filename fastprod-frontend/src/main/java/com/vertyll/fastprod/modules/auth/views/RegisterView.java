@@ -58,8 +58,7 @@ public class RegisterView extends VerticalLayout {
         setMinHeight("100vh");
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        getStyle()
-            .set("background", "var(--lumo-base-color)")
+        getStyle().set("background", "var(--lumo-base-color)")
             .set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
             .set("box-sizing", "border-box");
 
@@ -69,8 +68,7 @@ public class RegisterView extends VerticalLayout {
     private void createForm() {
         Div card = new Div();
         card.addClassName("register-card");
-        card
-            .getStyle()
+        card.getStyle()
             .set("background", "var(--lumo-base-color)")
             .set("border-radius", "var(--lumo-border-radius-l)")
             .set("border", "1px solid var(--lumo-contrast-10pct)")
@@ -80,15 +78,16 @@ public class RegisterView extends VerticalLayout {
             .set("box-sizing", "border-box");
 
         H1 title = new H1(CREATE_ACCOUNT);
-        title
-            .getStyle()
+        title.getStyle()
             .set("margin", "0")
             .set("font-size", "var(--lumo-font-size-xxxl)")
             .set("font-weight", "600")
             .set(COLOR, "var(--lumo-primary-text-color)");
 
         Paragraph subtitle = new Paragraph("Sign up to get started");
-        subtitle.getStyle().set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0").set(COLOR, "var(--lumo-secondary-text-color)");
+        subtitle.getStyle()
+            .set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0")
+            .set(COLOR, "var(--lumo-secondary-text-color)");
 
         firstNameField = new TextField("First Name");
         firstNameField.setRequiredIndicatorVisible(true);
@@ -131,7 +130,10 @@ public class RegisterView extends VerticalLayout {
         registerButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         RouterLink loginLink = new RouterLink("Sign in", LoginView.class);
-        loginLink.getStyle().set(COLOR, "var(--lumo-primary-color)").set("text-decoration", "none").set("font-weight", "500");
+        loginLink.getStyle()
+            .set(COLOR, "var(--lumo-primary-color)")
+            .set("text-decoration", "none")
+            .set("font-weight", "500");
 
         Div loginContainer = new Div();
         loginContainer.getStyle().set("text-align", "center").set("margin-top", LUMO_SPACE_M);
@@ -139,29 +141,34 @@ public class RegisterView extends VerticalLayout {
 
         configureBinder();
 
-        card.add(title, subtitle, nameLayout, emailField, passwordField, confirmPasswordField, registerButton, loginContainer);
+        card.add(
+            title,
+            subtitle,
+            nameLayout,
+            emailField,
+            passwordField,
+            confirmPasswordField,
+            registerButton,
+            loginContainer
+        );
 
         add(card);
     }
 
     private void configureBinder() {
-        binder
-            .forField(firstNameField)
+        binder.forField(firstNameField)
             .withValidator(new StringLengthValidator("First name is required", 1, null))
             .bind(FormBuilder::getFirstName, FormBuilder::setFirstName);
 
-        binder
-            .forField(lastNameField)
+        binder.forField(lastNameField)
             .withValidator(new StringLengthValidator("Last name is required", 1, null))
             .bind(FormBuilder::getLastName, FormBuilder::setLastName);
 
-        binder
-            .forField(emailField)
+        binder.forField(emailField)
             .withValidator(new EmailValidator("Please enter a valid email address"))
             .bind(FormBuilder::getEmail, FormBuilder::setEmail);
 
-        binder
-            .forField(passwordField)
+        binder.forField(passwordField)
             .withValidator(
                 password -> password != null && password.matches("^(?=.*\\d)(?=.*[a-zA-Z]).{8,}$"),
                 "Password must be at least 8 characters long and contain a letter and a digit"

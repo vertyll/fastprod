@@ -25,10 +25,13 @@ import lombok.*;
 @Entity
 @Table(
     name = "\"user\"",
-    indexes = {@Index(name = "idx_user_email", columnList = "email"), @Index(name = "idx_user_is_active", columnList = "is_active"),
-            @Index(name = "idx_user_is_verified", columnList = "is_verified"),
-            @Index(name = "idx_user_created_at", columnList = "created_at"),
-            @Index(name = "idx_user_is_active_is_verified", columnList = "is_active, is_verified"),}
+    indexes = {
+        @Index(name = "idx_user_email", columnList = "email"),
+        @Index(name = "idx_user_is_active", columnList = "is_active"),
+        @Index(name = "idx_user_is_verified", columnList = "is_verified"),
+        @Index(name = "idx_user_created_at", columnList = "created_at"),
+        @Index(name = "idx_user_is_active_is_verified", columnList = "is_active, is_verified"),
+    }
 )
 public class User extends BaseEntity implements UserDetails {
 

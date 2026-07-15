@@ -33,8 +33,10 @@ public class JwtParser {
 
             if (rolesNode != null) {
                 if (rolesNode.isArray()) {
-                    return objectMapper
-                        .convertValue(rolesNode, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+                    return objectMapper.convertValue(
+                        rolesNode,
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, String.class)
+                    );
                 } else if (rolesNode.isString()) {
                     return List.of(rolesNode.asString());
                 }

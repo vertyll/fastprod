@@ -52,8 +52,7 @@ class RoleControllerTest {
         validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(roleController)
+        mockMvc = MockMvcBuilders.standaloneSetup(roleController)
             .setControllerAdvice(new GlobalExceptionHandler())
             .setValidator(validator)
             .build();
@@ -77,7 +76,10 @@ class RoleControllerTest {
 
         // when & then
         mockMvc
-            .perform(post("/roles").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createDto)))
+            .perform(
+                post("/roles").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createDto))
+            )
             .andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.id").value(1))
@@ -93,7 +95,10 @@ class RoleControllerTest {
 
         // when & then
         mockMvc
-            .perform(post("/roles").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidCreateDto)))
+            .perform(
+                post("/roles").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidCreateDto))
+            )
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("Validation failed"));
@@ -110,7 +115,10 @@ class RoleControllerTest {
 
         // when & then
         mockMvc
-            .perform(put("/roles/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .perform(
+                put("/roles/1").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updateDto))
+            )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.id").value(1))
@@ -129,7 +137,10 @@ class RoleControllerTest {
 
         // when & then
         mockMvc
-            .perform(put("/roles/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .perform(
+                put("/roles/1").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updateDto))
+            )
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("Role not found"));
@@ -142,7 +153,10 @@ class RoleControllerTest {
 
         // when & then
         mockMvc
-            .perform(put("/roles/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidUpdateDto)))
+            .perform(
+                put("/roles/1").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidUpdateDto))
+            )
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("Validation failed"));
@@ -156,8 +170,7 @@ class RoleControllerTest {
         when(roleService.getRoleById(1L)).thenReturn(responseDto);
 
         // when & then
-        mockMvc
-            .perform(get("/roles/1"))
+        mockMvc.perform(get("/roles/1"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.id").value(1))
@@ -171,8 +184,7 @@ class RoleControllerTest {
         when(roleService.getRoleById(1L)).thenThrow(new ApiException("Role not found", HttpStatus.NOT_FOUND));
 
         // when & then
-        mockMvc
-            .perform(get("/roles/1"))
+        mockMvc.perform(get("/roles/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("Role not found"));
@@ -180,8 +192,7 @@ class RoleControllerTest {
 
     @Test
     void getAllRoleTypes_ShouldReturnAllTypes() throws Exception {
-        mockMvc
-            .perform(get("/roles/types"))
+        mockMvc.perform(get("/roles/types"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isArray())

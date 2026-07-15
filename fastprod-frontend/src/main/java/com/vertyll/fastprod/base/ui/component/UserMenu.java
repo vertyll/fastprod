@@ -53,18 +53,19 @@ public class UserMenu extends HorizontalLayout {
         SubMenu subMenu = menuItem.getSubMenu();
 
         Div profileHeader = new Div();
-        profileHeader
-            .getStyle()
+        profileHeader.getStyle()
             .set("padding", "var(--lumo-space-m)")
             .set("border-bottom", "1px solid var(--lumo-contrast-10pct)")
             .set("background", "var(--lumo-contrast-5pct)")
             .set("min-width", "250px");
 
-        userName.getStyle().set("display", "block").set("font-weight", "600").set("color", "var(--lumo-primary-text-color)");
+        userName.getStyle()
+            .set("display", "block")
+            .set("font-weight", "600")
+            .set("color", "var(--lumo-primary-text-color)");
 
         Span userEmailSpan = new Span();
-        userEmailSpan
-            .getStyle()
+        userEmailSpan.getStyle()
             .set("display", "block")
             .set("font-size", "var(--lumo-font-size-xs)")
             .set("color", "var(--lumo-secondary-text-color)")

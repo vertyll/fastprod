@@ -102,18 +102,15 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
         formLayout.add(firstNameField, lastNameField, emailField, rolesField, passwordField, confirmPasswordField);
 
         // Bind fields
-        binder
-            .forField(firstNameField)
+        binder.forField(firstNameField)
             .asRequired("First name is required")
             .bind(EmployeeFormData::getFirstName, EmployeeFormData::setFirstName);
 
-        binder
-            .forField(lastNameField)
+        binder.forField(lastNameField)
             .asRequired("Last name is required")
             .bind(EmployeeFormData::getLastName, EmployeeFormData::setLastName);
 
-        binder
-            .forField(emailField)
+        binder.forField(emailField)
             .asRequired("Email is required")
             .withValidator(new EmailValidator("Invalid email format"))
             .bind(EmployeeFormData::getEmail, EmployeeFormData::setEmail);
@@ -169,8 +166,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
             }
         } catch (Exception e) {
             log.error("Failed to load employee", e);
-            Notification
-                .show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
         }
@@ -184,8 +180,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
             if (formData.getPassword() != null && !formData.getPassword().isEmpty()) {
                 String confirmPass = confirmPasswordField.getValue();
                 if (!formData.getPassword().equals(confirmPass)) {
-                    Notification
-                        .show("Passwords must match", 3000, Notification.Position.TOP_CENTER)
+                    Notification.show("Passwords must match", 3000, Notification.Position.TOP_CENTER)
                         .addThemeVariants(NotificationVariant.LUMO_ERROR);
                     confirmPasswordField.setInvalid(true);
                     return;
@@ -194,8 +189,8 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
             if (isEditMode) {
                 // Only send password if it's not empty
-                String passwordToSend =
-                        (formData.getPassword() != null && !formData.getPassword().isEmpty()) ? formData.getPassword() : null;
+                String passwordToSend = (formData.getPassword() != null && !formData.getPassword().isEmpty())
+                        ? formData.getPassword() : null;
 
                 EmployeeUpdateDto updateDto = new EmployeeUpdateDto(
                     formData.getFirstName(),
@@ -205,8 +200,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
                     formData.getRoleNames()
                 );
                 employeeService.updateEmployee(employeeId, updateDto);
-                Notification
-                    .show("Employee updated successfully", 3000, Notification.Position.TOP_CENTER)
+                Notification.show("Employee updated successfully", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             } else {
                 EmployeeCreateDto createDto = new EmployeeCreateDto(
@@ -217,8 +211,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
                     formData.getRoleNames()
                 );
                 employeeService.createEmployee(createDto);
-                Notification
-                    .show("Employee created successfully", 3000, Notification.Position.TOP_CENTER)
+                Notification.show("Employee created successfully", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             }
 
@@ -227,8 +220,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
             log.error("Validation failed", e);
         } catch (Exception e) {
             log.error("Failed to save employee", e);
-            Notification
-                .show("Failed to save employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Failed to save employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }

@@ -19,7 +19,11 @@ public class AuthService extends BaseHttpService {
 
     private static final String AUTH_ENDPOINT = "/auth";
 
-    public AuthService(@Value("${api.backend.url}") String backendUrl, ObjectMapper objectMapper, AuthTokenProvider authTokenProvider) {
+    public AuthService(
+        @Value("${api.backend.url}") String backendUrl,
+        ObjectMapper objectMapper,
+        AuthTokenProvider authTokenProvider
+    ) {
         super(backendUrl, objectMapper, authTokenProvider);
     }
 

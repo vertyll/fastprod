@@ -44,17 +44,28 @@ class ValidationErrorResponseTest {
         // given
         String testMessage = "Validation failed";
         Map<String, List<String>> testErrors = new HashMap<>();
-        testErrors
-            .put("password", List.of("Password must contain at least 8 characters", "Password must contain at least one uppercase letter"));
+        testErrors.put(
+            "password",
+            List.of(
+                "Password must contain at least 8 characters",
+                "Password must contain at least one uppercase letter"
+            )
+        );
 
         // when
-        ValidationErrorResponse response = ValidationErrorResponse.builder().message(testMessage).errors(testErrors).build();
+        ValidationErrorResponse response =
+                ValidationErrorResponse.builder().message(testMessage).errors(testErrors).build();
 
         // then
         assertEquals(1, response.getErrors().size());
         assertEquals(2, requireNonNull(response.getErrors().get("password")).size());
-        assertTrue(requireNonNull(response.getErrors().get("password")).contains("Password must contain at least 8 characters"));
-        assertTrue(requireNonNull(response.getErrors().get("password")).contains("Password must contain at least one uppercase letter"));
+        assertTrue(
+            requireNonNull(response.getErrors().get("password")).contains("Password must contain at least 8 characters")
+        );
+        assertTrue(
+            requireNonNull(response.getErrors().get("password"))
+                .contains("Password must contain at least one uppercase letter")
+        );
     }
 
     @Test

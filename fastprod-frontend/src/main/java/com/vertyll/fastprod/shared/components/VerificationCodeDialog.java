@@ -25,7 +25,11 @@ public class VerificationCodeDialog extends Dialog {
     private final Button verifyButton;
     private final transient BiConsumer<String, VerificationCodeDialog> onVerify;
 
-    public VerificationCodeDialog(String title, String description, BiConsumer<String, VerificationCodeDialog> onVerify) {
+    public VerificationCodeDialog(
+        String title,
+        String description,
+        BiConsumer<String, VerificationCodeDialog> onVerify
+    ) {
         this.onVerify = onVerify;
 
         setCloseOnEsc(false);
@@ -38,10 +42,14 @@ public class VerificationCodeDialog extends Dialog {
         layout.setAlignItems(FlexComponent.Alignment.STRETCH);
 
         H3 titleHeader = new H3(title);
-        titleHeader.getStyle().set("margin", "0 0 var(--lumo-space-m) 0").set("color", "var(--lumo-primary-text-color)");
+        titleHeader.getStyle()
+            .set("margin", "0 0 var(--lumo-space-m) 0")
+            .set("color", "var(--lumo-primary-text-color)");
 
         Paragraph descriptionText = new Paragraph(description);
-        descriptionText.getStyle().set("margin", "0 0 var(--lumo-space-l) 0").set("color", "var(--lumo-secondary-text-color)");
+        descriptionText.getStyle()
+            .set("margin", "0 0 var(--lumo-space-l) 0")
+            .set("color", "var(--lumo-secondary-text-color)");
 
         codeField = new TextField("Verification Code");
         codeField.setWidthFull();

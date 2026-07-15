@@ -23,7 +23,7 @@
 
         <setting
                 id="org.eclipse.jdt.core.formatter.lineSplit"
-                value="140"/>
+                value="120"/>
 
         <setting
                 id="org.eclipse.jdt.core.formatter.tabulation.char"
@@ -143,6 +143,16 @@
                 id="org.eclipse.jdt.core.formatter.parentheses_positions_in_enum_constant_declaration"
                 value="separate_lines_if_wrapped"/>
 
+        <!-- Generic declarations and parameterized types -->
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.alignment_for_method_declaration"
+                value="0"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.alignment_for_parameterized_type_references"
+                value="0"/>
+
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration"
                 value="52"/>
@@ -181,11 +191,11 @@
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_type_parameters"
-                value="52"/>
+                value="0"/>
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_type_arguments"
-                value="52"/>
+                value="0"/>
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_type_declaration"
@@ -217,7 +227,7 @@
 
         <setting
                 id="org.eclipse.jdt.core.formatter.alignment_for_selector_in_method_invocation"
-                value="52"/>
+                value="84"/>
 
         <setting
                 id="org.eclipse.jdt.core.formatter.wrap_before_selector_in_method_invocation"
@@ -226,6 +236,44 @@
         <setting
                 id="org.eclipse.jdt.core.formatter.align_selector_in_method_invocation_on_expression_first_line"
                 value="false"/>
+
+        <!-- Array initializers, including arrays used in annotations -->
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.alignment_for_expressions_in_array_initializer"
+                value="53"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.brace_position_for_array_initializer"
+                value="end_of_line"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_new_line_after_opening_brace_in_array_initializer"
+                value="insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_new_line_before_closing_brace_in_array_initializer"
+                value="insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.keep_empty_array_initializer_on_one_line"
+                value="true"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_array_initializer"
+                value="insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_space_after_opening_brace_in_array_initializer"
+                value="do not insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_space_before_closing_brace_in_array_initializer"
+                value="do not insert"/>
+
+        <setting
+                id="org.eclipse.jdt.core.formatter.insert_space_between_empty_braces_in_array_initializer"
+                value="do not insert"/>
 
         <!-- Assignments -->
 

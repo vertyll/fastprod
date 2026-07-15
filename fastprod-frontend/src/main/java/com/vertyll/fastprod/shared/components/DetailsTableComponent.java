@@ -15,7 +15,9 @@ public class DetailsTableComponent extends Div {
 
     public DetailsTableComponent() {
         addClassName("details-table");
-        getStyle().set("border", BORDER_STYLE).set("border-radius", "var(--lumo-border-radius-m)").set("overflow", "hidden");
+        getStyle().set("border", BORDER_STYLE)
+            .set("border-radius", "var(--lumo-border-radius-m)")
+            .set("overflow", "hidden");
     }
 
     public void addRow(String label, String value) {

@@ -18,8 +18,7 @@ public class LoadingSpinner extends Div {
         overlay.addClassName("loading-overlay");
 
         if (fullScreen) {
-            overlay
-                .getStyle()
+            overlay.getStyle()
                 .set("position", "fixed")
                 .set("top", "0")
                 .set("left", "0")
@@ -31,8 +30,7 @@ public class LoadingSpinner extends Div {
                 .set("align-items", CENTER)
                 .set("justify-content", CENTER);
         } else {
-            overlay
-                .getStyle()
+            overlay.getStyle()
                 .set("position", "absolute")
                 .set("top", "0")
                 .set("left", "0")

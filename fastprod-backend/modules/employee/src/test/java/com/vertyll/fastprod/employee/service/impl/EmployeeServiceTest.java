@@ -36,7 +36,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SuppressFBWarnings(
-    value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD"},
+    value = {
+        "URF_UNREAD_FIELD",
+        "HARD_CODE_PASSWORD"
+    },
     justification = "Test class: employeeMapper is used by Mockito injection; hardcoded test passwords are safe in unit tests"
 )
 @ExtendWith(MockitoExtension.class)
@@ -75,13 +78,18 @@ class EmployeeServiceTest {
 
         createDto = new EmployeeCreateDto("John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
 
-        updateDto = new EmployeeUpdateDto("John Updated", "Doe Updated", "john.updated@example.com", null, Set.of("EMPLOYEE", "ADMIN"));
+        updateDto = new EmployeeUpdateDto(
+            "John Updated",
+            "Doe Updated",
+            "john.updated@example.com",
+            null,
+            Set.of("EMPLOYEE", "ADMIN")
+        );
 
         Set<Role> roles = new HashSet<>();
         roles.add(employeeRole);
 
-        user = User
-            .builder()
+        user = User.builder()
             .firstName("John")
             .lastName("Doe")
             .email("john@example.com")
@@ -180,13 +188,15 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_WhenEmailAlreadyExists_ShouldThrowException() {
         // given
-        EmployeeUpdateDto dtoWithDifferentEmail = new EmployeeUpdateDto("John", "Doe", "different@example.com", null, Set.of("EMPLOYEE"));
+        EmployeeUpdateDto dtoWithDifferentEmail =
+                new EmployeeUpdateDto("John", "Doe", "different@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail("different@example.com")).thenReturn(true);
 
         // when & then
-        ApiException exception = assertThrows(ApiException.class, () -> employeeService.updateEmployee(1L, dtoWithDifferentEmail));
+        ApiException exception =
+                assertThrows(ApiException.class, () -> employeeService.updateEmployee(1L, dtoWithDifferentEmail));
 
         assertEquals("Email already exists", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
@@ -283,7 +293,8 @@ class EmployeeServiceTest {
         when(roleService.getOrCreateDefaultRole(RoleType.ADMIN)).thenReturn(adminRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        EmployeeUpdateDto updateRequest = new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
+        EmployeeUpdateDto updateRequest =
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("ADMIN"));
 
         // when
         EmployeeResponseDto result = employeeService.updateEmployee(1L, updateRequest);
@@ -300,7 +311,8 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_WhenNoRolesProvided_ShouldCreateEmployeeWithDefaultRole() {
         // given
-        EmployeeCreateDto createDtoWithoutRoles = new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", null);
+        EmployeeCreateDto createDtoWithoutRoles =
+                new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", null);
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -318,7 +330,8 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_WhenEmptyRolesProvided_ShouldCreateEmployeeWithDefaultRole() {
         // given
-        EmployeeCreateDto createDtoWithEmptyRoles = new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
+        EmployeeCreateDto createDtoWithEmptyRoles =
+                new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -357,7 +370,8 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_WhenPasswordNull_ShouldNotEncodePassword() {
         // given
-        EmployeeUpdateDto updateWithoutPassword = new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("EMPLOYEE"));
+        EmployeeUpdateDto updateWithoutPassword =
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
@@ -374,7 +388,8 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_WhenPasswordBlank_ShouldNotEncodePassword() {
         // given
-        EmployeeUpdateDto updateWithBlankPassword = new EmployeeUpdateDto("John", "Doe", "john@example.com", "   ", Set.of("EMPLOYEE"));
+        EmployeeUpdateDto updateWithBlankPassword =
+                new EmployeeUpdateDto("John", "Doe", "john@example.com", "   ", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);

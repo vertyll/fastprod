@@ -24,7 +24,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 
-@SuppressFBWarnings(value = "XSS_SERVLET", justification = "Only static JSON error responses are written, no user-controlled content")
+@SuppressFBWarnings(
+    value = "XSS_SERVLET",
+    justification = "Only static JSON error responses are written, no user-controlled content"
+)
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -32,15 +35,15 @@ import tools.jackson.databind.ObjectMapper;
 public class SecurityConfig {
 
     private static final String REQUIRED_TO_ACCESS_THIS_RESOURCE = "Authentication is required to access this resource";
-    private static final String NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE = "You do not have permission to access this resource";
+    private static final String NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE =
+            "You do not have permission to access this resource";
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
-        http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(
                 auth -> auth
@@ -78,8 +81,8 @@ public class SecurityConfig {
                 response.setStatus(HttpStatus.FORBIDDEN.value());
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-                ResponseEntity<ApiResponse<Void>> responseEntity =
-                        ApiResponse.buildResponse(null, NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE, HttpStatus.FORBIDDEN);
+                ResponseEntity<ApiResponse<Void>> responseEntity = ApiResponse
+                    .buildResponse(null, NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE, HttpStatus.FORBIDDEN);
 
                 response.getWriter().write(objectMapper.writeValueAsString(responseEntity.getBody()));
             }));

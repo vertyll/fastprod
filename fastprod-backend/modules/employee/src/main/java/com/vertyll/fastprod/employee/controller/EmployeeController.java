@@ -64,7 +64,9 @@ public class EmployeeController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Get all employees with pagination and filters")
-    public ResponseEntity<PaginatedApiResponse<EmployeeResponseDto>> getAllEmployees(@Valid @ModelAttribute EmployeeFilterDto filterDto) {
+    public ResponseEntity<PaginatedApiResponse<EmployeeResponseDto>> getAllEmployees(
+        @Valid @ModelAttribute EmployeeFilterDto filterDto
+    ) {
         Page<EmployeeResponseDto> employees = employeeService.getAllEmployees(filterDto);
         return PaginatedApiResponse.buildResponse(employees, EMPLOYEES_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
     }

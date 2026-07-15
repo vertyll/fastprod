@@ -190,7 +190,8 @@ public class FiltersComponent extends HorizontalLayout {
         Object emptyToken = selectEmptyTokens.get(cfg.id());
 
         if (cfg.itemLabelGenerator() != null) {
-            @SuppressWarnings("unchecked") var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
+            @SuppressWarnings("unchecked") var gen =
+                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
             select.setItemLabelGenerator(item -> generateSelectLabel(item, emptyToken, cfg.placeholder(), gen));
         } else {
             select.setItemLabelGenerator(item -> generateDefaultSelectLabel(item, emptyToken, cfg.placeholder()));
@@ -242,7 +243,8 @@ public class FiltersComponent extends HorizontalLayout {
 
     private void configureMultiSelectLabels(MultiSelectComboBox<Object> ms, FilterFieldConfig<?> cfg) {
         if (cfg.itemLabelGenerator() != null) {
-            @SuppressWarnings("unchecked") var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
+            @SuppressWarnings("unchecked") var gen =
+                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
             ms.setItemLabelGenerator(gen);
         } else {
             ms.setItemLabelGenerator(item -> item == null ? "" : String.valueOf(item));
@@ -430,7 +432,8 @@ public class FiltersComponent extends HorizontalLayout {
         }
 
         if (value != null) {
-            @SuppressWarnings("unchecked") var gen = (com.vaadin.flow.component.ItemLabelGenerator<Object>) select.getItemLabelGenerator();
+            @SuppressWarnings("unchecked") var gen =
+                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) select.getItemLabelGenerator();
             String valueText = gen != null ? gen.apply(value) : String.valueOf(value);
             return new ChipData(select.getLabel(), valueText);
         }

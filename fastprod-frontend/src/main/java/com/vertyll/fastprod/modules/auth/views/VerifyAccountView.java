@@ -49,8 +49,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         setMinHeight("100vh");
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        getStyle()
-            .set("background", "var(--lumo-base-color)")
+        getStyle().set("background", "var(--lumo-base-color)")
             .set("padding", "var(--lumo-space-s) var(--lumo-space-m)")
             .set("box-sizing", "border-box");
 
@@ -68,8 +67,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
     private void createView() {
         Div card = new Div();
         card.addClassName("verify-card");
-        card
-            .getStyle()
+        card.getStyle()
             .set("background", "var(--lumo-base-color)")
             .set("border-radius", "var(--lumo-border-radius-l)")
             .set("border", "1px solid var(--lumo-contrast-10pct)")
@@ -84,17 +82,19 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
         H1 title = new H1("Verify Your Account");
-        title
-            .getStyle()
+        title.getStyle()
             .set("margin", "0")
             .set("font-size", "var(--lumo-font-size-xxxl)")
             .set("font-weight", "600")
             .set(COLOR, "var(--lumo-primary-text-color)");
 
         Paragraph description = new Paragraph(
-            "We've sent a verification code to your email address. " + "Please enter the code below to verify your account."
+            "We've sent a verification code to your email address. "
+                    + "Please enter the code below to verify your account."
         );
-        description.getStyle().set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0").set(COLOR, "var(--lumo-secondary-text-color)");
+        description.getStyle()
+            .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
+            .set(COLOR, "var(--lumo-secondary-text-color)");
 
         emailField = new TextField("Email Address");
         emailField.setWidthFull();
@@ -108,7 +108,10 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         codeField.setPlaceholder("Enter 6-digit code");
         codeField.setMaxLength(6);
         codeField.setPattern("[0-9]*");
-        codeField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)").set("letter-spacing", "0.3em").set(TEXT_ALIGN, CENTER);
+        codeField.getStyle()
+            .set(MARGIN_BOTTOM, "var(--lumo-space-l)")
+            .set("letter-spacing", "0.3em")
+            .set(TEXT_ALIGN, CENTER);
 
         verifyButton = new Button("Verify Account", VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
@@ -166,7 +169,10 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during verification: {}", e.getMessage());
         } catch (Exception e) {
-            showNotification("Verification failed. Please check your code and try again.", NotificationVariant.LUMO_ERROR);
+            showNotification(
+                "Verification failed. Please check your code and try again.",
+                NotificationVariant.LUMO_ERROR
+            );
             log.error("Error during verification", e);
         } finally {
             verifyButton.setEnabled(true);
@@ -200,7 +206,10 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
             }
             log.error("API error during resend: {}", e.getMessage());
         } catch (Exception e) {
-            showNotification("Failed to resend code. Please try registering again or contact support.", NotificationVariant.LUMO_ERROR);
+            showNotification(
+                "Failed to resend code. Please try registering again or contact support.",
+                NotificationVariant.LUMO_ERROR
+            );
             log.error("Error during resend", e);
         } finally {
             resendButton.setEnabled(true);

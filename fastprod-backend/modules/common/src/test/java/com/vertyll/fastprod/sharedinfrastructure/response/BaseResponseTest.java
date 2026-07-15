@@ -25,7 +25,8 @@ class BaseResponseTest {
         LocalDateTime testTime = LocalDateTime.now(ZoneOffset.UTC);
 
         // when
-        BaseResponse<String> response = TestBaseResponse.<String>builder().data(testData).message(testMessage).timestamp(testTime).build();
+        BaseResponse<String> response =
+                TestBaseResponse.<String>builder().data(testData).message(testMessage).timestamp(testTime).build();
 
         // then
         assertEquals(testData, response.getData());

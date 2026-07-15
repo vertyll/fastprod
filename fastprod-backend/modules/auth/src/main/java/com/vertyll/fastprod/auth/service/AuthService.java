@@ -8,7 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.vertyll.fastprod.auth.dto.*;
+import com.vertyll.fastprod.auth.dto.AuthRequestDto;
+import com.vertyll.fastprod.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.auth.dto.ChangeEmailRequestDto;
+import com.vertyll.fastprod.auth.dto.ChangePasswordRequestDto;
+import com.vertyll.fastprod.auth.dto.RegisterRequestDto;
+import com.vertyll.fastprod.auth.dto.ResetPasswordRequestDto;
+import com.vertyll.fastprod.auth.dto.SessionResponseDto;
 
 public interface AuthService {
     @Transactional

@@ -50,7 +50,8 @@ class ApiResponseTest {
     @Test
     void constructor_ShouldSetDefaultTimestamp() {
         // when
-        ApiResponse<String> response = ApiResponse.<String>builder().timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
+        ApiResponse<String> response =
+                ApiResponse.<String>builder().timestamp(LocalDateTime.now(ZoneOffset.UTC)).build();
 
         // then
         assertNotNull(response.getTimestamp());

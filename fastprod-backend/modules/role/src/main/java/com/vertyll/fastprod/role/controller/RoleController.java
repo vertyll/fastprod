@@ -45,7 +45,10 @@ public class RoleController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update existing role")
-    public ResponseEntity<ApiResponse<RoleResponseDto>> updateRole(@PathVariable Long id, @RequestBody @Valid RoleUpdateDto dto) {
+    public ResponseEntity<ApiResponse<RoleResponseDto>> updateRole(
+        @PathVariable Long id,
+        @RequestBody @Valid RoleUpdateDto dto
+    ) {
         RoleResponseDto role = roleService.updateRole(id, dto);
         return ApiResponse.buildResponse(role, ROLE_UPDATED_SUCCESSFULLY, HttpStatus.OK);
     }

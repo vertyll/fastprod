@@ -55,7 +55,12 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 
 @SuppressFBWarnings(
-    value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD", "HTTPONLY_COOKIE", "INSECURE_COOKIE"},
+    value = {
+        "URF_UNREAD_FIELD",
+        "HARD_CODE_PASSWORD",
+        "HTTPONLY_COOKIE",
+        "INSECURE_COOKIE"
+    },
     justification = "Test class: authMapper is used by Mockito injection; hardcoded test passwords and cookie configurations are safe in unit tests"
 )
 @ExtendWith(MockitoExtension.class)
@@ -129,8 +134,7 @@ class AuthServiceTest {
 
         userRole = Role.builder().name(RoleType.USER).description("Default user role").build();
 
-        user = User
-            .builder()
+        user = User.builder()
             .firstName("John")
             .lastName("Doe")
             .email("john@example.com")
@@ -139,8 +143,7 @@ class AuthServiceTest {
             .verified(false)
             .build();
 
-        verificationToken = VerificationToken
-            .builder()
+        verificationToken = VerificationToken.builder()
             .token("123456")
             .user(user)
             .expiryDate(LocalDateTime.now(ZoneOffset.UTC).plusHours(24))
@@ -171,9 +174,15 @@ class AuthServiceTest {
 
         // then
         verify(userService).saveUser(userCaptor.capture());
-        verify(verificationTokenService).createVerificationToken(any(User.class), eq(VerificationTokenType.ACCOUNT_ACTIVATION), eq(null));
-        verify(emailService)
-            .sendEmail(eq("john@example.com"), eq("John"), eq(EmailTemplateName.ACTIVATE_ACCOUNT), eq("123456"), anyString());
+        verify(verificationTokenService)
+            .createVerificationToken(any(User.class), eq(VerificationTokenType.ACCOUNT_ACTIVATION), eq(null));
+        verify(emailService).sendEmail(
+            eq("john@example.com"),
+            eq("John"),
+            eq(EmailTemplateName.ACTIVATE_ACCOUNT),
+            eq("123456"),
+            anyString()
+        );
 
         User capturedUser = userCaptor.getValue();
         assertEquals("John", capturedUser.getFirstName());
@@ -220,8 +229,10 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.empty());
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> authService.authenticate(authRequest, httpServletRequest, httpServletResponse));
+        ApiException exception = assertThrows(
+            ApiException.class,
+            () -> authService.authenticate(authRequest, httpServletRequest, httpServletResponse)
+        );
         assertEquals("User not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
@@ -233,8 +244,10 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
 
         // when & then
-        ApiException exception =
-                assertThrows(ApiException.class, () -> authService.authenticate(authRequest, httpServletRequest, httpServletResponse));
+        ApiException exception = assertThrows(
+            ApiException.class,
+            () -> authService.authenticate(authRequest, httpServletRequest, httpServletResponse)
+        );
         assertEquals("Account not verified", exception.getMessage());
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
@@ -242,7 +255,8 @@ class AuthServiceTest {
     @Test
     void verifyAccount_ShouldActivateUser() {
         // given
-        when(verificationTokenService.getValidToken("123456", VerificationTokenType.ACCOUNT_ACTIVATION)).thenReturn(verificationToken);
+        when(verificationTokenService.getValidToken("123456", VerificationTokenType.ACCOUNT_ACTIVATION))
+            .thenReturn(verificationToken);
         when(userService.saveUser(any(User.class))).thenReturn(user);
 
         // when
@@ -261,7 +275,8 @@ class AuthServiceTest {
         // given
         user.setVerified(true);
         verificationToken.setUser(user);
-        when(verificationTokenService.getValidToken("123456", VerificationTokenType.ACCOUNT_ACTIVATION)).thenReturn(verificationToken);
+        when(verificationTokenService.getValidToken("123456", VerificationTokenType.ACCOUNT_ACTIVATION))
+            .thenReturn(verificationToken);
 
         // when & then
         ApiException exception = assertThrows(ApiException.class, () -> authService.verifyAccount("123456"));
@@ -282,7 +297,8 @@ class AuthServiceTest {
 
         // then
         verify(verificationTokenService).createVerificationToken(user, VerificationTokenType.ACCOUNT_ACTIVATION, null);
-        verify(emailService).sendEmail("john@example.com", "John", EmailTemplateName.ACTIVATE_ACCOUNT, "654321", "Account activation");
+        verify(emailService)
+            .sendEmail("john@example.com", "John", EmailTemplateName.ACTIVATE_ACCOUNT, "654321", "Account activation");
     }
 
     @Test
@@ -291,7 +307,8 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles("nonexistent@example.com")).thenReturn(Optional.empty());
 
         // when & then
-        ApiException exception = assertThrows(ApiException.class, () -> authService.resendVerificationCode("nonexistent@example.com"));
+        ApiException exception =
+                assertThrows(ApiException.class, () -> authService.resendVerificationCode("nonexistent@example.com"));
         assertEquals("User not found", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         verify(verificationTokenService, never()).createVerificationToken(any(), any(), any());
@@ -305,7 +322,8 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles("john@example.com")).thenReturn(Optional.of(user));
 
         // when & then
-        ApiException exception = assertThrows(ApiException.class, () -> authService.resendVerificationCode("john@example.com"));
+        ApiException exception =
+                assertThrows(ApiException.class, () -> authService.resendVerificationCode("john@example.com"));
         assertEquals("Account already verified", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         verify(verificationTokenService, never()).createVerificationToken(any(), any(), any());
@@ -328,7 +346,8 @@ class AuthServiceTest {
         authService.authenticate(authRequest, httpServletRequest, httpServletResponse);
 
         // then
-        verify(authenticationManager).authenticate(new UsernamePasswordAuthenticationToken("john@example.com", "password123"));
+        verify(authenticationManager)
+            .authenticate(new UsernamePasswordAuthenticationToken("john@example.com", "password123"));
     }
 
     @Test
@@ -364,7 +383,8 @@ class AuthServiceTest {
         AuthResponseDto response = authService.authenticate(authRequest, httpServletRequest, null);
 
         // then
-        verify(refreshTokenService, never()).createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class));
+        verify(refreshTokenService, never())
+            .createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class));
         assertEquals("jwt-token", response.token());
     }
 
@@ -413,11 +433,16 @@ class AuthServiceTest {
         // given
         setupCookieProperties();
         Cookie refreshCookie = new Cookie("refresh_token", "valid-refresh-token");
-        when(httpServletRequest.getCookies()).thenReturn(new Cookie[]{refreshCookie});
+        when(httpServletRequest.getCookies()).thenReturn(
+            new Cookie[] {
+                refreshCookie
+            }
+        );
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(refreshTokenService.validateRefreshToken("valid-refresh-token")).thenReturn(user);
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("new-access-token");
-        when(refreshTokenService.rotateRefreshToken(anyString(), any(), any(HttpServletRequest.class))).thenReturn("new-refresh-token");
+        when(refreshTokenService.rotateRefreshToken(anyString(), any(), any(HttpServletRequest.class)))
+            .thenReturn("new-refresh-token");
 
         // when
         AuthResponseDto response = authService.refreshToken(httpServletRequest, httpServletResponse);
@@ -436,7 +461,10 @@ class AuthServiceTest {
         when(httpServletRequest.getCookies()).thenReturn(null);
 
         // when & then
-        ApiException exception = assertThrows(ApiException.class, () -> authService.refreshToken(httpServletRequest, httpServletResponse));
+        ApiException exception = assertThrows(
+            ApiException.class,
+            () -> authService.refreshToken(httpServletRequest, httpServletResponse)
+        );
         assertEquals("Refresh token not found", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
     }
@@ -446,7 +474,11 @@ class AuthServiceTest {
         // given
         setupCookieProperties();
         Cookie refreshCookie = new Cookie("refresh_token", "valid-refresh-token");
-        when(httpServletRequest.getCookies()).thenReturn(new Cookie[]{refreshCookie});
+        when(httpServletRequest.getCookies()).thenReturn(
+            new Cookie[] {
+                refreshCookie
+            }
+        );
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
 
         // when
@@ -462,7 +494,11 @@ class AuthServiceTest {
         // given
         setupCookieProperties();
         Cookie refreshCookie = new Cookie("refresh_token", "valid-refresh-token");
-        when(httpServletRequest.getCookies()).thenReturn(new Cookie[]{refreshCookie});
+        when(httpServletRequest.getCookies()).thenReturn(
+            new Cookie[] {
+                refreshCookie
+            }
+        );
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
         when(refreshTokenService.validateRefreshToken("valid-refresh-token")).thenReturn(user);
 
@@ -481,16 +517,24 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles("john@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("currentPassword123", "encodedPassword")).thenReturn(true);
         when(userService.existsByEmail("newemail@example.com")).thenReturn(false);
-        when(verificationTokenService.createVerificationToken(any(User.class), any(VerificationTokenType.class), anyString()))
-            .thenReturn("123456");
+        when(
+            verificationTokenService
+                .createVerificationToken(any(User.class), any(VerificationTokenType.class), anyString())
+        ).thenReturn("123456");
 
         // when
         authService.requestEmailChange(changeEmailRequest);
 
         // then
-        verify(verificationTokenService).createVerificationToken(user, VerificationTokenType.EMAIL_CHANGE, "newemail@example.com");
-        verify(emailService)
-            .sendEmail("newemail@example.com", "John", EmailTemplateName.CHANGE_EMAIL, "123456", "Email Change Verification");
+        verify(verificationTokenService)
+            .createVerificationToken(user, VerificationTokenType.EMAIL_CHANGE, "newemail@example.com");
+        verify(emailService).sendEmail(
+            "newemail@example.com",
+            "John",
+            EmailTemplateName.CHANGE_EMAIL,
+            "123456",
+            "Email Change Verification"
+        );
     }
 
     @Test
@@ -501,7 +545,8 @@ class AuthServiceTest {
         when(passwordEncoder.matches("currentPassword123", "encodedPassword")).thenReturn(false);
 
         // when & then
-        ApiException exception = assertThrows(ApiException.class, () -> authService.requestEmailChange(changeEmailRequest));
+        ApiException exception =
+                assertThrows(ApiException.class, () -> authService.requestEmailChange(changeEmailRequest));
         assertEquals("Invalid current password", exception.getMessage());
     }
 
@@ -511,7 +556,8 @@ class AuthServiceTest {
         setupCookieProperties();
         verificationToken.setTokenType(VerificationTokenType.EMAIL_CHANGE);
         verificationToken.setAdditionalData("newemail@example.com");
-        when(verificationTokenService.getValidToken("123456", VerificationTokenType.EMAIL_CHANGE)).thenReturn(verificationToken);
+        when(verificationTokenService.getValidToken("123456", VerificationTokenType.EMAIL_CHANGE))
+            .thenReturn(verificationToken);
         when(userService.saveUser(any(User.class))).thenReturn(user);
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("new-jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -540,16 +586,24 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles("john@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("currentPassword123", "encodedPassword")).thenReturn(true);
         when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");
-        when(verificationTokenService.createVerificationToken(any(User.class), any(VerificationTokenType.class), anyString()))
-            .thenReturn("123456");
+        when(
+            verificationTokenService
+                .createVerificationToken(any(User.class), any(VerificationTokenType.class), anyString())
+        ).thenReturn("123456");
 
         // when
         authService.requestPasswordChange(changePasswordRequest);
 
         // then
-        verify(verificationTokenService).createVerificationToken(user, VerificationTokenType.PASSWORD_CHANGE, "encodedNewPassword");
-        verify(emailService)
-            .sendEmail("john@example.com", "John", EmailTemplateName.CHANGE_PASSWORD, "123456", "Password Change Verification");
+        verify(verificationTokenService)
+            .createVerificationToken(user, VerificationTokenType.PASSWORD_CHANGE, "encodedNewPassword");
+        verify(emailService).sendEmail(
+            "john@example.com",
+            "John",
+            EmailTemplateName.CHANGE_PASSWORD,
+            "123456",
+            "Password Change Verification"
+        );
     }
 
     @Test
@@ -557,7 +611,8 @@ class AuthServiceTest {
         // given
         verificationToken.setTokenType(VerificationTokenType.PASSWORD_CHANGE);
         verificationToken.setAdditionalData("encodedNewPassword");
-        when(verificationTokenService.getValidToken("123456", VerificationTokenType.PASSWORD_CHANGE)).thenReturn(verificationToken);
+        when(verificationTokenService.getValidToken("123456", VerificationTokenType.PASSWORD_CHANGE))
+            .thenReturn(verificationToken);
         when(userService.saveUser(any(User.class))).thenReturn(user);
 
         // when
@@ -584,14 +639,16 @@ class AuthServiceTest {
 
         // then
         verify(verificationTokenService).createVerificationToken(user, VerificationTokenType.PASSWORD_RESET, null);
-        verify(emailService).sendEmail("john@example.com", "John", EmailTemplateName.RESET_PASSWORD, "123456", "Password Reset");
+        verify(emailService)
+            .sendEmail("john@example.com", "John", EmailTemplateName.RESET_PASSWORD, "123456", "Password Reset");
     }
 
     @Test
     void resetPassword_ShouldUpdatePassword() {
         // given
         verificationToken.setTokenType(VerificationTokenType.PASSWORD_RESET);
-        when(verificationTokenService.getValidToken("valid-token", VerificationTokenType.PASSWORD_RESET)).thenReturn(verificationToken);
+        when(verificationTokenService.getValidToken("valid-token", VerificationTokenType.PASSWORD_RESET))
+            .thenReturn(verificationToken);
         when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");
         when(userService.saveUser(any(User.class))).thenReturn(user);
 

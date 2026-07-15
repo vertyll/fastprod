@@ -33,13 +33,15 @@ public class GlobalExceptionHandler {
     private static final String INVALID_EMAIL_OR_PASSWORD = "Invalid email or password";
     private static final String ACCOUNT_IS_DISABLED = "Account is disabled";
     private static final String ACCOUNT_IS_LOCKED = "Account is locked";
-    private static final String NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION = "You do not have permission to perform this action";
+    private static final String NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION =
+            "You do not have permission to perform this action";
     private static final String ACCESS_DENIED = "Access denied";
     private static final String AUTHENTICATION_REQUIRED = "Authentication required";
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<Void>> handleApiException(ApiException ex) {
-        return ApiResponse.buildResponse(null, requireNonNullElse(ex.getMessage(), AN_UNEXPECTED_ERROR_OCCURRED), ex.getStatus());
+        return ApiResponse
+            .buildResponse(null, requireNonNullElse(ex.getMessage(), AN_UNEXPECTED_ERROR_OCCURRED), ex.getStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -53,8 +55,7 @@ public class GlobalExceptionHandler {
             errors.computeIfAbsent(field, _ -> new ArrayList<>()).add(message);
         });
 
-        ValidationErrorResponse response = ValidationErrorResponse
-            .builder()
+        ValidationErrorResponse response = ValidationErrorResponse.builder()
             .message(VALIDATION_FAILED)
             .errors(errors)
             .timestamp(LocalDateTime.now(ZoneOffset.UTC))
@@ -84,7 +85,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(AuthorizationDeniedException ignoredEx) {
+    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDeniedException(
+        AuthorizationDeniedException ignoredEx
+    ) {
         return ApiResponse.buildResponse(null, NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION, HttpStatus.FORBIDDEN);
     }
 

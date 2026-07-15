@@ -57,8 +57,7 @@ class UserControllerTest {
         validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(userController)
+        mockMvc = MockMvcBuilders.standaloneSetup(userController)
             .setControllerAdvice(new GlobalExceptionHandler())
             .setValidator(validator)
             .build();
@@ -90,7 +89,10 @@ class UserControllerTest {
 
         // when & then
         mockMvc
-            .perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createDto)))
+            .perform(
+                post("/users").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createDto))
+            )
             .andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.id").value(1))
@@ -113,7 +115,10 @@ class UserControllerTest {
 
         // when & then
         mockMvc
-            .perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidCreateDto)))
+            .perform(
+                post("/users").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidCreateDto))
+            )
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("Validation failed"));
@@ -128,7 +133,10 @@ class UserControllerTest {
 
         // when & then
         mockMvc
-            .perform(put("/users/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .perform(
+                put("/users/1").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updateDto))
+            )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value("User updated successfully"));
@@ -139,11 +147,15 @@ class UserControllerTest {
     @Test
     void updateUser_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND)).when(userService).updateUser(anyLong(), any(UserUpdateDto.class));
+        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND)).when(userService)
+            .updateUser(anyLong(), any(UserUpdateDto.class));
 
         // when & then
         mockMvc
-            .perform(put("/users/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .perform(
+                put("/users/1").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updateDto))
+            )
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("User not found"));
@@ -155,8 +167,7 @@ class UserControllerTest {
         when(userService.getUserById(1L)).thenReturn(responseDto);
 
         // when & then
-        mockMvc
-            .perform(get("/users/1"))
+        mockMvc.perform(get("/users/1"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.id").value(1))
@@ -172,8 +183,7 @@ class UserControllerTest {
         when(userService.getUserById(1L)).thenThrow(new ApiException("User not found", HttpStatus.NOT_FOUND));
 
         // when & then
-        mockMvc
-            .perform(get("/users/1"))
+        mockMvc.perform(get("/users/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("User not found"));

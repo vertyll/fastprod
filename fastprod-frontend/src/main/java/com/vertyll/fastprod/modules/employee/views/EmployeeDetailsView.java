@@ -51,8 +51,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
         if (employeeId != null) {
             loadEmployee(employeeId);
         } else {
-            Notification
-                .show("Invalid employee ID", 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Invalid employee ID", 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
         }
@@ -105,8 +104,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
             }
         } catch (Exception e) {
             log.error("Failed to load employee", e);
-            Notification
-                .show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
         } finally {
@@ -140,7 +138,8 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     }
 
     private void confirmDelete() {
-        com.vaadin.flow.component.confirmdialog.ConfirmDialog dialog = new com.vaadin.flow.component.confirmdialog.ConfirmDialog();
+        com.vaadin.flow.component.confirmdialog.ConfirmDialog dialog =
+                new com.vaadin.flow.component.confirmdialog.ConfirmDialog();
         dialog.setHeader("Delete Employee");
         dialog.setText("Are you sure you want to delete this employee? This action cannot be undone.");
         dialog.setCancelable(true);
@@ -153,14 +152,12 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     private void deleteEmployee() {
         try {
             employeeService.deleteEmployee(employeeId);
-            Notification
-                .show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             navigateToList();
         } catch (Exception e) {
             log.error("Failed to delete employee", e);
-            Notification
-                .show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }

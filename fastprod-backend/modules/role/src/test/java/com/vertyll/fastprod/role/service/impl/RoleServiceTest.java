@@ -29,7 +29,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, justification = "Test class: roleMapper is used by Mockito injection")
+@SuppressFBWarnings(
+    value = {
+        "URF_UNREAD_FIELD"
+    },
+    justification = "Test class: roleMapper is used by Mockito injection"
+)
 @ExtendWith(MockitoExtension.class)
 class RoleServiceTest {
 

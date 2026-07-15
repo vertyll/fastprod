@@ -44,7 +44,10 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update existing user")
-    public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(@PathVariable Long id, @RequestBody @Valid UserUpdateDto dto) {
+    public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(
+        @PathVariable Long id,
+        @RequestBody @Valid UserUpdateDto dto
+    ) {
         UserResponseDto user = userService.updateUser(id, dto);
         return ApiResponse.buildResponse(user, USER_UPDATED_SUCCESSFULLY, HttpStatus.OK);
     }

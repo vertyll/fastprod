@@ -21,8 +21,7 @@ public class MainErrorHandler {
     @Bean
     @SuppressWarnings("FutureReturnValueIgnored")
     public VaadinServiceInitListener errorHandlerInitializer() {
-        return event -> event
-            .getSource()
+        return event -> event.getSource()
             .addSessionInitListener(sessionInitEvent -> sessionInitEvent.getSession().setErrorHandler(errorEvent -> {
                 log.error("An unexpected error occurred", errorEvent.getThrowable());
                 errorEvent.getComponent().flatMap(Component::getUI).ifPresent(ui -> {

@@ -22,7 +22,8 @@ public record EmployeeFilterDto(
     @Nullable String roles,
     @Nullable String search
 ) {
-    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "firstName", "lastName", "email", "createdAt", "updatedAt");
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("id", "firstName", "lastName", "email", "createdAt", "updatedAt");
 
     public EmployeeFilterDto {
         if (sortBy != null && !sortBy.isBlank() && ALLOWED_SORT_FIELDS.contains(sortBy.trim())) {

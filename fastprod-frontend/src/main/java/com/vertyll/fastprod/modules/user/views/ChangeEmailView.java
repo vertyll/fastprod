@@ -61,8 +61,7 @@ public class ChangeEmailView extends VerticalLayout {
         formLayout.setWidth("100%");
         formLayout.setPadding(true);
         formLayout.setSpacing(true);
-        formLayout
-            .getStyle()
+        formLayout.getStyle()
             .set("background", "var(--lumo-base-color)")
             .set("border-radius", "var(--lumo-border-radius-m)")
             .set("box-shadow", "var(--lumo-box-shadow-xl)")
@@ -80,15 +79,16 @@ public class ChangeEmailView extends VerticalLayout {
         passwordField.setRequiredIndicatorVisible(true);
         passwordField.setHelperText("Enter your current password to confirm the change");
 
-        binder
-            .forField(newEmailField)
+        binder.forField(newEmailField)
             .asRequired("Email is required")
             .withValidator(new EmailValidator("Please enter a valid email address"))
             .bind(ChangeEmailDto::newEmail, (_, _) -> {
             });
 
-        binder.forField(passwordField).asRequired("Password is required").bind(ChangeEmailDto::currentPassword, (_, _) -> {
-        });
+        binder.forField(passwordField)
+            .asRequired("Password is required")
+            .bind(ChangeEmailDto::currentPassword, (_, _) -> {
+            });
 
         Button saveButton = new Button("Request Email Change");
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

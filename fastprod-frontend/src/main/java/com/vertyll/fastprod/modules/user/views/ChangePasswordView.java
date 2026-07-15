@@ -55,8 +55,7 @@ public class ChangePasswordView extends VerticalLayout {
         formLayout.setWidth("100%");
         formLayout.setPadding(true);
         formLayout.setSpacing(true);
-        formLayout
-            .getStyle()
+        formLayout.getStyle()
             .set("background", "var(--lumo-base-color)")
             .set("border-radius", "var(--lumo-border-radius-m)")
             .set("box-shadow", "var(--lumo-box-shadow-xl)")
@@ -78,17 +77,18 @@ public class ChangePasswordView extends VerticalLayout {
         confirmPasswordField.setWidthFull();
         confirmPasswordField.setRequiredIndicatorVisible(true);
 
-        binder
-            .forField(currentPasswordField)
+        binder.forField(currentPasswordField)
             .asRequired("Current password is required")
             .bind(ChangePasswordDto::currentPassword, (_, _) -> {
             });
 
-        binder
-            .forField(newPasswordField)
+        binder.forField(newPasswordField)
             .asRequired("New password is required")
             .withValidator(pwd -> pwd.length() >= 8, "Password must be at least 8 characters")
-            .withValidator(pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"), "Password must contain at least one letter and one digit")
+            .withValidator(
+                pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"),
+                "Password must contain at least one letter and one digit"
+            )
             .bind(ChangePasswordDto::newPassword, (_, _) -> {
             });
 
@@ -121,7 +121,10 @@ public class ChangePasswordView extends VerticalLayout {
 
             if (binder.validate().isOk()) {
                 authService.requestPasswordChange(dto);
-                showNotification("Verification code sent to your email. Please check your inbox.", NotificationVariant.LUMO_SUCCESS);
+                showNotification(
+                    "Verification code sent to your email. Please check your inbox.",
+                    NotificationVariant.LUMO_SUCCESS
+                );
                 clearFormAndValidation();
                 showVerificationDialog();
             }

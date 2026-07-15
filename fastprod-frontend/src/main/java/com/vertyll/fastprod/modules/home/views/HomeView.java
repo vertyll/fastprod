@@ -36,7 +36,9 @@ public class HomeView extends VerticalLayout {
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
 
         H3 welcome = new H3("Welcome to FastProd!");
-        Paragraph description = new Paragraph("This is your main dashboard. Navigate using the side menu to access different features.");
+        Paragraph description = new Paragraph(
+            "This is your main dashboard. Navigate using the side menu to access different features."
+        );
 
         add(title, welcome, description);
     }

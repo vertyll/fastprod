@@ -28,7 +28,12 @@ class BaseEntityTest {
         assertTrue(clazz.isAnnotationPresent(MappedSuperclass.class));
         assertTrue(clazz.isAnnotationPresent(EntityListeners.class));
         EntityListeners entityListeners = clazz.getAnnotation(EntityListeners.class);
-        assertArrayEquals(new Class[]{AuditingEntityListener.class}, entityListeners.value());
+        assertArrayEquals(
+            new Class[] {
+                AuditingEntityListener.class
+            },
+            entityListeners.value()
+        );
     }
 
     @Test

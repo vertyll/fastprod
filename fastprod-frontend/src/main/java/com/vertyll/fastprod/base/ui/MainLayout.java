@@ -121,7 +121,12 @@ public final class MainLayout extends AppLayout {
         appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
 
         Div header = new Div(appIcon, appName);
-        header.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Padding.MEDIUM, LumoUtility.Gap.MEDIUM, LumoUtility.AlignItems.CENTER);
+        header.addClassNames(
+            LumoUtility.Display.FLEX,
+            LumoUtility.Padding.MEDIUM,
+            LumoUtility.Gap.MEDIUM,
+            LumoUtility.AlignItems.CENTER
+        );
 
         return header;
     }

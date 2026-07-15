@@ -57,15 +57,20 @@ class EmployeeControllerTest {
         validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
 
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(employeeController)
+        mockMvc = MockMvcBuilders.standaloneSetup(employeeController)
             .setControllerAdvice(new GlobalExceptionHandler())
             .setValidator(validator)
             .build();
 
         createDto = new EmployeeCreateDto("John", "Doe", "john@example.com", "password123", Set.of("EMPLOYEE"));
 
-        updateDto = new EmployeeUpdateDto("John Updated", "Doe Updated", "john.updated@example.com", null, Set.of("EMPLOYEE", "ADMIN"));
+        updateDto = new EmployeeUpdateDto(
+            "John Updated",
+            "Doe Updated",
+            "john.updated@example.com",
+            null,
+            Set.of("EMPLOYEE", "ADMIN")
+        );
 
         responseDto = new EmployeeResponseDto(1L, "John", "Doe", "john@example.com", Set.of(RoleType.EMPLOYEE), true);
     }
@@ -84,7 +89,10 @@ class EmployeeControllerTest {
 
         // when & then
         mockMvc
-            .perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createDto)))
+            .perform(
+                post("/employees").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createDto))
+            )
             .andDo(print())
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.id").value(1))
@@ -107,7 +115,10 @@ class EmployeeControllerTest {
 
         // when & then
         mockMvc
-            .perform(post("/employees").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidCreateDto)))
+            .perform(
+                post("/employees").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidCreateDto))
+            )
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("Validation failed"));
@@ -122,7 +133,10 @@ class EmployeeControllerTest {
 
         // when & then
         mockMvc
-            .perform(put("/employees/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .perform(
+                put("/employees/1").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updateDto))
+            )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value("Employee updated successfully"));
@@ -133,13 +147,15 @@ class EmployeeControllerTest {
     @Test
     void updateEmployee_WhenEmployeeNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND))
-            .when(employeeService)
+        doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND)).when(employeeService)
             .updateEmployee(anyLong(), any(EmployeeUpdateDto.class));
 
         // when & then
         mockMvc
-            .perform(put("/employees/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateDto)))
+            .perform(
+                put("/employees/1").contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updateDto))
+            )
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("Employee not found"));
@@ -151,8 +167,7 @@ class EmployeeControllerTest {
         when(employeeService.getEmployeeById(1L)).thenReturn(responseDto);
 
         // when & then
-        mockMvc
-            .perform(get("/employees/1"))
+        mockMvc.perform(get("/employees/1"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.id").value(1))
@@ -165,11 +180,11 @@ class EmployeeControllerTest {
     @Test
     void getEmployee_WhenNotFound_ShouldReturnNotFound() throws Exception {
         // given
-        when(employeeService.getEmployeeById(1L)).thenThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+        when(employeeService.getEmployeeById(1L))
+            .thenThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND));
 
         // when & then
-        mockMvc
-            .perform(get("/employees/1"))
+        mockMvc.perform(get("/employees/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("Employee not found"));
@@ -181,8 +196,7 @@ class EmployeeControllerTest {
         doNothing().when(employeeService).deleteEmployee(1L);
 
         // when & then
-        mockMvc
-            .perform(delete("/employees/1"))
+        mockMvc.perform(delete("/employees/1"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value("Employee deleted successfully"));
@@ -196,8 +210,7 @@ class EmployeeControllerTest {
         doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND)).when(employeeService).deleteEmployee(1L);
 
         // when & then
-        mockMvc
-            .perform(delete("/employees/1"))
+        mockMvc.perform(delete("/employees/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.message").value("Employee not found"));

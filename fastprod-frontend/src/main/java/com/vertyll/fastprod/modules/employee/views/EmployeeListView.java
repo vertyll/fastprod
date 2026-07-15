@@ -33,7 +33,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees", layout = MainLayout.class)
 @PageTitle("Employees | FastProd")
-@RolesAllowed({"ADMIN", "MANAGER"})
+@RolesAllowed(
+    {
+        "ADMIN",
+        "MANAGER"
+    }
+)
 @Slf4j
 public class EmployeeListView extends VerticalLayout {
 
@@ -79,7 +84,8 @@ public class EmployeeListView extends VerticalLayout {
     private void createToolbar() {
         Button refreshButton = new Button("Refresh", VaadinIcon.REFRESH.create());
         refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        refreshButton.addClickListener(_ -> loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize(), currentFilters));
+        refreshButton
+            .addClickListener(_ -> loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize(), currentFilters));
 
         Button addButton = new Button("Add Employee", VaadinIcon.PLUS.create());
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -99,21 +105,22 @@ public class EmployeeListView extends VerticalLayout {
     private void configureGrid() {
         Grid<EmployeeResponseDto> grid = pagedGrid.getGrid();
 
-        grid.addColumn(EmployeeResponseDto::id).setHeader("ID").setSortable(true).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
-        grid
-            .addColumn(EmployeeResponseDto::firstName)
+        grid.addColumn(EmployeeResponseDto::id)
+            .setHeader("ID")
+            .setSortable(true)
+            .setAutoWidth(true)
+            .setTextAlign(ColumnTextAlign.CENTER);
+        grid.addColumn(EmployeeResponseDto::firstName)
             .setHeader("First Name")
             .setSortable(true)
             .setAutoWidth(true)
             .setTextAlign(ColumnTextAlign.CENTER);
-        grid
-            .addColumn(EmployeeResponseDto::lastName)
+        grid.addColumn(EmployeeResponseDto::lastName)
             .setHeader("Last Name")
             .setSortable(true)
             .setAutoWidth(true)
             .setTextAlign(ColumnTextAlign.CENTER);
-        grid
-            .addColumn(EmployeeResponseDto::email)
+        grid.addColumn(EmployeeResponseDto::email)
             .setHeader("Email")
             .setSortable(true)
             .setAutoWidth(true)
@@ -171,8 +178,7 @@ public class EmployeeListView extends VerticalLayout {
             pagedGrid.updateData(pageResponse);
         } catch (Exception e) {
             log.error("Failed to load employees", e);
-            Notification
-                .show("Failed to load employees: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Failed to load employees: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
         } finally {
             loadingSpinner.hide();
@@ -180,7 +186,8 @@ public class EmployeeListView extends VerticalLayout {
     }
 
     private void confirmDelete(EmployeeResponseDto employee) {
-        com.vaadin.flow.component.confirmdialog.ConfirmDialog dialog = new com.vaadin.flow.component.confirmdialog.ConfirmDialog();
+        com.vaadin.flow.component.confirmdialog.ConfirmDialog dialog =
+                new com.vaadin.flow.component.confirmdialog.ConfirmDialog();
         dialog.setHeader("Delete Employee");
         dialog.setText("Are you sure you want to delete " + employee.firstName() + " " + employee.lastName() + "?");
         dialog.setCancelable(true);
@@ -193,14 +200,12 @@ public class EmployeeListView extends VerticalLayout {
     private void deleteEmployee(Long employeeId) {
         try {
             employeeService.deleteEmployee(employeeId);
-            Notification
-                .show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize(), currentFilters);
         } catch (Exception e) {
             log.error("Failed to delete employee", e);
-            Notification
-                .show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification.show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }

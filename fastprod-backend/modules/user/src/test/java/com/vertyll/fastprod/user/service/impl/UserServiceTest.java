@@ -36,7 +36,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SuppressFBWarnings(
-    value = {"URF_UNREAD_FIELD", "HARD_CODE_PASSWORD"},
+    value = {
+        "URF_UNREAD_FIELD",
+        "HARD_CODE_PASSWORD"
+    },
     justification = "Test class: unused fields and test passwords are safe"
 )
 @ExtendWith(MockitoExtension.class)
@@ -75,13 +78,18 @@ class UserServiceTest {
 
         createDto = new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
 
-        updateDto = new UserUpdateDto("John Updated", "Doe Updated", "john.updated@example.com", null, Set.of("USER", "ADMIN"));
+        updateDto = new UserUpdateDto(
+            "John Updated",
+            "Doe Updated",
+            "john.updated@example.com",
+            null,
+            Set.of("USER", "ADMIN")
+        );
 
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
 
-        user = User
-            .builder()
+        user = User.builder()
             .firstName("John")
             .lastName("Doe")
             .email("john@example.com")
@@ -235,7 +243,8 @@ class UserServiceTest {
     @Test
     void createUser_WhenEmptyRolesProvided_ShouldCreateUserWithDefaultRole() {
         // given
-        UserCreateDto createDtoWithEmptyRoles = new UserCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
+        UserCreateDto createDtoWithEmptyRoles =
+                new UserCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");

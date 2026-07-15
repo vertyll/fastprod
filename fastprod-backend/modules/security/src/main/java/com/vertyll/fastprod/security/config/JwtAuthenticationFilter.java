@@ -26,7 +26,10 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressFBWarnings(value = "SERVLET_HEADER", justification = "Authorization header is cryptographically validated JWT token")
+@SuppressFBWarnings(
+    value = "SERVLET_HEADER",
+    justification = "Authorization header is cryptographically validated JWT token"
+)
 @Component
 @RequiredArgsConstructor
 @Slf4j

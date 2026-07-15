@@ -9,7 +9,6 @@ import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 @NullMarked
 public final class ViewToolbar extends Composite<Header> {
@@ -37,30 +36,28 @@ public final class ViewToolbar extends Composite<Header> {
 
         if (components.length > 0) {
             var actions = new Div(components);
-            actions
-                .addClassNames(
-                    Display.FLEX,
-                    FlexDirection.COLUMN,
-                    JustifyContent.BETWEEN,
-                    Flex.GROW,
-                    Gap.SMALL,
-                    FlexDirection.Breakpoint.Medium.ROW
-                );
+            actions.addClassNames(
+                Display.FLEX,
+                FlexDirection.COLUMN,
+                JustifyContent.BETWEEN,
+                Flex.GROW,
+                Gap.SMALL,
+                FlexDirection.Breakpoint.Medium.ROW
+            );
             getContent().add(actions);
         }
     }
 
     public static Component group(Component... components) {
         var group = new Div(components);
-        group
-            .addClassNames(
-                Display.FLEX,
-                FlexDirection.COLUMN,
-                AlignItems.STRETCH,
-                Gap.SMALL,
-                FlexDirection.Breakpoint.Medium.ROW,
-                AlignItems.Breakpoint.Medium.CENTER
-            );
+        group.addClassNames(
+            Display.FLEX,
+            FlexDirection.COLUMN,
+            AlignItems.STRETCH,
+            Gap.SMALL,
+            FlexDirection.Breakpoint.Medium.ROW,
+            AlignItems.Breakpoint.Medium.CENTER
+        );
         return group;
     }
 }

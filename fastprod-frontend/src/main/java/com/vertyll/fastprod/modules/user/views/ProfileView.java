@@ -102,8 +102,7 @@ public class ProfileView extends VerticalLayout {
         VerticalLayout detailsLayout = new VerticalLayout(detailsTable);
         detailsLayout.setSpacing(true);
         detailsLayout.setPadding(true);
-        detailsLayout
-            .getStyle()
+        detailsLayout.getStyle()
             .set("background", "var(--lumo-base-color)")
             .set("border-radius", "var(--lumo-border-radius-m)")
             .set("box-shadow", "var(--lumo-box-shadow-s)");
@@ -128,8 +127,10 @@ public class ProfileView extends VerticalLayout {
         lastNameField = new TextField("Last Name");
         lastNameField.setRequiredIndicatorVisible(true);
 
-        binder.forField(firstNameField).asRequired("First name is required").bind(ProfileUpdateDto::firstName, (_, _) -> {
-        });
+        binder.forField(firstNameField)
+            .asRequired("First name is required")
+            .bind(ProfileUpdateDto::firstName, (_, _) -> {
+            });
 
         binder.forField(lastNameField).asRequired("Last name is required").bind(ProfileUpdateDto::lastName, (_, _) -> {
         });
@@ -150,8 +151,7 @@ public class ProfileView extends VerticalLayout {
         VerticalLayout form = new VerticalLayout(formLayout, buttons);
         form.setSpacing(true);
         form.setPadding(true);
-        form
-            .getStyle()
+        form.getStyle()
             .set("background", "var(--lumo-base-color)")
             .set("border-radius", "var(--lumo-border-radius-m)")
             .set("box-shadow", "var(--lumo-box-shadow-s)");

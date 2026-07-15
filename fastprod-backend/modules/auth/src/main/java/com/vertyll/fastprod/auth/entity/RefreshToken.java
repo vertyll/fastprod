@@ -3,12 +3,22 @@ package com.vertyll.fastprod.auth.entity;
 import java.io.Serial;
 import java.time.Instant;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 import com.vertyll.fastprod.user.entity.User;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -18,10 +28,12 @@ import lombok.*;
 @Entity
 @Table(
     name = "refresh_token",
-    indexes = {@Index(name = "idx_refresh_token_user_id", columnList = "user_id"),
-            @Index(name = "idx_refresh_token_expiry_date", columnList = "expiry_date"),
-            @Index(name = "idx_refresh_token_is_revoked", columnList = "is_revoked"),
-            @Index(name = "idx_refresh_token_token", columnList = "token"),}
+    indexes = {
+        @Index(name = "idx_refresh_token_user_id", columnList = "user_id"),
+        @Index(name = "idx_refresh_token_expiry_date", columnList = "expiry_date"),
+        @Index(name = "idx_refresh_token_is_revoked", columnList = "is_revoked"),
+        @Index(name = "idx_refresh_token_token", columnList = "token"),
+    }
 )
 public class RefreshToken extends BaseEntity {
 

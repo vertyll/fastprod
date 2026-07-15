@@ -84,7 +84,10 @@ class EmailTemplateNameTest {
     void allTemplates_ShouldHaveUnderscoreInName() {
         // when & then
         for (EmailTemplateName template : EmailTemplateName.values()) {
-            assertTrue(template.getName().contains("_"), "Template name should contain underscore: " + template.getName());
+            assertTrue(
+                template.getName().contains("_"),
+                "Template name should contain underscore: " + template.getName()
+            );
         }
     }
 
