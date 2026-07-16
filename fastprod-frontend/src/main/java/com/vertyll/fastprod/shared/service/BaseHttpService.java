@@ -137,8 +137,10 @@ public abstract class BaseHttpService {
         }
     }
 
-    private <T> PageResponse<T> handlePaginatedResponse(HttpResponse<String> response, Class<T> responseType)
-            throws Exception {
+    private <T> PageResponse<T> handlePaginatedResponse(
+        HttpResponse<String> response,
+        Class<T> responseType
+    ) throws Exception {
         if (response.statusCode() >= 200 && response.statusCode() < 300) {
             PaginatedApiResponse<T> paginatedResponse = objectMapper.readValue(
                 response.body(),

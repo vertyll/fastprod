@@ -6,6 +6,11 @@ import com.vertyll.fastprod.email.enums.EmailTemplateName;
 
 @FunctionalInterface
 public interface EmailService {
-    void sendEmail(String to, String username, EmailTemplateName emailTemplate, String activationCode, String subject)
-            throws MessagingException;
+    void sendEmail(
+        String to,
+        String username,
+        EmailTemplateName emailTemplate,
+        String activationCode,
+        String subject
+    ) throws MessagingException;
 }

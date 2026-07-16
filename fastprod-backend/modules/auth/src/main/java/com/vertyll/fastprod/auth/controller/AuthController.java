@@ -51,8 +51,9 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register new user")
-    public ResponseEntity<ApiResponse<Void>> register(@RequestBody @Valid RegisterRequestDto request)
-            throws MessagingException {
+    public ResponseEntity<ApiResponse<Void>> register(
+        @RequestBody @Valid RegisterRequestDto request
+    ) throws MessagingException {
         authService.register(request);
         return ApiResponse.buildResponse(null, USER_REGISTERED_SUCCESSFULLY, HttpStatus.OK);
     }
@@ -119,8 +120,9 @@ public class AuthController {
     @PostMapping("/change-email-request")
     @PreAuthorize(IS_AUTHENTICATED)
     @Operation(summary = "Request email change, sends verification to new email")
-    public ResponseEntity<ApiResponse<Void>> requestEmailChange(@RequestBody @Valid ChangeEmailRequestDto request)
-            throws MessagingException {
+    public ResponseEntity<ApiResponse<Void>> requestEmailChange(
+        @RequestBody @Valid ChangeEmailRequestDto request
+    ) throws MessagingException {
         authService.requestEmailChange(request);
         return ApiResponse.buildResponse(null, EMAIL_CHANGE_VERIFICATION_SENT_TO_NEW_EMAIL, HttpStatus.OK);
     }
@@ -140,8 +142,9 @@ public class AuthController {
     @PostMapping("/change-password-request")
     @PreAuthorize(IS_AUTHENTICATED)
     @Operation(summary = "Request password change, sends verification email")
-    public ResponseEntity<ApiResponse<Void>> requestPasswordChange(@RequestBody @Valid ChangePasswordRequestDto request)
-            throws MessagingException {
+    public ResponseEntity<ApiResponse<Void>> requestPasswordChange(
+        @RequestBody @Valid ChangePasswordRequestDto request
+    ) throws MessagingException {
         authService.requestPasswordChange(request);
         return ApiResponse.buildResponse(null, PASSWORD_CHANGE_VERIFICATION_SENT_TO_EMAIL, HttpStatus.OK);
     }
