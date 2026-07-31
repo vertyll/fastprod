@@ -24,7 +24,7 @@ Production management application.
 - OpenAPI (Swagger)
 
 ### Front-end:
-- Vaadn (Java-only(Flow))
+- Vaadin (Java-only(Flow))
 - Spring Boot
 - Java
 - Gradle Kotlin DSL
@@ -38,7 +38,7 @@ Production management application.
 - the application allows login on multiple devices simultaneously
 
 ### Core back-end:
-- Gradle multi module build system
+- Gradle multi-module build system
 - the application has an exception handling mechanism
 - the application has a logging mechanism
 - the application has an email sending mechanism
@@ -66,7 +66,8 @@ Production management application.
 - Error Prone for static code analysis
 - Spotless for code formatting
 
-> **Note:** During application development, SOLID principles, DRY, composition over inheritance, dependency injection, design patterns, architectural patterns were applied, tests were written, and other good programming practices were adopted.
+> [!NOTE]
+> During application development, SOLID principles, DRY, composition over inheritance, dependency injection, design patterns, architectural patterns were applied, tests were written, and other good programming practices were adopted.
 
 ## Preview Screenshots
 
