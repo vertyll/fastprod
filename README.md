@@ -67,6 +67,7 @@ Production management application.
 - Spotless for code formatting
 
 > [!NOTE]
+>
 > During application development, SOLID principles, DRY, composition over inheritance, dependency injection, design patterns, architectural patterns were applied, tests were written, and other good programming practices were adopted.
 
 ## Preview Screenshots
