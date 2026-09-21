@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jspecify.annotations.NonNull;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,7 +42,7 @@ public class DataSeeder implements ApplicationRunner {
 
     @Override
     @Transactional
-    public void run(@NonNull ApplicationArguments args) {
+    public void run(ApplicationArguments args) {
         if (!seedProps.isEnabled()) {
             log.info("[DataSeeder] Seeding is disabled (app.seed.enabled=false)");
             return;
@@ -52,8 +51,7 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     private void seedAdminUser() {
-        String email =
-                (adminProps.email() == null || adminProps.email().isBlank()) ? DEFAULT_ADMIN_EMAIL : adminProps.email();
+        String email = adminProps.email().isBlank() ? DEFAULT_ADMIN_EMAIL : adminProps.email();
 
         if (userService.existsByEmail(email)) {
             log.info("[DataSeeder] Admin user already exists: {}", email);
@@ -61,7 +59,7 @@ public class DataSeeder implements ApplicationRunner {
         }
 
         String password = adminProps.password();
-        if (password == null || password.isBlank()) {
+        if (password.isBlank()) {
             log.warn(
                 "[DataSeeder] Admin password not provided. Skipping admin creation. Set ADMIN_PASSWORD or admin.password to enable."
             );
@@ -72,14 +70,8 @@ public class DataSeeder implements ApplicationRunner {
         Set<RoleType> adminRoleNames = Stream.of(RoleType.ADMIN).collect(Collectors.toSet());
 
         User admin = User.builder()
-            .firstName(
-                (adminProps.firstName() == null || adminProps.firstName().isBlank()) ? DEFAULT_ADMIN_FIRST_NAME
-                        : adminProps.firstName()
-            )
-            .lastName(
-                (adminProps.lastName() == null || adminProps.lastName().isBlank()) ? DEFAULT_ADMIN_LAST_NAME
-                        : adminProps.lastName()
-            )
+            .firstName(adminProps.firstName().isBlank() ? DEFAULT_ADMIN_FIRST_NAME : adminProps.firstName())
+            .lastName(adminProps.lastName().isBlank() ? DEFAULT_ADMIN_LAST_NAME : adminProps.lastName())
             .email(email)
             .password(requireNonNull(passwordEncoder.encode(nonNullPassword)))
             .active(true)
