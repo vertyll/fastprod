@@ -8,6 +8,7 @@ import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
      */
     @Override
     @Transactional
-    public String createVerificationToken(User user, VerificationTokenType tokenType, String additionalData) {
+    public String createVerificationToken(User user, VerificationTokenType tokenType, @Nullable String additionalData) {
         String code = generateVerificationCode();
 
         VerificationToken verificationToken = VerificationToken.builder()

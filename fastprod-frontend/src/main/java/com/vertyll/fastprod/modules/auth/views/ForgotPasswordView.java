@@ -172,7 +172,7 @@ public class ForgotPasswordView extends VerticalLayout {
 
     @Setter
     private static class FormData {
-        private String email;
+        private String email = "";
 
         String email() {
             return email;

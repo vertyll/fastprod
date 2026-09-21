@@ -4,14 +4,20 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class FiltersValue {
+import org.jspecify.annotations.Nullable;
+
+public final class FiltersValue {
     private final Map<String, Object> values = new HashMap<>();
+
+    private FiltersValue() {
+    }
 
     public static FiltersValue empty() {
         return new FiltersValue();
     }
 
-    public void set(String key, Object value) {
+    public void set(String key, @Nullable Object value) {
+        Objects.requireNonNull(key, "key");
         switch (value) {
             case null -> values.remove(key);
             case String s when s.isBlank() -> values.remove(key);
@@ -20,14 +26,14 @@ public class FiltersValue {
         }
     }
 
-    @SuppressWarnings(
-        {
-            "unchecked",
-            "TypeParameterUnusedInFormals"
-        }
-    )
-    public <T> T get(String key) {
-        return (T) values.get(key);
+    public void remove(String key) {
+        values.remove(Objects.requireNonNull(key, "key"));
+    }
+
+    public <T> Optional<T> get(String key, Class<T> type) {
+        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(type, "type");
+        return Optional.ofNullable(values.get(key)).map(type::cast);
     }
 
     public Map<String, Object> asMap() {

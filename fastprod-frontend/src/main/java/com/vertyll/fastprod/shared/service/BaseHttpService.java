@@ -32,12 +32,7 @@ public abstract class BaseHttpService {
     }
 
     private void addAuthorizationHeader(HttpRequest.Builder requestBuilder) {
-        if (authTokenProvider != null) {
-            String authHeader = authTokenProvider.getAuthorizationHeader();
-            if (authHeader != null) {
-                requestBuilder.header("Authorization", authHeader);
-            }
-        }
+        authTokenProvider.getAuthorizationHeader().ifPresent(header -> requestBuilder.header("Authorization", header));
     }
 
     protected <T> ApiResponse<T> get(String endpoint, Class<T> responseType) throws Exception {
@@ -51,9 +46,21 @@ public abstract class BaseHttpService {
         return handleResponse(response, responseType);
     }
 
-    protected <T, R> ApiResponse<R> post(String endpoint, T requestBody, Class<R> responseType) throws Exception {
-        String json = requestBody != null ? objectMapper.writeValueAsString(requestBody) : "";
+    /**
+     * Sends a POST request without a body.
+     */
+    protected <R> ApiResponse<R> post(String endpoint, Class<R> responseType) throws Exception {
+        return sendPost(endpoint, "", responseType);
+    }
 
+    /**
+     * Sends a POST request with {@code requestBody} serialized as JSON.
+     */
+    protected <T, R> ApiResponse<R> post(String endpoint, T requestBody, Class<R> responseType) throws Exception {
+        return sendPost(endpoint, objectMapper.writeValueAsString(requestBody), responseType);
+    }
+
+    private <R> ApiResponse<R> sendPost(String endpoint, String json, Class<R> responseType) throws Exception {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
             .uri(URI.create(backendUrl + endpoint))
             .header("Content-Type", "application/json")

@@ -14,6 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 import com.vertyll.fastprod.user.entity.User;
@@ -62,5 +64,5 @@ public class VerificationToken extends BaseEntity {
     private VerificationTokenType tokenType;
 
     @Column
-    private String additionalData;
+    private @Nullable String additionalData;
 }

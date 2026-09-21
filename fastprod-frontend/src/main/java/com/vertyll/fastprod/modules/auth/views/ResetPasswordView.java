@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.auth.views;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
@@ -40,7 +42,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
     private final transient AuthService authService;
     private final Binder<FormData> binder;
 
-    private String resetToken;
+    private @Nullable String resetToken;
     private PasswordField newPasswordField;
     private PasswordField confirmPasswordField;
     private Button submitButton;
@@ -154,7 +156,8 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
             return;
         }
 
-        if (resetToken == null || resetToken.isEmpty()) {
+        String token = resetToken;
+        if (token == null || token.isEmpty()) {
             showNotification("Invalid reset token", NotificationVariant.LUMO_ERROR);
             return;
         }
@@ -164,7 +167,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
 
         try {
             ResetPasswordRequestDto request = new ResetPasswordRequestDto(newPwd);
-            authService.resetPassword(resetToken, request);
+            authService.resetPassword(token, request);
 
             showNotification(
                 "Password reset successfully! You can now log in with your new password.",
@@ -211,8 +214,8 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
 
     @Setter
     private static class FormData {
-        private String newPassword;
-        private String confirmPassword;
+        private String newPassword = "";
+        private String confirmPassword = "";
 
         String newPassword() {
             return newPassword;

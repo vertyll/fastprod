@@ -6,6 +6,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vertyll.fastprod.auth.dto.AuthRequestDto;
@@ -21,7 +22,11 @@ public interface AuthService {
     void register(RegisterRequestDto request) throws MessagingException;
 
     @Transactional
-    AuthResponseDto authenticate(AuthRequestDto request, HttpServletRequest httpRequest, HttpServletResponse response);
+    AuthResponseDto authenticate(
+        AuthRequestDto request,
+        HttpServletRequest httpRequest,
+        @Nullable HttpServletResponse response
+    );
 
     @Transactional
     AuthResponseDto refreshToken(HttpServletRequest request, HttpServletResponse response);

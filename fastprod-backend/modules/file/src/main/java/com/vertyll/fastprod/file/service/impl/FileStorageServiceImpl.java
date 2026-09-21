@@ -7,13 +7,14 @@ import com.google.common.base.Ascii;
 import com.vertyll.fastprod.file.config.FileUploadProperties;
 import com.vertyll.fastprod.file.service.FileStorageService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import jakarta.annotation.Nonnull;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,7 +28,7 @@ class FileStorageServiceImpl implements FileStorageService {
     private final FileUploadProperties fileUploadProperties;
 
     @Override
-    public String saveFile(@Nonnull MultipartFile sourceFile, @Nonnull String userId) {
+    public String saveFile(MultipartFile sourceFile, String userId) {
         final String fileUploadSubPath = USERS + separator + userId;
         return uploadFile(sourceFile, fileUploadSubPath);
     }
@@ -35,8 +36,8 @@ class FileStorageServiceImpl implements FileStorageService {
     @SuppressFBWarnings(
             value = "PATH_TRAVERSAL_IN",
             justification = "Path traversal is prevented by normalize() and startsWith() validation")
-    private String uploadFile(@Nonnull MultipartFile sourceFile,
-                              @Nonnull String fileUploadSubPath) {
+    private String uploadFile(MultipartFile sourceFile,
+                              String fileUploadSubPath) {
 
         try {
             // Get the base directory and normalize it
@@ -77,7 +78,7 @@ class FileStorageServiceImpl implements FileStorageService {
     }
 
 
-    private String getFileExtension(String fileName) {
+    private String getFileExtension(@Nullable String fileName) {
         if (fileName == null || fileName.isEmpty()) {
             return "";
         }

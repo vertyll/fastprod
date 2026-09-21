@@ -37,7 +37,7 @@ public class AuthService extends BaseHttpService {
 
     public void verifyAccount(VerifyAccountRequestDto verifyAccountRequest) throws Exception {
         String endpoint = AUTH_ENDPOINT + "/verify?code=" + verifyAccountRequest.code();
-        post(endpoint, null, Void.class);
+        post(endpoint, Void.class);
     }
 
     public void resendVerificationCode(String email) throws Exception {
@@ -46,16 +46,16 @@ public class AuthService extends BaseHttpService {
     }
 
     public ApiResponse<AuthResponseDto> refreshToken() throws Exception {
-        return post(AUTH_ENDPOINT + "/refresh-token", null, AuthResponseDto.class);
+        return post(AUTH_ENDPOINT + "/refresh-token", AuthResponseDto.class);
     }
 
     public void logout() throws Exception {
-        post(AUTH_ENDPOINT + "/logout", null, Void.class);
+        post(AUTH_ENDPOINT + "/logout", Void.class);
     }
 
     public void requestPasswordReset(String email) throws Exception {
         String endpoint = AUTH_ENDPOINT + "/reset-password-request?email=" + email;
-        post(endpoint, null, Void.class);
+        post(endpoint, Void.class);
     }
 
     public void resetPassword(String token, ResetPasswordRequestDto request) throws Exception {
@@ -68,7 +68,7 @@ public class AuthService extends BaseHttpService {
     }
 
     public ApiResponse<Void> verifyPasswordChange(String code) throws Exception {
-        return post(AUTH_ENDPOINT + "/verify-password-change?code=" + code, null, Void.class);
+        return post(AUTH_ENDPOINT + "/verify-password-change?code=" + code, Void.class);
     }
 
     public ApiResponse<Void> requestEmailChange(ChangeEmailDto dto) throws Exception {
@@ -76,6 +76,6 @@ public class AuthService extends BaseHttpService {
     }
 
     public ApiResponse<AuthResponseDto> verifyEmailChange(String code) throws Exception {
-        return post(AUTH_ENDPOINT + "/verify-email-change?code=" + code, null, AuthResponseDto.class);
+        return post(AUTH_ENDPOINT + "/verify-email-change?code=" + code, AuthResponseDto.class);
     }
 }

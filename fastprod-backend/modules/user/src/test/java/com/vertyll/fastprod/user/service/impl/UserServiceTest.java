@@ -262,7 +262,8 @@ class UserServiceTest {
     @Test
     void updateUser_WhenNullFieldsProvided_ShouldNotUpdateNullFields() {
         // given
-        UserUpdateDto partialUpdateDto = new UserUpdateDto("Updated Name", null, null, null, null);
+        @SuppressWarnings("NullAway") UserUpdateDto partialUpdateDto =
+                new UserUpdateDto("Updated Name", null, null, null, null);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);

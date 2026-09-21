@@ -5,19 +5,21 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.auth.dto.SessionInfoDto;
 import com.vertyll.fastprod.auth.entity.RefreshToken;
 import com.vertyll.fastprod.user.entity.User;
 
 public interface RefreshTokenService {
     @Transactional
-    String createRefreshToken(User user, String deviceInfo, HttpServletRequest request);
+    String createRefreshToken(User user, @Nullable String deviceInfo, HttpServletRequest request);
 
     @Transactional
     User validateRefreshToken(String token);
 
     @Transactional
-    String rotateRefreshToken(String oldToken, String deviceInfo, HttpServletRequest request);
+    String rotateRefreshToken(String oldToken, @Nullable String deviceInfo, HttpServletRequest request);
 
     @Transactional
     void revokeRefreshToken(String token);

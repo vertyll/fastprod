@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.shared.security;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
 import com.vaadin.flow.server.VaadinSession;
@@ -17,14 +19,11 @@ public class AuthTokenProvider {
     /**
      * Gets the authentication token from the current Vaadin session.
      *
-     * @return authentication token or null if not authenticated
+     * @return authentication token, or empty if not authenticated
      */
-    public String getToken() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            return (String) session.getAttribute(TOKEN_SESSION_KEY);
-        }
-        return null;
+    public Optional<String> getToken() {
+        return Optional.ofNullable(VaadinSession.getCurrent())
+            .map(session -> (String) session.getAttribute(TOKEN_SESSION_KEY));
     }
 
     /**
@@ -44,13 +43,9 @@ public class AuthTokenProvider {
     /**
      * Gets the full Authorization header value (e.g., "Bearer eyJhbGc...").
      *
-     * @return authorization header value or null if not authenticated
+     * @return authorization header value, or empty if not authenticated
      */
-    public String getAuthorizationHeader() {
-        String token = getToken();
-        if (token != null) {
-            return getTokenType() + " " + token;
-        }
-        return null;
+    public Optional<String> getAuthorizationHeader() {
+        return getToken().map(token -> getTokenType() + " " + token);
     }
 }

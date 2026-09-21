@@ -2,6 +2,7 @@ package com.vertyll.fastprod.shared.security;
 
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
@@ -21,7 +22,7 @@ public class TokenRefreshService {
     private final SecurityService securityService;
     private final SecurityProperties securityProperties;
 
-    private Instant tokenExpirationTime;
+    private @Nullable Instant tokenExpirationTime;
 
     public void setTokenExpiration() {
         long expirationMs = securityProperties.getAccessToken().getExpiration();

@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 import com.vertyll.fastprod.user.entity.User;
 
@@ -55,7 +57,7 @@ public class RefreshToken extends BaseEntity {
     @Column(nullable = false)
     private boolean revoked = false;
 
-    private String deviceInfo;
+    private @Nullable String deviceInfo;
 
     @Column(length = 45) // IPv6 max length
     private String ipAddress;

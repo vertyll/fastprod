@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.employee.views;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
@@ -31,7 +33,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     private final DetailsTableComponent detailsTable = new DetailsTableComponent();
     private final LoadingSpinner loadingSpinner = new LoadingSpinner();
 
-    private Long employeeId;
+    private @Nullable Long employeeId;
 
     public EmployeeDetailsView(EmployeeService employeeService) {
         this.employeeService = employeeService;
@@ -46,10 +48,11 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        employeeId = event.getRouteParameters().get("id").map(Long::parseLong).orElse(null);
+        Long id = event.getRouteParameters().get("id").map(Long::parseLong).orElse(null);
+        employeeId = id;
 
-        if (employeeId != null) {
-            loadEmployee(employeeId);
+        if (id != null) {
+            loadEmployee(id);
         } else {
             Notification.show("Invalid employee ID", 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -74,7 +77,12 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
 
         Button editButton = new Button("Edit", VaadinIcon.EDIT.create());
         editButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        editButton.addClickListener(_ -> navigateToForm(employeeId));
+        editButton.addClickListener(_ -> {
+            Long id = employeeId;
+            if (id != null) {
+                navigateToForm(id);
+            }
+        });
 
         Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create());
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
@@ -150,8 +158,12 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     }
 
     private void deleteEmployee() {
+        Long id = employeeId;
+        if (id == null) {
+            return;
+        }
         try {
-            employeeService.deleteEmployee(employeeId);
+            employeeService.deleteEmployee(id);
             Notification.show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             navigateToList();

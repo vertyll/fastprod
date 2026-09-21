@@ -1,6 +1,8 @@
 package com.vertyll.fastprod.shared.security;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -64,12 +66,9 @@ public class SecurityService {
         return session.getAttribute(TOKEN_SESSION_KEY) != null;
     }
 
-    public String getToken() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            return (String) session.getAttribute(TOKEN_SESSION_KEY);
-        }
-        return null;
+    public Optional<String> getToken() {
+        return Optional.ofNullable(VaadinSession.getCurrent())
+            .map(session -> (String) session.getAttribute(TOKEN_SESSION_KEY));
     }
 
     public String getTokenType() {
@@ -81,20 +80,13 @@ public class SecurityService {
         return "Bearer";
     }
 
-    public String getAuthorizationHeader() {
-        String token = getToken();
-        if (token != null) {
-            return getTokenType() + " " + token;
-        }
-        return null;
+    public Optional<String> getAuthorizationHeader() {
+        return getToken().map(token -> getTokenType() + " " + token);
     }
 
-    public AuthResponseDto getCurrentUser() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            return (AuthResponseDto) session.getAttribute(USER_SESSION_KEY);
-        }
-        return null;
+    public Optional<AuthResponseDto> getCurrentUser() {
+        return Optional.ofNullable(VaadinSession.getCurrent())
+            .map(session -> (AuthResponseDto) session.getAttribute(USER_SESSION_KEY));
     }
 
     @SuppressWarnings("unchecked")
@@ -113,9 +105,7 @@ public class SecurityService {
     }
 
     public boolean hasRole(RoleType role) {
-        if (role == null) {
-            return false;
-        }
+        Objects.requireNonNull(role, "role");
         List<String> userRoles = getCurrentUserRoles();
         String roleName = role.name();
         String roleAuthority = role.getAuthority();
@@ -133,7 +123,7 @@ public class SecurityService {
     }
 
     public boolean hasAnyRole(RoleType... roles) {
-        if (roles == null || roles.length == 0) {
+        if (roles.length == 0) {
             return false;
         }
         for (RoleType role : roles) {
@@ -145,7 +135,7 @@ public class SecurityService {
     }
 
     public boolean hasAllRoles(RoleType... roles) {
-        if (roles == null || roles.length == 0) {
+        if (roles.length == 0) {
             return true;
         }
         for (RoleType role : roles) {

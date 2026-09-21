@@ -6,8 +6,8 @@ public record LoginRequestDto(String email, String password) {
 
     @Data
     public static class FormBuilder {
-        private String email;
-        private String password;
+        private String email = "";
+        private String password = "";
 
         public LoginRequestDto toDto() {
             return new LoginRequestDto(email, password);

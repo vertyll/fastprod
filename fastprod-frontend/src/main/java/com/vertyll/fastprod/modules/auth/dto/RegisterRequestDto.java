@@ -6,10 +6,10 @@ public record RegisterRequestDto(String firstName, String lastName, String email
 
     @Data
     public static class FormBuilder {
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String password;
+        private String firstName = "";
+        private String lastName = "";
+        private String email = "";
+        private String password = "";
 
         public RegisterRequestDto toDto() {
             return new RegisterRequestDto(firstName, lastName, email, password);

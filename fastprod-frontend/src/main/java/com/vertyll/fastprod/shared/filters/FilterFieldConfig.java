@@ -1,18 +1,22 @@
 package com.vertyll.fastprod.shared.filters;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import org.jspecify.annotations.Nullable;
 
 import com.vaadin.flow.component.ItemLabelGenerator;
 
-public class FilterFieldConfig<T> {
+public final class FilterFieldConfig<T> {
     private final String id;
     private final String label;
     private final FilterFieldType type;
-    private final List<T> staticItems;
-    private final Supplier<List<T>> itemsSupplier;
-    private final ItemLabelGenerator<T> itemLabelGenerator;
-    private final String placeholder;
+    private final @Nullable List<T> staticItems;
+    private final @Nullable Supplier<List<T>> itemsSupplier;
+    private final @Nullable ItemLabelGenerator<T> itemLabelGenerator;
+    private final @Nullable String placeholder;
 
     private FilterFieldConfig(Builder<T> b) {
         this.id = b.id;
@@ -36,58 +40,58 @@ public class FilterFieldConfig<T> {
         return type;
     }
 
-    public List<T> staticItems() {
-        return staticItems;
+    public Optional<List<T>> staticItems() {
+        return Optional.ofNullable(staticItems);
     }
 
-    public Supplier<List<T>> itemsSupplier() {
-        return itemsSupplier;
+    public Optional<Supplier<List<T>>> itemsSupplier() {
+        return Optional.ofNullable(itemsSupplier);
     }
 
-    public ItemLabelGenerator<T> itemLabelGenerator() {
-        return itemLabelGenerator;
+    public Optional<ItemLabelGenerator<T>> itemLabelGenerator() {
+        return Optional.ofNullable(itemLabelGenerator);
     }
 
-    public String placeholder() {
-        return placeholder;
+    public Optional<String> placeholder() {
+        return Optional.ofNullable(placeholder);
     }
 
     public static <T> Builder<T> builder(String id, String label, FilterFieldType type) {
         return new Builder<>(id, label, type);
     }
 
-    public static class Builder<T> {
+    public static final class Builder<T> {
         private final String id;
         private final String label;
         private final FilterFieldType type;
-        private List<T> staticItems;
-        private Supplier<List<T>> itemsSupplier;
-        private ItemLabelGenerator<T> itemLabelGenerator;
-        private String placeholder;
+        private @Nullable List<T> staticItems;
+        private @Nullable Supplier<List<T>> itemsSupplier;
+        private @Nullable ItemLabelGenerator<T> itemLabelGenerator;
+        private @Nullable String placeholder;
 
-        public Builder(String id, String label, FilterFieldType type) {
-            this.id = id;
-            this.label = label;
-            this.type = type;
+        private Builder(String id, String label, FilterFieldType type) {
+            this.id = Objects.requireNonNull(id, "id");
+            this.label = Objects.requireNonNull(label, "label");
+            this.type = Objects.requireNonNull(type, "type");
         }
 
         public Builder<T> items(List<T> items) {
-            this.staticItems = items;
+            this.staticItems = List.copyOf(items);
             return this;
         }
 
         public Builder<T> itemsSupplier(Supplier<List<T>> supplier) {
-            this.itemsSupplier = supplier;
+            this.itemsSupplier = Objects.requireNonNull(supplier, "supplier");
             return this;
         }
 
         public Builder<T> itemLabel(ItemLabelGenerator<T> generator) {
-            this.itemLabelGenerator = generator;
+            this.itemLabelGenerator = Objects.requireNonNull(generator, "generator");
             return this;
         }
 
         public Builder<T> placeholder(String placeholder) {
-            this.placeholder = placeholder;
+            this.placeholder = Objects.requireNonNull(placeholder, "placeholder");
             return this;
         }
 

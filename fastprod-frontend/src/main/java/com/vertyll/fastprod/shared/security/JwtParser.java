@@ -4,13 +4,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
+import org.jspecify.annotations.Nullable;
 
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
-public class JwtParser {
+public final class JwtParser {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -48,20 +51,20 @@ public class JwtParser {
         }
     }
 
-    public static String extractEmail(String token) {
+    public static Optional<String> extractEmail(String token) {
         JsonNode jsonNode = parsePayload(token);
         if (jsonNode == null) {
-            return null;
+            return Optional.empty();
         }
 
         JsonNode emailNode = jsonNode.get("sub");
         if (emailNode == null) {
             emailNode = jsonNode.get("email");
         }
-        return emailNode != null ? emailNode.asString() : null;
+        return Optional.ofNullable(emailNode).map(JsonNode::asString);
     }
 
-    private static JsonNode parsePayload(String token) {
+    private static @Nullable JsonNode parsePayload(@Nullable String token) {
         if (token == null || token.isBlank()) {
             return null;
         }

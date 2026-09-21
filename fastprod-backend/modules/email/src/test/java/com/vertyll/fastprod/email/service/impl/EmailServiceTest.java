@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -81,11 +82,12 @@ class EmailServiceTest {
 
     @Test
     void sendEmail_WhenTemplateNameNull_ShouldThrowException() {
+        // given
+        @SuppressWarnings("NullAway") Executable sendWithoutTemplate =
+                () -> emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, null, TEST_CODE, TEST_SUBJECT);
+
         // when & then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, null, TEST_CODE, TEST_SUBJECT)
-        );
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, sendWithoutTemplate);
 
         assertEquals("Email template cannot be null", exception.getMessage());
         verify(templateEngine, never()).process(anyString(), any(Context.class));

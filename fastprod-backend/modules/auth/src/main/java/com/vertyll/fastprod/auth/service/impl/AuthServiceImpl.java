@@ -23,6 +23,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -104,7 +105,11 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public AuthResponseDto authenticate(AuthRequestDto request, HttpServletRequest httpRequest, HttpServletResponse response) {
+    public AuthResponseDto authenticate(
+            AuthRequestDto request,
+            HttpServletRequest httpRequest,
+            @Nullable HttpServletResponse response
+    ) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
@@ -130,13 +135,11 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponseDto refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = extractRefreshTokenFromCookies(request);
-        if (refreshToken == null) {
-            throw new ApiException(REFRESH_TOKEN_NOT_FOUND, HttpStatus.UNAUTHORIZED);
-        }
+        String refreshToken = extractRefreshTokenFromCookies(request)
+                .orElseThrow(() -> new ApiException(REFRESH_TOKEN_NOT_FOUND, HttpStatus.UNAUTHORIZED));
 
         User user = refreshTokenService.validateRefreshToken(refreshToken);
-        
+
         Map<String, Object> claims = createClaimsWithRoles(user);
         String accessToken = jwtService.generateToken(claims, user);
         String newRefreshToken = refreshTokenService.rotateRefreshToken(refreshToken, null, request);
@@ -149,11 +152,7 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = extractRefreshTokenFromCookies(request);
-
-        if (refreshToken != null) {
-            refreshTokenService.revokeRefreshToken(refreshToken);
-        }
+        extractRefreshTokenFromCookies(request).ifPresent(refreshTokenService::revokeRefreshToken);
 
         deleteRefreshTokenCookie(response);
     }
@@ -161,15 +160,12 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logoutAllSessions(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = extractRefreshTokenFromCookies(request);
+        String refreshToken = extractRefreshTokenFromCookies(request)
+                .orElseThrow(() -> new ApiException(REFRESH_TOKEN_NOT_FOUND, HttpStatus.UNAUTHORIZED));
 
-        if (refreshToken != null) {
-            User user = refreshTokenService.validateRefreshToken(refreshToken);
-            refreshTokenService.revokeAllUserTokens(user);
-            deleteRefreshTokenCookie(response);
-        } else {
-            throw new ApiException(REFRESH_TOKEN_NOT_FOUND, HttpStatus.UNAUTHORIZED);
-        }
+        User user = refreshTokenService.validateRefreshToken(refreshToken);
+        refreshTokenService.revokeAllUserTokens(user);
+        deleteRefreshTokenCookie(response);
     }
 
     @Override
@@ -232,11 +228,7 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void requestEmailChange(ChangeEmailRequestDto request) throws MessagingException {
-        Authentication authentication = getCurrentAuthentication();
-        if (authentication == null) {
-            throw new ApiException(USER_NOT_AUTHENTICATED, HttpStatus.UNAUTHORIZED);
-        }
-        String currentEmail = authentication.getName();
+        String currentEmail = getCurrentUserEmail();
 
         User user = userService.findByEmailWithRoles(currentEmail)
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
@@ -296,11 +288,7 @@ class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void requestPasswordChange(ChangePasswordRequestDto request) throws MessagingException {
-        Authentication authentication = getCurrentAuthentication();
-        if (authentication == null) {
-            throw new ApiException(USER_NOT_AUTHENTICATED, HttpStatus.UNAUTHORIZED);
-        }
-        String email = authentication.getName();
+        String email = getCurrentUserEmail();
 
         User user = userService.findByEmailWithRoles(email)
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
@@ -412,19 +400,23 @@ class AuthServiceImpl implements AuthService {
         response.addHeader(SET_COOKIE, cookie.toString());
     }
 
-    private String extractRefreshTokenFromCookies(HttpServletRequest request) {
+    private Optional<String> extractRefreshTokenFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (cookies == null) return null;
+        if (cookies == null) {
+            return Optional.empty();
+        }
 
+        String cookieName = jwtService.getRefreshTokenCookieName();
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(jwtService.getRefreshTokenCookieName()))
+                .filter(cookie -> cookie.getName().equals(cookieName))
                 .findFirst()
-                .map(Cookie::getValue)
-                .orElse(null);
+                .map(Cookie::getValue);
     }
 
-    private Authentication getCurrentAuthentication() {
-        return SecurityContextHolder.getContext().getAuthentication();
+    private String getCurrentUserEmail() {
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(Authentication::getName)
+                .orElseThrow(() -> new ApiException(USER_NOT_AUTHENTICATED, HttpStatus.UNAUTHORIZED));
     }
 
     private Map<String, Object> createClaimsWithRoles(User user) {

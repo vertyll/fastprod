@@ -3,11 +3,13 @@ package com.vertyll.fastprod.auth.dto;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
+import org.jspecify.annotations.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public record SessionResponseDto(
     Long id,
-    String deviceInfo,
+    @Nullable String deviceInfo,
     String ipAddress,
     String userAgent,
     String browser,

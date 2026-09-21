@@ -57,31 +57,30 @@ public final class EmployeeFilters {
     }
 
     public static FiltersValue normalize(FiltersValue raw) {
+        Objects.requireNonNull(raw, "raw");
         FiltersValue out = FiltersValue.empty();
-        if (raw == null)
-            return out;
 
-        out.set(FIRST_NAME, raw.get(FIRST_NAME));
-        out.set(LAST_NAME, raw.get(LAST_NAME));
-        out.set(EMAIL, raw.get(EMAIL));
-        out.set(IS_VERIFIED, raw.get(IS_VERIFIED));
-
-        Object rolesVal = raw.get(ROLES);
-        if (rolesVal instanceof Collection<?> col) {
-            List<String> names = col.stream().filter(Objects::nonNull).map(o -> {
-                if (o instanceof RoleType rt)
-                    return rt.name();
-                return String.valueOf(o);
-            }).filter(s -> !s.isBlank()).collect(Collectors.toCollection(ArrayList::new));
-            out.set(ROLES, names);
-        } else if (rolesVal != null) {
-            if (rolesVal instanceof RoleType rt) {
-                out.set(ROLES, List.of(rt.name()));
-            } else {
-                out.set(ROLES, List.of(String.valueOf(rolesVal)));
-            }
-        }
+        raw.get(FIRST_NAME, String.class).ifPresent(value -> out.set(FIRST_NAME, value));
+        raw.get(LAST_NAME, String.class).ifPresent(value -> out.set(LAST_NAME, value));
+        raw.get(EMAIL, String.class).ifPresent(value -> out.set(EMAIL, value));
+        raw.get(IS_VERIFIED, Boolean.class).ifPresent(value -> out.set(IS_VERIFIED, value));
+        raw.get(ROLES, Object.class).ifPresent(value -> out.set(ROLES, toRoleNames(value)));
 
         return out;
+    }
+
+    private static List<String> toRoleNames(Object rolesValue) {
+        if (rolesValue instanceof Collection<?> col) {
+            return col.stream()
+                .filter(Objects::nonNull)
+                .map(EmployeeFilters::toRoleName)
+                .filter(s -> !s.isBlank())
+                .collect(Collectors.toCollection(ArrayList::new));
+        }
+        return List.of(toRoleName(rolesValue));
+    }
+
+    private static String toRoleName(Object role) {
+        return role instanceof RoleType rt ? rt.name() : String.valueOf(role);
     }
 }

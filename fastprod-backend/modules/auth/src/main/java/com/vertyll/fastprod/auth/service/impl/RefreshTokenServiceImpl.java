@@ -11,6 +11,7 @@ import com.vertyll.fastprod.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -44,7 +45,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     @Transactional
-    public String createRefreshToken(User user, String deviceInfo, HttpServletRequest request) {
+    public String createRefreshToken(User user, @Nullable String deviceInfo, HttpServletRequest request) {
         String tokenValue = jwtService.generateRefreshToken(user);
 
         String hashedToken = HashUtil.hashToken(tokenValue);
@@ -106,7 +107,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
      */
     @Override
     @Transactional
-    public String rotateRefreshToken(String oldToken, String deviceInfo, HttpServletRequest request) {
+    public String rotateRefreshToken(String oldToken, @Nullable String deviceInfo, HttpServletRequest request) {
         RefreshTokenService self = selfProvider.getObject();
         User user = self.validateRefreshToken(oldToken);
 

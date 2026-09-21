@@ -3,10 +3,13 @@ package com.vertyll.fastprod.shared.components;
 import java.util.*;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -131,9 +134,7 @@ public class FiltersComponent extends HorizontalLayout {
 
     private TextField createTextField(FilterFieldConfig<?> cfg) {
         TextField tf = new TextField(cfg.label());
-        if (cfg.placeholder() != null) {
-            tf.setPlaceholder(cfg.placeholder());
-        }
+        cfg.placeholder().ifPresent(tf::setPlaceholder);
         tf.setClearButtonVisible(true);
         tf.setValueChangeMode(ValueChangeMode.LAZY);
         tf.setValueChangeTimeout(300);
@@ -145,10 +146,7 @@ public class FiltersComponent extends HorizontalLayout {
         Select<Object> select = new Select<>();
         select.setLabel(cfg.label());
         select.setEmptySelectionAllowed(false);
-
-        if (cfg.placeholder() != null) {
-            select.setPlaceholder(cfg.placeholder());
-        }
+        cfg.placeholder().ifPresent(select::setPlaceholder);
 
         List<Object> items = getItemsForConfig(cfg);
         List<Object> menuItems = buildSelectMenuItems(cfg, items);
@@ -161,23 +159,18 @@ public class FiltersComponent extends HorizontalLayout {
         return select;
     }
 
-    private List<Object> getItemsForConfig(FilterFieldConfig<?> cfg) {
-        List<?> rawItems;
-        if (cfg.staticItems() != null) {
-            rawItems = cfg.staticItems();
-        } else if (cfg.itemsSupplier() != null) {
-            rawItems = cfg.itemsSupplier().get();
-        } else {
-            rawItems = Collections.emptyList();
-        }
-        return normalizeItems(rawItems);
+    private static List<Object> getItemsForConfig(FilterFieldConfig<?> cfg) {
+        return cfg.staticItems()
+            .map(FiltersComponent::normalizeItems)
+            .or(() -> cfg.itemsSupplier().map(supplier -> normalizeItems(supplier.get())))
+            .orElseGet(List::of);
     }
 
     private List<Object> buildSelectMenuItems(FilterFieldConfig<?> cfg, List<Object> items) {
         List<Object> menuItems = new ArrayList<>();
-        Object emptyToken = cfg.placeholder() != null ? new Object() : null;
 
-        if (emptyToken != null) {
+        if (cfg.placeholder().isPresent()) {
+            Object emptyToken = new Object();
             selectEmptyTokens.put(cfg.id(), emptyToken);
             menuItems.add(emptyToken);
         }
@@ -188,32 +181,23 @@ public class FiltersComponent extends HorizontalLayout {
 
     private void configureSelectLabels(Select<Object> select, FilterFieldConfig<?> cfg) {
         Object emptyToken = selectEmptyTokens.get(cfg.id());
+        String placeholder = cfg.placeholder().orElse("");
+        ItemLabelGenerator<Object> generator = labelGeneratorOf(cfg).orElse(FiltersComponent::defaultLabel);
 
-        if (cfg.itemLabelGenerator() != null) {
-            @SuppressWarnings("unchecked") var gen =
-                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
-            select.setItemLabelGenerator(item -> generateSelectLabel(item, emptyToken, cfg.placeholder(), gen));
-        } else {
-            select.setItemLabelGenerator(item -> generateDefaultSelectLabel(item, emptyToken, cfg.placeholder()));
-        }
+        select.setItemLabelGenerator(item -> {
+            if (emptyToken != null && Objects.equals(item, emptyToken)) {
+                return placeholder;
+            }
+            return generator.apply(item);
+        });
     }
 
-    private String generateSelectLabel(
-        Object item,
-        Object emptyToken,
-        String placeholder,
-        com.vaadin.flow.component.ItemLabelGenerator<Object> generator
-    ) {
-        if (emptyToken != null && Objects.equals(item, emptyToken)) {
-            return placeholder;
-        }
-        return generator.apply(item);
+    @SuppressWarnings("unchecked")
+    private static Optional<ItemLabelGenerator<Object>> labelGeneratorOf(FilterFieldConfig<?> cfg) {
+        return cfg.itemLabelGenerator().map(generator -> (ItemLabelGenerator<Object>) generator);
     }
 
-    private String generateDefaultSelectLabel(Object item, Object emptyToken, String placeholder) {
-        if (emptyToken != null && Objects.equals(item, emptyToken)) {
-            return placeholder;
-        }
+    private static String defaultLabel(@Nullable Object item) {
         return item == null ? "" : String.valueOf(item);
     }
 
@@ -227,10 +211,7 @@ public class FiltersComponent extends HorizontalLayout {
     private MultiSelectComboBox<Object> createMultiSelect(FilterFieldConfig<?> cfg) {
         MultiSelectComboBox<Object> ms = new MultiSelectComboBox<>();
         ms.setLabel(cfg.label());
-
-        if (cfg.placeholder() != null) {
-            ms.setPlaceholder(cfg.placeholder());
-        }
+        cfg.placeholder().ifPresent(ms::setPlaceholder);
 
         List<Object> items = getItemsForConfig(cfg);
         configureMultiSelectLabels(ms, cfg);
@@ -241,21 +222,11 @@ public class FiltersComponent extends HorizontalLayout {
         return ms;
     }
 
-    private void configureMultiSelectLabels(MultiSelectComboBox<Object> ms, FilterFieldConfig<?> cfg) {
-        if (cfg.itemLabelGenerator() != null) {
-            @SuppressWarnings("unchecked") var gen =
-                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) cfg.itemLabelGenerator();
-            ms.setItemLabelGenerator(gen);
-        } else {
-            ms.setItemLabelGenerator(item -> item == null ? "" : String.valueOf(item));
-        }
+    private static void configureMultiSelectLabels(MultiSelectComboBox<Object> ms, FilterFieldConfig<?> cfg) {
+        ms.setItemLabelGenerator(labelGeneratorOf(cfg).orElse(FiltersComponent::defaultLabel));
     }
 
     private static List<Object> normalizeItems(List<?> items) {
-        if (items == null) {
-            return Collections.emptyList();
-        }
-
         if (items.size() != 1) {
             return Collections.unmodifiableList(new ArrayList<>(items));
         }
@@ -265,7 +236,7 @@ public class FiltersComponent extends HorizontalLayout {
         return Collections.unmodifiableList(out);
     }
 
-    private static List<Object> processSingleItem(Object first, List<?> items) {
+    private static List<Object> processSingleItem(@Nullable Object first, List<?> items) {
         if (first == null) {
             return new ArrayList<>(items);
         }
@@ -308,7 +279,7 @@ public class FiltersComponent extends HorizontalLayout {
                 Object value = sel.getValue();
                 Object token = selectEmptyTokens.get(id);
                 if (token != null && Objects.equals(value, token)) {
-                    fv.set(id, null);
+                    fv.remove(id);
                 } else {
                     fv.set(id, value);
                 }
@@ -324,7 +295,7 @@ public class FiltersComponent extends HorizontalLayout {
         updateSelectedSummary();
     }
 
-    private void setComponentValue(String key, Component component, Object value) {
+    private void setComponentValue(String key, Component component, @Nullable Object value) {
         if (component instanceof TextField tf) {
             setTextFieldValue(tf, value);
         } else if (component instanceof Select<?> select) {
@@ -334,11 +305,11 @@ public class FiltersComponent extends HorizontalLayout {
         }
     }
 
-    private void setTextFieldValue(TextField textField, Object value) {
+    private void setTextFieldValue(TextField textField, @Nullable Object value) {
         textField.setValue(value != null ? String.valueOf(value) : "");
     }
 
-    private void setSelectValue(String key, Select<?> select, Object value) {
+    private void setSelectValue(String key, Select<?> select, @Nullable Object value) {
         @SuppressWarnings("unchecked") Select<Object> s = (Select<Object>) select;
 
         if (value == null) {
@@ -353,7 +324,7 @@ public class FiltersComponent extends HorizontalLayout {
         }
     }
 
-    private void setMultiSelectValue(MultiSelectComboBox<?> multiSelect, Object value) {
+    private void setMultiSelectValue(MultiSelectComboBox<?> multiSelect, @Nullable Object value) {
         @SuppressWarnings("unchecked") MultiSelectComboBox<Object> ms = (MultiSelectComboBox<Object>) multiSelect;
         ms.clear();
 
@@ -398,13 +369,10 @@ public class FiltersComponent extends HorizontalLayout {
     }
 
     private void addChipIfHasValue(String id, Component component) {
-        ChipData chipData = extractChipData(id, component);
-        if (chipData != null) {
-            createAndAddChip(chipData);
-        }
+        extractChipData(id, component).ifPresent(this::createAndAddChip);
     }
 
-    private ChipData extractChipData(String id, Component component) {
+    private Optional<ChipData> extractChipData(String id, Component component) {
         if (component instanceof TextField tf) {
             return extractTextFieldChipData(tf);
         } else if (component instanceof Select<?> select) {
@@ -412,46 +380,44 @@ public class FiltersComponent extends HorizontalLayout {
         } else if (component instanceof MultiSelectComboBox<?> multiSelect) {
             return extractMultiSelectChipData(multiSelect);
         }
-        return null;
+        return Optional.empty();
     }
 
-    private ChipData extractTextFieldChipData(TextField textField) {
+    private static Optional<ChipData> extractTextFieldChipData(TextField textField) {
         String value = textField.getValue();
         if (value != null && !value.isBlank()) {
-            return new ChipData(textField.getLabel(), value);
+            return Optional.of(new ChipData(textField.getLabel(), value));
         }
-        return null;
+        return Optional.empty();
     }
 
-    private ChipData extractSelectChipData(String id, Select<?> select) {
+    private Optional<ChipData> extractSelectChipData(String id, Select<?> select) {
         Object value = select.getValue();
         Object token = selectEmptyTokens.get(id);
 
         if (token != null && Objects.equals(value, token)) {
-            return null;
+            return Optional.empty();
         }
 
         if (value != null) {
-            @SuppressWarnings("unchecked") var gen =
-                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) select.getItemLabelGenerator();
+            @SuppressWarnings("unchecked") var gen = (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
             String valueText = gen != null ? gen.apply(value) : String.valueOf(value);
-            return new ChipData(select.getLabel(), valueText);
+            return Optional.of(new ChipData(select.getLabel(), valueText));
         }
-        return null;
+        return Optional.empty();
     }
 
-    private ChipData extractMultiSelectChipData(MultiSelectComboBox<?> multiSelect) {
+    private static Optional<ChipData> extractMultiSelectChipData(MultiSelectComboBox<?> multiSelect) {
         Set<?> selected = multiSelect.getSelectedItems();
 
         if (selected != null && !selected.isEmpty()) {
-            @SuppressWarnings("unchecked") var gen =
-                    (com.vaadin.flow.component.ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
+            @SuppressWarnings("unchecked") var gen = (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
 
             List<String> labels = selected.stream().map(o -> gen != null ? gen.apply(o) : String.valueOf(o)).toList();
 
-            return new ChipData(multiSelect.getLabel(), String.join(", ", labels));
+            return Optional.of(new ChipData(multiSelect.getLabel(), String.join(", ", labels)));
         }
-        return null;
+        return Optional.empty();
     }
 
     private void createAndAddChip(ChipData data) {

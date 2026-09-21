@@ -2,6 +2,8 @@ package com.vertyll.fastprod.modules.user.views;
 
 import jakarta.annotation.security.PermitAll;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.user.dto.ProfileUpdateDto;
 import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
@@ -40,9 +42,9 @@ public class ProfileView extends VerticalLayout {
     private final Binder<ProfileUpdateDto> binder;
     private final LoadingSpinner loadingSpinner;
 
-    private transient UserProfileDto currentUser;
-    private TextField firstNameField;
-    private TextField lastNameField;
+    private transient @Nullable UserProfileDto currentUser;
+    private final TextField firstNameField = new TextField("First Name");
+    private final TextField lastNameField = new TextField("Last Name");
     private DetailsTableComponent detailsTable;
     private Div editFormContainer;
     private Div detailsContainer;
@@ -121,10 +123,7 @@ public class ProfileView extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("500px", 2));
 
-        firstNameField = new TextField("First Name");
         firstNameField.setRequiredIndicatorVisible(true);
-
-        lastNameField = new TextField("Last Name");
         lastNameField.setRequiredIndicatorVisible(true);
 
         binder.forField(firstNameField)
@@ -164,9 +163,10 @@ public class ProfileView extends VerticalLayout {
     private void loadUserProfile() {
         try {
             ApiResponse<UserProfileDto> response = userService.getCurrentUser();
-            if (response.data() != null) {
-                currentUser = response.data();
-                updateDetailsView();
+            UserProfileDto user = response.data();
+            if (user != null) {
+                currentUser = user;
+                updateDetailsView(user);
             }
         } catch (Exception e) {
             log.error("Failed to load user profile", e);
@@ -174,23 +174,27 @@ public class ProfileView extends VerticalLayout {
         }
     }
 
-    private void updateDetailsView() {
+    private void updateDetailsView(UserProfileDto user) {
         detailsTable.removeAll();
-        detailsTable.addRow("First Name", currentUser.firstName());
-        detailsTable.addRow("Last Name", currentUser.lastName());
-        detailsTable.addRow("Email", currentUser.email());
+        detailsTable.addRow("First Name", user.firstName());
+        detailsTable.addRow("Last Name", user.lastName());
+        detailsTable.addRow("Email", user.email());
 
-        String rolesText = String.join(", ", currentUser.roles());
+        String rolesText = String.join(", ", user.roles());
         detailsTable.addRow("Roles", rolesText);
 
-        Span verifiedBadge = new Span(currentUser.isVerified() ? "Verified" : "Not Verified");
-        verifiedBadge.getElement().getThemeList().add(currentUser.isVerified() ? "badge success" : "badge error");
+        Span verifiedBadge = new Span(user.isVerified() ? "Verified" : "Not Verified");
+        verifiedBadge.getElement().getThemeList().add(user.isVerified() ? "badge success" : "badge error");
         detailsTable.addRow("Status", verifiedBadge);
     }
 
     private void showEditForm() {
-        firstNameField.setValue(currentUser.firstName());
-        lastNameField.setValue(currentUser.lastName());
+        UserProfileDto user = currentUser;
+        if (user == null) {
+            return;
+        }
+        firstNameField.setValue(user.firstName());
+        lastNameField.setValue(user.lastName());
         detailsContainer.setVisible(false);
         editFormContainer.setVisible(true);
     }
@@ -208,9 +212,10 @@ public class ProfileView extends VerticalLayout {
 
             if (binder.validate().isOk()) {
                 ApiResponse<UserProfileDto> response = userService.updateProfile(dto);
-                if (response.data() != null) {
-                    currentUser = response.data();
-                    updateDetailsView();
+                UserProfileDto user = response.data();
+                if (user != null) {
+                    currentUser = user;
+                    updateDetailsView(user);
                     hideEditForm();
                     showNotification("Profile updated successfully", NotificationVariant.LUMO_SUCCESS);
                 }

@@ -1,14 +1,14 @@
 package com.vertyll.fastprod.shared.components;
 
-import java.util.function.BiConsumer;
+import java.util.Objects;
 
 import com.vertyll.fastprod.shared.dto.PageResponse;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.function.SerializableBiConsumer;
 
 import lombok.Getter;
-import lombok.Setter;
 
 public class PagedGridComponent<T> extends VerticalLayout {
 
@@ -17,8 +17,8 @@ public class PagedGridComponent<T> extends VerticalLayout {
     @Getter
     private final PaginationComponent pagination;
 
-    @Setter
-    private transient BiConsumer<Integer, Integer> onPageChange;
+    private SerializableBiConsumer<Integer, Integer> onPageChange = (_, _) -> {
+    };
 
     public PagedGridComponent(Class<T> beanType) {
         this(new Grid<>(beanType, false));
@@ -34,20 +34,15 @@ public class PagedGridComponent<T> extends VerticalLayout {
 
         grid.setSizeFull();
 
-        pagination.setOnPageChange(page -> {
-            if (onPageChange != null) {
-                onPageChange.accept(page, pagination.getPageSize());
-            }
-        });
-
-        pagination.setOnPageSizeChange(pageSize -> {
-            if (onPageChange != null) {
-                onPageChange.accept(0, pageSize);
-            }
-        });
+        pagination.setOnPageChange(page -> onPageChange.accept(page, pagination.getPageSize()));
+        pagination.setOnPageSizeChange(pageSize -> onPageChange.accept(0, pageSize));
 
         add(grid);
         add(pagination);
+    }
+
+    public void setOnPageChange(SerializableBiConsumer<Integer, Integer> onPageChange) {
+        this.onPageChange = Objects.requireNonNull(onPageChange, "onPageChange");
     }
 
     public void updateData(PageResponse<T> pageResponse) {

@@ -89,7 +89,7 @@ public class EmployeeListView extends VerticalLayout {
 
         Button addButton = new Button("Add Employee", VaadinIcon.PLUS.create());
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        addButton.addClickListener(_ -> navigateToForm(null));
+        addButton.addClickListener(_ -> navigateToCreateForm());
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
@@ -153,7 +153,7 @@ public class EmployeeListView extends VerticalLayout {
             editButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
             editButton.getElement().setAttribute(TITLE, "Edit");
             editButton.getStyle().set(COLOR, LUMO_CONTRAST).set(BACKGROUND, CONTRAST_COLOR);
-            editButton.addClickListener(_ -> navigateToForm(employee.id()));
+            editButton.addClickListener(_ -> navigateToEditForm(employee.id()));
 
             Button deleteButton = new Button(VaadinIcon.TRASH.create());
             deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
@@ -210,12 +210,12 @@ public class EmployeeListView extends VerticalLayout {
         }
     }
 
-    private void navigateToForm(Long employeeId) {
-        if (employeeId != null) {
-            UI.getCurrent().navigate("employees/form/" + employeeId);
-        } else {
-            UI.getCurrent().navigate("employees/form");
-        }
+    private static void navigateToCreateForm() {
+        UI.getCurrent().navigate("employees/form");
+    }
+
+    private static void navigateToEditForm(long employeeId) {
+        UI.getCurrent().navigate("employees/form/" + employeeId);
     }
 
     private void navigateToDetails(Long employeeId) {

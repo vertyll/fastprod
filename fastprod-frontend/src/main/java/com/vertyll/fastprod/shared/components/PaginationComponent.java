@@ -1,6 +1,8 @@
 package com.vertyll.fastprod.shared.components;
 
-import java.util.function.Consumer;
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -9,9 +11,9 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.function.SerializableConsumer;
 
 import lombok.Getter;
-import lombok.Setter;
 
 public class PaginationComponent extends HorizontalLayout {
 
@@ -26,10 +28,10 @@ public class PaginationComponent extends HorizontalLayout {
     private int currentPage = 0;
     private int totalPages = 0;
     private long totalElements = 0;
-    @Setter
-    private transient Consumer<Integer> onPageChange;
-    @Setter
-    private transient Consumer<Integer> onPageSizeChange;
+    private SerializableConsumer<Integer> onPageChange = _ -> {
+    };
+    private SerializableConsumer<Integer> onPageSizeChange = _ -> {
+    };
 
     public PaginationComponent() {
         setSpacing(true);
@@ -124,8 +126,16 @@ public class PaginationComponent extends HorizontalLayout {
         }
     }
 
-    private void handlePageSizeChange(Integer newPageSize) {
-        if (newPageSize != null && onPageSizeChange != null) {
+    public void setOnPageChange(SerializableConsumer<Integer> onPageChange) {
+        this.onPageChange = Objects.requireNonNull(onPageChange, "onPageChange");
+    }
+
+    public void setOnPageSizeChange(SerializableConsumer<Integer> onPageSizeChange) {
+        this.onPageSizeChange = Objects.requireNonNull(onPageSizeChange, "onPageSizeChange");
+    }
+
+    private void handlePageSizeChange(@Nullable Integer newPageSize) {
+        if (newPageSize != null) {
             currentPage = 0;
             onPageSizeChange.accept(newPageSize);
             updateControls();
@@ -141,9 +151,7 @@ public class PaginationComponent extends HorizontalLayout {
     }
 
     private void notifyPageChange() {
-        if (onPageChange != null) {
-            onPageChange.accept(currentPage);
-        }
+        onPageChange.accept(currentPage);
     }
 
     public void updatePagination(int currentPage, int totalPages, long totalElements) {

@@ -15,6 +15,7 @@ import com.vertyll.fastprod.user.repository.UserRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -136,7 +137,7 @@ class EmployeeServiceImpl implements EmployeeService {
         return spec;
     }
 
-    private Specification<User> addFirstNameFilter(Specification<User> spec, String firstName) {
+    private Specification<User> addFirstNameFilter(Specification<User> spec, @Nullable String firstName) {
         if (firstName == null || firstName.isBlank()) {
             return spec;
         }
@@ -144,7 +145,7 @@ class EmployeeServiceImpl implements EmployeeService {
         return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("firstName")), likePattern));
     }
 
-    private Specification<User> addLastNameFilter(Specification<User> spec, String lastName) {
+    private Specification<User> addLastNameFilter(Specification<User> spec, @Nullable String lastName) {
         if (lastName == null || lastName.isBlank()) {
             return spec;
         }
@@ -152,7 +153,7 @@ class EmployeeServiceImpl implements EmployeeService {
         return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("lastName")), likePattern));
     }
 
-    private Specification<User> addEmailFilter(Specification<User> spec, String email) {
+    private Specification<User> addEmailFilter(Specification<User> spec, @Nullable String email) {
         if (email == null || email.isBlank()) {
             return spec;
         }
@@ -160,14 +161,14 @@ class EmployeeServiceImpl implements EmployeeService {
         return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("email")), likePattern));
     }
 
-    private Specification<User> addVerifiedFilter(Specification<User> spec, Boolean isVerified) {
+    private Specification<User> addVerifiedFilter(Specification<User> spec, @Nullable Boolean isVerified) {
         if (isVerified == null) {
             return spec;
         }
         return spec.and((root, _, cb) -> cb.equal(root.get("verified"), isVerified));
     }
 
-    private Specification<User> addRolesFilter(Specification<User> spec, String roles) {
+    private Specification<User> addRolesFilter(Specification<User> spec, @Nullable String roles) {
         if (roles == null || roles.isBlank()) {
             return spec;
         }
@@ -188,7 +189,7 @@ class EmployeeServiceImpl implements EmployeeService {
         });
     }
 
-    private Specification<User> addSearchFilter(Specification<User> spec, String searchTerm) {
+    private Specification<User> addSearchFilter(Specification<User> spec, @Nullable String searchTerm) {
         if (searchTerm == null || searchTerm.isBlank()) {
             return spec;
         }
@@ -200,7 +201,7 @@ class EmployeeServiceImpl implements EmployeeService {
         ));
     }
 
-    private void assignRolesToUser(User user, Set<String> roleNames) {
+    private void assignRolesToUser(User user, @Nullable Set<String> roleNames) {
         if (roleNames != null && !roleNames.isEmpty()) {
             roleNames.forEach(roleName -> {
                 Role role = roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName));

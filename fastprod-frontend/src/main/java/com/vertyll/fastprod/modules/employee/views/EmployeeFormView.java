@@ -3,6 +3,8 @@ package com.vertyll.fastprod.modules.employee.views;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
@@ -40,7 +42,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
     private PasswordField passwordField;
     private PasswordField confirmPasswordField;
-    private Long employeeId;
+    private @Nullable Long employeeId;
     private boolean isEditMode = false;
 
     public EmployeeFormView(EmployeeService employeeService) {
@@ -56,12 +58,12 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        employeeId = event.getRouteParameters().get("id").map(Long::parseLong).orElse(null);
+        Long id = event.getRouteParameters().get("id").map(Long::parseLong).orElse(null);
+        employeeId = id;
+        isEditMode = id != null;
 
-        isEditMode = employeeId != null;
-
-        if (isEditMode) {
-            loadEmployee(employeeId);
+        if (id != null) {
+            loadEmployee(id);
             passwordField.setLabel("New Password (leave empty to keep current)");
             passwordField.setRequiredIndicatorVisible(false);
             confirmPasswordField.setLabel("Confirm New Password");
@@ -187,7 +189,8 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
                 }
             }
 
-            if (isEditMode) {
+            Long id = employeeId;
+            if (id != null) {
                 // Only send password if it's not empty
                 String passwordToSend = (formData.getPassword() != null && !formData.getPassword().isEmpty())
                         ? formData.getPassword() : null;
@@ -199,7 +202,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
                     passwordToSend,
                     formData.getRoleNames()
                 );
-                employeeService.updateEmployee(employeeId, updateDto);
+                employeeService.updateEmployee(id, updateDto);
                 Notification.show("Employee updated successfully", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             } else {
@@ -231,10 +234,10 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
     @Data
     public static class EmployeeFormData {
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String password;
+        private String firstName = "";
+        private String lastName = "";
+        private String email = "";
+        private String password = "";
         private Set<String> roleNames = new HashSet<>();
     }
 }
