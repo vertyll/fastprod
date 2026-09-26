@@ -1,12 +1,14 @@
-name: Build and Publish FastProd Frontend
+name: Frontend
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
+    tags: ["v*"]
+    paths:
+      - "fastprod-frontend/**"
+      - ".github/workflows/frontend.yml"
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "fastprod-frontend/**"
       - ".github/workflows/frontend.yml"
@@ -15,23 +17,59 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: zot.vertyll.dev
   IMAGE_NAME: vertyll/fastprod-frontend
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-24.04-arm
-
+  verify:
+    name: Spotless, Error Prone + NullAway, PMD, SpotBugs, tests
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: fastprod-frontend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Derive version from tag
+      - name: Set up Java 25 (Azul Zulu)
+        uses: actions/setup-java@v6
+        with:
+          distribution: zulu
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Verify
+        run: ./gradlew build
+
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-reports
+          path: fastprod-frontend/**/build/reports/
+          if-no-files-found: ignore
+
+  image:
+    name: Build and publish
+    needs: verify
+    if: github.event_name != 'push' || github.ref_type == 'tag'
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Derive image version
         id: vars
         shell: bash
         run: |
-          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
           else
             echo "version=pr-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
@@ -41,14 +79,14 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log in to Zot
-        if: github.event_name != 'pull_request'
+        if: github.ref_type == 'tag'
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ secrets.ZOT_USERNAME }}
           password: ${{ secrets.ZOT_PASSWORD }}
 
-      - name: Build and push frontend
+      - name: Build and push
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -58,5 +96,5 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha,scope=frontend
-          cache-to: type=gha,mode=max,scope=frontend
+          cache-from: type=gha,scope=${{ env.IMAGE_NAME }}
+          cache-to: type=gha,mode=max,scope=${{ env.IMAGE_NAME }}
