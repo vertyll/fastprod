@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Email;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -86,8 +86,8 @@ public class AuthController {
     @GetMapping("/sessions")
     @PreAuthorize(IS_AUTHENTICATED)
     @Operation(summary = "Get all active sessions for the current user")
-    public ResponseEntity<List<SessionResponseDto>> getSessions(@AuthenticationPrincipal String email) {
-        List<SessionResponseDto> sessions = authService.getUserActiveSessions(email);
+    public ResponseEntity<List<SessionResponseDto>> getSessions(Authentication authentication) {
+        List<SessionResponseDto> sessions = authService.getUserActiveSessions(authentication.getName());
         return ResponseEntity.ok(sessions);
     }
 
