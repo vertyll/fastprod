@@ -43,7 +43,7 @@ public final class EmployeeFilters {
                         return "";
                     }
                     if (v instanceof Boolean b) {
-                        return Boolean.TRUE.equals(b) ? I18n.t(VERIFIED_LABEL_KEY) : I18n.t("common.notVerified");
+                        return b ? I18n.t(VERIFIED_LABEL_KEY) : I18n.t("common.notVerified");
                     }
                     return Boolean.parseBoolean(String.valueOf(v)) ? I18n.t(VERIFIED_LABEL_KEY)
                             : I18n.t("common.notVerified");

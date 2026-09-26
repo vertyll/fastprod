@@ -127,9 +127,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     @Transactional
     public void revokeAllUserTokens(User user) {
         List<RefreshToken> tokens = refreshTokenRepository.findByUserAndRevoked(user, false);
-        tokens.forEach(token -> {
-            token.revoke(Instant.now());
-        });
+        tokens.forEach(token -> token.revoke(Instant.now()));
         refreshTokenRepository.saveAll(tokens);
 
         log.info("Revoked all refresh tokens for user: {} (count: {})",
@@ -173,10 +171,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
             justification = "IP address is used only for audit logging, not security decisions. " +
                     "Value is sanitized before storage to prevent injection attacks.")
     private String extractIpAddress(HttpServletRequest request) {
-        if (request == null) {
-            return UNKNOWN;
-        }
-
         String ip;
         String xForwardedFor = request.getHeader(X_FORWARDED_FOR);
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
@@ -194,10 +188,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
             justification = "User-Agent is used only for audit logging and session display, " +
                     "not security decisions. Value is sanitized before storage.")
     private String extractUserAgent(HttpServletRequest request) {
-        if (request == null) {
-            return UNKNOWN;
-        }
-
         String userAgent = request.getHeader(USER_AGENT);
         if (userAgent == null || userAgent.isEmpty()) {
             return UNKNOWN;
@@ -207,7 +197,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     private String sanitizeIpAddress(String ip) {
-        if (ip == null || ip.isEmpty()) {
+        if (ip.isEmpty()) {
             return UNKNOWN;
         }
 
@@ -217,7 +207,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     private String sanitizeUserAgent(String userAgent) {
-        if (userAgent == null || userAgent.isEmpty()) {
+        if (userAgent.isEmpty()) {
             return UNKNOWN;
         }
 

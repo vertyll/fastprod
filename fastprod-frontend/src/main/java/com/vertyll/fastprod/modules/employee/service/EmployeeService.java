@@ -57,8 +57,8 @@ public class EmployeeService extends BaseHttpService {
             sortBy,
             sortDirection
         );
-        String queryFilters = filters != null ? filters.toQueryString() : "";
-        String endpoint = queryFilters == null || queryFilters.isBlank() ? base : (base + "&" + queryFilters);
+        String queryFilters = filters.toQueryString();
+        String endpoint = queryFilters.isBlank() ? base : (base + "&" + queryFilters);
         return getPaginated(endpoint, EmployeeResponseDto.class);
     }
 

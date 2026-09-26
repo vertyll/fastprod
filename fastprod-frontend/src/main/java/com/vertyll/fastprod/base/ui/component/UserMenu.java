@@ -94,12 +94,10 @@ public final class UserMenu extends HorizontalLayout {
     private void loadUserData(Span emailSpan) {
         try {
             UserProfileDto user = userService.getCurrentUser();
-            if (user != null) {
-                String fullName = user.firstName() + " " + user.lastName();
-                avatar.setName(fullName);
-                userName.setText(fullName);
-                emailSpan.setText(user.email());
-            }
+            String fullName = user.firstName() + " " + user.lastName();
+            avatar.setName(fullName);
+            userName.setText(fullName);
+            emailSpan.setText(user.email());
         } catch (ApiException e) {
             log.error("Failed to load user data", e);
         }

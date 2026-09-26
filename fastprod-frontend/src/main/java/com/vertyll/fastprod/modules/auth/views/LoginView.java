@@ -167,10 +167,8 @@ public final class LoginView extends VerticalLayout implements HasDynamicTitle {
 
             AuthResponseDto response = authService.login(loginRequest);
 
-            if (response != null) {
-                securityService.login(response);
-                tokenRefreshService.setTokenExpiration();
-            }
+            securityService.login(response);
+            tokenRefreshService.setTokenExpiration();
 
             String message = I18n.t("auth.login.success");
             showNotification(message, NotificationVariant.LUMO_SUCCESS);

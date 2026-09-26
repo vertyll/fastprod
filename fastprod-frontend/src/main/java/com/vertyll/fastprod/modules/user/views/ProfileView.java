@@ -168,10 +168,8 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     private void loadUserProfile() {
         try {
             UserProfileDto user = userService.getCurrentUser();
-            if (user != null) {
-                currentUser = user;
-                updateDetailsView(user);
-            }
+            currentUser = user;
+            updateDetailsView(user);
         } catch (ApiException e) {
             log.error("Failed to load user profile", e);
             showNotification(I18n.t("profile.loadFailed"), NotificationVariant.LUMO_ERROR);
@@ -216,12 +214,10 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
 
             if (binder.validate().isOk()) {
                 UserProfileDto user = userService.updateProfile(dto);
-                if (user != null) {
-                    currentUser = user;
-                    updateDetailsView(user);
-                    hideEditForm();
-                    showNotification(I18n.t("profile.updated"), NotificationVariant.LUMO_SUCCESS);
-                }
+                currentUser = user;
+                updateDetailsView(user);
+                hideEditForm();
+                showNotification(I18n.t("profile.updated"), NotificationVariant.LUMO_SUCCESS);
             }
         } catch (ApiException e) {
             log.error("Failed to update profile", e);

@@ -115,9 +115,7 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
         loadingSpinner.show();
         try {
             EmployeeResponseDto employee = employeeService.getEmployee(id);
-            if (employee != null) {
-                displayEmployee(employee);
-            }
+            displayEmployee(employee);
         } catch (ApiException e) {
             log.error("Failed to load employee", e);
             Notification

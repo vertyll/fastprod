@@ -6,7 +6,6 @@ import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -23,12 +22,10 @@ import com.vertyll.fastprod.sharedinfrastructure.config.MailProperties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,18 +76,6 @@ class EmailServiceTest {
         assertNotNull(capturedContext.getVariable("activation_code"));
         assertEquals(TEST_USERNAME, capturedContext.getVariable("username"));
         assertEquals(TEST_CODE, capturedContext.getVariable("activation_code"));
-    }
-
-    @Test
-    void sendEmail_WhenTemplateNameNull_ShouldThrowException() {
-        @SuppressWarnings("NullAway") Executable sendWithoutTemplate =
-                () -> emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, null, TEST_CODE, TEST_SUBJECT);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, sendWithoutTemplate);
-
-        assertEquals("Email template cannot be null", exception.getMessage());
-        verify(templateEngine, never()).process(anyString(), any(Context.class));
-        verify(mailSender, never()).send(any(MimeMessage.class));
     }
 
     @Test

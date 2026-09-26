@@ -70,7 +70,7 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
     }
 
     @Override
-    public void setParameter(BeforeEvent event, @OptionalParameter String token) {
+    public void setParameter(BeforeEvent event, @OptionalParameter @Nullable String token) {
         if (token != null && !token.isEmpty()) {
             this.resetToken = token;
         } else {

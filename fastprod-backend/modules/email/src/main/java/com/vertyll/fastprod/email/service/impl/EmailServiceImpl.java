@@ -25,7 +25,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @Slf4j
 @RequiredArgsConstructor
 class EmailServiceImpl implements EmailService {
-    private static final String EMAIL_TEMPLATE_CANNOT_BE_NULL = "Email template cannot be null";
     private static final String FAILED_TO_PROCESS_EMAIL_TEMPLATE = "Failed to process email template: ";
     private static final String FAILED_TO_SEND_EMAIL_WITH_TEMPLATE = "Failed to send email with template: ";
 
@@ -42,10 +41,6 @@ class EmailServiceImpl implements EmailService {
             String activationCode,
             String subject
     ) throws MessagingException {
-        if (emailTemplate == null) {
-            throw new IllegalArgumentException(EMAIL_TEMPLATE_CANNOT_BE_NULL);
-        }
-
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MULTIPART_MODE_MIXED, UTF_8.name());
 

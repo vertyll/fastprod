@@ -164,15 +164,13 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
     private void loadEmployee(Long id) {
         try {
             EmployeeResponseDto employee = employeeService.getEmployee(id);
-            if (employee != null) {
-                EmployeeFormData formData = new EmployeeFormData();
-                formData.setFirstName(employee.firstName());
-                formData.setLastName(employee.lastName());
-                formData.setEmail(employee.email());
-                formData.setRoleNames(new HashSet<>(employee.roles()));
+            EmployeeFormData formData = new EmployeeFormData();
+            formData.setFirstName(employee.firstName());
+            formData.setLastName(employee.lastName());
+            formData.setEmail(employee.email());
+            formData.setRoleNames(new HashSet<>(employee.roles()));
 
-                binder.readBean(formData);
-            }
+            binder.readBean(formData);
         } catch (ApiException e) {
             log.error("Failed to load employee", e);
             Notification

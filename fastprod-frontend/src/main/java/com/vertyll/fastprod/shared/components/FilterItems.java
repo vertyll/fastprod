@@ -38,7 +38,7 @@ final class FilterItems {
 
     private static List<Object> normalizeItems(List<?> items) {
         if (items.size() != 1) {
-            return Collections.unmodifiableList(new ArrayList<>(items));
+            return List.copyOf(items);
         }
 
         Object first = items.getFirst();

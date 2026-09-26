@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
@@ -52,19 +51,6 @@ public final class JwtParser {
             log.error("Failed to extract roles from JWT", e);
             return Collections.emptyList();
         }
-    }
-
-    public static Optional<String> extractEmail(String token) {
-        JsonNode jsonNode = parsePayload(token);
-        if (jsonNode == null) {
-            return Optional.empty();
-        }
-
-        JsonNode emailNode = jsonNode.get("sub");
-        if (emailNode == null) {
-            emailNode = jsonNode.get("email");
-        }
-        return Optional.ofNullable(emailNode).map(JsonNode::asString);
     }
 
     private static @Nullable JsonNode parsePayload(@Nullable String token) {

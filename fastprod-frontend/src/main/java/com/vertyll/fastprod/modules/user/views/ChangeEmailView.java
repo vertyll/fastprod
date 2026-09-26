@@ -149,9 +149,7 @@ public final class ChangeEmailView extends VerticalLayout implements HasDynamicT
         try {
             AuthResponseDto response = authService.verifyEmailChange(code);
 
-            if (response != null) {
-                securityService.login(response);
-            }
+            securityService.login(response);
 
             dialog.showSuccess(I18n.t("account.email.changed"));
             UI.getCurrent().getPage().setLocation("/login");

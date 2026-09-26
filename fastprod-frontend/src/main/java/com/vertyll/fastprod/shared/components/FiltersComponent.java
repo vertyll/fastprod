@@ -34,7 +34,7 @@ public final class FiltersComponent extends HorizontalLayout {
     private final List<Consumer<FiltersValue>> listeners = new ArrayList<>();
     private final Map<String, Object> selectEmptyTokens = new HashMap<>();
 
-    private int maxVisible = 6;
+    private static final int MAX_VISIBLE = 6;
     private boolean expanded = false;
     private final Button toggleButton = new Button();
 
@@ -94,17 +94,6 @@ public final class FiltersComponent extends HorizontalLayout {
         updateSelectedSummary();
     }
 
-    public void setMaxVisible(int maxVisible) {
-        this.maxVisible = Math.max(1, maxVisible);
-        updateVisibility();
-    }
-
-    public void setToggleLabels(String showMore, String collapse) {
-        toggleButton.getElement().setProperty("data-show-label", showMore);
-        toggleButton.getElement().setProperty("data-hide-label", collapse);
-        updateToggleLabel();
-    }
-
     private void updateToggleLabel() {
         String customShow = toggleButton.getElement().getProperty("data-show-label");
         String customHide = toggleButton.getElement().getProperty("data-hide-label");
@@ -115,7 +104,7 @@ public final class FiltersComponent extends HorizontalLayout {
 
     private void updateVisibility() {
         int total = controls.size();
-        boolean needToggle = total > maxVisible;
+        boolean needToggle = total > MAX_VISIBLE;
         toggleButton.setVisible(needToggle);
 
         int i = 0;
@@ -123,7 +112,7 @@ public final class FiltersComponent extends HorizontalLayout {
             if (expanded) {
                 c.setVisible(true);
             } else {
-                c.setVisible(i < maxVisible);
+                c.setVisible(i < MAX_VISIBLE);
             }
             i++;
         }

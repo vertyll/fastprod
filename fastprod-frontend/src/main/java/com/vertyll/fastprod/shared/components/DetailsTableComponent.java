@@ -1,8 +1,6 @@
 package com.vertyll.fastprod.shared.components;
 
 import java.io.Serial;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
@@ -13,8 +11,6 @@ public final class DetailsTableComponent extends Div {
     private static final long serialVersionUID = 1L;
 
     private static final String BORDER_STYLE = "1px solid var(--lumo-contrast-10pct)";
-
-    private final Map<String, Component> rows = new LinkedHashMap<>();
 
     public DetailsTableComponent() {
         super();
@@ -31,25 +27,7 @@ public final class DetailsTableComponent extends Div {
 
     public void addRow(String label, Component valueComponent) {
         Div row = createTableRow(label, valueComponent);
-        rows.put(label, valueComponent);
         add(row);
-    }
-
-    public void updateRow(String label, String value) {
-        Component component = rows.get(label);
-        if (component instanceof Span span) {
-            span.setText(value);
-        }
-    }
-
-    public void updateRow(String label, Component valueComponent) {
-        rows.put(label, valueComponent);
-        rebuildTable();
-    }
-
-    private void rebuildTable() {
-        removeAll();
-        rows.forEach((label, component) -> add(createTableRow(label, component)));
     }
 
     private Div createTableRow(String label, Component valueComponent) {
@@ -69,7 +47,6 @@ public final class DetailsTableComponent extends Div {
     }
 
     public void clear() {
-        rows.clear();
         removeAll();
     }
 }

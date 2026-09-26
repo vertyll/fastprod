@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.auth.util;
 
+import org.jspecify.annotations.Nullable;
+
 public final class UserAgentUtils {
 
     private static final String CHROME = "Chrome";
@@ -19,7 +21,7 @@ public final class UserAgentUtils {
     private UserAgentUtils() {
     }
 
-    public static String parseBrowser(String userAgent) {
+    public static String parseBrowser(@Nullable String userAgent) {
         String ua = userAgent != null ? userAgent : UNKNOWN;
         if (ua.contains(CHROME)) {
             return CHROME;
@@ -39,7 +41,7 @@ public final class UserAgentUtils {
         return UNKNOWN;
     }
 
-    public static String parseOs(String userAgent) {
+    public static String parseOs(@Nullable String userAgent) {
         String ua = userAgent != null ? userAgent : UNKNOWN;
         if (ua.contains(WINDOWS)) {
             return WINDOWS;

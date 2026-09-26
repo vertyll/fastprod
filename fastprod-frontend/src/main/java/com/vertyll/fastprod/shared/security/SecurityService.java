@@ -78,15 +78,6 @@ public class SecurityService {
         return "Bearer";
     }
 
-    public Optional<String> getAuthorizationHeader() {
-        return getToken().map(token -> getTokenType() + " " + token);
-    }
-
-    public Optional<AuthResponseDto> getCurrentUser() {
-        return Optional.ofNullable(VaadinSession.getCurrent())
-            .map(session -> (AuthResponseDto) session.getAttribute(USER_SESSION_KEY));
-    }
-
     public List<String> getCurrentUserRoles() {
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
@@ -94,11 +85,6 @@ public class SecurityService {
             return roles != null ? roles : List.of();
         }
         return List.of();
-    }
-
-    public boolean hasRole(String role) {
-        List<String> roles = getCurrentUserRoles();
-        return roles.contains(role) || roles.contains("ROLE_" + role);
     }
 
     public boolean hasRole(RoleType role) {
@@ -109,37 +95,12 @@ public class SecurityService {
         return userRoles.contains(roleName) || userRoles.contains(roleAuthority);
     }
 
-    public boolean hasAnyRole(String... roles) {
-        List<String> userRoles = getCurrentUserRoles();
-        for (String role : roles) {
-            if (userRoles.contains(role) || userRoles.contains("ROLE_" + role)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean hasAnyRole(RoleType... roles) {
-        if (roles.length == 0) {
-            return false;
-        }
         for (RoleType role : roles) {
             if (hasRole(role)) {
                 return true;
             }
         }
         return false;
-    }
-
-    public boolean hasAllRoles(RoleType... roles) {
-        if (roles.length == 0) {
-            return true;
-        }
-        for (RoleType role : roles) {
-            if (!hasRole(role)) {
-                return false;
-            }
-        }
-        return true;
     }
 }

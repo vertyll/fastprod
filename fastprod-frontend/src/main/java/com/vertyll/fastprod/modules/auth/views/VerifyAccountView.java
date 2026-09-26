@@ -3,6 +3,8 @@ package com.vertyll.fastprod.modules.auth.views;
 import java.io.Serial;
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.base.ui.DelayedNavigation;
 import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
@@ -64,7 +66,7 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
     }
 
     @Override
-    public void setParameter(BeforeEvent event, @OptionalParameter String email) {
+    public void setParameter(BeforeEvent event, @OptionalParameter @Nullable String email) {
         if (email != null && !email.isEmpty()) {
             emailField.setValue(email);
             emailField.setReadOnly(true);
