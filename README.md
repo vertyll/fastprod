@@ -74,11 +74,6 @@ mechanism (http only secure cookie).
 - Error Prone for static code analysis.
 - Spotless for code formatting.
 
-> [!NOTE]
->
-> During application development, SOLID principles, DRY, composition over inheritance, dependency injection, design 
-> patterns, architectural patterns were applied, tests were written, and other good programming practices were adopted.
-
 ## Preview Screenshots
 
 ![Project View](https://raw.githubusercontent.com/vertyll/fastprod/refs/heads/main/screenshots/register.png)
