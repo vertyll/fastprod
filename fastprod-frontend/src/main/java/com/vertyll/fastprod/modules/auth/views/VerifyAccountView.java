@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.auth.views;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
@@ -27,7 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @Route("verify-account")
 @PageTitle("Verify Account | FastProd")
 @Slf4j
-public class VerifyAccountView extends VerticalLayout implements HasUrlParameter<String> {
+public final class VerifyAccountView extends VerticalLayout implements HasUrlParameter<String> {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String TEXT_ALIGN = "text-align";
     private static final String CENTER = "center";
@@ -43,6 +47,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
     private Button resendButton;
 
     public VerifyAccountView(AuthService authService) {
+        super();
         this.authService = authService;
 
         setWidthFull();
@@ -77,7 +82,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
             .set("box-sizing", "border-box")
             .set(TEXT_ALIGN, CENTER);
 
-        Icon icon = VaadinIcon.ENVELOPE_O.create();
+        Icon icon = VaadinIcon.ENVELOPE.create();
         icon.setSize("64px");
         icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
@@ -138,7 +143,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
     private void handleVerification() {
         String code = codeField.getValue();
 
-        if (code == null || code.trim().isEmpty()) {
+        if (code == null || code.isBlank()) {
             showNotification("Please enter the verification code", NotificationVariant.LUMO_ERROR);
             return;
         }
@@ -168,12 +173,6 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during verification: {}", e.getMessage());
-        } catch (Exception e) {
-            showNotification(
-                "Verification failed. Please check your code and try again.",
-                NotificationVariant.LUMO_ERROR
-            );
-            log.error("Error during verification", e);
         } finally {
             verifyButton.setEnabled(true);
             verifyButton.setText("Verify Account");
@@ -183,7 +182,7 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
     private void handleResendCode() {
         String email = emailField.getValue();
 
-        if (email == null || email.trim().isEmpty()) {
+        if (email == null || email.isBlank()) {
             showNotification("Please enter your email address", NotificationVariant.LUMO_ERROR);
             return;
         }
@@ -205,12 +204,6 @@ public class VerifyAccountView extends VerticalLayout implements HasUrlParameter
                 showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             }
             log.error("API error during resend: {}", e.getMessage());
-        } catch (Exception e) {
-            showNotification(
-                "Failed to resend code. Please try registering again or contact support.",
-                NotificationVariant.LUMO_ERROR
-            );
-            log.error("Error during resend", e);
         } finally {
             resendButton.setEnabled(true);
             resendButton.setText("Resend Code");

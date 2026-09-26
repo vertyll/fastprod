@@ -105,7 +105,7 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
     }
 
     private String generateVerificationCode() {
-        int code = 100000 + RANDOM.nextInt(900000);
+        int code = 100_000 + RANDOM.nextInt(900_000);
         return String.valueOf(code);
     }
 }

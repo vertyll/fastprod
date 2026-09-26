@@ -18,7 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static java.util.Objects.requireNonNull;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

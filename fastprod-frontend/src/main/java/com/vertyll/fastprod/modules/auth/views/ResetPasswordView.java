@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.auth.views;
 
+import java.io.Serial;
+
 import org.jspecify.annotations.Nullable;
 
 import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
@@ -26,14 +28,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Route("reset-password")
 @PageTitle("Reset Password | FastProd")
 @AnonymousAllowed
 @Slf4j
-public class ResetPasswordView extends VerticalLayout implements HasUrlParameter<String> {
+public final class ResetPasswordView extends VerticalLayout implements HasUrlParameter<String> {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String COLOR = "color";
     private static final String MARGIN_BOTTOM = "margin-bottom";
@@ -48,6 +51,7 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
     private Button submitButton;
 
     public ResetPasswordView(AuthService authService) {
+        super();
         this.authService = authService;
         this.binder = new Binder<>(FormData.class);
 
@@ -182,16 +186,9 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
                     log.error("Delayed navigation failed", ex);
                     return null;
                 });
-
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during password reset: {}", e.getMessage());
-        } catch (Exception e) {
-            showNotification(
-                "Failed to reset password. The reset link may have expired.",
-                NotificationVariant.LUMO_ERROR
-            );
-            log.error("Error during password reset", e);
         } finally {
             submitButton.setEnabled(true);
             submitButton.setText("Reset Password");
@@ -211,9 +208,8 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
         notification.add(text);
         notification.open();
     }
-
-    @Setter
-    private static class FormData {
+    @SuppressWarnings("PMD.DataClass")
+    private static final class FormData {
         private String newPassword = "";
         private String confirmPassword = "";
 
@@ -223,6 +219,14 @@ public class ResetPasswordView extends VerticalLayout implements HasUrlParameter
 
         String confirmPassword() {
             return confirmPassword;
+        }
+
+        void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
+        }
+
+        void setConfirmPassword(String confirmPassword) {
+            this.confirmPassword = confirmPassword;
         }
     }
 }

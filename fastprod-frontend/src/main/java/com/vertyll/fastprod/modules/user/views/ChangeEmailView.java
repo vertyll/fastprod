@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.user.views;
 
+import java.io.Serial;
+
 import jakarta.annotation.security.PermitAll;
 
 import com.vertyll.fastprod.base.ui.MainLayout;
@@ -7,6 +9,7 @@ import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
+import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
 import com.vaadin.flow.component.UI;
@@ -31,7 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 @PageTitle("Change Email | FastProd")
 @PermitAll
 @Slf4j
-public class ChangeEmailView extends VerticalLayout {
+public final class ChangeEmailView extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final transient SecurityService securityService;
     private final Binder<ChangeEmailDto> binder;
@@ -41,6 +46,7 @@ public class ChangeEmailView extends VerticalLayout {
     private PasswordField passwordField;
 
     public ChangeEmailView(SecurityService securityService, AuthService authService) {
+        super();
         this.securityService = securityService;
         this.binder = new Binder<>(ChangeEmailDto.class);
 
@@ -117,7 +123,7 @@ public class ChangeEmailView extends VerticalLayout {
                 clearFormAndValidation();
                 showVerificationDialog();
             }
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to request email change", e);
             showNotification(
                 "Failed to change email. Check your password or ensure the email is not already in use.",
@@ -156,7 +162,7 @@ public class ChangeEmailView extends VerticalLayout {
             dialog.showSuccess("Email changed successfully! Please log in again with your new email.");
             // After email change, user needs to log in again
             UI.getCurrent().getPage().setLocation("/login");
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to verify email change", e);
             dialog.showError("Verification failed. Please check your code and try again.");
         }

@@ -3,7 +3,7 @@ package com.vertyll.fastprod.sharedinfrastructure.exception;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ApiExceptionTest {
 

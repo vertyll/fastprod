@@ -2,7 +2,14 @@ package com.vertyll.fastprod.shared.filters;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
@@ -41,8 +48,9 @@ public final class FiltersValue {
     }
 
     public String toQueryString() {
-        if (values.isEmpty())
+        if (values.isEmpty()) {
             return "";
+        }
         List<String> parts = new ArrayList<>();
         for (Map.Entry<String, Object> e : values.entrySet()) {
             String k = url(e.getKey());

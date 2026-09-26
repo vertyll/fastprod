@@ -204,7 +204,9 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
             justification = "IP address is used only for audit logging, not security decisions. " +
                     "Value is sanitized before storage to prevent injection attacks.")
     private String extractIpAddress(HttpServletRequest request) {
-        if (request == null) return UNKNOWN;
+        if (request == null) {
+            return UNKNOWN;
+        }
 
         String ip;
         String xForwardedFor = request.getHeader(X_FORWARDED_FOR);

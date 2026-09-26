@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.io.Serial;
 import java.util.Objects;
 
 import com.vertyll.fastprod.shared.dto.PageResponse;
@@ -10,7 +11,9 @@ import com.vaadin.flow.function.SerializableBiConsumer;
 
 import lombok.Getter;
 
-public class PagedGridComponent<T> extends VerticalLayout {
+public final class PagedGridComponent<T> extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Getter
     private final Grid<T> grid;
@@ -25,6 +28,7 @@ public class PagedGridComponent<T> extends VerticalLayout {
     }
 
     public PagedGridComponent(Grid<T> customGrid) {
+        super();
         this.grid = customGrid;
         this.pagination = new PaginationComponent();
 

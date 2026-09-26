@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.auth.views;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto.FormBuilder;
@@ -32,7 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 @Route("login")
 @PageTitle("Login | FastProd")
 @Slf4j
-public class LoginView extends VerticalLayout {
+public final class LoginView extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String SIGN_IN = "Sign In";
     private static final String COLOR = "color";
@@ -55,6 +59,7 @@ public class LoginView extends VerticalLayout {
         SecurityService securityService,
         TokenRefreshService tokenRefreshService
     ) {
+        super();
         this.authService = authService;
         this.securityService = securityService;
         this.tokenRefreshService = tokenRefreshService;
@@ -186,9 +191,6 @@ public class LoginView extends VerticalLayout {
                 showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
                 log.error("API error during login: {} (status: {})", e.getMessage(), e.getStatusCode());
             }
-        } catch (Exception e) {
-            showNotification("An unexpected error occurred. Please try again.", NotificationVariant.LUMO_ERROR);
-            log.error("Unexpected error during login", e);
         } finally {
             loginButton.setEnabled(true);
             loginButton.setText(SIGN_IN);

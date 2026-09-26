@@ -1,9 +1,13 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.io.Serial;
+
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
-public class LoadingSpinner extends Div {
+public final class LoadingSpinner extends Div {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String CENTER = "center";
 
@@ -12,6 +16,7 @@ public class LoadingSpinner extends Div {
     }
 
     public LoadingSpinner(boolean fullScreen) {
+        super();
         addClassName("loading-spinner-container");
 
         Div overlay = new Div();

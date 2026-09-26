@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.base.ui.component;
 
+import java.io.Serial;
+
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -21,8 +23,11 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 
 @NullMarked
 public final class ViewToolbar extends Composite<Header> {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public ViewToolbar(@Nullable String viewTitle, Component... components) {
+        super();
         addClassNames(
             Display.FLEX,
             FlexDirection.COLUMN,
@@ -33,18 +38,18 @@ public final class ViewToolbar extends Composite<Header> {
             AlignItems.Breakpoint.Medium.CENTER
         );
 
-        var drawerToggle = new DrawerToggle();
+        DrawerToggle drawerToggle = new DrawerToggle();
         drawerToggle.addClassNames(Margin.NONE);
 
-        var title = new H1(viewTitle);
+        H1 title = new H1(viewTitle);
         title.addClassNames(FontSize.XLARGE, Margin.NONE, FontWeight.LIGHT);
 
-        var toggleAndTitle = new Div(drawerToggle, title);
+        Div toggleAndTitle = new Div(drawerToggle, title);
         toggleAndTitle.addClassNames(Display.FLEX, AlignItems.CENTER);
         getContent().add(toggleAndTitle);
 
         if (components.length > 0) {
-            var actions = new Div(components);
+            Div actions = new Div(components);
             actions.addClassNames(
                 Display.FLEX,
                 FlexDirection.COLUMN,
@@ -58,7 +63,7 @@ public final class ViewToolbar extends Composite<Header> {
     }
 
     public static Component group(Component... components) {
-        var group = new Div(components);
+        Div group = new Div(components);
         group.addClassNames(
             Display.FLEX,
             FlexDirection.COLUMN,

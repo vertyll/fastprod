@@ -1,5 +1,8 @@
 package com.vertyll.fastprod.modules.employee.views;
 
+import java.io.Serial;
+import java.util.List;
+
 import jakarta.annotation.security.RolesAllowed;
 
 import com.vertyll.fastprod.base.ui.MainLayout;
@@ -10,6 +13,8 @@ import com.vertyll.fastprod.shared.components.FiltersComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.components.PagedGridComponent;
 import com.vertyll.fastprod.shared.dto.PageResponse;
+import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
 
 import com.vaadin.flow.component.UI;
@@ -40,7 +45,9 @@ import lombok.extern.slf4j.Slf4j;
     }
 )
 @Slf4j
-public class EmployeeListView extends VerticalLayout {
+public final class EmployeeListView extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String COLOR = "color";
     private static final String TITLE = "title";
@@ -55,6 +62,7 @@ public class EmployeeListView extends VerticalLayout {
     private final LoadingSpinner loadingSpinner;
 
     public EmployeeListView(EmployeeService employeeService) {
+        super();
         this.employeeService = employeeService;
         this.pagedGrid = new PagedGridComponent<>(EmployeeResponseDto.class);
         this.filtersComponent = new FiltersComponent();
@@ -176,7 +184,7 @@ public class EmployeeListView extends VerticalLayout {
             PageResponse<EmployeeResponseDto> pageResponse =
                     employeeService.getAllEmployees(page, pageSize, sortBy, sortDirection, filters);
             pagedGrid.updateData(pageResponse);
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to load employees", e);
             Notification.show("Failed to load employees: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -203,7 +211,7 @@ public class EmployeeListView extends VerticalLayout {
             Notification.show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize(), currentFilters);
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to delete employee", e);
             Notification.show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -223,7 +231,7 @@ public class EmployeeListView extends VerticalLayout {
     }
 
     private void createFiltersBar() {
-        var configs = EmployeeFilters.configs();
+        List<FilterFieldConfig<?>> configs = EmployeeFilters.configs();
         filtersComponent.setConfig(configs);
         filtersComponent.addValueChangeListener(values -> {
             currentFilters = EmployeeFilters.normalize(values);

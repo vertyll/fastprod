@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.auth.views;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto.FormBuilder;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
@@ -32,7 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 @Route("register")
 @PageTitle("Sign Up | FastProd")
 @Slf4j
-public class RegisterView extends VerticalLayout {
+public final class RegisterView extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String CREATE_ACCOUNT = "Create Account";
     private static final String COLOR = "color";
@@ -50,6 +54,7 @@ public class RegisterView extends VerticalLayout {
     private Button registerButton;
 
     public RegisterView(AuthService authService) {
+        super();
         this.authService = authService;
         this.binder = new Binder<>(FormBuilder.class);
 
@@ -205,9 +210,6 @@ public class RegisterView extends VerticalLayout {
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during registration: {} (status: {})", e.getMessage(), e.getStatusCode());
-        } catch (Exception e) {
-            showNotification("An unexpected error occurred. Please try again.", NotificationVariant.LUMO_ERROR);
-            log.error("Unexpected error during registration", e);
         } finally {
             registerButton.setEnabled(true);
             registerButton.setText(CREATE_ACCOUNT);

@@ -9,13 +9,14 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 public final class JwtParser {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private JwtParser() {
         throw new UnsupportedOperationException("Utility class");
@@ -29,23 +30,25 @@ public final class JwtParser {
 
         try {
             JsonNode rolesNode = jsonNode.get("roles");
-            if (rolesNode == null)
+            if (rolesNode == null) {
                 rolesNode = jsonNode.get("authorities");
-            if (rolesNode == null)
+            }
+            if (rolesNode == null) {
                 rolesNode = jsonNode.get("role");
+            }
 
             if (rolesNode != null) {
                 if (rolesNode.isArray()) {
-                    return objectMapper.convertValue(
+                    return OBJECT_MAPPER.convertValue(
                         rolesNode,
-                        objectMapper.getTypeFactory().constructCollectionType(List.class, String.class)
+                        OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, String.class)
                     );
                 } else if (rolesNode.isString()) {
                     return List.of(rolesNode.asString());
                 }
             }
             return Collections.emptyList();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | JacksonException e) {
             log.error("Failed to extract roles from JWT", e);
             return Collections.emptyList();
         }
@@ -77,8 +80,8 @@ public final class JwtParser {
             }
 
             String payload = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-            return objectMapper.readTree(payload);
-        } catch (Exception e) {
+            return OBJECT_MAPPER.readTree(payload);
+        } catch (IllegalArgumentException | JacksonException e) {
             log.error("Failed to parse JWT payload", e);
             return null;
         }

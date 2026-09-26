@@ -3,7 +3,12 @@ package com.vertyll.fastprod.modules.auth.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.vertyll.fastprod.modules.auth.dto.*;
+import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto;
+import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto;
+import com.vertyll.fastprod.modules.auth.dto.ResendVerificationRequestDto;
+import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
+import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;

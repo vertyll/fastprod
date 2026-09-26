@@ -1,11 +1,14 @@
 package com.vertyll.fastprod.modules.user.views;
 
+import java.io.Serial;
+
 import jakarta.annotation.security.PermitAll;
 
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
+import com.vertyll.fastprod.shared.exception.ApiException;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -27,7 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 @PageTitle("Change Password | FastProd")
 @PermitAll
 @Slf4j
-public class ChangePasswordView extends VerticalLayout {
+public final class ChangePasswordView extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Binder<ChangePasswordDto> binder;
     private final transient AuthService authService;
@@ -37,6 +42,7 @@ public class ChangePasswordView extends VerticalLayout {
     private PasswordField confirmPasswordField;
 
     public ChangePasswordView(AuthService authService) {
+        super();
         this.binder = new Binder<>(ChangePasswordDto.class);
 
         setSizeFull();
@@ -128,7 +134,7 @@ public class ChangePasswordView extends VerticalLayout {
                 clearFormAndValidation();
                 showVerificationDialog();
             }
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to request password change", e);
             showNotification("Failed to change password. Check your current password.", NotificationVariant.LUMO_ERROR);
         }
@@ -160,7 +166,7 @@ public class ChangePasswordView extends VerticalLayout {
             authService.verifyPasswordChange(code);
             dialog.showSuccess("Password changed successfully!");
             UI.getCurrent().navigate("profile");
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to verify password change", e);
             dialog.showError("Verification failed. Please check your code and try again.");
         }

@@ -62,7 +62,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -232,7 +231,7 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
-        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
+        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604_800_000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
             .thenReturn("refresh-token-jwt");
 
@@ -359,7 +358,7 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
-        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
+        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604_800_000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
             .thenReturn("refresh-token-jwt");
 
@@ -379,7 +378,7 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
-        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
+        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604_800_000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
             .thenReturn("refresh-token-jwt");
 
@@ -417,7 +416,7 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
-        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
+        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604_800_000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
             .thenReturn("refresh-token-jwt");
 
@@ -436,7 +435,7 @@ class AuthServiceTest {
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("generated-jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
-        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
+        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604_800_000L);
         when(refreshTokenService.createRefreshToken(any(User.class), anyString(), any(HttpServletRequest.class)))
             .thenReturn("refresh-token-jwt");
 
@@ -581,7 +580,7 @@ class AuthServiceTest {
         when(userService.saveUser(any(User.class))).thenReturn(user);
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("new-jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
-        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604800000L);
+        when(jwtService.getRefreshTokenExpirationTime()).thenReturn(604_800_000L);
         when(refreshTokenService.createRefreshToken(any(User.class), isNull(), any(HttpServletRequest.class)))
             .thenReturn("new-refresh-token");
 

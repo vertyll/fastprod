@@ -23,7 +23,7 @@ import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
-public abstract class BaseHttpService {
+public class BaseHttpService {
 
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
@@ -47,40 +47,38 @@ public abstract class BaseHttpService {
     }
 
     protected <T> @Nullable T get(String endpoint, Class<T> responseType) {
-        return send(request(endpoint).GET(), objectMapper.constructType(responseType));
+        return read(send(request(endpoint).GET()), responseType);
     }
 
     protected <R> @Nullable R post(String endpoint, Class<R> responseType) {
-        return send(request(endpoint).POST(HttpRequest.BodyPublishers.noBody()), objectMapper.constructType(responseType));
+        return read(send(request(endpoint).POST(HttpRequest.BodyPublishers.noBody())), responseType);
     }
 
     protected <T, R> @Nullable R post(String endpoint, T requestBody, Class<R> responseType) {
-        return send(
-            request(endpoint).header(CONTENT_TYPE, APPLICATION_JSON).POST(json(requestBody)),
-            objectMapper.constructType(responseType)
+        return read(
+            send(request(endpoint).header(CONTENT_TYPE, APPLICATION_JSON).POST(json(requestBody))),
+            responseType
         );
     }
 
     protected <T, R> @Nullable R put(String endpoint, T requestBody, Class<R> responseType) {
-        return send(
-            request(endpoint).header(CONTENT_TYPE, APPLICATION_JSON).PUT(json(requestBody)),
-            objectMapper.constructType(responseType)
+        return read(
+            send(request(endpoint).header(CONTENT_TYPE, APPLICATION_JSON).PUT(json(requestBody))),
+            responseType
         );
     }
 
     protected <T> @Nullable T delete(String endpoint, Class<T> responseType) {
-        return send(request(endpoint).DELETE(), objectMapper.constructType(responseType));
+        return read(send(request(endpoint).DELETE()), responseType);
     }
 
     protected <T> PageResponse<T> getPaginated(String endpoint, Class<T> responseType) {
-        PageResponse<T> page = send(
-            request(endpoint).GET(),
-            objectMapper.getTypeFactory().constructParametricType(PageResponse.class, responseType)
-        );
-        if (page == null) {
+        String body = send(request(endpoint).GET());
+        if (body == null) {
             throw new ApiException(COMMUNICATION_ERROR);
         }
-        return page;
+        JavaType pageType = objectMapper.getTypeFactory().constructParametricType(PageResponse.class, responseType);
+        return objectMapper.readValue(body, pageType);
     }
 
     private HttpRequest.Builder request(String endpoint) {
@@ -93,7 +91,14 @@ public abstract class BaseHttpService {
         return HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body));
     }
 
-    private <T> @Nullable T send(HttpRequest.Builder builder, JavaType responseType) {
+    private <T> @Nullable T read(@Nullable String body, Class<T> responseType) {
+        if (body == null || responseType == Void.class) {
+            return null;
+        }
+        return objectMapper.readValue(body, responseType);
+    }
+
+    private @Nullable String send(HttpRequest.Builder builder) {
         HttpResponse<String> response;
         try {
             response = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
@@ -107,18 +112,15 @@ public abstract class BaseHttpService {
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             throw toApiException(response);
         }
-        if (responseType.hasRawClass(Void.class) || response.body().isBlank()) {
-            return null;
-        }
-        return objectMapper.readValue(response.body(), responseType);
+        return response.body().isBlank() ? null : response.body();
     }
 
     private ApiException toApiException(HttpResponse<String> response) {
         log.warn("HTTP request failed with status {}", response.statusCode());
         try {
             Problem problem = objectMapper.readValue(response.body(), Problem.class);
-            String detail = problem.detail() != null ? problem.detail()
-                    : "Server error (code: " + response.statusCode() + ")";
+            String detail =
+                    problem.detail() != null ? problem.detail() : "Server error (code: " + response.statusCode() + ")";
             return new ApiException(detail, response.statusCode(), problem.fieldErrors());
         } catch (JacksonException e) {
             return new ApiException(COMMUNICATION_ERROR, response.statusCode());

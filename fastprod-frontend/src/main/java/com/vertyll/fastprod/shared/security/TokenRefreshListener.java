@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.shared.security;
 
+import java.io.Serial;
+
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -11,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class TokenRefreshListener implements VaadinServiceInitListener {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final transient TokenRefreshService tokenRefreshService;
     private final transient SecurityService securityService;

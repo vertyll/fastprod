@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.config.SecurityProperties;
+import com.vertyll.fastprod.shared.exception.ApiException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class TokenRefreshService {
     private @Nullable Instant tokenExpirationTime;
 
     public void setTokenExpiration() {
-        long expirationMs = securityProperties.getAccessToken().getExpiration();
+        long expirationMs = securityProperties.accessToken().expiration();
         this.tokenExpirationTime = Instant.now().plusMillis(expirationMs);
         log.debug("Token expiration set to: {} ({}ms from now)", tokenExpirationTime, expirationMs);
     }
@@ -34,7 +35,7 @@ public class TokenRefreshService {
             return false;
         }
 
-        long refreshBeforeMs = securityProperties.getAccessToken().getRefreshBeforeExpiry();
+        long refreshBeforeMs = securityProperties.accessToken().refreshBeforeExpiry();
         Instant refreshThreshold = Instant.now().plusMillis(refreshBeforeMs);
         boolean shouldRefresh = refreshThreshold.isAfter(tokenExpirationTime);
 
@@ -61,22 +62,14 @@ public class TokenRefreshService {
             log.warn("Token refresh returned null data");
             return false;
 
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to refresh token: {}", e.getMessage());
             return false;
         }
     }
 
     public boolean ensureValidToken() {
-        if (!securityService.isAuthenticated()) {
-            return false;
-        }
-
-        if (shouldRefreshToken()) {
-            return refreshToken();
-        }
-
-        return true;
+        return securityService.isAuthenticated() && (!shouldRefreshToken() || refreshToken());
     }
 
     public void clearTokenExpiration() {

@@ -1,6 +1,16 @@
 package com.vertyll.fastprod.shared.components;
 
-import java.util.*;
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -19,7 +29,9 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
-public class FiltersComponent extends HorizontalLayout {
+public final class FiltersComponent extends HorizontalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String FLEX_WRAP = "flex-wrap";
 
@@ -35,6 +47,7 @@ public class FiltersComponent extends HorizontalLayout {
     private final HorizontalLayout selectedChips = new HorizontalLayout();
 
     public FiltersComponent() {
+        super();
         setWidthFull();
         setSpacing(true);
         setPadding(false);
@@ -87,9 +100,7 @@ public class FiltersComponent extends HorizontalLayout {
     }
 
     public void setMaxVisible(int maxVisible) {
-        if (maxVisible < 1)
-            maxVisible = 1;
-        this.maxVisible = maxVisible;
+        this.maxVisible = Math.max(1, maxVisible);
         updateVisibility();
     }
 
@@ -128,7 +139,6 @@ public class FiltersComponent extends HorizontalLayout {
             case TEXT -> createTextField(cfg);
             case SELECT -> createSelect(cfg);
             case MULTISELECT -> createMultiSelect(cfg);
-            default -> new TextField(cfg.label());
         };
     }
 
@@ -148,7 +158,7 @@ public class FiltersComponent extends HorizontalLayout {
         select.setEmptySelectionAllowed(false);
         cfg.placeholder().ifPresent(select::setPlaceholder);
 
-        List<Object> items = getItemsForConfig(cfg);
+        List<Object> items = FilterItems.itemsOf(cfg);
         List<Object> menuItems = buildSelectMenuItems(cfg, items);
 
         configureSelectLabels(select, cfg);
@@ -157,13 +167,6 @@ public class FiltersComponent extends HorizontalLayout {
         select.addValueChangeListener(_ -> emitChange());
 
         return select;
-    }
-
-    private static List<Object> getItemsForConfig(FilterFieldConfig<?> cfg) {
-        return cfg.staticItems()
-            .map(FiltersComponent::normalizeItems)
-            .or(() -> cfg.itemsSupplier().map(supplier -> normalizeItems(supplier.get())))
-            .orElseGet(List::of);
     }
 
     private List<Object> buildSelectMenuItems(FilterFieldConfig<?> cfg, List<Object> items) {
@@ -182,7 +185,7 @@ public class FiltersComponent extends HorizontalLayout {
     private void configureSelectLabels(Select<Object> select, FilterFieldConfig<?> cfg) {
         Object emptyToken = selectEmptyTokens.get(cfg.id());
         String placeholder = cfg.placeholder().orElse("");
-        ItemLabelGenerator<Object> generator = labelGeneratorOf(cfg).orElse(FiltersComponent::defaultLabel);
+        ItemLabelGenerator<Object> generator = FilterItems.labelGeneratorOf(cfg);
 
         select.setItemLabelGenerator(item -> {
             if (emptyToken != null && Objects.equals(item, emptyToken)) {
@@ -190,15 +193,6 @@ public class FiltersComponent extends HorizontalLayout {
             }
             return generator.apply(item);
         });
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Optional<ItemLabelGenerator<Object>> labelGeneratorOf(FilterFieldConfig<?> cfg) {
-        return cfg.itemLabelGenerator().map(generator -> (ItemLabelGenerator<Object>) generator);
-    }
-
-    private static String defaultLabel(@Nullable Object item) {
-        return item == null ? "" : String.valueOf(item);
     }
 
     private void setSelectInitialValue(Select<Object> select, FilterFieldConfig<?> cfg) {
@@ -213,7 +207,7 @@ public class FiltersComponent extends HorizontalLayout {
         ms.setLabel(cfg.label());
         cfg.placeholder().ifPresent(ms::setPlaceholder);
 
-        List<Object> items = getItemsForConfig(cfg);
+        List<Object> items = FilterItems.itemsOf(cfg);
         configureMultiSelectLabels(ms, cfg);
         ms.setItems(items);
         ms.setClearButtonVisible(true);
@@ -223,49 +217,7 @@ public class FiltersComponent extends HorizontalLayout {
     }
 
     private static void configureMultiSelectLabels(MultiSelectComboBox<Object> ms, FilterFieldConfig<?> cfg) {
-        ms.setItemLabelGenerator(labelGeneratorOf(cfg).orElse(FiltersComponent::defaultLabel));
-    }
-
-    private static List<Object> normalizeItems(List<?> items) {
-        if (items.size() != 1) {
-            return Collections.unmodifiableList(new ArrayList<>(items));
-        }
-
-        Object first = items.getFirst();
-        List<Object> out = processSingleItem(first, items);
-        return Collections.unmodifiableList(out);
-    }
-
-    private static List<Object> processSingleItem(@Nullable Object first, List<?> items) {
-        if (first == null) {
-            return new ArrayList<>(items);
-        }
-
-        if (first.getClass().isArray()) {
-            return processArrayItem(first);
-        }
-
-        if (first instanceof Collection<?> col) {
-            return new ArrayList<>(col);
-        }
-
-        return new ArrayList<>(items);
-    }
-
-    private static List<Object> processArrayItem(Object arrayItem) {
-        if (arrayItem instanceof Object[] arr) {
-            return new ArrayList<>(Arrays.asList(arr));
-        }
-        return processPrimitiveArray(arrayItem);
-    }
-
-    private static List<Object> processPrimitiveArray(Object primitiveArray) {
-        int length = java.lang.reflect.Array.getLength(primitiveArray);
-        List<Object> result = new ArrayList<>(length);
-        for (int i = 0; i < length; i++) {
-            result.add(java.lang.reflect.Array.get(primitiveArray, i));
-        }
-        return result;
+        ms.setItemLabelGenerator(FilterItems.labelGeneratorOf(cfg));
     }
 
     public FiltersValue getValues() {
@@ -336,8 +288,9 @@ public class FiltersComponent extends HorizontalLayout {
     public void clear() {
         for (Map.Entry<String, Component> e : controls.entrySet()) {
             Component c = e.getValue();
-            if (c instanceof TextField tf)
+            if (c instanceof TextField tf) {
                 tf.clear();
+            }
             if (c instanceof Select<?> sel) {
                 @SuppressWarnings("unchecked") Select<Object> s = (Select<Object>) sel;
                 Object token = selectEmptyTokens.get(e.getKey());
@@ -347,8 +300,9 @@ public class FiltersComponent extends HorizontalLayout {
                     s.clear();
                 }
             }
-            if (c instanceof MultiSelectComboBox<?> ms)
+            if (c instanceof MultiSelectComboBox<?> ms) {
                 ms.clear();
+            }
         }
         emitChange();
     }
@@ -400,7 +354,8 @@ public class FiltersComponent extends HorizontalLayout {
         }
 
         if (value != null) {
-            @SuppressWarnings("unchecked") var gen = (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
+            @SuppressWarnings("unchecked") ItemLabelGenerator<Object> gen =
+                    (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
             String valueText = gen != null ? gen.apply(value) : String.valueOf(value);
             return Optional.of(new ChipData(select.getLabel(), valueText));
         }
@@ -411,7 +366,8 @@ public class FiltersComponent extends HorizontalLayout {
         Set<?> selected = multiSelect.getSelectedItems();
 
         if (selected != null && !selected.isEmpty()) {
-            @SuppressWarnings("unchecked") var gen = (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
+            @SuppressWarnings("unchecked") ItemLabelGenerator<Object> gen =
+                    (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
 
             List<String> labels = selected.stream().map(o -> gen != null ? gen.apply(o) : String.valueOf(o)).toList();
 

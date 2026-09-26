@@ -36,10 +36,12 @@ public final class EmployeeFilters {
             FilterFieldConfig.builder(IS_VERIFIED, VERIFIED_LABEL, FilterFieldType.SELECT)
                 .items(List.of(true, false))
                 .itemLabel(v -> {
-                    if (v == null)
+                    if (v == null) {
                         return "";
-                    if (v instanceof Boolean b)
+                    }
+                    if (v instanceof Boolean b) {
                         return Boolean.TRUE.equals(b) ? VERIFIED_LABEL : "Not verified";
+                    }
                     return Boolean.parseBoolean(String.valueOf(v)) ? VERIFIED_LABEL : "Not verified";
                 })
                 .placeholder("Any")
@@ -47,8 +49,9 @@ public final class EmployeeFilters {
             FilterFieldConfig.<RoleType>builder(ROLES, "Roles", FilterFieldType.MULTISELECT)
                 .items(java.util.Arrays.stream(RoleType.values()).toList())
                 .itemLabel(v -> {
-                    if (v == null)
+                    if (v == null) {
                         return "";
+                    }
                     return v.name();
                 })
                 .placeholder("Any roles")

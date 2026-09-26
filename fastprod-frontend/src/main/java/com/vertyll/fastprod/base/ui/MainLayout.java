@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.base.ui;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.base.ui.component.UserMenu;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.security.RoleType;
@@ -28,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 @Layout
 @Slf4j
 public final class MainLayout extends AppLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String APP_NAME = "FastProd";
 
@@ -35,6 +39,7 @@ public final class MainLayout extends AppLayout {
     private final transient UserService userService;
 
     public MainLayout(SecurityService securityService, UserService userService) {
+        super();
         this.securityService = securityService;
         this.userService = userService;
 

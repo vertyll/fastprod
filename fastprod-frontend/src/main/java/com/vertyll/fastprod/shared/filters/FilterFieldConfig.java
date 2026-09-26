@@ -9,6 +9,8 @@ import org.jspecify.annotations.Nullable;
 
 import com.vaadin.flow.component.ItemLabelGenerator;
 
+@SuppressWarnings("PMD.DataClass")
+
 public final class FilterFieldConfig<T> {
     private final String id;
     private final String label;

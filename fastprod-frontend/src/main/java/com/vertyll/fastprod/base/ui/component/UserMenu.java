@@ -1,7 +1,10 @@
 package com.vertyll.fastprod.base.ui.component;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.modules.user.service.UserService;
+import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
 import com.vaadin.flow.component.UI;
@@ -20,7 +23,9 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class UserMenu extends HorizontalLayout {
+public final class UserMenu extends HorizontalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final transient UserService userService;
     private final transient SecurityService securityService;
@@ -28,6 +33,7 @@ public class UserMenu extends HorizontalLayout {
     private final Span userName;
 
     public UserMenu(UserService userService, SecurityService securityService) {
+        super();
         this.userService = userService;
         this.securityService = securityService;
 
@@ -93,7 +99,7 @@ public class UserMenu extends HorizontalLayout {
                 userName.setText(fullName);
                 emailSpan.setText(user.email());
             }
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to load user data", e);
         }
     }

@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.user.views;
 
+import java.io.Serial;
+
 import jakarta.annotation.security.PermitAll;
 
 import org.jspecify.annotations.Nullable;
@@ -10,6 +12,7 @@ import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
+import com.vertyll.fastprod.shared.exception.ApiException;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -35,7 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @PageTitle("My Profile | FastProd")
 @PermitAll
 @Slf4j
-public class ProfileView extends VerticalLayout {
+public final class ProfileView extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final transient UserService userService;
     private final Binder<ProfileUpdateDto> binder;
@@ -49,6 +54,7 @@ public class ProfileView extends VerticalLayout {
     private Div detailsContainer;
 
     public ProfileView(UserService userService) {
+        super();
         this.userService = userService;
         this.binder = new Binder<>(ProfileUpdateDto.class);
 
@@ -166,7 +172,7 @@ public class ProfileView extends VerticalLayout {
                 currentUser = user;
                 updateDetailsView(user);
             }
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to load user profile", e);
             showNotification("Failed to load profile", NotificationVariant.LUMO_ERROR);
         }
@@ -217,7 +223,7 @@ public class ProfileView extends VerticalLayout {
                     showNotification("Profile updated successfully", NotificationVariant.LUMO_SUCCESS);
                 }
             }
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to update profile", e);
             showNotification("Failed to update profile", NotificationVariant.LUMO_ERROR);
         } finally {

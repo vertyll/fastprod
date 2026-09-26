@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.io.Serial;
 import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
@@ -15,7 +16,9 @@ import com.vaadin.flow.function.SerializableConsumer;
 
 import lombok.Getter;
 
-public class PaginationComponent extends HorizontalLayout {
+public final class PaginationComponent extends HorizontalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Button previousButton;
     private final Button nextButton;
@@ -34,6 +37,7 @@ public class PaginationComponent extends HorizontalLayout {
     };
 
     public PaginationComponent() {
+        super();
         setSpacing(true);
         setAlignItems(Alignment.CENTER);
         addClassName("pagination-bar");

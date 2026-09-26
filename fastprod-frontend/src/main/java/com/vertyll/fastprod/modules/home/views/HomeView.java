@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.home.views;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
@@ -17,9 +19,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Dashboard | FastProd")
-public class HomeView extends VerticalLayout {
+public final class HomeView extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public HomeView(SecurityService securityService) {
+        super();
         setSizeFull();
         setPadding(true);
         setSpacing(true);

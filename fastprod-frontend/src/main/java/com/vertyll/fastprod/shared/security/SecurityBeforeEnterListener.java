@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.shared.security;
 
+import java.io.Serial;
+
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -11,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class SecurityBeforeEnterListener implements BeforeEnterListener {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String LOGIN_ROUTE = "login";
 

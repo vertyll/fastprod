@@ -1,30 +1,21 @@
 package com.vertyll.fastprod.shared.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
-import lombok.Data;
-
-@Component
 @ConfigurationProperties(prefix = "security.jwt")
-@Data
-public class SecurityProperties {
+public record SecurityProperties(@DefaultValue AccessToken accessToken, @DefaultValue RefreshToken refreshToken) {
 
-    private final AccessToken accessToken = new AccessToken();
-    private final RefreshToken refreshToken = new RefreshToken();
-
-    @Data
-    public static class AccessToken {
-        private long expiration = 900000L;
-        private long refreshBeforeExpiry = 120000L;
+    public record AccessToken(
+        @DefaultValue("900000") long expiration,
+        @DefaultValue("120000") long refreshBeforeExpiry
+    ) {
     }
 
-    @Data
-    public static class RefreshToken {
-        private String cookieName = "refresh_token";
+    public record RefreshToken(@DefaultValue("refresh_token") String cookieName) {
     }
 
     public String getRefreshTokenCookieName() {
-        return refreshToken.getCookieName();
+        return refreshToken.cookieName();
     }
 }

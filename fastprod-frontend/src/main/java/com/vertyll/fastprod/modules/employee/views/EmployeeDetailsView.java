@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.employee.views;
 
+import java.io.Serial;
+
 import org.jspecify.annotations.Nullable;
 
 import com.vertyll.fastprod.base.ui.MainLayout;
@@ -7,6 +9,7 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
+import com.vertyll.fastprod.shared.exception.ApiException;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -18,14 +21,19 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees/details/:id", layout = MainLayout.class)
 @PageTitle("Employee Details | FastProd")
 @Slf4j
-public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterObserver {
+public final class EmployeeDetailsView extends VerticalLayout implements BeforeEnterObserver {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final transient EmployeeService employeeService;
     private final H2 titleLabel = new H2();
@@ -35,6 +43,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     private @Nullable Long employeeId;
 
     public EmployeeDetailsView(EmployeeService employeeService) {
+        super();
         this.employeeService = employeeService;
 
         setSizeFull();
@@ -108,7 +117,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
             if (employee != null) {
                 displayEmployee(employee);
             }
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to load employee", e);
             Notification.show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -165,7 +174,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
             Notification.show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             navigateToList();
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to delete employee", e);
             Notification.show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);

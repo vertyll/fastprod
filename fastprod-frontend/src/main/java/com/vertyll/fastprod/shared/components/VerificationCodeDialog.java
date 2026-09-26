@@ -1,6 +1,9 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.io.Serial;
 import java.util.function.BiConsumer;
+
+import com.vertyll.fastprod.shared.exception.ApiException;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -17,7 +20,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class VerificationCodeDialog extends Dialog {
+public final class VerificationCodeDialog extends Dialog {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String VERIFY_BUTTON_TEXT = "Verify";
 
@@ -30,6 +35,7 @@ public class VerificationCodeDialog extends Dialog {
         String description,
         BiConsumer<String, VerificationCodeDialog> onVerify
     ) {
+        super();
         this.onVerify = onVerify;
 
         setCloseOnEsc(false);
@@ -78,7 +84,7 @@ public class VerificationCodeDialog extends Dialog {
     private void handleVerification() {
         String code = codeField.getValue();
 
-        if (code == null || code.trim().isEmpty()) {
+        if (code == null || code.isBlank()) {
             showNotification("Please enter the verification code", NotificationVariant.LUMO_ERROR);
             return;
         }
@@ -93,7 +99,7 @@ public class VerificationCodeDialog extends Dialog {
 
         try {
             onVerify.accept(code, this);
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Verification failed", e);
             verifyButton.setEnabled(true);
             verifyButton.setText(VERIFY_BUTTON_TEXT);

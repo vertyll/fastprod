@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.shared.config;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.shared.security.SecurityBeforeEnterListener;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
@@ -14,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class SecurityConfiguration implements VaadinServiceInitListener {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final transient SecurityService securityService;
 

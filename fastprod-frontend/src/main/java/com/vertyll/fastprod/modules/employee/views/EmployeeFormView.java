@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.modules.employee.views;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
+import com.vertyll.fastprod.shared.exception.ApiException;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -26,15 +28,19 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.validator.EmailValidator;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees/form/:id?", layout = MainLayout.class)
 @PageTitle("Employee Form | FastProd")
 @Slf4j
-public class EmployeeFormView extends VerticalLayout implements BeforeEnterObserver {
+public final class EmployeeFormView extends VerticalLayout implements BeforeEnterObserver {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final transient EmployeeService employeeService;
     private final Binder<EmployeeFormData> binder;
@@ -45,6 +51,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
     private boolean isEditMode = false;
 
     public EmployeeFormView(EmployeeService employeeService) {
+        super();
         this.employeeService = employeeService;
         this.binder = new Binder<>(EmployeeFormData.class);
 
@@ -164,7 +171,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
                 binder.readBean(formData);
             }
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to load employee", e);
             Notification.show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -219,7 +226,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
             navigateToList();
         } catch (ValidationException e) {
             log.error("Validation failed", e);
-        } catch (Exception e) {
+        } catch (ApiException e) {
             log.error("Failed to save employee", e);
             Notification.show("Failed to save employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -229,13 +236,52 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
     private void navigateToList() {
         UI.getCurrent().navigate(EmployeeListView.class);
     }
-
-    @Data
+    @SuppressWarnings("PMD.DataClass")
     public static class EmployeeFormData {
         private String firstName = "";
         private String lastName = "";
         private String email = "";
         private String password = "";
         private Set<String> roleNames = new HashSet<>();
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public Set<String> getRoleNames() {
+            return roleNames;
+        }
+
+        public void setRoleNames(Set<String> roleNames) {
+            this.roleNames = roleNames;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.shared.components;
 
+import java.io.Serial;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -7,13 +8,16 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 
-public class DetailsTableComponent extends Div {
+public final class DetailsTableComponent extends Div {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String BORDER_STYLE = "1px solid var(--lumo-contrast-10pct)";
 
     private final Map<String, Component> rows = new LinkedHashMap<>();
 
     public DetailsTableComponent() {
+        super();
         addClassName("details-table");
         getStyle().set("border", BORDER_STYLE)
             .set("border-radius", "var(--lumo-border-radius-m)")

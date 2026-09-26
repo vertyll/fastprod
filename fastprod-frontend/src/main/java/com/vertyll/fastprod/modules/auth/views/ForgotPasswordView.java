@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.modules.auth.views;
 
+import java.io.Serial;
+
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
 import com.vertyll.fastprod.shared.exception.ApiException;
@@ -22,14 +24,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Route("forgot-password")
 @PageTitle("Forgot Password | FastProd")
 @AnonymousAllowed
 @Slf4j
-public class ForgotPasswordView extends VerticalLayout {
+public final class ForgotPasswordView extends VerticalLayout {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String COLOR = "color";
     private static final String MARGIN_BOTTOM = "margin-bottom";
@@ -44,6 +47,7 @@ public class ForgotPasswordView extends VerticalLayout {
     private Button submitButton;
 
     public ForgotPasswordView(AuthService authService) {
+        super();
         this.authService = authService;
         this.binder = new Binder<>(FormData.class);
 
@@ -129,13 +133,9 @@ public class ForgotPasswordView extends VerticalLayout {
             showNotification("Password reset code sent! Please check your email.", NotificationVariant.LUMO_SUCCESS);
             emailField.setEnabled(false);
             showVerificationDialog();
-
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during password reset request: {}", e.getMessage());
-        } catch (Exception e) {
-            showNotification("Failed to send reset instructions. Please try again.", NotificationVariant.LUMO_ERROR);
-            log.error("Error during password reset request", e);
         } finally {
             submitButton.setEnabled(true);
             submitButton.setText("Send Reset Instructions");
@@ -169,13 +169,15 @@ public class ForgotPasswordView extends VerticalLayout {
         notification.add(text);
         notification.open();
     }
-
-    @Setter
-    private static class FormData {
+    private static final class FormData {
         private String email = "";
 
         String email() {
             return email;
+        }
+
+        void setEmail(String email) {
+            this.email = email;
         }
     }
 }
