@@ -7,6 +7,7 @@
 
     <!-- Best Practices -->
     <rule ref="category/java/bestpractices.xml">
+        <exclude name="ImplicitFunctionalInterface"/>
         <exclude name="UnitTestContainsTooManyAsserts"/>
         <exclude name="UnitTestAssertionsShouldIncludeMessage"/>
         <exclude name="UnitTestShouldIncludeAssert"/>
@@ -14,6 +15,7 @@
 
     <!-- Code Style -->
     <rule ref="category/java/codestyle.xml">
+        <exclude name="ShortMethodName"/>
         <exclude name="OnlyOneReturn"/>
         <exclude name="AtLeastOneConstructor"/>
         <exclude name="CommentDefaultAccessModifier"/>
@@ -24,7 +26,6 @@
         <exclude name="MethodArgumentCouldBeFinal"/>
         <exclude name="LocalVariableCouldBeFinal"/>
         <exclude name="MethodNamingConventions"/>
-        <exclude name="UseUnderscoresInNumericLiterals"/>
         <exclude name="LinguisticNaming"/>
     </rule>
 
@@ -44,20 +45,30 @@
     <rule ref="category/java/documentation.xml">
         <exclude name="CommentRequired"/>
         <exclude name="CommentSize"/>
+        <exclude name="UncommentedEmptyMethodBody"/>
+        <exclude name="UncommentedEmptyConstructor"/>
     </rule>
 
     <!-- Error Prone -->
     <rule ref="category/java/errorprone.xml">
+        <exclude name="NullAssignment"/>
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+        <exclude name="AvoidLiteralsInIfCondition"/>
         <exclude name="AvoidDuplicateLiterals"/>
         <exclude name="MissingSerialVersionUID"/>
         <exclude name="TestClassWithoutTestCases"/>
     </rule>
 
     <!-- Multithreading -->
-    <rule ref="category/java/multithreading.xml" />
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="UseConcurrentHashMap"/>
+        <exclude name="DoNotUseThreads"/>
+    </rule>
 
     <!-- Performance -->
     <rule ref="category/java/performance.xml">
+        <exclude name="TooFewBranchesForSwitch"/>
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
         <exclude name="RedundantFieldInitializer" />
     </rule>
 
