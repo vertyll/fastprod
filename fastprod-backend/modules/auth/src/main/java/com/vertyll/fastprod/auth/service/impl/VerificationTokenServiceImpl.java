@@ -23,7 +23,6 @@ import java.util.Random;
 @RequiredArgsConstructor
 @Slf4j
 class VerificationTokenServiceImpl implements VerificationTokenService {
-
     private static final Random RANDOM = new SecureRandom();
 
     private static final String INVALID_VERIFICATION_CODE = "Invalid verification code";
@@ -33,9 +32,6 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
 
     private final VerificationTokenRepository verificationTokenRepository;
 
-    /**
-     * Creates a verification token for a user.
-     */
     @Override
     @Transactional
     public String createVerificationToken(User user, VerificationTokenType tokenType, @Nullable String additionalData) {
@@ -57,9 +53,6 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
         return code;
     }
 
-    /**
-     * Validates and retrieves a verification token.
-     */
     @Override
     @Transactional(readOnly = true)
     public VerificationToken getValidToken(String code, VerificationTokenType expectedType) {
@@ -81,9 +74,6 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
         return token;
     }
 
-    /**
-     * Marks a token as used.
-     */
     @Override
     @Transactional
     public void markTokenAsUsed(VerificationToken token) {
@@ -93,11 +83,8 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
         log.info("Marked verification token as used for user: {}", token.getUser().getEmail());
     }
 
-    /**
-     * Scheduled task to delete expired tokens.
-     */
     @Override
-    @Scheduled(cron = "0 0 2 * * ?") // 2 AM daily
+    @Scheduled(cron = "0 0 2 * * ?")
     @Transactional
     public void cleanupExpiredTokens() {
         int deleted = verificationTokenRepository.deleteByExpiryDateBeforeAndIsUsed(LocalDateTime.now(ZoneOffset.UTC), true);

@@ -43,7 +43,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeControllerTest {
-
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
@@ -92,10 +91,8 @@ class EmployeeControllerTest {
 
     @Test
     void createEmployee_WhenValidInput_ShouldReturnCreated() throws Exception {
-        // given
         when(employeeService.createEmployee(any(EmployeeCreateDto.class))).thenReturn(responseDto);
 
-        // when & then
         mockMvc
             .perform(
                 post("/employees").contentType(MediaType.APPLICATION_JSON)
@@ -111,16 +108,9 @@ class EmployeeControllerTest {
 
     @Test
     void createEmployee_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
-        // given
-        EmployeeCreateDto invalidCreateDto = new EmployeeCreateDto(
-            "John",
-            "Doe",
-            "invalid-email", // invalid email format
-            "password123",
-            Set.of("EMPLOYEE")
-        );
+        EmployeeCreateDto invalidCreateDto =
+                new EmployeeCreateDto("John", "Doe", "invalid-email", "password123", Set.of("EMPLOYEE"));
 
-        // when & then
         mockMvc
             .perform(
                 post("/employees").contentType(MediaType.APPLICATION_JSON)
@@ -135,10 +125,8 @@ class EmployeeControllerTest {
 
     @Test
     void updateEmployee_WhenValidInput_ShouldReturnSuccess() throws Exception {
-        // given
         when(employeeService.updateEmployee(anyLong(), any(EmployeeUpdateDto.class))).thenReturn(responseDto);
 
-        // when & then
         mockMvc
             .perform(
                 put("/employees/1").contentType(MediaType.APPLICATION_JSON)
@@ -152,11 +140,9 @@ class EmployeeControllerTest {
 
     @Test
     void updateEmployee_WhenEmployeeNotFound_ShouldReturnNotFound() throws Exception {
-        // given
         doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND)).when(employeeService)
             .updateEmployee(anyLong(), any(EmployeeUpdateDto.class));
 
-        // when & then
         mockMvc
             .perform(
                 put("/employees/1").contentType(MediaType.APPLICATION_JSON)
@@ -169,10 +155,8 @@ class EmployeeControllerTest {
 
     @Test
     void getEmployee_WhenExists_ShouldReturnEmployee() throws Exception {
-        // given
         when(employeeService.getEmployeeById(1L)).thenReturn(responseDto);
 
-        // when & then
         mockMvc.perform(get("/employees/1"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -184,11 +168,9 @@ class EmployeeControllerTest {
 
     @Test
     void getEmployee_WhenNotFound_ShouldReturnNotFound() throws Exception {
-        // given
         when(employeeService.getEmployeeById(1L))
             .thenThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND));
 
-        // when & then
         mockMvc.perform(get("/employees/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
@@ -197,10 +179,8 @@ class EmployeeControllerTest {
 
     @Test
     void deleteEmployee_WhenExists_ShouldReturnSuccess() throws Exception {
-        // given
         doNothing().when(employeeService).deleteEmployee(1L);
 
-        // when & then
         mockMvc.perform(delete("/employees/1")).andDo(print()).andExpect(status().isNoContent());
 
         verify(employeeService).deleteEmployee(1L);
@@ -208,10 +188,8 @@ class EmployeeControllerTest {
 
     @Test
     void deleteEmployee_WhenNotFound_ShouldReturnNotFound() throws Exception {
-        // given
         doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND)).when(employeeService).deleteEmployee(1L);
 
-        // when & then
         mockMvc.perform(delete("/employees/1"))
             .andDo(print())
             .andExpect(status().isNotFound())

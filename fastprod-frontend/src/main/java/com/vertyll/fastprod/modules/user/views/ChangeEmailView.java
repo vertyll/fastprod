@@ -160,7 +160,6 @@ public final class ChangeEmailView extends VerticalLayout {
             }
 
             dialog.showSuccess("Email changed successfully! Please log in again with your new email.");
-            // After email change, user needs to log in again
             UI.getCurrent().getPage().setLocation("/login");
         } catch (ApiException e) {
             log.error("Failed to verify email change", e);

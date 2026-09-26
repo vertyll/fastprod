@@ -24,7 +24,6 @@ public class SecurityConfiguration implements VaadinServiceInitListener {
     @Override
     public void serviceInit(ServiceInitEvent event) {
         event.getSource().addUIInitListener(uiEvent -> {
-            // Create a new instance of the listener for each UI
             SecurityBeforeEnterListener listener = new SecurityBeforeEnterListener(securityService);
             uiEvent.getUI().addBeforeEnterListener(listener);
             log.debug("Security listener registered for UI");

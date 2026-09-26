@@ -39,24 +39,24 @@ final class FilterChips {
         return Optional.empty();
     }
 
-    @SuppressWarnings("unchecked")
     private static Optional<Chip> ofSelect(Select<?> select, @Nullable Object emptyToken) {
         Object value = select.getValue();
         if (value == null || (emptyToken != null && Objects.equals(value, emptyToken))) {
             return Optional.empty();
         }
-        ItemLabelGenerator<Object> generator = (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
+        @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =
+                (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
         String text = generator != null ? generator.apply(value) : String.valueOf(value);
         return Optional.of(new Chip(select.getLabel(), text));
     }
 
-    @SuppressWarnings("unchecked")
     private static Optional<Chip> ofMultiSelect(MultiSelectComboBox<?> multiSelect) {
         Set<?> selected = multiSelect.getSelectedItems();
         if (selected == null || selected.isEmpty()) {
             return Optional.empty();
         }
-        ItemLabelGenerator<Object> generator = (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
+        @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =
+                (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
         List<String> labels = selected.stream()
             .map(item -> generator != null ? generator.apply(item) : String.valueOf(item))
             .toList();

@@ -25,7 +25,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @Slf4j
 @RequiredArgsConstructor
 class EmailServiceImpl implements EmailService {
-
     private static final String EMAIL_TEMPLATE_CANNOT_BE_NULL = "Email template cannot be null";
     private static final String FAILED_TO_PROCESS_EMAIL_TEMPLATE = "Failed to process email template: ";
     private static final String FAILED_TO_SEND_EMAIL_WITH_TEMPLATE = "Failed to send email with template: ";
@@ -76,7 +75,7 @@ class EmailServiceImpl implements EmailService {
             throw new MessagingException(FAILED_TO_SEND_EMAIL_WITH_TEMPLATE + templateName, e);
         } catch (MessagingException e) {
             log.error("Failed to prepare email message for: {} with template: {}", to, templateName, e);
-            throw e; // Re-throw since the method already declares this exception
+            throw e;
         }
     }
 }

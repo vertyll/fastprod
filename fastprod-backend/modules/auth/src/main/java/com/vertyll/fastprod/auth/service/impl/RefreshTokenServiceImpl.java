@@ -28,9 +28,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 class RefreshTokenServiceImpl implements RefreshTokenService {
-
     private static final String UNKNOWN = "unknown";
-    private static final int MAX_IP_LENGTH = 45; // IPv6 max length
+    private static final int MAX_IP_LENGTH = 45;
     private static final int MAX_USER_AGENT_LENGTH = 255;
     private static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
     private static final String INVALID_REFRESH_TOKEN_SIGNATURE = "Invalid refresh token signature";
@@ -68,26 +67,18 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         return tokenValue;
     }
 
-    /**
-     * Validates a refresh token and returns the associated user if valid.
-     * Compares the provided token with hashed tokens in database.
-     */
     @Override
     @Transactional
     public User validateRefreshToken(String token) {
-        // Validate JWT signature and expiration
         if (!jwtService.isRefreshTokenValid(token)) {
             log.error("Invalid or expired JWT refresh token");
             throw new ApiException(INVALID_REFRESH_TOKEN, HttpStatus.UNAUTHORIZED);
         }
 
-        // Extract username from token
         String username = jwtService.extractUsernameFromRefreshToken(token);
 
-        // Find the matching token in database
         RefreshToken refreshToken = findTokenByValue(token, username);
 
-        // Validate JWT signature using refresh token secret key
         if (!jwtService.validateRefreshToken(token, refreshToken.getUser())) {
             log.error("Invalid JWT signature for refresh token, user: {}",
                     refreshToken.getUser().getEmail());
@@ -100,25 +91,17 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         return refreshToken.getUser();
     }
 
-    /**
-     * Rotates a refresh token - revokes the old one and creates a new one.
-     */
     @Override
     @Transactional
     public String rotateRefreshToken(String oldToken, @Nullable String deviceInfo, HttpServletRequest request) {
         RefreshTokenService self = selfProvider.getObject();
         User user = self.validateRefreshToken(oldToken);
 
-        // Revoke the old token
         self.revokeRefreshToken(oldToken);
 
-        // Create new refresh token
         return self.createRefreshToken(user, deviceInfo, request);
     }
 
-    /**
-     * Revokes a specific refresh token.
-     */
     @Override
     @Transactional
     public void revokeRefreshToken(String token) {
@@ -140,9 +123,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         }
     }
 
-    /**
-     * Revokes all refresh tokens for a user.
-     */
     @Override
     @Transactional
     public void revokeAllUserTokens(User user) {
@@ -156,11 +136,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
                 user.getEmail(), tokens.size());
     }
 
-    /**
-     * Gets all active sessions for a user.
-     * Note: We can't validate individual JWT signatures here because tokens are hashed.
-     * We rely on database state (expiry, revoked) for session listing.
-     */
     @Override
     @Transactional(readOnly = true)
     public List<RefreshToken> getUserActiveSessions(User user) {
@@ -170,9 +145,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
                 .toList();
     }
 
-    /**
-     * Gets session details including security information.
-     */
     @Override
     @Transactional(readOnly = true)
     public List<SessionInfoDto> getUserSessionDetails(User user) {
@@ -189,9 +161,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
                 .toList();
     }
 
-    /**
-     * Scheduled task to delete expired tokens.
-     */
     @Override
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
@@ -211,14 +180,12 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
         String ip;
         String xForwardedFor = request.getHeader(X_FORWARDED_FOR);
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            // Take only the first IP from X-Forwarded-For chain
             ip = Iterables.get(Splitter.on(',').split(xForwardedFor), 0).trim();
         } else {
             String xRealIp = request.getHeader(X_REAL_IP);
             ip = (xRealIp != null && !xRealIp.isEmpty()) ? xRealIp : request.getRemoteAddr();
         }
 
-        // Sanitize: limit length and remove newlines/carriage returns to prevent log injection
         return sanitizeIpAddress(ip);
     }
 

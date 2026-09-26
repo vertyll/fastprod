@@ -41,7 +41,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
-
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
@@ -74,7 +73,7 @@ class UserControllerTest {
             "John Updated",
             "Doe Updated",
             "john.updated@example.com",
-            null, // password can be null for updates
+            null,
             Set.of("USER", "ADMIN")
         );
 
@@ -90,10 +89,8 @@ class UserControllerTest {
 
     @Test
     void createUser_WhenValidInput_ShouldReturnCreated() throws Exception {
-        // given
         when(userService.createUser(any(UserCreateDto.class))).thenReturn(responseDto);
 
-        // when & then
         mockMvc
             .perform(
                 post("/users").contentType(MediaType.APPLICATION_JSON)
@@ -109,16 +106,9 @@ class UserControllerTest {
 
     @Test
     void createUser_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
-        // given
-        UserCreateDto invalidCreateDto = new UserCreateDto(
-            "John",
-            "Doe",
-            "invalid-email", // invalid email format
-            "password123",
-            Set.of("USER")
-        );
+        UserCreateDto invalidCreateDto =
+                new UserCreateDto("John", "Doe", "invalid-email", "password123", Set.of("USER"));
 
-        // when & then
         mockMvc
             .perform(
                 post("/users").contentType(MediaType.APPLICATION_JSON)
@@ -133,10 +123,8 @@ class UserControllerTest {
 
     @Test
     void updateUser_WhenValidInput_ShouldReturnSuccess() throws Exception {
-        // given
         when(userService.updateUser(anyLong(), any(UserUpdateDto.class))).thenReturn(responseDto);
 
-        // when & then
         mockMvc
             .perform(
                 put("/users/1").contentType(MediaType.APPLICATION_JSON)
@@ -150,11 +138,9 @@ class UserControllerTest {
 
     @Test
     void updateUser_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
-        // given
         doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND)).when(userService)
             .updateUser(anyLong(), any(UserUpdateDto.class));
 
-        // when & then
         mockMvc
             .perform(
                 put("/users/1").contentType(MediaType.APPLICATION_JSON)
@@ -167,10 +153,8 @@ class UserControllerTest {
 
     @Test
     void getUser_WhenExists_ShouldReturnUser() throws Exception {
-        // given
         when(userService.getUserById(1L)).thenReturn(responseDto);
 
-        // when & then
         mockMvc.perform(get("/users/1"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -182,10 +166,8 @@ class UserControllerTest {
 
     @Test
     void getUser_WhenNotFound_ShouldReturnNotFound() throws Exception {
-        // given
         when(userService.getUserById(1L)).thenThrow(new ApiException("User not found", HttpStatus.NOT_FOUND));
 
-        // when & then
         mockMvc.perform(get("/users/1"))
             .andDo(print())
             .andExpect(status().isNotFound())

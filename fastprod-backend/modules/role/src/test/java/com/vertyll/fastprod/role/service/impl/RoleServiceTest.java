@@ -43,12 +43,13 @@ import static org.mockito.Mockito.when;
 )
 @ExtendWith(MockitoExtension.class)
 class RoleServiceTest {
-
     @Mock
     private RoleRepository roleRepository;
 
     @Spy
+
     @SuppressWarnings("UnusedVariable")
+
     private final RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);
 
     @InjectMocks
@@ -69,14 +70,11 @@ class RoleServiceTest {
 
     @Test
     void createRole_WhenValidData_ShouldCreateRole() {
-        // given
         when(roleRepository.existsByName(any(RoleType.class))).thenReturn(false);
         when(roleRepository.save(any(Role.class))).thenReturn(role);
 
-        // when
         RoleResponseDto returnedRole = roleService.createRole(createDto);
 
-        // then
         verify(roleRepository).save(roleCaptor.capture());
         Role capturedRole = roleCaptor.getValue();
 
@@ -89,10 +87,8 @@ class RoleServiceTest {
 
     @Test
     void createRole_WhenRoleExists_ShouldThrowException() {
-        // given
         when(roleRepository.existsByName(any(RoleType.class))).thenReturn(true);
 
-        // when & then
         ApiException exception = assertThrows(ApiException.class, () -> roleService.createRole(createDto));
 
         assertEquals("Role already exists", exception.getMessage());
@@ -102,7 +98,6 @@ class RoleServiceTest {
 
     @Test
     void updateRole_WhenValidData_ShouldUpdateRole() {
-        // given
         Role existingRole = Role.builder().name(RoleType.ADMIN).description("Old description").build();
         ReflectionTestUtils.setField(existingRole, "id", 1L);
 
@@ -111,18 +106,14 @@ class RoleServiceTest {
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
         when(roleRepository.save(any(Role.class))).thenReturn(existingRole);
 
-        // when
         RoleResponseDto result = roleService.updateRole(1L, updateDto);
 
-        // then
         verify(roleRepository).save(roleCaptor.capture());
         Role capturedRole = roleCaptor.getValue();
 
-        // Assertions for the captured entity (Database state)
         assertEquals(RoleType.ADMIN, capturedRole.getName());
         assertEquals("Updated description", capturedRole.getDescription());
 
-        // Assertions for the 'result' variable (API Response)
         assertNotNull(result);
         assertEquals(1L, result.id());
         assertEquals("ADMIN", result.name());
@@ -131,12 +122,10 @@ class RoleServiceTest {
 
     @Test
     void updateRole_WhenRoleNotFound_ShouldThrowException() {
-        // given
         RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // when & then
         ApiException exception = assertThrows(ApiException.class, () -> roleService.updateRole(1L, updateDto));
 
         assertEquals("Role not found", exception.getMessage());
@@ -146,16 +135,14 @@ class RoleServiceTest {
 
     @Test
     void updateRole_WhenNameAlreadyExists_ShouldThrowException() {
-        // given
         Role existingRole = Role.builder().name(RoleType.ADMIN).description("Old description").build();
-        ReflectionTestUtils.setField(existingRole, "id", 1L); // Set ID after building
+        ReflectionTestUtils.setField(existingRole, "id", 1L);
 
-        RoleUpdateDto updateDto = new RoleUpdateDto("USER", "Updated description"); // Different name than existing role
+        RoleUpdateDto updateDto = new RoleUpdateDto("USER", "Updated description");
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(existingRole));
-        when(roleRepository.existsByName(RoleType.USER)).thenReturn(true); // Name conflict with another role
+        when(roleRepository.existsByName(RoleType.USER)).thenReturn(true);
 
-        // when & then
         ApiException exception = assertThrows(ApiException.class, () -> roleService.updateRole(1L, updateDto));
 
         assertEquals("Role with this name already exists", exception.getMessage());
@@ -165,13 +152,10 @@ class RoleServiceTest {
 
     @Test
     void getOrCreateDefaultRole_WhenRoleExists_ShouldReturnExistingRole() {
-        // given
         when(roleRepository.findByName(RoleType.USER)).thenReturn(Optional.of(role));
 
-        // when
         Role returnedRole = roleService.getOrCreateDefaultRole(RoleType.USER);
 
-        // then
         assertNotNull(returnedRole);
         assertEquals(role.getName(), returnedRole.getName());
         verify(roleRepository, never()).save(any(Role.class));
@@ -179,14 +163,11 @@ class RoleServiceTest {
 
     @Test
     void getOrCreateDefaultRole_WhenRoleDoesNotExist_ShouldCreateNewRole() {
-        // given
         when(roleRepository.findByName(RoleType.USER)).thenReturn(Optional.empty());
         when(roleRepository.save(any(Role.class))).thenReturn(role);
 
-        // when
         Role returnedRole = roleService.getOrCreateDefaultRole(RoleType.USER);
 
-        // then
         verify(roleRepository).save(roleCaptor.capture());
         Role capturedRole = roleCaptor.getValue();
 
@@ -197,13 +178,10 @@ class RoleServiceTest {
 
     @Test
     void getRoleById_WhenRoleExists_ShouldReturnRole() {
-        // given
         when(roleRepository.findById(1L)).thenReturn(Optional.of(role));
 
-        // when
         RoleResponseDto returnedRole = roleService.getRoleById(1L);
 
-        // then
         assertNotNull(returnedRole);
         assertEquals(role.getName().name(), returnedRole.name());
         assertEquals(role.getDescription(), returnedRole.description());
@@ -211,10 +189,8 @@ class RoleServiceTest {
 
     @Test
     void getRoleById_WhenRoleDoesNotExist_ShouldThrowException() {
-        // given
         when(roleRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // when & then
         ApiException exception = assertThrows(ApiException.class, () -> roleService.getRoleById(1L));
 
         assertEquals("Role not found", exception.getMessage());

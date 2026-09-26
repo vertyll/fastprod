@@ -9,20 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class HashUtil {
-
     private static final String SHA_256_ALGORITHM_NOT_AVAILABLE = "SHA-256 algorithm not available";
     private static final String ALGORITHM = "SHA-256";
 
     private HashUtil() {
     }
 
-    /**
-     * Hashes a token using SHA-256 algorithm. This is a deterministic hash function - the same
-     * input always produces the same output.
-     *
-     * @param value the value to hash
-     * @return hexadecimal representation of the hash
-     */
     public static String hashToken(String value) {
         try {
             MessageDigest digest = MessageDigest.getInstance(ALGORITHM);

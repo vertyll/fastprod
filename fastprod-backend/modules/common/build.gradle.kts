@@ -3,32 +3,25 @@ plugins {
 }
 
 dependencies {
-    // API
     api(libs.bundles.spring.boot.starters.common)
     api(libs.bundles.spring.boot.starters.mail)
     api(libs.bundles.spring.boot.starters.security)
     api(libs.mapstruct)
     api(libs.jspecify)
 
-    // Implementation
     implementation(libs.guava)
 
-    // Compile Only
     compileOnly(libs.lombok)
     compileOnly(libs.springdoc.openapi.starter.webmvc.ui)
 
-    // Annotation Processor
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.mapstruct.processor)
 
-    // Test Compile Only
     testCompileOnly(libs.lombok)
 
-    // Test Annotation Processor
     testAnnotationProcessor(libs.lombok)
     testAnnotationProcessor(libs.mapstruct.processor)
 
-    // Test Implementation
     testImplementation(libs.bundles.spring.boot.test.common)
     testImplementation(libs.bundles.spring.boot.test.mail)
     testImplementation(libs.bundles.spring.boot.test.security)

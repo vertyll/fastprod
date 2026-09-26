@@ -27,10 +27,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 
-@SuppressFBWarnings(
-    value = "XSS_SERVLET",
-    justification = "Only static JSON error responses are written, no user-controlled content"
-)
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -93,6 +89,10 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @SuppressFBWarnings(
+        value = "XSS_SERVLET",
+        justification = "Only static JSON error responses are written, no user-controlled content"
+    )
     private void writeProblem(HttpServletResponse response, HttpStatus status, String detail) throws IOException {
         response.setStatus(status.value());
         response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);

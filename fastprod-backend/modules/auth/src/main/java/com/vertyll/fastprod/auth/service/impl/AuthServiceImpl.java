@@ -40,17 +40,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressFBWarnings(
-        value = "COOKIE_USAGE",
-        justification = "Refresh token is stored in Secure, HttpOnly cookie and used only server-side"
-)
 @Service
 @RequiredArgsConstructor
 class AuthServiceImpl implements AuthService {
@@ -409,6 +404,10 @@ class AuthServiceImpl implements AuthService {
         response.addHeader(SET_COOKIE, cookie.toString());
     }
 
+    @SuppressFBWarnings(
+        value = "COOKIE_USAGE",
+        justification = "Refresh token is stored in Secure, HttpOnly cookie and used only server-side"
+    )
     private Optional<String> extractRefreshTokenFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
@@ -416,10 +415,12 @@ class AuthServiceImpl implements AuthService {
         }
 
         String cookieName = jwtService.getRefreshTokenCookieName();
-        return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals(cookieName))
-                .findFirst()
-                .map(Cookie::getValue);
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(cookieName)) {
+                return Optional.of(cookie.getValue());
+            }
+        }
+        return Optional.empty();
     }
 
     private String getCurrentUserEmail() {

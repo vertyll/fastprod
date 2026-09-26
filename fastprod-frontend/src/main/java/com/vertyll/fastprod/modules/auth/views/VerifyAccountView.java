@@ -1,7 +1,9 @@
 package com.vertyll.fastprod.modules.auth.views;
 
 import java.io.Serial;
+import java.time.Duration;
 
+import com.vertyll.fastprod.base.ui.DelayedNavigation;
 import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
@@ -139,7 +141,6 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
         add(card);
     }
 
-    @SuppressWarnings("FutureReturnValueIgnored")
     private void handleVerification() {
         String code = codeField.getValue();
 
@@ -162,13 +163,7 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
             showNotification("Account verified successfully! You can now log in.", NotificationVariant.LUMO_SUCCESS);
 
             UI ui = UI.getCurrent();
-            java.util.concurrent.CompletableFuture.runAsync(() -> {
-            }, java.util.concurrent.CompletableFuture.delayedExecutor(2, java.util.concurrent.TimeUnit.SECONDS))
-                .thenRun(() -> ui.access(() -> ui.navigate(LoginView.class)))
-                .exceptionally(ex -> {
-                    log.error("Delayed navigation failed", ex);
-                    return null;
-                });
+            DelayedNavigation.navigate(ui, LoginView.class, Duration.ofSeconds(2));
 
         } catch (ApiException e) {
             showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);

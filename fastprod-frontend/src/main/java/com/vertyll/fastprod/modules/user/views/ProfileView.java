@@ -103,7 +103,6 @@ public final class ProfileView extends VerticalLayout {
     }
 
     private void createContent() {
-        // Details view
         detailsTable = new DetailsTableComponent();
 
         VerticalLayout detailsLayout = new VerticalLayout(detailsTable);
@@ -117,7 +116,6 @@ public final class ProfileView extends VerticalLayout {
         detailsContainer = new Div(detailsLayout);
         detailsContainer.setWidthFull();
 
-        // Edit form (initially hidden)
         editFormContainer = createEditForm();
         editFormContainer.setVisible(false);
 

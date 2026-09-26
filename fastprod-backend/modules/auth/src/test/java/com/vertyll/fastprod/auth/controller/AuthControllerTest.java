@@ -45,7 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
-
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
@@ -97,10 +96,8 @@ class AuthControllerTest {
 
     @Test
     void register_WhenValidRequest_ShouldReturnSuccess() throws Exception {
-        // given
         doNothing().when(authService).register(any(RegisterRequestDto.class));
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/register").contentType(MediaType.APPLICATION_JSON)
@@ -114,10 +111,8 @@ class AuthControllerTest {
 
     @Test
     void register_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
-        // given
         RegisterRequestDto invalidRequest = new RegisterRequestDto("John", "Doe", "invalid-email", "password123");
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/register").contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +129,6 @@ class AuthControllerTest {
     void register_WhenMissingRequiredFields_ShouldReturnBadRequest() throws Exception {
         RegisterRequestDto invalidRequest = new RegisterRequestDto("", "", "", "");
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/register").contentType(MediaType.APPLICATION_JSON)
@@ -149,11 +143,9 @@ class AuthControllerTest {
 
     @Test
     void register_WhenEmailAlreadyExists_ShouldReturnBadRequest() throws Exception {
-        // given
         doThrow(new ApiException("Email already registered", HttpStatus.BAD_REQUEST)).when(authService)
             .register(any(RegisterRequestDto.class));
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/register").contentType(MediaType.APPLICATION_JSON)
@@ -166,13 +158,11 @@ class AuthControllerTest {
 
     @Test
     void authenticate_WhenValidCredentials_ShouldReturnToken() throws Exception {
-        // given
         when(
             authService
                 .authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class))
         ).thenReturn(authResponse);
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON)
@@ -186,13 +176,11 @@ class AuthControllerTest {
 
     @Test
     void authenticate_WhenInvalidCredentials_ShouldReturnUnauthorized() throws Exception {
-        // given
         when(
             authService
                 .authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class))
         ).thenThrow(new ApiException("Invalid credentials", HttpStatus.UNAUTHORIZED));
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON)
@@ -205,10 +193,8 @@ class AuthControllerTest {
 
     @Test
     void authenticate_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
-        // given
         AuthRequestDto invalidRequest = new AuthRequestDto("invalid-email", "password123", "web-browser");
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON)
@@ -226,7 +212,6 @@ class AuthControllerTest {
     void authenticate_WhenMissingCredentials_ShouldReturnBadRequest() throws Exception {
         AuthRequestDto invalidRequest = new AuthRequestDto("", "", "web-browser");
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/authenticate").contentType(MediaType.APPLICATION_JSON)
@@ -242,11 +227,9 @@ class AuthControllerTest {
 
     @Test
     void refreshToken_WhenValidRefreshToken_ShouldReturnNewToken() throws Exception {
-        // given
         when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
             .thenReturn(authResponse);
 
-        // when & then
         mockMvc.perform(post("/auth/refresh-token"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -256,11 +239,9 @@ class AuthControllerTest {
 
     @Test
     void refreshToken_WhenInvalidRefreshToken_ShouldReturnUnauthorized() throws Exception {
-        // given
         when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
             .thenThrow(new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED));
 
-        // when & then
         mockMvc.perform(post("/auth/refresh-token"))
             .andDo(print())
             .andExpect(status().isUnauthorized())
@@ -269,10 +250,8 @@ class AuthControllerTest {
 
     @Test
     void logout_ShouldReturnSuccess() throws Exception {
-        // given
         doNothing().when(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
-        // when & then
         mockMvc.perform(post("/auth/logout")).andDo(print()).andExpect(status().isNoContent());
 
         verify(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -280,10 +259,8 @@ class AuthControllerTest {
 
     @Test
     void logoutAll_ShouldReturnSuccess() throws Exception {
-        // given
         doNothing().when(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
-        // when & then
         mockMvc.perform(post("/auth/logout-all")).andDo(print()).andExpect(status().isNoContent());
 
         verify(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -291,10 +268,8 @@ class AuthControllerTest {
 
     @Test
     void verifyAccount_WhenValidCode_ShouldReturnSuccess() throws Exception {
-        // given
         doNothing().when(authService).verifyAccount(anyString());
 
-        // when & then
         mockMvc.perform(post("/auth/verify").param("code", "123456")).andDo(print()).andExpect(status().isNoContent());
 
         verify(authService).verifyAccount("123456");
@@ -302,11 +277,9 @@ class AuthControllerTest {
 
     @Test
     void verifyAccount_WhenInvalidCode_ShouldReturnBadRequest() throws Exception {
-        // given
         doThrow(new ApiException("Invalid verification code", HttpStatus.BAD_REQUEST)).when(authService)
             .verifyAccount(anyString());
 
-        // when & then
         mockMvc.perform(post("/auth/verify").param("code", "invalid"))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -315,11 +288,9 @@ class AuthControllerTest {
 
     @Test
     void resendVerificationCode_WhenValidEmail_ShouldReturnSuccess() throws Exception {
-        // given
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("john@example.com");
         doNothing().when(authService).resendVerificationCode(anyString());
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/resend-verification-code").contentType(MediaType.APPLICATION_JSON)
@@ -333,10 +304,8 @@ class AuthControllerTest {
 
     @Test
     void resendVerificationCode_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
-        // given
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("invalid-email");
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/resend-verification-code").contentType(MediaType.APPLICATION_JSON)
@@ -351,12 +320,10 @@ class AuthControllerTest {
 
     @Test
     void resendVerificationCode_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
-        // given
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("nonexistent@example.com");
         doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND)).when(authService)
             .resendVerificationCode(anyString());
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/resend-verification-code").contentType(MediaType.APPLICATION_JSON)
@@ -369,12 +336,10 @@ class AuthControllerTest {
 
     @Test
     void resendVerificationCode_WhenAccountAlreadyVerified_ShouldReturnBadRequest() throws Exception {
-        // given
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("john@example.com");
         doThrow(new ApiException("Account already verified", HttpStatus.BAD_REQUEST)).when(authService)
             .resendVerificationCode(anyString());
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/resend-verification-code").contentType(MediaType.APPLICATION_JSON)
@@ -387,9 +352,6 @@ class AuthControllerTest {
 
     @Test
     void requestEmailChange_WhenValidRequest_ShouldReturnSuccess() throws Exception {
-        // given
-
-        // when & then
         mockMvc
             .perform(
                 post("/auth/change-email-request").with(user("john@example.com").roles("USER"))
@@ -404,10 +366,8 @@ class AuthControllerTest {
 
     @Test
     void requestEmailChange_WhenInvalidEmail_ShouldReturnBadRequest() throws Exception {
-        // given
         ChangeEmailRequestDto invalidRequest = new ChangeEmailRequestDto("password123", "invalid-email");
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/change-email-request").with(user("john@example.com").roles("USER"))
@@ -423,11 +383,9 @@ class AuthControllerTest {
 
     @Test
     void verifyEmailChange_WhenValidCode_ShouldReturnSuccess() throws Exception {
-        // given
         when(authService.verifyEmailChange(anyString(), any(HttpServletRequest.class), any(HttpServletResponse.class)))
             .thenReturn(authResponse);
 
-        // when & then
         mockMvc.perform(post("/auth/verify-email-change").param("code", "123456"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -439,9 +397,6 @@ class AuthControllerTest {
 
     @Test
     void requestPasswordChange_WhenValidRequest_ShouldReturnSuccess() throws Exception {
-        // given
-
-        // when & then
         mockMvc
             .perform(
                 post("/auth/change-password-request").with(user("john@example.com").roles("USER"))
@@ -456,10 +411,8 @@ class AuthControllerTest {
 
     @Test
     void verifyPasswordChange_WhenValidCode_ShouldReturnSuccess() throws Exception {
-        // given
         doNothing().when(authService).verifyPasswordChange(anyString());
 
-        // when & then
         mockMvc.perform(post("/auth/verify-password-change").param("code", "123456"))
             .andDo(print())
             .andExpect(status().isNoContent());
@@ -469,10 +422,8 @@ class AuthControllerTest {
 
     @Test
     void requestPasswordReset_WhenValidEmail_ShouldReturnSuccess() throws Exception {
-        // given
         doNothing().when(authService).sendPasswordResetEmail(anyString());
 
-        // when & then
         mockMvc.perform(post("/auth/reset-password-request").param("email", "john@example.com"))
             .andDo(print())
             .andExpect(status().isNoContent());
@@ -482,10 +433,8 @@ class AuthControllerTest {
 
     @Test
     void resetPassword_WhenValidTokenAndRequest_ShouldReturnSuccess() throws Exception {
-        // given
         doNothing().when(authService).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/reset-password").param("token", "valid-token")
@@ -500,10 +449,8 @@ class AuthControllerTest {
 
     @Test
     void resetPassword_WhenInvalidPassword_ShouldReturnBadRequest() throws Exception {
-        // given
         ResetPasswordRequestDto invalidRequest = new ResetPasswordRequestDto("");
 
-        // when & then
         mockMvc
             .perform(
                 post("/auth/reset-password").param("token", "valid-token")

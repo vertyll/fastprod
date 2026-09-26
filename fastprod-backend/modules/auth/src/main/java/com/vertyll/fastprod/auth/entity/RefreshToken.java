@@ -32,7 +32,6 @@ import lombok.Getter;
     }
 )
 public class RefreshToken extends BaseEntity {
-
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -51,7 +50,7 @@ public class RefreshToken extends BaseEntity {
 
     private @Nullable String deviceInfo;
 
-    @Column(length = 45) // IPv6 max length
+    @Column(length = 45)
     private String ipAddress;
 
     @Column(length = 500)

@@ -1,6 +1,5 @@
 package com.vertyll.fastprod.modules.auth.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
@@ -11,6 +10,7 @@ import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
+import com.vertyll.fastprod.shared.config.BackendApiProperties;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
 
@@ -26,11 +26,11 @@ public class AuthService extends BaseHttpService {
     private static final String AUTH_ENDPOINT = "/auth";
 
     public AuthService(
-        @Value("${api.backend.url}") String backendUrl,
+        BackendApiProperties backendApi,
         ObjectMapper objectMapper,
         AuthTokenProvider authTokenProvider
     ) {
-        super(backendUrl, objectMapper, authTokenProvider);
+        super(backendApi.url(), objectMapper, authTokenProvider);
     }
 
     public void register(RegisterRequestDto registerRequest) {

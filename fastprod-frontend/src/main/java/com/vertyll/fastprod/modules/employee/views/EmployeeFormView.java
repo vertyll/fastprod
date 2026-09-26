@@ -109,7 +109,6 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
 
         formLayout.add(firstNameField, lastNameField, emailField, rolesField, passwordField, confirmPasswordField);
 
-        // Bind fields
         binder.forField(firstNameField)
             .asRequired("First name is required")
             .bind(EmployeeFormData::getFirstName, EmployeeFormData::setFirstName);
@@ -196,7 +195,6 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
 
             Long id = employeeId;
             if (id != null) {
-                // Only send password if it's not empty
                 String passwordToSend = (formData.getPassword() != null && !formData.getPassword().isEmpty())
                         ? formData.getPassword() : null;
 

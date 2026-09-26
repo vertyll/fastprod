@@ -23,7 +23,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class GlobalExceptionHandlerTest {
-
     private GlobalExceptionHandler handler;
 
     @BeforeEach
@@ -33,20 +32,16 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleApiException_ShouldReturnCorrectResponse() {
-        // given
         ApiException ex = new ApiException("test message", HttpStatus.BAD_REQUEST);
 
-        // when
         ProblemDetail problem = handler.handleApiException(ex);
 
-        // then
         assertEquals(HttpStatus.BAD_REQUEST.value(), problem.getStatus());
         assertEquals("test message", problem.getDetail());
     }
 
     @Test
     void handleValidationException_ShouldReturnFieldErrors() {
-        // given
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         BindingResult bindingResult = mock(BindingResult.class);
         FieldError fieldError = new FieldError("object", "username", "Username is required");
@@ -54,10 +49,8 @@ class GlobalExceptionHandlerTest {
         when(ex.getBindingResult()).thenReturn(bindingResult);
         when(bindingResult.getFieldErrors()).thenReturn(Collections.singletonList(fieldError));
 
-        // when
         ProblemDetail problem = handler.handleValidationException(ex);
 
-        // then
         assertEquals(HttpStatus.BAD_REQUEST.value(), problem.getStatus());
         assertEquals("Validation failed", problem.getDetail());
 
@@ -68,7 +61,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleValidationException_ShouldHandleMultipleErrors() {
-        // given
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         BindingResult bindingResult = mock(BindingResult.class);
         FieldError passwordError1 = new FieldError("object", "password", "Password must be at least 8 characters");
@@ -78,10 +70,8 @@ class GlobalExceptionHandlerTest {
         when(ex.getBindingResult()).thenReturn(bindingResult);
         when(bindingResult.getFieldErrors()).thenReturn(Arrays.asList(passwordError1, passwordError2, emailError));
 
-        // when
         ProblemDetail problem = handler.handleValidationException(ex);
 
-        // then
         Map<String, List<String>> errors = errorsOf(problem);
         assertEquals(2, errors.size());
         assertEquals(
@@ -93,40 +83,32 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleBadCredentialsException_ShouldReturnUnauthorized() {
-        // when
         ProblemDetail problem = handler.handleBadCredentialsException(new BadCredentialsException("bad credentials"));
 
-        // then
         assertEquals(HttpStatus.UNAUTHORIZED.value(), problem.getStatus());
         assertEquals("Invalid email or password", problem.getDetail());
     }
 
     @Test
     void handleDisabledException_ShouldReturnForbidden() {
-        // when
         ProblemDetail problem = handler.handleDisabledException(new DisabledException("disabled"));
 
-        // then
         assertEquals(HttpStatus.FORBIDDEN.value(), problem.getStatus());
         assertEquals("Account is disabled", problem.getDetail());
     }
 
     @Test
     void handleLockedException_ShouldReturnForbidden() {
-        // when
         ProblemDetail problem = handler.handleLockedException(new LockedException("locked"));
 
-        // then
         assertEquals(HttpStatus.FORBIDDEN.value(), problem.getStatus());
         assertEquals("Account is locked", problem.getDetail());
     }
 
     @Test
     void handleException_ShouldReturnInternalServerError() {
-        // when
         ProblemDetail problem = handler.handleException(new RuntimeException("unexpected error"));
 
-        // then
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problem.getStatus());
         assertEquals("An unexpected error occurred", problem.getDetail());
     }

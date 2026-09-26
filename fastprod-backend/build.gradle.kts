@@ -37,10 +37,8 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(25))
+            languageVersion.set(JavaLanguageVersion.of(rootProject.libs.versions.java.get()))
         }
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
     }
 
     configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
@@ -50,27 +48,20 @@ subprojects {
     }
 
     dependencies {
-        // Compile Only
         compileOnly(rootProject.libs.jspecify)
 
-        // SpotBugs Annotations
         compileOnly(rootProject.libs.spotbugs.annotations)
 
-        // Annotation Processor
         annotationProcessor(rootProject.libs.guava.beta.checker)
 
-        // Error Prone
         add("errorprone", rootProject.libs.errorprone.core)
         add("errorprone", rootProject.libs.nullaway)
 
-        // SpotBugs
         add("spotbugsPlugins", rootProject.libs.findsecbugs)
 
-        // Test Compile Only
         testCompileOnly(rootProject.libs.jspecify)
         testCompileOnly(rootProject.libs.spotbugs.annotations)
 
-        // Test Runtime Only
         testRuntimeOnly(rootProject.libs.junit.platform.launcher)
     }
 

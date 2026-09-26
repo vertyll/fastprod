@@ -87,11 +87,10 @@ public class SecurityService {
             .map(session -> (AuthResponseDto) session.getAttribute(USER_SESSION_KEY));
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getCurrentUserRoles() {
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
-            List<String> roles = (List<String>) session.getAttribute(ROLES_SESSION_KEY);
+            @SuppressWarnings("unchecked") List<String> roles = (List<String>) session.getAttribute(ROLES_SESSION_KEY);
             return roles != null ? roles : List.of();
         }
         return List.of();

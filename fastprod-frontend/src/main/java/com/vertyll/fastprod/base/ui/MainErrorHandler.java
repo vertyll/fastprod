@@ -1,5 +1,7 @@
 package com.vertyll.fastprod.base.ui;
 
+import java.util.concurrent.Future;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +20,6 @@ public class MainErrorHandler {
             "An unexpected error has occurred. Please try again later.";
 
     @Bean
-    @SuppressWarnings("FutureReturnValueIgnored")
     public VaadinServiceInitListener errorHandlerInitializer() {
         return event -> event.getSource()
             .addSessionInitListener(sessionInitEvent -> sessionInitEvent.getSession().setErrorHandler(errorEvent -> {
@@ -30,7 +31,7 @@ public class MainErrorHandler {
                     notification.setPosition(Notification.Position.TOP_CENTER);
                     notification.setDuration(3000);
 
-                    ui.access(notification::open);
+                    Future<Void> _ = ui.access(notification::open);
                 });
             }));
     }

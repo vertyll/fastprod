@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class RoleControllerTest {
-
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
@@ -76,10 +75,8 @@ class RoleControllerTest {
 
     @Test
     void createRole_WhenValidInput_ShouldReturnCreated() throws Exception {
-        // given
         when(roleService.createRole(any(RoleCreateDto.class))).thenReturn(responseDto);
 
-        // when & then
         mockMvc
             .perform(
                 post("/roles").contentType(MediaType.APPLICATION_JSON)
@@ -94,10 +91,8 @@ class RoleControllerTest {
 
     @Test
     void createRole_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
-        // given
         @SuppressWarnings("NullAway") RoleCreateDto invalidCreateDto = new RoleCreateDto(null, "Administrator role");
 
-        // when & then
         mockMvc
             .perform(
                 post("/roles").contentType(MediaType.APPLICATION_JSON)
@@ -112,12 +107,10 @@ class RoleControllerTest {
 
     @Test
     void updateRole_WhenValidInput_ShouldReturnUpdated() throws Exception {
-        // given
         RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Administrator role");
 
         when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class))).thenReturn(responseDto);
 
-        // when & then
         mockMvc
             .perform(
                 put("/roles/1").contentType(MediaType.APPLICATION_JSON)
@@ -132,13 +125,11 @@ class RoleControllerTest {
 
     @Test
     void updateRole_WhenNotFound_ShouldReturnNotFound() throws Exception {
-        // given
         RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Administrator role");
 
         when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class)))
             .thenThrow(new ApiException("Role not found", HttpStatus.NOT_FOUND));
 
-        // when & then
         mockMvc
             .perform(
                 put("/roles/1").contentType(MediaType.APPLICATION_JSON)
@@ -151,10 +142,8 @@ class RoleControllerTest {
 
     @Test
     void updateRole_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
-        // given
         @SuppressWarnings("NullAway") RoleUpdateDto invalidUpdateDto = new RoleUpdateDto(null, "Administrator role");
 
-        // when & then
         mockMvc
             .perform(
                 put("/roles/1").contentType(MediaType.APPLICATION_JSON)
@@ -169,10 +158,8 @@ class RoleControllerTest {
 
     @Test
     void getRole_WhenExists_ShouldReturnRole() throws Exception {
-        // given
         when(roleService.getRoleById(1L)).thenReturn(responseDto);
 
-        // when & then
         mockMvc.perform(get("/roles/1"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -182,10 +169,8 @@ class RoleControllerTest {
 
     @Test
     void getRole_WhenNotExists_ShouldReturnNotFound() throws Exception {
-        // given
         when(roleService.getRoleById(1L)).thenThrow(new ApiException("Role not found", HttpStatus.NOT_FOUND));
 
-        // when & then
         mockMvc.perform(get("/roles/1"))
             .andDo(print())
             .andExpect(status().isNotFound())

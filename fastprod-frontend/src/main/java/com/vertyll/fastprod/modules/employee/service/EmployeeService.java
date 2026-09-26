@@ -1,11 +1,11 @@
 package com.vertyll.fastprod.modules.employee.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.vertyll.fastprod.modules.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeUpdateDto;
+import com.vertyll.fastprod.shared.config.BackendApiProperties;
 import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
@@ -23,11 +23,11 @@ public class EmployeeService extends BaseHttpService {
     private static final String EMPLOYEE_ENDPOINT = "/employees";
 
     public EmployeeService(
-        @Value("${api.backend.url}") String backendUrl,
+        BackendApiProperties backendApi,
         ObjectMapper objectMapper,
         AuthTokenProvider authTokenProvider
     ) {
-        super(backendUrl, objectMapper, authTokenProvider);
+        super(backendApi.url(), objectMapper, authTokenProvider);
     }
 
     public EmployeeResponseDto createEmployee(EmployeeCreateDto createDto) {

@@ -27,27 +27,23 @@ public class SecurityBeforeEnterListener implements BeforeEnterListener {
 
         log.debug("Navigation to: {}, authenticated: {}", targetLocation, isAuthenticated);
 
-        // Public routes that don't require authentication
         boolean isPublicRoute = LOGIN_ROUTE.equals(targetLocation) || "register".equals(targetLocation)
                 || "verify-account".equals(targetLocation) || targetLocation.startsWith("verify-account/")
                 || "forgot-password".equals(targetLocation) || targetLocation.startsWith("reset-password")
                 || targetLocation.isEmpty();
 
-        // If trying to access protected route without authentication
         if (!isAuthenticated && !isPublicRoute) {
             log.info("Unauthorized access attempt to: {}. Redirecting to login.", targetLocation);
             event.rerouteTo(LOGIN_ROUTE);
             return;
         }
 
-        // If authenticated and trying to access login/register, redirect to home
         if (isAuthenticated && (LOGIN_ROUTE.equals(targetLocation) || "register".equals(targetLocation))) {
             log.info("Already authenticated. Redirecting to home.");
             event.rerouteTo("");
             return;
         }
 
-        // Check role-based access for employees routes
         if (isAuthenticated && targetLocation.startsWith("employees")
                 && !securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
             log.warn("Access denied to {} for user without required roles", targetLocation);

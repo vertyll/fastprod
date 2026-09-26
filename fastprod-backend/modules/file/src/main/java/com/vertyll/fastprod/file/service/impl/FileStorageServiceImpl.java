@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RequiredArgsConstructor
 class FileStorageServiceImpl implements FileStorageService {
-
     private static final String USERS = "users";
 
     private final FileUploadProperties fileUploadProperties;
@@ -38,45 +37,34 @@ class FileStorageServiceImpl implements FileStorageService {
             justification = "Path traversal is prevented by normalize() and startsWith() validation")
     private String uploadFile(MultipartFile sourceFile,
                               String fileUploadSubPath) {
-
         try {
-            // Get the base directory and normalize it
             Path baseDir = Paths.get(fileUploadProperties.fileOutputPath())
                     .toRealPath()
                     .normalize();
 
-            // Resolve the user directory and normalize it
             Path userDir = baseDir.resolve(fileUploadSubPath).normalize();
 
-            // SECURITY: Prevent path traversal attacks
-            // Ensure the resolved path is still within the base directory
             if (!userDir.startsWith(baseDir)) {
                 log.warn("Blocked path traversal attempt: {}", fileUploadSubPath);
                 return "";
             }
 
-            // Create the directory if it doesn't exist
             Files.createDirectories(userDir);
 
-            // Generate a safe filename
             String extension = getFileExtension(sourceFile.getOriginalFilename());
             String fileName = currentTimeMillis() + "." + extension;
 
-            // Resolve the final file path and normalize it
             Path targetPath = userDir.resolve(fileName).normalize();
 
-            // Write the file
             Files.write(targetPath, sourceFile.getBytes());
 
             log.info("File saved to: {}", targetPath);
             return targetPath.toString();
-
         } catch (IOException e) {
             log.error("File was not saved", e);
             return "";
         }
     }
-
 
     private String getFileExtension(@Nullable String fileName) {
         if (fileName == null || fileName.isEmpty()) {

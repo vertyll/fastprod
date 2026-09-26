@@ -27,9 +27,8 @@ import lombok.Getter;
         "PMD.AbstractClassWithoutAnyMethod",
         "NullAway"
     }
-) // JPA MappedSuperclass pattern
+)
 public abstract class BaseEntity implements Serializable {
-
     @Serial
     private static final long serialVersionUID = 1L;
 

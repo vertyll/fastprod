@@ -50,7 +50,6 @@ public final class MainLayout extends AppLayout {
         }
     }
 
-    /** Create layout for authenticated users (with side navigation) */
     private void createAuthenticatedLayout() {
         setPrimarySection(Section.DRAWER);
 
@@ -60,13 +59,11 @@ public final class MainLayout extends AppLayout {
         addToDrawer(createDrawerHeader(), new Scroller(createSideNav()));
     }
 
-    /** Create layout for public users (with top navigation only) */
     private void createPublicLayout() {
         HorizontalLayout navbar = createPublicNavbar();
         addToNavbar(navbar);
     }
 
-    /** Create navbar for authenticated users */
     private HorizontalLayout createAuthenticatedNavbar() {
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
@@ -87,7 +84,6 @@ public final class MainLayout extends AppLayout {
         return navbar;
     }
 
-    /** Create navbar for public users */
     private HorizontalLayout createPublicNavbar() {
         H1 logo = new H1(APP_NAME);
         logo.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
@@ -117,7 +113,6 @@ public final class MainLayout extends AppLayout {
         return navbar;
     }
 
-    /** Create drawer header */
     private Div createDrawerHeader() {
         Icon appIcon = VaadinIcon.FACTORY.create();
         appIcon.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.IconSize.LARGE);
@@ -136,7 +131,6 @@ public final class MainLayout extends AppLayout {
         return header;
     }
 
-    /** Create side navigation menu */
     private SideNav createSideNav() {
         SideNav nav = new SideNav();
         nav.addClassNames(LumoUtility.Margin.Horizontal.MEDIUM);

@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EmailServiceTest {
-
     @Mock
     private JavaMailSender mailSender;
 
@@ -68,13 +67,10 @@ class EmailServiceTest {
 
     @Test
     void sendEmail_WhenAllParametersValid_ShouldSendEmail() throws MessagingException {
-        // given
         EmailTemplateName templateName = EmailTemplateName.ACTIVATE_ACCOUNT;
 
-        // when
         emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, templateName, TEST_CODE, TEST_SUBJECT);
 
-        // then
         verify(mailSender).send(any(MimeMessage.class));
         verify(templateEngine).process(eq(templateName.getName()), contextCaptor.capture());
 
@@ -87,11 +83,9 @@ class EmailServiceTest {
 
     @Test
     void sendEmail_WhenTemplateNameNull_ShouldThrowException() {
-        // given
         @SuppressWarnings("NullAway") Executable sendWithoutTemplate =
                 () -> emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, null, TEST_CODE, TEST_SUBJECT);
 
-        // when & then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, sendWithoutTemplate);
 
         assertEquals("Email template cannot be null", exception.getMessage());
@@ -101,13 +95,10 @@ class EmailServiceTest {
 
     @Test
     void sendEmail_ShouldSetCorrectEmailProperties() throws MessagingException {
-        // given
         EmailTemplateName templateName = EmailTemplateName.CHANGE_EMAIL;
 
-        // when
         emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, templateName, TEST_CODE, TEST_SUBJECT);
 
-        // then
         verify(templateEngine).process(eq(templateName.getName()), contextCaptor.capture());
 
         Context capturedContext = contextCaptor.getValue();
@@ -117,26 +108,20 @@ class EmailServiceTest {
 
     @Test
     void sendEmail_ShouldProcessCorrectTemplate() throws MessagingException {
-        // given
         EmailTemplateName templateName = EmailTemplateName.RESET_PASSWORD;
 
-        // when
         emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, templateName, TEST_CODE, TEST_SUBJECT);
 
-        // then
         verify(templateEngine).process(eq("reset_password"), any(Context.class));
     }
 
     @Test
     void sendEmail_ShouldHandleAllTemplateTypes() throws MessagingException {
-        // Test all template types
         for (EmailTemplateName template : EmailTemplateName.values()) {
             clearInvocations(mailSender, templateEngine);
 
-            // when
             emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, template, TEST_CODE, TEST_SUBJECT);
 
-            // then
             verify(templateEngine).process(eq(template.getName()), any(Context.class));
             verify(mailSender).send(any(MimeMessage.class));
         }
@@ -144,13 +129,10 @@ class EmailServiceTest {
 
     @Test
     void sendEmail_ShouldIncludeActivationCodeInContext() throws MessagingException {
-        // given
         String customCode = "CUSTOM123";
 
-        // when
         emailService.sendEmail(TEST_EMAIL, TEST_USERNAME, EmailTemplateName.ACTIVATE_ACCOUNT, customCode, TEST_SUBJECT);
 
-        // then
         verify(templateEngine).process(anyString(), contextCaptor.capture());
         Context context = contextCaptor.getValue();
         assertEquals(customCode, context.getVariable("activation_code"));
@@ -158,13 +140,10 @@ class EmailServiceTest {
 
     @Test
     void sendEmail_ShouldIncludeUsernameInContext() throws MessagingException {
-        // given
         String customUsername = "customUser";
 
-        // when
         emailService.sendEmail(TEST_EMAIL, customUsername, EmailTemplateName.ACTIVATE_ACCOUNT, TEST_CODE, TEST_SUBJECT);
 
-        // then
         verify(templateEngine).process(anyString(), contextCaptor.capture());
         Context context = contextCaptor.getValue();
         assertEquals(customUsername, context.getVariable("username"));

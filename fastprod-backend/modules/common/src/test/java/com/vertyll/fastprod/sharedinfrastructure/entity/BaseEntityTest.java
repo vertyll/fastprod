@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BaseEntityTest {
-
     private static final class TestEntity extends BaseEntity {
         @Serial
         private static final long serialVersionUID = 1L;
@@ -24,10 +23,8 @@ class BaseEntityTest {
 
     @Test
     void class_ShouldHaveRequiredAnnotations() {
-        // given
         Class<?> clazz = BaseEntity.class;
 
-        // then
         assertTrue(clazz.isAnnotationPresent(MappedSuperclass.class));
         assertTrue(clazz.isAnnotationPresent(EntityListeners.class));
         EntityListeners entityListeners = clazz.getAnnotation(EntityListeners.class);
@@ -41,18 +38,15 @@ class BaseEntityTest {
 
     @Test
     void auditFields_ShouldBeReadable() {
-        // given
         TestEntity entity = new TestEntity();
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         String user = "testUser";
 
-        // when
         ReflectionTestUtils.setField(entity, "createdAt", now);
         ReflectionTestUtils.setField(entity, "updatedAt", now);
         ReflectionTestUtils.setField(entity, "createdBy", user);
         ReflectionTestUtils.setField(entity, "updatedBy", user);
 
-        // then
         assertEquals(now, entity.getCreatedAt());
         assertEquals(now, entity.getUpdatedAt());
         assertEquals(user, entity.getCreatedBy());
@@ -61,14 +55,11 @@ class BaseEntityTest {
 
     @Test
     void id_ShouldBeReadable() {
-        // given
         TestEntity entity = new TestEntity();
         Long id = 1L;
 
-        // when
         ReflectionTestUtils.setField(entity, "id", id);
 
-        // then
         assertEquals(id, entity.getId());
     }
 }

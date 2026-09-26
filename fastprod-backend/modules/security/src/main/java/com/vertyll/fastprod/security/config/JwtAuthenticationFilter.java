@@ -26,10 +26,6 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressFBWarnings(
-    value = "SERVLET_HEADER",
-    justification = "Authorization header is cryptographically validated JWT token"
-)
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -42,6 +38,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
+    @SuppressFBWarnings(
+        value = "SERVLET_HEADER",
+        justification = "Authorization header is cryptographically validated JWT token"
+    )
     protected void doFilterInternal(
         HttpServletRequest request,
         HttpServletResponse response,

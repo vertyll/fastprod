@@ -6,13 +6,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
+import com.vertyll.fastprod.shared.config.BackendApiProperties;
 import com.vertyll.fastprod.shared.config.SecurityProperties;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.AppShellSettings;
 
 @SpringBootApplication
-@EnableConfigurationProperties(SecurityProperties.class)
+@EnableConfigurationProperties(
+    {
+        SecurityProperties.class,
+        BackendApiProperties.class
+    }
+)
 public class Application implements AppShellConfigurator {
     @Serial
     private static final long serialVersionUID = 1L;

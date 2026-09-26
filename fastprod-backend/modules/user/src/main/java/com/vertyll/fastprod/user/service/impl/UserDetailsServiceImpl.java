@@ -12,14 +12,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 class UserDetailsServiceImpl implements UserDetailsService {
-
     private static final String USER_NOT_FOUND_WITH_EMAIL = "User not found with email: ";
 
     private final UserRepository userRepository;
 
     @Override
     @NullUnmarked
-    @SuppressWarnings("PMD.AvoidUncheckedExceptionsInSignatures") // Required by Spring Security interface
+    @SuppressWarnings("PMD.AvoidUncheckedExceptionsInSignatures")
     public UserDetails loadUserByUsername(@Nullable String username) throws UsernameNotFoundException {
         return userRepository
                 .findByEmailWithRoles(username)

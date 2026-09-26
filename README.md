@@ -49,7 +49,7 @@ mechanism (http only secure cookie).
 - The application has a logging mechanism.
 - The application has an email sending mechanism.
 - The application has a scheduled task handling mechanism (cron).
-- The application has separate environments for dev and prod.
+- The application has separate environments for local and prod.
 - The application has a dedicated configuration file.
 - The application has RBAC (Role Based Access Control).
 - The application has an audit mechanism (who and when modified data).
@@ -60,7 +60,7 @@ mechanism (http only secure cookie).
 
 - Gradle build system.
 - Vaadin.
-- The application has separate environments for dev and prod.
+- The application has separate environments for local and prod.
 - The application has a dedicated configuration file.
 - And many other features that can be found in the application code.
 

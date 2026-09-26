@@ -26,10 +26,8 @@ repositories {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
     }
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
 }
 
 dependencyManagement {
@@ -40,38 +38,29 @@ dependencyManagement {
 }
 
 dependencies {
-    // Implementation
     implementation(libs.bundles.vaadin)
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.actuator)
 
-    // Development Only
     developmentOnly("com.vaadin:vaadin-dev")
 
-    // Compile Only
     compileOnly(libs.lombok)
     compileOnly(libs.jspecify)
     compileOnly(libs.spotbugs.annotations)
 
-    // Annotation Processor
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.guava.beta.checker)
 
-    // Error Prone
     errorprone(libs.errorprone.core)
     errorprone(libs.nullaway)
 
-    // Spotbugs
     spotbugsPlugins(libs.findsecbugs)
 
-    // Test Implementation
     testImplementation(libs.spring.boot.starter.test)
 
-    // Test Compile Only
     testCompileOnly(libs.jspecify)
     testCompileOnly(libs.spotbugs.annotations)
 
-    // Test Runtime Only
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 
