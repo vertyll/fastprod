@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.util.CollectionUtils;
 
 @Configuration
 @EnableConfigurationProperties(MailProperties.class)
@@ -27,7 +28,7 @@ public class MailConfig {
         mailSender.setDefaultEncoding("UTF-8");
 
         Map<String, String> properties = mailProperties.properties();
-        if (properties != null && !properties.isEmpty()) {
+        if (!CollectionUtils.isEmpty(properties)) {
             Properties props = mailSender.getJavaMailProperties();
             props.putAll(properties);
         }

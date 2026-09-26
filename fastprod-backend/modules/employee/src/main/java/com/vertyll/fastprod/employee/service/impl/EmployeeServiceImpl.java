@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -81,7 +82,7 @@ class EmployeeServiceImpl implements EmployeeService {
         }
 
         Set<String> roleNames = dto.roleNames();
-        if (roleNames != null && !roleNames.isEmpty()) {
+        if (!CollectionUtils.isEmpty(roleNames)) {
             user.getRoles().clear();
             assignRolesToUser(user, roleNames);
         }
@@ -202,14 +203,14 @@ class EmployeeServiceImpl implements EmployeeService {
     }
 
     private void assignRolesToUser(User user, @Nullable Set<String> roleNames) {
-        if (roleNames != null && !roleNames.isEmpty()) {
+        if (CollectionUtils.isEmpty(roleNames)) {
+            Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE);
+            user.getRoles().add(employeeRole);
+        } else {
             roleNames.forEach(roleName -> {
                 Role role = roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName));
                 user.getRoles().add(role);
             });
-        } else {
-            Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE);
-            user.getRoles().add(employeeRole);
         }
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
 @Service
@@ -45,12 +46,12 @@ class UserServiceImpl implements UserService {
 
         Set<Role> roles = new HashSet<>();
         Set<String> roleNames = dto.roleNames();
-        if (roleNames != null && !roleNames.isEmpty()) {
+        if (CollectionUtils.isEmpty(roleNames)) {
+            roles.add(roleService.getOrCreateDefaultRole(RoleType.USER));
+        } else {
             for (String roleName : roleNames) {
                 roles.add(roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName)));
             }
-        } else {
-            roles.add(roleService.getOrCreateDefaultRole(RoleType.USER));
         }
 
         User user = userMapper.toEntity(dto);
