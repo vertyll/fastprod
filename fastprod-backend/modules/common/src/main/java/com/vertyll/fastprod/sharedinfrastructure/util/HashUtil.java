@@ -5,15 +5,16 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
-@UtilityClass
 @Slf4j
-public class HashUtil {
+public final class HashUtil {
 
     private static final String SHA_256_ALGORITHM_NOT_AVAILABLE = "SHA-256 algorithm not available";
     private static final String ALGORITHM = "SHA-256";
+
+    private HashUtil() {
+    }
 
     /**
      * Hashes a token using SHA-256 algorithm. This is a deterministic hash function - the same

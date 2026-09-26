@@ -2,7 +2,6 @@ package com.vertyll.fastprod.base.ui.component;
 
 import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.modules.user.service.UserService;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
 import com.vaadin.flow.component.UI;
@@ -87,8 +86,7 @@ public class UserMenu extends HorizontalLayout {
 
     private void loadUserData(Span emailSpan) {
         try {
-            ApiResponse<UserProfileDto> response = userService.getCurrentUser();
-            UserProfileDto user = response.data();
+            UserProfileDto user = userService.getCurrentUser();
             if (user != null) {
                 String fullName = user.firstName() + " " + user.lastName();
                 avatar.setName(fullName);

@@ -82,10 +82,9 @@ class RoleControllerTest {
             )
             .andDo(print())
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.data.id").value(1))
-            .andExpect(jsonPath("$.data.name").value("ADMIN"))
-            .andExpect(jsonPath("$.data.description").value("Administrator role"))
-            .andExpect(jsonPath("$.message").value("Role created successfully"));
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("ADMIN"))
+            .andExpect(jsonPath("$.description").value("Administrator role"));
     }
 
     @Test
@@ -101,7 +100,7 @@ class RoleControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(roleService, never()).createRole(any());
     }
@@ -121,10 +120,9 @@ class RoleControllerTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id").value(1))
-            .andExpect(jsonPath("$.data.name").value("ADMIN"))
-            .andExpect(jsonPath("$.data.description").value("Administrator role"))
-            .andExpect(jsonPath("$.message").value("Role updated successfully"));
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("ADMIN"))
+            .andExpect(jsonPath("$.description").value("Administrator role"));
     }
 
     @Test
@@ -143,7 +141,7 @@ class RoleControllerTest {
             )
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("Role not found"));
+            .andExpect(jsonPath("$.detail").value("Role not found"));
     }
 
     @Test
@@ -159,7 +157,7 @@ class RoleControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(roleService, never()).updateRole(anyLong(), any());
     }
@@ -173,9 +171,8 @@ class RoleControllerTest {
         mockMvc.perform(get("/roles/1"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id").value(1))
-            .andExpect(jsonPath("$.data.name").value("ADMIN"))
-            .andExpect(jsonPath("$.message").value("Role retrieved successfully"));
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("ADMIN"));
     }
 
     @Test
@@ -187,7 +184,7 @@ class RoleControllerTest {
         mockMvc.perform(get("/roles/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("Role not found"));
+            .andExpect(jsonPath("$.detail").value("Role not found"));
     }
 
     @Test
@@ -195,9 +192,8 @@ class RoleControllerTest {
         mockMvc.perform(get("/roles/types"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data").isArray())
-            .andExpect(jsonPath("$.data.length()").value(4))
-            .andExpect(jsonPath("$.data[?(@=='ADMIN')]").exists())
-            .andExpect(jsonPath("$.message").value("Role types retrieved successfully"));
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(4))
+            .andExpect(jsonPath("$[?(@=='ADMIN')]").exists());
     }
 }

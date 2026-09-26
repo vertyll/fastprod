@@ -13,8 +13,7 @@ import com.vertyll.fastprod.employee.dto.EmployeeFilterDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.employee.service.EmployeeService;
-import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
-import com.vertyll.fastprod.sharedinfrastructure.response.PaginatedApiResponse;
+import com.vertyll.fastprod.sharedinfrastructure.response.PageResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,56 +25,50 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Employees", description = "Employee management APIs")
 public class EmployeeController {
 
-    private static final String EMPLOYEE_CREATED_SUCCESSFULLY = "Employee created successfully";
-    private static final String EMPLOYEE_UPDATED_SUCCESSFULLY = "Employee updated successfully";
-    private static final String EMPLOYEE_RETRIEVED_SUCCESSFULLY = "Employee retrieved successfully";
-    private static final String EMPLOYEES_RETRIEVED_SUCCESSFULLY = "Employees retrieved successfully";
-    private static final String EMPLOYEE_DELETED_SUCCESSFULLY = "Employee deleted successfully";
-
     private final EmployeeService employeeService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create new employee")
-    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@RequestBody @Valid EmployeeCreateDto dto) {
+    public ResponseEntity<EmployeeResponseDto> createEmployee(@RequestBody @Valid EmployeeCreateDto dto) {
         EmployeeResponseDto employee = employeeService.createEmployee(dto);
-        return ApiResponse.buildResponse(employee, EMPLOYEE_CREATED_SUCCESSFULLY, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(employee);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update existing employee")
-    public ResponseEntity<ApiResponse<EmployeeResponseDto>> updateEmployee(
+    public ResponseEntity<EmployeeResponseDto> updateEmployee(
         @PathVariable Long id,
         @RequestBody @Valid EmployeeUpdateDto dto
     ) {
         EmployeeResponseDto employee = employeeService.updateEmployee(id, dto);
-        return ApiResponse.buildResponse(employee, EMPLOYEE_UPDATED_SUCCESSFULLY, HttpStatus.OK);
+        return ResponseEntity.ok(employee);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Get employee by ID")
-    public ResponseEntity<ApiResponse<EmployeeResponseDto>> getEmployee(@PathVariable Long id) {
+    public ResponseEntity<EmployeeResponseDto> getEmployee(@PathVariable Long id) {
         EmployeeResponseDto employee = employeeService.getEmployeeById(id);
-        return ApiResponse.buildResponse(employee, EMPLOYEE_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
+        return ResponseEntity.ok(employee);
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(summary = "Get all employees with pagination and filters")
-    public ResponseEntity<PaginatedApiResponse<EmployeeResponseDto>> getAllEmployees(
+    public ResponseEntity<PageResponse<EmployeeResponseDto>> getAllEmployees(
         @Valid @ModelAttribute EmployeeFilterDto filterDto
     ) {
         Page<EmployeeResponseDto> employees = employeeService.getAllEmployees(filterDto);
-        return PaginatedApiResponse.buildResponse(employees, EMPLOYEES_RETRIEVED_SUCCESSFULLY, HttpStatus.OK);
+        return ResponseEntity.ok(PageResponse.from(employees));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete employee")
-    public ResponseEntity<ApiResponse<Void>> deleteEmployee(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
-        return ApiResponse.buildResponse(null, EMPLOYEE_DELETED_SUCCESSFULLY, HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }

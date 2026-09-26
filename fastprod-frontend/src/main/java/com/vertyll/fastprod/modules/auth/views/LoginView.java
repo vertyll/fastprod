@@ -4,7 +4,6 @@ import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto.FormBuilder;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.SecurityService;
 import com.vertyll.fastprod.shared.security.TokenRefreshService;
@@ -161,14 +160,14 @@ public class LoginView extends VerticalLayout {
             loginButton.setEnabled(false);
             loginButton.setText("Signing in...");
 
-            ApiResponse<AuthResponseDto> response = authService.login(loginRequest);
+            AuthResponseDto response = authService.login(loginRequest);
 
-            if (response.data() != null) {
-                securityService.login(response.data());
+            if (response != null) {
+                securityService.login(response);
                 tokenRefreshService.setTokenExpiration();
             }
 
-            String message = response.message() != null ? response.message() : "Login successful!";
+            String message = "Login successful!";
             showNotification(message, NotificationVariant.LUMO_SUCCESS);
 
             UI.getCurrent().getPage().setLocation("/");

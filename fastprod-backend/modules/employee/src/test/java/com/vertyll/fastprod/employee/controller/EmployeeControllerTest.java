@@ -95,9 +95,8 @@ class EmployeeControllerTest {
             )
             .andDo(print())
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.data.id").value(1))
-            .andExpect(jsonPath("$.data.firstName").value("John"))
-            .andExpect(jsonPath("$.message").value("Employee created successfully"));
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.firstName").value("John"));
 
         verify(employeeService).createEmployee(any(EmployeeCreateDto.class));
     }
@@ -121,7 +120,7 @@ class EmployeeControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(employeeService, never()).createEmployee(any(EmployeeCreateDto.class));
     }
@@ -138,8 +137,7 @@ class EmployeeControllerTest {
                     .content(objectMapper.writeValueAsString(updateDto))
             )
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Employee updated successfully"));
+            .andExpect(status().isOk());
 
         verify(employeeService).updateEmployee(eq(1L), any(EmployeeUpdateDto.class));
     }
@@ -158,7 +156,7 @@ class EmployeeControllerTest {
             )
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("Employee not found"));
+            .andExpect(jsonPath("$.detail").value("Employee not found"));
     }
 
     @Test
@@ -170,9 +168,8 @@ class EmployeeControllerTest {
         mockMvc.perform(get("/employees/1"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id").value(1))
-            .andExpect(jsonPath("$.data.firstName").value("John"))
-            .andExpect(jsonPath("$.message").value("Employee retrieved successfully"));
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.firstName").value("John"));
 
         verify(employeeService).getEmployeeById(1L);
     }
@@ -187,7 +184,7 @@ class EmployeeControllerTest {
         mockMvc.perform(get("/employees/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("Employee not found"));
+            .andExpect(jsonPath("$.detail").value("Employee not found"));
     }
 
     @Test
@@ -196,10 +193,7 @@ class EmployeeControllerTest {
         doNothing().when(employeeService).deleteEmployee(1L);
 
         // when & then
-        mockMvc.perform(delete("/employees/1"))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Employee deleted successfully"));
+        mockMvc.perform(delete("/employees/1")).andDo(print()).andExpect(status().isNoContent());
 
         verify(employeeService).deleteEmployee(1L);
     }
@@ -213,6 +207,6 @@ class EmployeeControllerTest {
         mockMvc.perform(delete("/employees/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("Employee not found"));
+            .andExpect(jsonPath("$.detail").value("Employee not found"));
     }
 }

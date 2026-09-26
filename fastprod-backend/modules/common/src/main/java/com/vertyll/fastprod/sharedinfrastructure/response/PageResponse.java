@@ -2,37 +2,33 @@ package com.vertyll.fastprod.sharedinfrastructure.response;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PageResponse<T> implements IPaginatedResponse<T> {
-    private List<T> content;
-    private Integer pageNumber;
-    private Integer pageSize;
-    private Long totalElements;
-    private Integer totalPages;
-    private Boolean first;
-    private Boolean last;
-    private Boolean empty;
+public record PageResponse<T>(
+    List<T> content,
+    int pageNumber,
+    int pageSize,
+    long totalElements,
+    int totalPages,
+    boolean first,
+    boolean last,
+    boolean empty
+) {
 
-    @Override
-    public Boolean isFirst() {
-        return first;
+    public PageResponse {
+        content = List.copyOf(content);
     }
 
-    @Override
-    public Boolean isLast() {
-        return last;
-    }
-
-    @Override
-    public Boolean isEmpty() {
-        return empty;
+    public static <T> PageResponse<T> from(Page<T> page) {
+        return new PageResponse<>(
+            page.getContent(),
+            page.getNumber(),
+            page.getSize(),
+            page.getTotalElements(),
+            page.getTotalPages(),
+            page.isFirst(),
+            page.isLast(),
+            page.isEmpty()
+        );
     }
 }

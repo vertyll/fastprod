@@ -1,28 +1,55 @@
 spring:
   application:
     name: fastprod-backend
-
-  profiles:
-    active: dev
-
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
   flyway:
     validate-on-migrate: true
-
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+  mail:
+    properties:
+      mail:
+        smtp:
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+
+server:
+  port: 8080
+  shutdown: graceful
+  servlet:
+    context-path: /api/v1
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,metrics,info
+        include: health
   endpoint:
     health:
+      show-details: never
       probes:
         enabled: true
 
-server:
-  servlet:
-    context-path: /api/v1/
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+security:
+  jwt:
+    access-token:
+      expiration: 900000
+    refresh-token:
+      expiration: 2592000000
+      cookie-name: refresh_token
+  cookie:
+    http-only: true
+    same-site: Strict
+    path: /

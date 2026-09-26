@@ -8,16 +8,13 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-
-import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
-import com.vertyll.fastprod.sharedinfrastructure.response.ValidationErrorResponse;
 
 import static java.util.Objects.requireNonNull;
 
@@ -40,18 +37,15 @@ class GlobalExceptionHandlerTest {
         ApiException ex = new ApiException("test message", HttpStatus.BAD_REQUEST);
 
         // when
-        ResponseEntity<ApiResponse<Void>> response = handler.handleApiException(ex);
+        ProblemDetail problem = handler.handleApiException(ex);
 
         // then
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-        ApiResponse<Void> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("test message", body.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), problem.getStatus());
+        assertEquals("test message", problem.getDetail());
     }
 
     @Test
-    void handleValidationException_ShouldReturnValidationErrorResponse() {
+    void handleValidationException_ShouldReturnFieldErrors() {
         // given
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         BindingResult bindingResult = mock(BindingResult.class);
@@ -61,18 +55,13 @@ class GlobalExceptionHandlerTest {
         when(bindingResult.getFieldErrors()).thenReturn(Collections.singletonList(fieldError));
 
         // when
-        ResponseEntity<ValidationErrorResponse> response = handler.handleValidationException(ex);
+        ProblemDetail problem = handler.handleValidationException(ex);
 
         // then
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), problem.getStatus());
+        assertEquals("Validation failed", problem.getDetail());
 
-        ValidationErrorResponse body = response.getBody();
-        assertNotNull(body);
-        assertEquals("Validation failed", body.getMessage());
-        assertNotNull(body.getTimestamp());
-        assertNotNull(body.getErrors());
-
-        Map<String, List<String>> errors = body.getErrors();
+        Map<String, List<String>> errors = errorsOf(problem);
         assertEquals(1, errors.size());
         assertEquals(List.of("Username is required"), errors.get("username"));
     }
@@ -90,84 +79,62 @@ class GlobalExceptionHandlerTest {
         when(bindingResult.getFieldErrors()).thenReturn(Arrays.asList(passwordError1, passwordError2, emailError));
 
         // when
-        ResponseEntity<ValidationErrorResponse> response = handler.handleValidationException(ex);
+        ProblemDetail problem = handler.handleValidationException(ex);
 
         // then
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-
-        ValidationErrorResponse body = response.getBody();
-        assertNotNull(body);
-
-        Map<String, List<String>> errors = body.getErrors();
+        Map<String, List<String>> errors = errorsOf(problem);
         assertEquals(2, errors.size());
-        assertEquals(2, requireNonNull(errors.get("password")).size());
-        assertEquals(1, requireNonNull(errors.get("email")).size());
-        assertTrue(requireNonNull(errors.get("password")).contains("Password must be at least 8 characters"));
-        assertTrue(requireNonNull(errors.get("password")).contains("Password must contain an uppercase letter"));
+        assertEquals(
+            List.of("Password must be at least 8 characters", "Password must contain an uppercase letter"),
+            errors.get("password")
+        );
         assertEquals(List.of("Invalid email format"), errors.get("email"));
     }
 
     @Test
     void handleBadCredentialsException_ShouldReturnUnauthorized() {
-        // given
-        BadCredentialsException ex = new BadCredentialsException("bad credentials");
-
         // when
-        ResponseEntity<ApiResponse<Void>> response = handler.handleBadCredentialsException(ex);
+        ProblemDetail problem = handler.handleBadCredentialsException(new BadCredentialsException("bad credentials"));
 
         // then
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-        ApiResponse<Void> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("Invalid email or password", body.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), problem.getStatus());
+        assertEquals("Invalid email or password", problem.getDetail());
     }
 
     @Test
     void handleDisabledException_ShouldReturnForbidden() {
-        // given
-        DisabledException ex = new DisabledException("disabled");
-
         // when
-        ResponseEntity<ApiResponse<Void>> response = handler.handleDisabledException(ex);
+        ProblemDetail problem = handler.handleDisabledException(new DisabledException("disabled"));
 
         // then
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-
-        ApiResponse<Void> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("Account is disabled", body.getMessage());
+        assertEquals(HttpStatus.FORBIDDEN.value(), problem.getStatus());
+        assertEquals("Account is disabled", problem.getDetail());
     }
 
     @Test
     void handleLockedException_ShouldReturnForbidden() {
-        // given
-        LockedException ex = new LockedException("locked");
-
         // when
-        ResponseEntity<ApiResponse<Void>> response = handler.handleLockedException(ex);
+        ProblemDetail problem = handler.handleLockedException(new LockedException("locked"));
 
         // then
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-
-        ApiResponse<Void> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("Account is locked", body.getMessage());
+        assertEquals(HttpStatus.FORBIDDEN.value(), problem.getStatus());
+        assertEquals("Account is locked", problem.getDetail());
     }
 
     @Test
     void handleException_ShouldReturnInternalServerError() {
-        // given
-        Exception ex = new RuntimeException("unexpected error");
-
         // when
-        ResponseEntity<ApiResponse<Void>> response = handler.handleException(ex);
+        ProblemDetail problem = handler.handleException(new RuntimeException("unexpected error"));
 
         // then
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problem.getStatus());
+        assertEquals("An unexpected error occurred", problem.getDetail());
+    }
 
-        ApiResponse<Void> body = response.getBody();
-        assertNotNull(body);
-        assertEquals("An unexpected error occurred", body.getMessage());
+    @SuppressWarnings("unchecked")
+    private static Map<String, List<String>> errorsOf(ProblemDetail problem) {
+        return (Map<String, List<String>>) requireNonNull(
+            requireNonNull(problem.getProperties()).get(GlobalExceptionHandler.ERRORS_PROPERTY)
+        );
     }
 }

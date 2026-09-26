@@ -7,7 +7,6 @@ import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
 import com.vaadin.flow.component.UI;
@@ -148,11 +147,10 @@ public class ChangeEmailView extends VerticalLayout {
 
     private void handleVerifyCode(String code, VerificationCodeDialog dialog) {
         try {
-            ApiResponse<AuthResponseDto> response = authService.verifyEmailChange(code);
+            AuthResponseDto response = authService.verifyEmailChange(code);
 
-            // Update token with new one (email changed, so JWT needs to be updated)
-            if (response.data() != null) {
-                securityService.login(response.data());
+            if (response != null) {
+                securityService.login(response);
             }
 
             dialog.showSuccess("Email changed successfully! Please log in again with your new email.");

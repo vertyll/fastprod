@@ -2,27 +2,27 @@
 # Plugins
 spring-boot = "4.1.1"
 spring-dependency-management = "1.1.7"
-spotless = "8.10.1"
+spotless = "8.10.3"
 errorprone-plugin = "5.1.1"
 nullaway-plugin = "3.2.0"
-pmd = "7.27.0"
+pmd = "7.28.0"
 
 # Dependencies
-flyway = "13.4.0"
+flyway = "13.8.0"
 mapstruct = "1.6.3"
-lombok = "1.18.46"
+lombok = "1.18.48"
 lombok-mapstruct-binding = "0.2.0"
-springdoc = "3.0.1"
-testcontainers = "1.21.3"
+springdoc = "3.1.1"
+testcontainers = "2.0.5"
 jjwt = "0.13.0"
-guava = "33.6.0-jre"
+guava = "33.7.1-jre"
 errorprone = "2.50.0"
-nullaway = "0.13.7"
+nullaway = "0.14.2"
 jspecify = "1.0.1"
 eclipse-jdt = "4.40"
 beta-checker = "1.0"
 spotbugs = "6.5.11"
-spotbugs-annotations = "4.10.3"
+spotbugs-annotations = "4.10.4"
 findsecbugs = "1.14.0"
 
 [libraries]
@@ -54,7 +54,6 @@ jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
 # Database
 postgresql = { module = "org.postgresql:postgresql" }
-h2 = { module = "com.h2database:h2" }
 
 # Flyway
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
@@ -93,8 +92,8 @@ spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", ve
 findsecbugs = { module = "com.h3xstream.findsecbugs:findsecbugs-plugin", version.ref = "findsecbugs" }
 
 # Testcontainers
-testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
-testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
 
 # JUnit
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }

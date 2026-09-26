@@ -2,22 +2,22 @@
 # Plugins
 spring-boot = "4.1.1"
 spring-dependency-management = "1.1.7"
-vaadin = "25.0.7"
-vaadin-plugin = "25.0.7"
-spotless = "8.10.1"
+vaadin = "25.3.0"
+vaadin-plugin = "25.3.0"
+spotless = "8.10.3"
 errorprone-plugin = "5.1.1"
 nullaway-plugin = "3.2.0"
-pmd = "7.27.0"
+pmd = "7.28.0"
 
 # Dependencies
 errorprone = "2.50.0"
-nullaway = "0.13.7"
+nullaway = "0.14.2"
 jspecify = "1.0.1"
 eclipse-jdt = "4.40"
 beta-checker = "1.0"
-lombok = "1.18.46"
+lombok = "1.18.48"
 spotbugs = "6.5.11"
-spotbugs-annotations = "4.10.3"
+spotbugs-annotations = "4.10.4"
 findsecbugs = "1.14.0"
 
 [libraries]

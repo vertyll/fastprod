@@ -10,7 +10,6 @@ import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -162,8 +161,7 @@ public class ProfileView extends VerticalLayout {
 
     private void loadUserProfile() {
         try {
-            ApiResponse<UserProfileDto> response = userService.getCurrentUser();
-            UserProfileDto user = response.data();
+            UserProfileDto user = userService.getCurrentUser();
             if (user != null) {
                 currentUser = user;
                 updateDetailsView(user);
@@ -211,8 +209,7 @@ public class ProfileView extends VerticalLayout {
             ProfileUpdateDto dto = new ProfileUpdateDto(firstNameField.getValue(), lastNameField.getValue());
 
             if (binder.validate().isOk()) {
-                ApiResponse<UserProfileDto> response = userService.updateProfile(dto);
-                UserProfileDto user = response.data();
+                UserProfileDto user = userService.updateProfile(dto);
                 if (user != null) {
                     currentUser = user;
                     updateDetailsView(user);

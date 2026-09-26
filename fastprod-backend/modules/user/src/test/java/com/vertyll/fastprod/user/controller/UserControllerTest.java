@@ -95,9 +95,8 @@ class UserControllerTest {
             )
             .andDo(print())
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.data.id").value(1))
-            .andExpect(jsonPath("$.data.firstName").value("John"))
-            .andExpect(jsonPath("$.message").value("User created successfully"));
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.firstName").value("John"));
 
         verify(userService).createUser(any(UserCreateDto.class));
     }
@@ -121,7 +120,7 @@ class UserControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(userService, never()).createUser(any(UserCreateDto.class));
     }
@@ -138,8 +137,7 @@ class UserControllerTest {
                     .content(objectMapper.writeValueAsString(updateDto))
             )
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("User updated successfully"));
+            .andExpect(status().isOk());
 
         verify(userService).updateUser(eq(1L), any(UserUpdateDto.class));
     }
@@ -158,7 +156,7 @@ class UserControllerTest {
             )
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("User not found"));
+            .andExpect(jsonPath("$.detail").value("User not found"));
     }
 
     @Test
@@ -170,9 +168,8 @@ class UserControllerTest {
         mockMvc.perform(get("/users/1"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id").value(1))
-            .andExpect(jsonPath("$.data.firstName").value("John"))
-            .andExpect(jsonPath("$.message").value("User retrieved successfully"));
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.firstName").value("John"));
 
         verify(userService).getUserById(1L);
     }
@@ -186,6 +183,6 @@ class UserControllerTest {
         mockMvc.perform(get("/users/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("User not found"));
+            .andExpect(jsonPath("$.detail").value("User not found"));
     }
 }

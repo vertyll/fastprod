@@ -1,10 +1,13 @@
 package com.vertyll.fastprod.security.config;
 
+import java.io.IOException;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -18,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import com.vertyll.fastprod.sharedinfrastructure.response.ApiResponse;
+import com.vertyll.fastprod.sharedinfrastructure.exception.GlobalExceptionHandler;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.RequiredArgsConstructor;
@@ -69,25 +72,31 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .exceptionHandling(exception -> exception.authenticationEntryPoint((_, response, _) -> {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-                ResponseEntity<ApiResponse<Void>> responseEntity =
-                        ApiResponse.buildResponse(null, REQUIRED_TO_ACCESS_THIS_RESOURCE, HttpStatus.UNAUTHORIZED);
-
-                response.getWriter().write(objectMapper.writeValueAsString(responseEntity.getBody()));
-            }).accessDeniedHandler((_, response, _) -> {
-                response.setStatus(HttpStatus.FORBIDDEN.value());
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-                ResponseEntity<ApiResponse<Void>> responseEntity = ApiResponse
-                    .buildResponse(null, NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE, HttpStatus.FORBIDDEN);
-
-                response.getWriter().write(objectMapper.writeValueAsString(responseEntity.getBody()));
-            }));
+            .exceptionHandling(
+                exception -> exception
+                    .authenticationEntryPoint(
+                        (
+                            _,
+                            response,
+                            _
+                        ) -> writeProblem(response, HttpStatus.UNAUTHORIZED, REQUIRED_TO_ACCESS_THIS_RESOURCE)
+                    )
+                    .accessDeniedHandler(
+                        (
+                            _,
+                            response,
+                            _
+                        ) -> writeProblem(response, HttpStatus.FORBIDDEN, NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE)
+                    )
+            );
 
         return http.build();
+    }
+
+    private void writeProblem(HttpServletResponse response, HttpStatus status, String detail) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+        response.getWriter().write(objectMapper.writeValueAsString(GlobalExceptionHandler.problem(status, detail)));
     }
 
     @Bean

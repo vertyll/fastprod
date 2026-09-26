@@ -7,7 +7,6 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -105,8 +104,7 @@ public class EmployeeDetailsView extends VerticalLayout implements BeforeEnterOb
     private void loadEmployee(Long id) {
         loadingSpinner.show();
         try {
-            ApiResponse<EmployeeResponseDto> response = employeeService.getEmployee(id);
-            EmployeeResponseDto employee = response.data();
+            EmployeeResponseDto employee = employeeService.getEmployee(id);
             if (employee != null) {
                 displayEmployee(employee);
             }

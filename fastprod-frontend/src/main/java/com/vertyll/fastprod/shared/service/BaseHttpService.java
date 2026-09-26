@@ -1,22 +1,33 @@
 package com.vertyll.fastprod.shared.service;
 
+import java.io.IOException;
 import java.net.CookieManager;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
-import com.vertyll.fastprod.shared.dto.ApiResponse;
+import org.jspecify.annotations.Nullable;
+
 import com.vertyll.fastprod.shared.dto.PageResponse;
-import com.vertyll.fastprod.shared.dto.PaginatedApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 public abstract class BaseHttpService {
+
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String APPLICATION_JSON = "application/json";
+    private static final String COMMUNICATION_ERROR = "Error occurred during server communication";
 
     protected final String backendUrl;
     protected final HttpClient httpClient;
@@ -31,146 +42,93 @@ public abstract class BaseHttpService {
         this.authTokenProvider = authTokenProvider;
     }
 
-    private void addAuthorizationHeader(HttpRequest.Builder requestBuilder) {
-        authTokenProvider.getAuthorizationHeader().ifPresent(header -> requestBuilder.header("Authorization", header));
+    public static String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
-    protected <T> ApiResponse<T> get(String endpoint, Class<T> responseType) throws Exception {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().uri(URI.create(backendUrl + endpoint)).GET();
-
-        addAuthorizationHeader(requestBuilder);
-
-        HttpRequest request = requestBuilder.build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return handleResponse(response, responseType);
+    protected <T> @Nullable T get(String endpoint, Class<T> responseType) {
+        return send(request(endpoint).GET(), objectMapper.constructType(responseType));
     }
 
-    /**
-     * Sends a POST request without a body.
-     */
-    protected <R> ApiResponse<R> post(String endpoint, Class<R> responseType) throws Exception {
-        return sendPost(endpoint, "", responseType);
+    protected <R> @Nullable R post(String endpoint, Class<R> responseType) {
+        return send(request(endpoint).POST(HttpRequest.BodyPublishers.noBody()), objectMapper.constructType(responseType));
     }
 
-    /**
-     * Sends a POST request with {@code requestBody} serialized as JSON.
-     */
-    protected <T, R> ApiResponse<R> post(String endpoint, T requestBody, Class<R> responseType) throws Exception {
-        return sendPost(endpoint, objectMapper.writeValueAsString(requestBody), responseType);
+    protected <T, R> @Nullable R post(String endpoint, T requestBody, Class<R> responseType) {
+        return send(
+            request(endpoint).header(CONTENT_TYPE, APPLICATION_JSON).POST(json(requestBody)),
+            objectMapper.constructType(responseType)
+        );
     }
 
-    private <R> ApiResponse<R> sendPost(String endpoint, String json, Class<R> responseType) throws Exception {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-            .uri(URI.create(backendUrl + endpoint))
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(json));
-
-        addAuthorizationHeader(requestBuilder);
-
-        HttpRequest request = requestBuilder.build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return handleResponse(response, responseType);
+    protected <T, R> @Nullable R put(String endpoint, T requestBody, Class<R> responseType) {
+        return send(
+            request(endpoint).header(CONTENT_TYPE, APPLICATION_JSON).PUT(json(requestBody)),
+            objectMapper.constructType(responseType)
+        );
     }
 
-    protected <T, R> ApiResponse<R> put(String endpoint, T requestBody, Class<R> responseType) throws Exception {
-        String json = objectMapper.writeValueAsString(requestBody);
-
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-            .uri(URI.create(backendUrl + endpoint))
-            .header("Content-Type", "application/json")
-            .PUT(HttpRequest.BodyPublishers.ofString(json));
-
-        addAuthorizationHeader(requestBuilder);
-
-        HttpRequest request = requestBuilder.build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return handleResponse(response, responseType);
+    protected <T> @Nullable T delete(String endpoint, Class<T> responseType) {
+        return send(request(endpoint).DELETE(), objectMapper.constructType(responseType));
     }
 
-    protected <T> ApiResponse<T> delete(String endpoint, Class<T> responseType) throws Exception {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().uri(URI.create(backendUrl + endpoint)).DELETE();
-
-        addAuthorizationHeader(requestBuilder);
-
-        HttpRequest request = requestBuilder.build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return handleResponse(response, responseType);
+    protected <T> PageResponse<T> getPaginated(String endpoint, Class<T> responseType) {
+        PageResponse<T> page = send(
+            request(endpoint).GET(),
+            objectMapper.getTypeFactory().constructParametricType(PageResponse.class, responseType)
+        );
+        if (page == null) {
+            throw new ApiException(COMMUNICATION_ERROR);
+        }
+        return page;
     }
 
-    protected <T> PageResponse<T> getPaginated(String endpoint, Class<T> responseType) throws Exception {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().uri(URI.create(backendUrl + endpoint)).GET();
-
-        addAuthorizationHeader(requestBuilder);
-
-        HttpRequest request = requestBuilder.build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return handlePaginatedResponse(response, responseType);
+    private HttpRequest.Builder request(String endpoint) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(backendUrl + endpoint));
+        authTokenProvider.getAuthorizationHeader().ifPresent(header -> builder.header("Authorization", header));
+        return builder;
     }
 
-    private <T> ApiResponse<T> handleResponse(HttpResponse<String> response, Class<T> responseType) throws Exception {
-        if (response.statusCode() >= 200 && response.statusCode() < 300) {
-            if (responseType == Void.class) {
-                return objectMapper.readValue(
-                    response.body(),
-                    objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Void.class)
-                );
-            }
-            return objectMapper.readValue(
-                response.body(),
-                objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, responseType)
-            );
-        } else {
-            log.error("HTTP request failed with status: {}, body: {}", response.statusCode(), response.body());
+    private HttpRequest.BodyPublisher json(Object body) {
+        return HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body));
+    }
 
-            try {
-                ApiResponse<?> errorResponse = objectMapper.readValue(
-                    response.body(),
-                    objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Object.class)
-                );
-                String errorMessage = errorResponse.message() != null ? errorResponse.message()
-                        : "Server error (code: " + response.statusCode() + ")";
-                throw new ApiException(errorMessage, response.statusCode());
-            } catch (ApiException ae) {
-                throw ae;
-            } catch (Exception parseException) {
-                log.error("Failed to parse error response", parseException);
-                throw new ApiException("Error occurred during server communication", response.statusCode());
-            }
+    private <T> @Nullable T send(HttpRequest.Builder builder, JavaType responseType) {
+        HttpResponse<String> response;
+        try {
+            response = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new ApiException(COMMUNICATION_ERROR, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApiException(COMMUNICATION_ERROR, e);
+        }
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw toApiException(response);
+        }
+        if (responseType.hasRawClass(Void.class) || response.body().isBlank()) {
+            return null;
+        }
+        return objectMapper.readValue(response.body(), responseType);
+    }
+
+    private ApiException toApiException(HttpResponse<String> response) {
+        log.warn("HTTP request failed with status {}", response.statusCode());
+        try {
+            Problem problem = objectMapper.readValue(response.body(), Problem.class);
+            String detail = problem.detail() != null ? problem.detail()
+                    : "Server error (code: " + response.statusCode() + ")";
+            return new ApiException(detail, response.statusCode(), problem.fieldErrors());
+        } catch (JacksonException e) {
+            return new ApiException(COMMUNICATION_ERROR, response.statusCode());
         }
     }
 
-    private <T> PageResponse<T> handlePaginatedResponse(
-        HttpResponse<String> response,
-        Class<T> responseType
-    ) throws Exception {
-        if (response.statusCode() >= 200 && response.statusCode() < 300) {
-            PaginatedApiResponse<T> paginatedResponse = objectMapper.readValue(
-                response.body(),
-                objectMapper.getTypeFactory().constructParametricType(PaginatedApiResponse.class, responseType)
-            );
-            return paginatedResponse.data();
-        } else {
-            log.error("HTTP request failed with status: {}, body: {}", response.statusCode(), response.body());
+    private record Problem(@Nullable String detail, @Nullable Map<String, List<String>> errors) {
 
-            try {
-                ApiResponse<?> errorResponse = objectMapper.readValue(
-                    response.body(),
-                    objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Object.class)
-                );
-                String errorMessage = errorResponse.message() != null ? errorResponse.message()
-                        : "Server error (code: " + response.statusCode() + ")";
-                throw new ApiException(errorMessage, response.statusCode());
-            } catch (ApiException ae) {
-                throw ae;
-            } catch (Exception parseException) {
-                log.error("Failed to parse error response", parseException);
-                throw new ApiException("Error occurred during server communication", response.statusCode());
-            }
+        Map<String, List<String>> fieldErrors() {
+            return errors == null ? Map.of() : errors;
         }
     }
 }

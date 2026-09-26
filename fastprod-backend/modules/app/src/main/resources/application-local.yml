@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fastprod
+    username: postgres
+    password: postgres
+  mail:
+    host: localhost
+    port: 1025
+    from: no-reply@fastprod.local
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+security:
+  jwt:
+    access-token:
+      secret-key: CbIKeXKAkneVUn5me1nHZ+V74qpmZ36InUDFEXsg6YY=
+    refresh-token:
+      secret-key: isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA=
+  cookie:
+    secure: false
+
+application:
+  file:
+    uploads:
+      file-output-path: ./uploads
+  frontend:
+    url: http://localhost:8001
+
+admin:
+  email: admin@fastprod.local
+  password: zaq1@WSX
+  first-name: System
+  last-name: Administrator
+
+app:
+  seed:
+    enabled: true
+
+logging:
+  level:
+    com.vertyll.fastprod: DEBUG

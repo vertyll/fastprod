@@ -107,9 +107,7 @@ class AuthControllerTest {
                     .content(objectMapper.writeValueAsString(registerRequest))
             )
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("User registered successfully"))
-            .andExpect(jsonPath("$.data").doesNotExist());
+            .andExpect(status().isNoContent());
 
         verify(authService).register(any(RegisterRequestDto.class));
     }
@@ -127,7 +125,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(authService, never()).register(any(RegisterRequestDto.class));
     }
@@ -144,7 +142,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(authService, never()).register(any(RegisterRequestDto.class));
     }
@@ -163,7 +161,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Email already registered"));
+            .andExpect(jsonPath("$.detail").value("Email already registered"));
     }
 
     @Test
@@ -182,9 +180,8 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.token").value("jwt-token"))
-            .andExpect(jsonPath("$.data.type").value("Bearer"))
-            .andExpect(jsonPath("$.message").value("Authentication successful"));
+            .andExpect(jsonPath("$.token").value("jwt-token"))
+            .andExpect(jsonPath("$.type").value("Bearer"));
     }
 
     @Test
@@ -203,7 +200,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isUnauthorized())
-            .andExpect(jsonPath("$.message").value("Invalid credentials"));
+            .andExpect(jsonPath("$.detail").value("Invalid credentials"));
     }
 
     @Test
@@ -219,7 +216,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(authService, never())
             .authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -237,7 +234,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(authService, never())
             .authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -253,9 +250,8 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/refresh-token"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.token").value("jwt-token"))
-            .andExpect(jsonPath("$.data.type").value("Bearer"))
-            .andExpect(jsonPath("$.message").value("Token refreshed successfully"));
+            .andExpect(jsonPath("$.token").value("jwt-token"))
+            .andExpect(jsonPath("$.type").value("Bearer"));
     }
 
     @Test
@@ -268,7 +264,7 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/refresh-token"))
             .andDo(print())
             .andExpect(status().isUnauthorized())
-            .andExpect(jsonPath("$.message").value("Invalid refresh token"));
+            .andExpect(jsonPath("$.detail").value("Invalid refresh token"));
     }
 
     @Test
@@ -277,10 +273,7 @@ class AuthControllerTest {
         doNothing().when(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         // when & then
-        mockMvc.perform(post("/auth/logout"))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Logged out successfully"));
+        mockMvc.perform(post("/auth/logout")).andDo(print()).andExpect(status().isNoContent());
 
         verify(authService).logout(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
@@ -291,10 +284,7 @@ class AuthControllerTest {
         doNothing().when(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
         // when & then
-        mockMvc.perform(post("/auth/logout-all"))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Logged out from all sessions successfully"));
+        mockMvc.perform(post("/auth/logout-all")).andDo(print()).andExpect(status().isNoContent());
 
         verify(authService).logoutAllSessions(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
@@ -305,10 +295,7 @@ class AuthControllerTest {
         doNothing().when(authService).verifyAccount(anyString());
 
         // when & then
-        mockMvc.perform(post("/auth/verify").param("code", "123456"))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Account verified successfully"));
+        mockMvc.perform(post("/auth/verify").param("code", "123456")).andDo(print()).andExpect(status().isNoContent());
 
         verify(authService).verifyAccount("123456");
     }
@@ -323,7 +310,7 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/verify").param("code", "invalid"))
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Invalid verification code"));
+            .andExpect(jsonPath("$.detail").value("Invalid verification code"));
     }
 
     @Test
@@ -339,8 +326,7 @@ class AuthControllerTest {
                     .content(objectMapper.writeValueAsString(request))
             )
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Verification code sent successfully"));
+            .andExpect(status().isNoContent());
 
         verify(authService).resendVerificationCode("john@example.com");
     }
@@ -358,7 +344,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(authService, never()).resendVerificationCode(anyString());
     }
@@ -378,7 +364,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message").value("User not found"));
+            .andExpect(jsonPath("$.detail").value("User not found"));
     }
 
     @Test
@@ -396,7 +382,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Account already verified"));
+            .andExpect(jsonPath("$.detail").value("Account already verified"));
     }
 
     @Test
@@ -411,8 +397,7 @@ class AuthControllerTest {
                     .content(objectMapper.writeValueAsString(changeEmailRequest))
             )
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Email change verification sent to new email"));
+            .andExpect(status().isNoContent());
 
         verify(authService).requestEmailChange(any(ChangeEmailRequestDto.class));
     }
@@ -431,7 +416,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(authService, never()).requestEmailChange(any(ChangeEmailRequestDto.class));
     }
@@ -446,8 +431,7 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/verify-email-change").param("code", "123456"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Email changed successfully"))
-            .andExpect(jsonPath("$.data.token").value("jwt-token"));
+            .andExpect(jsonPath("$.token").value("jwt-token"));
 
         verify(authService)
             .verifyEmailChange(eq("123456"), any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -465,8 +449,7 @@ class AuthControllerTest {
                     .content(objectMapper.writeValueAsString(changePasswordRequest))
             )
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Password change verification sent to email"));
+            .andExpect(status().isNoContent());
 
         verify(authService).requestPasswordChange(any(ChangePasswordRequestDto.class));
     }
@@ -479,8 +462,7 @@ class AuthControllerTest {
         // when & then
         mockMvc.perform(post("/auth/verify-password-change").param("code", "123456"))
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Password changed successfully"));
+            .andExpect(status().isNoContent());
 
         verify(authService).verifyPasswordChange("123456");
     }
@@ -493,8 +475,7 @@ class AuthControllerTest {
         // when & then
         mockMvc.perform(post("/auth/reset-password-request").param("email", "john@example.com"))
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Password reset instructions sent to email"));
+            .andExpect(status().isNoContent());
 
         verify(authService).sendPasswordResetEmail("john@example.com");
     }
@@ -512,8 +493,7 @@ class AuthControllerTest {
                     .content(objectMapper.writeValueAsString(resetPasswordRequest))
             )
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value("Password reset successfully"));
+            .andExpect(status().isNoContent());
 
         verify(authService).resetPassword(eq("valid-token"), any(ResetPasswordRequestDto.class));
     }
@@ -532,7 +512,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("Validation failed"));
 
         verify(authService, never()).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
     }

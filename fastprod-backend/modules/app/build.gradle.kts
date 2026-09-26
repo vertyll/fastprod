@@ -50,7 +50,6 @@ dependencies {
 
     // Test Implementation
     testImplementation(libs.bundles.test.starters)
-    testImplementation(libs.h2)
     testImplementation(libs.bundles.testcontainers)
 }
 

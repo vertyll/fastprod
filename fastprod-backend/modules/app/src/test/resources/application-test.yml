@@ -1,10 +1,4 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5433/fastprod_test
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
       ddl-auto: validate
@@ -43,11 +37,11 @@ security:
       secret-key: "isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA="
       expiration: 2592000000
       cookie-name: "refresh_token"
-    cookie:
-      httpOnly: true
-      secure: false
-      sameSite: Strict
-      path: "/"
+  cookie:
+    http-only: true
+    secure: false
+    same-site: Strict
+    path: /
 
 application:
   file:
@@ -59,3 +53,8 @@ application:
 
 server:
   port: 0
+admin:
+  email: admin@fastprod.test
+  password: test-admin-password
+  first-name: Test
+  last-name: Administrator

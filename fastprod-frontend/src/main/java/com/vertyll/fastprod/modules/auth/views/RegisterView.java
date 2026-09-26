@@ -3,7 +3,6 @@ package com.vertyll.fastprod.modules.auth.views;
 import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.RegisterRequestDto.FormBuilder;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 
 import com.vaadin.flow.component.UI;
@@ -192,10 +191,9 @@ public class RegisterView extends VerticalLayout {
             registerButton.setEnabled(false);
             registerButton.setText("Signing up...");
 
-            ApiResponse<Void> response = authService.register(registerRequest);
+            authService.register(registerRequest);
 
-            String message = response.message() != null ? response.message()
-                    : "Registration successful! Please check your email for verification code.";
+            String message = "Registration successful! Please check your email for verification code.";
             showNotification(message, NotificationVariant.LUMO_SUCCESS);
 
             String email = registerRequest.email();

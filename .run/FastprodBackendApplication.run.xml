@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="FastprodBackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" folderName="Spring Boot" nameIsGenerated="true">
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <option name="ACTIVE_PROFILES" value="local" />
     <module name="fastprod-backend.modules.app.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.vertyll.fastprod.FastprodBackendApplication" />
     <method v="2">

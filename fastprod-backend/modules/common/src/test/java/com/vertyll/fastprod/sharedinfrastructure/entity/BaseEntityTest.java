@@ -9,6 +9,7 @@ import jakarta.persistence.MappedSuperclass;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,17 +38,17 @@ class BaseEntityTest {
     }
 
     @Test
-    void auditFields_ShouldBeSettableAndGettable() {
+    void auditFields_ShouldBeReadable() {
         // given
         TestEntity entity = new TestEntity();
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         String user = "testUser";
 
         // when
-        entity.setCreatedAt(now);
-        entity.setUpdatedAt(now);
-        entity.setCreatedBy(user);
-        entity.setUpdatedBy(user);
+        ReflectionTestUtils.setField(entity, "createdAt", now);
+        ReflectionTestUtils.setField(entity, "updatedAt", now);
+        ReflectionTestUtils.setField(entity, "createdBy", user);
+        ReflectionTestUtils.setField(entity, "updatedBy", user);
 
         // then
         assertEquals(now, entity.getCreatedAt());
@@ -57,13 +58,13 @@ class BaseEntityTest {
     }
 
     @Test
-    void id_ShouldBeSettableAndGettable() {
+    void id_ShouldBeReadable() {
         // given
         TestEntity entity = new TestEntity();
         Long id = 1L;
 
         // when
-        entity.setId(id);
+        ReflectionTestUtils.setField(entity, "id", id);
 
         // then
         assertEquals(id, entity.getId());

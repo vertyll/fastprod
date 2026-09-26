@@ -1,26 +1,10 @@
 spring:
-  application:
-    name: fastprod-backend
-
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
-    open-in-view: false
-    properties:
-      hibernate:
-        format_sql: false
-
   flyway:
-    validate-on-migrate: true
     clean-disabled: true
-
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
@@ -34,56 +18,34 @@ spring:
           starttls:
             enable: true
             required: true
-          ssl:
-            trust: ${MAIL_SMTP_TRUST}
-          connectiontimeout: 5000
-          timeout: 3000
-          writetimeout: 5000
-
-springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false
 
 security:
   jwt:
     access-token:
       secret-key: ${JWT_ACCESS_SECRET}
-      expiration: ${JWT_ACCESS_EXPIRATION:900000}
     refresh-token:
       secret-key: ${JWT_REFRESH_SECRET}
-      expiration: ${JWT_REFRESH_EXPIRATION:2592000000}
-      cookie-name: "refresh_token"
-    cookie:
-      httpOnly: true
-      secure: true
-      sameSite: Strict
-      path: "/"
+  cookie:
+    secure: true
 
 application:
   file:
     uploads:
-      file-output-path: ${FILE_UPLOAD_PATH:/var/app/uploads}
-
+      file-output-path: ${FILE_UPLOAD_PATH}
   frontend:
     url: ${FRONTEND_URL}
 
-server:
-  port: ${SERVER_PORT:8080}
+admin:
+  email: ${ADMIN_EMAIL}
+  password: ${ADMIN_PASSWORD}
+  first-name: ${ADMIN_FIRST_NAME}
+  last-name: ${ADMIN_LAST_NAME}
+
+app:
+  seed:
+    enabled: ${APP_SEED_ENABLED}
 
 logging:
   level:
     root: WARN
     com.vertyll.fastprod: INFO
-    org.springframework.security: INFO
-
-admin:
-  email: ${ADMIN_EMAIL:admin@fastprod.local}
-  password: ${ADMIN_PASSWORD:}
-  first-name: ${ADMIN_FIRST_NAME:System}
-  last-name: ${ADMIN_LAST_NAME:Administrator}
-
-app:
-  seed:
-    enabled: ${APP_SEED_ENABLED:false}

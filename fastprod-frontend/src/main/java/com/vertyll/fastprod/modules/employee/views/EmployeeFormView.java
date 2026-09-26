@@ -10,7 +10,6 @@ import com.vertyll.fastprod.modules.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.modules.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.modules.employee.service.EmployeeService;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -155,8 +154,7 @@ public class EmployeeFormView extends VerticalLayout implements BeforeEnterObser
 
     private void loadEmployee(Long id) {
         try {
-            ApiResponse<EmployeeResponseDto> response = employeeService.getEmployee(id);
-            EmployeeResponseDto employee = response.data();
+            EmployeeResponseDto employee = employeeService.getEmployee(id);
             if (employee != null) {
                 EmployeeFormData formData = new EmployeeFormData();
                 formData.setFirstName(employee.firstName());

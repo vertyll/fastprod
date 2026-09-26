@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.config.SecurityProperties;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +49,10 @@ public class TokenRefreshService {
         try {
             String cookieName = securityProperties.getRefreshTokenCookieName();
             log.debug("Attempting to refresh token using cookie: {}", cookieName);
-            ApiResponse<AuthResponseDto> response = authService.refreshToken();
+            AuthResponseDto response = authService.refreshToken();
 
-            if (response.data() != null) {
-                securityService.login(response.data());
+            if (response != null) {
+                securityService.login(response);
                 setTokenExpiration();
                 log.info("Token refreshed successfully");
                 return true;

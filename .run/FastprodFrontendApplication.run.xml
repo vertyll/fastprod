@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="FastprodFrontendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" folderName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="local" />
     <module name="fastprod-frontend.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.vertyll.fastprod.Application" />
     <method v="2">

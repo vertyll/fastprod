@@ -6,12 +6,13 @@ import org.springframework.stereotype.Service;
 import com.vertyll.fastprod.modules.auth.dto.*;
 import com.vertyll.fastprod.modules.user.dto.ChangeEmailDto;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
-import com.vertyll.fastprod.shared.dto.ApiResponse;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
 
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
+
+import static java.util.Objects.requireNonNull;
 
 @Service
 @Slf4j
@@ -27,55 +28,55 @@ public class AuthService extends BaseHttpService {
         super(backendUrl, objectMapper, authTokenProvider);
     }
 
-    public ApiResponse<Void> register(RegisterRequestDto registerRequest) throws Exception {
-        return post(AUTH_ENDPOINT + "/register", registerRequest, Void.class);
+    public void register(RegisterRequestDto registerRequest) {
+        post(AUTH_ENDPOINT + "/register", registerRequest, Void.class);
     }
 
-    public ApiResponse<AuthResponseDto> login(LoginRequestDto loginRequest) throws Exception {
-        return post(AUTH_ENDPOINT + "/authenticate", loginRequest, AuthResponseDto.class);
+    public AuthResponseDto login(LoginRequestDto loginRequest) {
+        return requireNonNull(post(AUTH_ENDPOINT + "/authenticate", loginRequest, AuthResponseDto.class));
     }
 
-    public void verifyAccount(VerifyAccountRequestDto verifyAccountRequest) throws Exception {
-        String endpoint = AUTH_ENDPOINT + "/verify?code=" + verifyAccountRequest.code();
+    public void verifyAccount(VerifyAccountRequestDto verifyAccountRequest) {
+        String endpoint = AUTH_ENDPOINT + "/verify?code=" + encode(verifyAccountRequest.code());
         post(endpoint, Void.class);
     }
 
-    public void resendVerificationCode(String email) throws Exception {
+    public void resendVerificationCode(String email) {
         ResendVerificationRequestDto request = new ResendVerificationRequestDto(email);
         post(AUTH_ENDPOINT + "/resend-verification-code", request, Void.class);
     }
 
-    public ApiResponse<AuthResponseDto> refreshToken() throws Exception {
-        return post(AUTH_ENDPOINT + "/refresh-token", AuthResponseDto.class);
+    public AuthResponseDto refreshToken() {
+        return requireNonNull(post(AUTH_ENDPOINT + "/refresh-token", AuthResponseDto.class));
     }
 
-    public void logout() throws Exception {
+    public void logout() {
         post(AUTH_ENDPOINT + "/logout", Void.class);
     }
 
-    public void requestPasswordReset(String email) throws Exception {
-        String endpoint = AUTH_ENDPOINT + "/reset-password-request?email=" + email;
+    public void requestPasswordReset(String email) {
+        String endpoint = AUTH_ENDPOINT + "/reset-password-request?email=" + encode(email);
         post(endpoint, Void.class);
     }
 
-    public void resetPassword(String token, ResetPasswordRequestDto request) throws Exception {
-        String endpoint = AUTH_ENDPOINT + "/reset-password?token=" + token;
+    public void resetPassword(String token, ResetPasswordRequestDto request) {
+        String endpoint = AUTH_ENDPOINT + "/reset-password?token=" + encode(token);
         post(endpoint, request, Void.class);
     }
 
-    public ApiResponse<Void> requestPasswordChange(ChangePasswordDto dto) throws Exception {
-        return post(AUTH_ENDPOINT + "/change-password-request", dto, Void.class);
+    public void requestPasswordChange(ChangePasswordDto dto) {
+        post(AUTH_ENDPOINT + "/change-password-request", dto, Void.class);
     }
 
-    public ApiResponse<Void> verifyPasswordChange(String code) throws Exception {
-        return post(AUTH_ENDPOINT + "/verify-password-change?code=" + code, Void.class);
+    public void verifyPasswordChange(String code) {
+        post(AUTH_ENDPOINT + "/verify-password-change?code=" + encode(code), Void.class);
     }
 
-    public ApiResponse<Void> requestEmailChange(ChangeEmailDto dto) throws Exception {
-        return post(AUTH_ENDPOINT + "/change-email-request", dto, Void.class);
+    public void requestEmailChange(ChangeEmailDto dto) {
+        post(AUTH_ENDPOINT + "/change-email-request", dto, Void.class);
     }
 
-    public ApiResponse<AuthResponseDto> verifyEmailChange(String code) throws Exception {
-        return post(AUTH_ENDPOINT + "/verify-email-change?code=" + code, AuthResponseDto.class);
+    public AuthResponseDto verifyEmailChange(String code) {
+        return requireNonNull(post(AUTH_ENDPOINT + "/verify-email-change?code=" + encode(code), AuthResponseDto.class));
     }
 }

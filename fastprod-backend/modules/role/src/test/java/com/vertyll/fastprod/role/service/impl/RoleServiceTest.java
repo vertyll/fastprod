@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.vertyll.fastprod.role.dto.RoleCreateDto;
 import com.vertyll.fastprod.role.dto.RoleResponseDto;
@@ -98,7 +99,7 @@ class RoleServiceTest {
     void updateRole_WhenValidData_ShouldUpdateRole() {
         // given
         Role existingRole = Role.builder().name(RoleType.ADMIN).description("Old description").build();
-        existingRole.setId(1L);
+        ReflectionTestUtils.setField(existingRole, "id", 1L);
 
         RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Updated description");
 
@@ -142,7 +143,7 @@ class RoleServiceTest {
     void updateRole_WhenNameAlreadyExists_ShouldThrowException() {
         // given
         Role existingRole = Role.builder().name(RoleType.ADMIN).description("Old description").build();
-        existingRole.setId(1L); // Set ID after building
+        ReflectionTestUtils.setField(existingRole, "id", 1L); // Set ID after building
 
         RoleUpdateDto updateDto = new RoleUpdateDto("USER", "Updated description"); // Different name than existing role
 
