@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
+import com.vertyll.fastprod.shared.i18n.I18n;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
@@ -50,14 +52,14 @@ public final class PaginationComponent extends HorizontalLayout {
         totalElementsSpan = new Span("0");
         pageSizeSelect = createPageSizeSelect();
 
-        Span pageSizeLabel = new Span("Items per page:");
+        Span pageSizeLabel = new Span(I18n.t("pagination.pageSize"));
         pageSizeLabel.getStyle().set("margin-right", "var(--lumo-space-s)");
 
         add(
             previousButton,
-            new Span("Page"),
+            new Span(I18n.t("pagination.page")),
             pageField,
-            new Span("of"),
+            new Span(I18n.t("pagination.of")),
             pageInfoSpan,
             nextButton,
             new Span("·"),

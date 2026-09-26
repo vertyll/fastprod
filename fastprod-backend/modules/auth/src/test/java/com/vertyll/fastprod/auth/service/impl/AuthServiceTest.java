@@ -215,7 +215,7 @@ class AuthServiceTest {
         when(userService.existsByEmail(anyString())).thenReturn(true);
 
         ApiException exception = assertThrows(ApiException.class, () -> authService.register(registerRequest));
-        assertEquals("Email already registered", exception.getMessage());
+        assertEquals("errors.user.emailTaken", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
@@ -246,7 +246,7 @@ class AuthServiceTest {
             ApiException.class,
             () -> authService.authenticate(authRequest, httpServletRequest, httpServletResponse)
         );
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("errors.user.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -258,7 +258,7 @@ class AuthServiceTest {
             ApiException.class,
             () -> authService.authenticate(authRequest, httpServletRequest, httpServletResponse)
         );
-        assertEquals("Account not verified", exception.getMessage());
+        assertEquals("errors.auth.accountNotVerified", exception.getMessage());
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
     }
 
@@ -284,7 +284,7 @@ class AuthServiceTest {
             .thenReturn(verificationToken);
 
         ApiException exception = assertThrows(ApiException.class, () -> authService.verifyAccount("123456"));
-        assertEquals("Account already verified", exception.getMessage());
+        assertEquals("errors.auth.accountAlreadyVerified", exception.getMessage());
         verify(userService, never()).saveUser(any(User.class));
         verify(verificationTokenService, never()).markTokenAsUsed(any(VerificationToken.class));
     }
@@ -308,7 +308,7 @@ class AuthServiceTest {
 
         ApiException exception =
                 assertThrows(ApiException.class, () -> authService.resendVerificationCode("nonexistent@example.com"));
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("errors.user.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         verify(verificationTokenService, never()).createVerificationToken(any(), any(), any());
         verify(emailService, never()).sendEmail(anyString(), anyString(), any(), anyString(), anyString());
@@ -321,7 +321,7 @@ class AuthServiceTest {
 
         ApiException exception =
                 assertThrows(ApiException.class, () -> authService.resendVerificationCode("john@example.com"));
-        assertEquals("Account already verified", exception.getMessage());
+        assertEquals("errors.auth.accountAlreadyVerified", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         verify(verificationTokenService, never()).createVerificationToken(any(), any(), any());
         verify(emailService, never()).sendEmail(anyString(), anyString(), any(), anyString(), anyString());
@@ -442,7 +442,7 @@ class AuthServiceTest {
             ApiException.class,
             () -> authService.refreshToken(httpServletRequest, httpServletResponse)
         );
-        assertEquals("Refresh token not found", exception.getMessage());
+        assertEquals("errors.auth.invalidRefreshToken", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
     }
 
@@ -513,7 +513,7 @@ class AuthServiceTest {
 
         ApiException exception =
                 assertThrows(ApiException.class, () -> authService.requestEmailChange(changeEmailRequest));
-        assertEquals("Invalid current password", exception.getMessage());
+        assertEquals("errors.auth.invalidCurrentPassword", exception.getMessage());
     }
 
     @Test

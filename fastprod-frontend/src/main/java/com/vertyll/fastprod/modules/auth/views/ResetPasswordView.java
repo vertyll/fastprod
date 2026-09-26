@@ -2,6 +2,7 @@ package com.vertyll.fastprod.modules.auth.views;
 
 import java.io.Serial;
 import java.time.Duration;
+import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
@@ -9,6 +10,7 @@ import com.vertyll.fastprod.base.ui.DelayedNavigation;
 import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -24,19 +26,18 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Route("reset-password")
-@PageTitle("Reset Password | FastProd")
 @AnonymousAllowed
 @Slf4j
-public final class ResetPasswordView extends VerticalLayout implements HasUrlParameter<String> {
+public final class ResetPasswordView extends VerticalLayout implements HasUrlParameter<String>, HasDynamicTitle {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -73,7 +74,7 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
         if (token != null && !token.isEmpty()) {
             this.resetToken = token;
         } else {
-            showNotification("Invalid or missing reset token", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("auth.reset.missingToken"), NotificationVariant.LUMO_ERROR);
             UI.getCurrent().navigate(LoginView.class);
         }
     }
@@ -95,51 +96,51 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
         icon.setSize("64px");
         icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        H1 title = new H1("Reset Your Password");
+        H1 title = new H1(I18n.t("auth.reset.title"));
         title.getStyle()
             .set("margin", "0")
             .set("font-size", "var(--lumo-font-size-xxxl)")
             .set("font-weight", "600")
             .set(COLOR, "var(--lumo-primary-text-color)");
 
-        Paragraph description = new Paragraph("Enter your new password below. Make sure it's strong and secure.");
+        Paragraph description = new Paragraph(I18n.t("auth.reset.description"));
         description.getStyle()
             .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        newPasswordField = new PasswordField("New Password");
+        newPasswordField = new PasswordField(I18n.t("common.newPassword"));
         newPasswordField.setWidthFull();
         newPasswordField.setPrefixComponent(VaadinIcon.LOCK.create());
         newPasswordField.setRequiredIndicatorVisible(true);
-        newPasswordField.setHelperText("At least 8 characters with a letter and a digit");
+        newPasswordField.setHelperText(I18n.t("validation.password.hint"));
         newPasswordField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        confirmPasswordField = new PasswordField("Confirm New Password");
+        confirmPasswordField = new PasswordField(I18n.t("common.confirmNewPassword"));
         confirmPasswordField.setWidthFull();
         confirmPasswordField.setPrefixComponent(VaadinIcon.LOCK.create());
         confirmPasswordField.setRequiredIndicatorVisible(true);
         confirmPasswordField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
         binder.forField(newPasswordField)
-            .asRequired("Password is required")
-            .withValidator(pwd -> pwd.length() >= 8, "Password must be at least 8 characters")
+            .asRequired(I18n.t("validation.password.required"))
+            .withValidator(pwd -> pwd.length() >= 8, I18n.t("validation.password.minLength", Map.of("min", 8)))
             .withValidator(
                 pwd -> pwd.matches("^(?=.*[A-Za-z])(?=.*\\d).+$"),
-                "Password must contain at least one letter and one digit"
+                I18n.t("validation.password.letterAndDigit")
             )
             .bind(FormData::newPassword, FormData::setNewPassword);
 
         binder.forField(confirmPasswordField)
-            .asRequired("Please confirm your password")
+            .asRequired(I18n.t("validation.password.confirmRequired"))
             .bind(FormData::confirmPassword, FormData::setConfirmPassword);
 
-        submitButton = new Button("Reset Password", VaadinIcon.CHECK.create());
+        submitButton = new Button(I18n.t("auth.reset.submit"), VaadinIcon.CHECK.create());
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         submitButton.setWidthFull();
         submitButton.addClickListener(_ -> handleSubmit());
         submitButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        Button backButton = new Button("Back to Login", VaadinIcon.ARROW_LEFT.create());
+        Button backButton = new Button(I18n.t("auth.backToLogin"), VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         backButton.addClickListener(_ -> UI.getCurrent().navigate(LoginView.class));
 
@@ -157,27 +158,24 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
         String confirmPwd = confirmPasswordField.getValue();
 
         if (!newPwd.equals(confirmPwd)) {
-            showNotification("Passwords do not match", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("validation.password.mismatch"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         String token = resetToken;
         if (token == null || token.isEmpty()) {
-            showNotification("Invalid reset token", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("auth.reset.invalidToken"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         submitButton.setEnabled(false);
-        submitButton.setText("Resetting...");
+        submitButton.setText(I18n.t("auth.reset.submitting"));
 
         try {
             ResetPasswordRequestDto request = new ResetPasswordRequestDto(newPwd);
             authService.resetPassword(token, request);
 
-            showNotification(
-                "Password reset successfully! You can now log in with your new password.",
-                NotificationVariant.LUMO_SUCCESS
-            );
+            showNotification(I18n.t("auth.reset.success"), NotificationVariant.LUMO_SUCCESS);
 
             UI ui = UI.getCurrent();
             DelayedNavigation.navigate(ui, LoginView.class, Duration.ofSeconds(2));
@@ -186,7 +184,7 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
             log.error("API error during password reset: {}", e.getMessage());
         } finally {
             submitButton.setEnabled(true);
-            submitButton.setText("Reset Password");
+            submitButton.setText(I18n.t("auth.reset.submit"));
         }
     }
 
@@ -223,5 +221,10 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
         void setConfirmPassword(String confirmPassword) {
             this.confirmPassword = confirmPassword;
         }
+    }
+
+    @Override
+    public String getPageTitle() {
+        return I18n.t("pages.resetPassword");
     }
 }

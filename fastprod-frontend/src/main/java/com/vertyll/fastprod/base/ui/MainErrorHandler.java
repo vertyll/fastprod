@@ -5,6 +5,8 @@ import java.util.concurrent.Future;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.vertyll.fastprod.shared.i18n.I18n;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -16,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class MainErrorHandler {
 
-    private static final String AN_UNEXPECTED_ERROR_HAS_OCCURRED_PLEASE_TRY_AGAIN_LATER =
-            "An unexpected error has occurred. Please try again later.";
+    private static final String AN_UNEXPECTED_ERROR_HAS_OCCURRED_PLEASE_TRY_AGAIN_LATER_KEY =
+            "errors.common.unexpectedTryLater";
 
     @Bean
     public VaadinServiceInitListener errorHandlerInitializer() {
@@ -26,7 +28,7 @@ public class MainErrorHandler {
                 log.error("An unexpected error occurred", errorEvent.getThrowable());
                 errorEvent.getComponent().flatMap(Component::getUI).ifPresent(ui -> {
                     Notification notification =
-                            new Notification(AN_UNEXPECTED_ERROR_HAS_OCCURRED_PLEASE_TRY_AGAIN_LATER);
+                            new Notification(I18n.t(AN_UNEXPECTED_ERROR_HAS_OCCURRED_PLEASE_TRY_AGAIN_LATER_KEY));
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.setPosition(Notification.Position.TOP_CENTER);
                     notification.setDuration(3000);

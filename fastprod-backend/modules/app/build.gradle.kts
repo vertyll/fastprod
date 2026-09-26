@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":modules:employee"))
     implementation(project(":modules:role"))
     implementation(project(":modules:user"))
+    implementation(project(":modules:translation"))
 
     implementation(libs.spring.boot.starter.webmvc)
     implementation(libs.spring.boot.starter.data.jpa)
@@ -29,7 +30,7 @@ dependencies {
     compileOnly(libs.lombok)
 
     runtimeOnly(libs.postgresql)
-    runtimeOnly(libs.spring.boot.devtools)
+    developmentOnly(libs.spring.boot.devtools)
 
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.bundles.mapstruct.processors)

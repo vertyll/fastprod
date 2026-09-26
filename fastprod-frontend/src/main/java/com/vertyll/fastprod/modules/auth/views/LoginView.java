@@ -7,6 +7,7 @@ import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto.FormBuilder;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vertyll.fastprod.shared.security.SecurityService;
 import com.vertyll.fastprod.shared.security.TokenRefreshService;
 
@@ -25,20 +26,19 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.validator.EmailValidator;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Route("login")
-@PageTitle("Login | FastProd")
 @Slf4j
-public final class LoginView extends VerticalLayout {
+public final class LoginView extends VerticalLayout implements HasDynamicTitle {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private static final String SIGN_IN = "Sign In";
+    private static final String SIGN_IN_KEY = "auth.login.title";
     private static final String COLOR = "color";
     private static final String MARGIN_BOTTOM = "margin-bottom";
     private static final String LUMO_SPACE_M = "var(--lumo-space-m)";
@@ -88,38 +88,38 @@ public final class LoginView extends VerticalLayout {
             .set("width", "100%")
             .set("box-sizing", "border-box");
 
-        H1 title = new H1(SIGN_IN);
+        H1 title = new H1(I18n.t(SIGN_IN_KEY));
         title.getStyle()
             .set("margin", "0")
             .set("font-size", "var(--lumo-font-size-xxxl)")
             .set("font-weight", "600")
             .set(COLOR, "var(--lumo-primary-text-color)");
 
-        Paragraph subtitle = new Paragraph("Sign in to your account");
+        Paragraph subtitle = new Paragraph(I18n.t("auth.login.subtitle"));
         subtitle.getStyle()
             .set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        emailField = new EmailField("Email");
+        emailField = new EmailField(I18n.t("common.email"));
         emailField.setRequiredIndicatorVisible(true);
-        emailField.setErrorMessage("Please enter a valid email address");
+        emailField.setErrorMessage(I18n.t("validation.email.invalid"));
         emailField.setClearButtonVisible(true);
         emailField.setWidthFull();
         emailField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        passwordField = new PasswordField("Password");
+        passwordField = new PasswordField(I18n.t("common.password"));
         passwordField.setRequiredIndicatorVisible(true);
         passwordField.setClearButtonVisible(true);
         passwordField.setWidthFull();
         passwordField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
-        loginButton = new Button(SIGN_IN);
+        loginButton = new Button(I18n.t(SIGN_IN_KEY));
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         loginButton.setWidthFull();
         loginButton.addClickListener(_ -> handleLogin());
         loginButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        RouterLink forgotPasswordLink = new RouterLink("Forgot password?", ForgotPasswordView.class);
+        RouterLink forgotPasswordLink = new RouterLink(I18n.t("auth.login.forgot"), ForgotPasswordView.class);
         forgotPasswordLink.getStyle()
             .set(COLOR, "var(--lumo-primary-color)")
             .set("text-decoration", "none")
@@ -128,7 +128,7 @@ public final class LoginView extends VerticalLayout {
             .set(TEXT_ALIGN, CENTER)
             .set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        RouterLink registerLink = new RouterLink("Create an account", RegisterView.class);
+        RouterLink registerLink = new RouterLink(I18n.t("auth.login.createAccount"), RegisterView.class);
         registerLink.getStyle()
             .set(COLOR, "var(--lumo-primary-color)")
             .set("text-decoration", "none")
@@ -136,7 +136,7 @@ public final class LoginView extends VerticalLayout {
 
         Div registerContainer = new Div();
         registerContainer.getStyle().set(TEXT_ALIGN, CENTER).set("margin-top", LUMO_SPACE_M);
-        registerContainer.add(new Span("Don't have an account? "), registerLink);
+        registerContainer.add(new Span(I18n.t("auth.login.noAccount")), registerLink);
 
         configureBinder();
 
@@ -147,11 +147,11 @@ public final class LoginView extends VerticalLayout {
 
     private void configureBinder() {
         binder.forField(emailField)
-            .withValidator(new EmailValidator("Please enter a valid email address"))
+            .withValidator(new EmailValidator(I18n.t("validation.email.invalid")))
             .bind(FormBuilder::getEmail, FormBuilder::setEmail);
 
         binder.forField(passwordField)
-            .asRequired("Password is required")
+            .asRequired(I18n.t("validation.password.required"))
             .bind(FormBuilder::getPassword, FormBuilder::setPassword);
     }
 
@@ -163,7 +163,7 @@ public final class LoginView extends VerticalLayout {
             LoginRequestDto loginRequest = form.toDto();
 
             loginButton.setEnabled(false);
-            loginButton.setText("Signing in...");
+            loginButton.setText(I18n.t("auth.login.submitting"));
 
             AuthResponseDto response = authService.login(loginRequest);
 
@@ -172,7 +172,7 @@ public final class LoginView extends VerticalLayout {
                 tokenRefreshService.setTokenExpiration();
             }
 
-            String message = "Login successful!";
+            String message = I18n.t("auth.login.success");
             showNotification(message, NotificationVariant.LUMO_SUCCESS);
 
             UI.getCurrent().getPage().setLocation("/");
@@ -180,11 +180,8 @@ public final class LoginView extends VerticalLayout {
         } catch (ValidationException e) {
             log.error("Validation error during login", e);
         } catch (ApiException e) {
-            if (e.getStatusCode() == 403 && e.getMessage().contains("not verified")) {
-                showNotification(
-                    "Your account is not verified. Please check your email for the verification code.",
-                    NotificationVariant.LUMO_WARNING
-                );
+            if (e.getStatusCode() == 403 && "errors.auth.accountNotVerified".equals(e.getMessage())) {
+                showNotification(I18n.t("auth.login.notVerified"), NotificationVariant.LUMO_WARNING);
                 String email = emailField.getValue();
                 UI.getCurrent().navigate(VerifyAccountView.class, email);
             } else {
@@ -193,7 +190,7 @@ public final class LoginView extends VerticalLayout {
             }
         } finally {
             loginButton.setEnabled(true);
-            loginButton.setText(SIGN_IN);
+            loginButton.setText(I18n.t(SIGN_IN_KEY));
         }
     }
 
@@ -209,5 +206,10 @@ public final class LoginView extends VerticalLayout {
 
         notification.add(text);
         notification.open();
+    }
+
+    @Override
+    public String getPageTitle() {
+        return I18n.t("pages.login");
     }
 }

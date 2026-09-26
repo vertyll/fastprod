@@ -133,7 +133,7 @@ class EmployeeServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> employeeService.createEmployee(createDto));
 
-        assertEquals("Email already exists", exception.getMessage());
+        assertEquals("errors.user.emailTaken", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         verify(userRepository, never()).save(any(User.class));
     }
@@ -165,7 +165,7 @@ class EmployeeServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> employeeService.updateEmployee(1L, updateDto));
 
-        assertEquals("Employee not found", exception.getMessage());
+        assertEquals("errors.employee.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -176,7 +176,7 @@ class EmployeeServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> employeeService.updateEmployee(1L, updateDto));
 
-        assertEquals("Cannot update inactive employee", exception.getMessage());
+        assertEquals("errors.employee.inactive", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
@@ -191,7 +191,7 @@ class EmployeeServiceTest {
         ApiException exception =
                 assertThrows(ApiException.class, () -> employeeService.updateEmployee(1L, dtoWithDifferentEmail));
 
-        assertEquals("Email already exists", exception.getMessage());
+        assertEquals("errors.user.emailTaken", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
@@ -216,7 +216,7 @@ class EmployeeServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> employeeService.getEmployeeById(1L));
 
-        assertEquals("Employee not found", exception.getMessage());
+        assertEquals("errors.employee.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -227,7 +227,7 @@ class EmployeeServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> employeeService.getEmployeeById(1L));
 
-        assertEquals("Employee not found", exception.getMessage());
+        assertEquals("errors.employee.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -250,7 +250,7 @@ class EmployeeServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> employeeService.deleteEmployee(1L));
 
-        assertEquals("Employee not found", exception.getMessage());
+        assertEquals("errors.employee.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -261,7 +261,7 @@ class EmployeeServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> employeeService.deleteEmployee(1L));
 
-        assertEquals("Employee already deleted", exception.getMessage());
+        assertEquals("errors.employee.alreadyDeleted", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 

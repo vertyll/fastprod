@@ -18,9 +18,9 @@ import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 @RequiredArgsConstructor
 class RoleServiceImpl implements RoleService {
 
-    private static final String ROLE_ALREADY_EXISTS = "Role already exists";
-    private static final String ROLE_NOT_FOUND = "Role not found";
-    private static final String ROLE_WITH_THIS_NAME_ALREADY_EXISTS = "Role with this name already exists";
+    private static final String ROLE_ALREADY_EXISTS = "errors.role.alreadyExists";
+    private static final String ROLE_NOT_FOUND = "errors.role.notFound";
+    private static final String ROLE_WITH_THIS_NAME_ALREADY_EXISTS = "errors.role.alreadyExists";
     private static final String DEFAULT_ROLE = "Default role: ";
 
     private final RoleRepository roleRepository;

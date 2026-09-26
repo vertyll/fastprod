@@ -3,6 +3,7 @@ package com.vertyll.fastprod.shared.components;
 import java.io.Serial;
 
 import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -24,7 +25,7 @@ public final class VerificationCodeDialog extends Dialog {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private static final String VERIFY_BUTTON_TEXT = "Verify";
+    private static final String VERIFY_BUTTON_TEXT_KEY = "verification.submit";
 
     private final TextField codeField;
     private final Button verifyButton;
@@ -57,21 +58,21 @@ public final class VerificationCodeDialog extends Dialog {
             .set("margin", "0 0 var(--lumo-space-l) 0")
             .set("color", "var(--lumo-secondary-text-color)");
 
-        codeField = new TextField("Verification Code");
+        codeField = new TextField(I18n.t("verification.code"));
         codeField.setWidthFull();
         codeField.setPrefixComponent(VaadinIcon.KEY.create());
-        codeField.setPlaceholder("Enter 6-digit code");
+        codeField.setPlaceholder(I18n.t("verification.codePlaceholder"));
         codeField.setMaxLength(6);
         codeField.setPattern("[0-9]*");
         codeField.setAutofocus(true);
         codeField.getStyle().set("font-size", "var(--lumo-font-size-xl)").set("text-align", "center");
 
-        verifyButton = new Button(VERIFY_BUTTON_TEXT, VaadinIcon.CHECK.create());
+        verifyButton = new Button(I18n.t(VERIFY_BUTTON_TEXT_KEY), VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         verifyButton.setWidthFull();
         verifyButton.addClickListener(_ -> handleVerification());
 
-        Button cancelButton = new Button("Cancel");
+        Button cancelButton = new Button(I18n.t("common.cancel"));
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         cancelButton.setWidthFull();
         cancelButton.addClickListener(_ -> close());
@@ -85,31 +86,31 @@ public final class VerificationCodeDialog extends Dialog {
         String code = codeField.getValue();
 
         if (code == null || code.isBlank()) {
-            showNotification("Please enter the verification code", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("validation.verificationCode.required"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         if (code.length() != 6) {
-            showNotification("Verification code must be 6 digits", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("validation.verificationCode.length"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         verifyButton.setEnabled(false);
-        verifyButton.setText("Verifying...");
+        verifyButton.setText(I18n.t("common.verifying"));
 
         try {
             onVerify.accept(code, this);
         } catch (ApiException e) {
             log.error("Verification failed", e);
             verifyButton.setEnabled(true);
-            verifyButton.setText(VERIFY_BUTTON_TEXT);
+            verifyButton.setText(I18n.t(VERIFY_BUTTON_TEXT_KEY));
         }
     }
 
     public void showError(String message) {
         showNotification(message, NotificationVariant.LUMO_ERROR);
         verifyButton.setEnabled(true);
-        verifyButton.setText(VERIFY_BUTTON_TEXT);
+        verifyButton.setText(I18n.t(VERIFY_BUTTON_TEXT_KEY));
         codeField.clear();
         codeField.focus();
     }

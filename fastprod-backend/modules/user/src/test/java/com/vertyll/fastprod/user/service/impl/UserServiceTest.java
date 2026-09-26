@@ -132,7 +132,7 @@ class UserServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> userService.createUser(createDto));
 
-        assertEquals("Email already exists", exception.getMessage());
+        assertEquals("errors.user.emailTaken", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         verify(userRepository, never()).save(any(User.class));
     }
@@ -164,7 +164,7 @@ class UserServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> userService.updateUser(1L, updateDto));
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("errors.user.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
@@ -189,7 +189,7 @@ class UserServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> userService.getUserById(1L));
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("errors.user.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 

@@ -1,6 +1,7 @@
 package com.vertyll.fastprod.modules.employee.views;
 
 import java.io.Serial;
+import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
@@ -10,6 +11,7 @@ import com.vertyll.fastprod.modules.employee.service.EmployeeService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -23,15 +25,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees/details/:id", layout = MainLayout.class)
-@PageTitle("Employee Details | FastProd")
 @Slf4j
-public final class EmployeeDetailsView extends VerticalLayout implements BeforeEnterObserver {
+public final class EmployeeDetailsView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -62,7 +63,7 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
         if (id != null) {
             loadEmployee(id);
         } else {
-            Notification.show("Invalid employee ID", 3000, Notification.Position.TOP_CENTER)
+            Notification.show(I18n.t("employees.invalidId"), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
         }
@@ -79,11 +80,11 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
         header.setPadding(false);
         header.setSpacing(true);
 
-        Button backButton = new Button("Back to List", VaadinIcon.ARROW_LEFT.create());
+        Button backButton = new Button(I18n.t("employees.backToList"), VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         backButton.addClickListener(_ -> navigateToList());
 
-        Button editButton = new Button("Edit", VaadinIcon.EDIT.create());
+        Button editButton = new Button(I18n.t("common.edit"), VaadinIcon.EDIT.create());
         editButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         editButton.addClickListener(_ -> {
             Long id = employeeId;
@@ -92,7 +93,7 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
             }
         });
 
-        Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create());
+        Button deleteButton = new Button(I18n.t("common.delete"), VaadinIcon.TRASH.create());
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         deleteButton.addClickListener(_ -> confirmDelete());
 
@@ -119,7 +120,12 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
             }
         } catch (ApiException e) {
             log.error("Failed to load employee", e);
-            Notification.show("Failed to load employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification
+                .show(
+                    I18n.t("employees.loadFailed", Map.of("reason", I18n.error(e))),
+                    3000,
+                    Notification.Position.TOP_CENTER
+                )
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
             navigateToList();
         } finally {
@@ -131,13 +137,13 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
         titleLabel.setText(employee.firstName() + " " + employee.lastName());
 
         detailsTable.clear();
-        detailsTable.addRow("ID", String.valueOf(employee.id()));
-        detailsTable.addRow("First Name", employee.firstName());
-        detailsTable.addRow("Last Name", employee.lastName());
-        detailsTable.addRow("Email", employee.email());
-        detailsTable.addRow("Roles", String.join(", ", employee.roles()));
+        detailsTable.addRow(I18n.t("common.id"), String.valueOf(employee.id()));
+        detailsTable.addRow(I18n.t("common.firstName"), employee.firstName());
+        detailsTable.addRow(I18n.t("common.lastName"), employee.lastName());
+        detailsTable.addRow(I18n.t("common.email"), employee.email());
+        detailsTable.addRow(I18n.t("common.roles"), I18n.roles(employee.roles()));
 
-        Span statusBadge = new Span(employee.isVerified() ? "Verified" : "Not Verified");
+        Span statusBadge = new Span(employee.isVerified() ? I18n.t("common.verified") : I18n.t("common.notVerified"));
         statusBadge.getElement().getThemeList().clear();
         statusBadge.getElement().getThemeList().add("badge");
         if (employee.isVerified()) {
@@ -145,7 +151,7 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
         } else {
             statusBadge.getElement().getThemeList().add("error");
         }
-        detailsTable.addRow("Status", statusBadge);
+        detailsTable.addRow(I18n.t("common.status"), statusBadge);
     }
 
     private void navigateToForm(Long employeeId) {
@@ -155,10 +161,10 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
     private void confirmDelete() {
         com.vaadin.flow.component.confirmdialog.ConfirmDialog dialog =
                 new com.vaadin.flow.component.confirmdialog.ConfirmDialog();
-        dialog.setHeader("Delete Employee");
-        dialog.setText("Are you sure you want to delete this employee? This action cannot be undone.");
+        dialog.setHeader(I18n.t("employees.delete.title"));
+        dialog.setText(I18n.t("employees.delete.confirmThis"));
         dialog.setCancelable(true);
-        dialog.setConfirmText("Delete");
+        dialog.setConfirmText(I18n.t("common.delete"));
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(_ -> deleteEmployee());
         dialog.open();
@@ -171,17 +177,27 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
         }
         try {
             employeeService.deleteEmployee(id);
-            Notification.show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
+            Notification.show(I18n.t("employees.delete.success"), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             navigateToList();
         } catch (ApiException e) {
             log.error("Failed to delete employee", e);
-            Notification.show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification
+                .show(
+                    I18n.t("employees.deleteFailed", Map.of("reason", I18n.error(e))),
+                    3000,
+                    Notification.Position.TOP_CENTER
+                )
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 
     private void navigateToList() {
         UI.getCurrent().navigate(EmployeeListView.class);
+    }
+
+    @Override
+    public String getPageTitle() {
+        return I18n.t("pages.employeeDetails");
     }
 }

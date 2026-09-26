@@ -150,7 +150,7 @@ public class AuthController {
     @PostMapping("/reset-password-request")
     @Operation(summary = "Request password reset for a forgotten password")
     public ResponseEntity<Void> requestPasswordReset(
-        @RequestParam @Email(message = "Email should be valid") String email
+        @RequestParam @Email(message = "validation.email.invalid") String email
     ) throws MessagingException {
         authService.sendPasswordResetEmail(email);
         return ResponseEntity.noContent().build();

@@ -116,7 +116,7 @@ class UserControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(userService, never()).createUser(any(UserCreateDto.class));
     }
@@ -138,7 +138,7 @@ class UserControllerTest {
 
     @Test
     void updateUser_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
-        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND)).when(userService)
+        doThrow(new ApiException("errors.user.notFound", HttpStatus.NOT_FOUND)).when(userService)
             .updateUser(anyLong(), any(UserUpdateDto.class));
 
         mockMvc
@@ -148,7 +148,7 @@ class UserControllerTest {
             )
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("User not found"));
+            .andExpect(jsonPath("$.detail").value("errors.user.notFound"));
     }
 
     @Test
@@ -166,11 +166,11 @@ class UserControllerTest {
 
     @Test
     void getUser_WhenNotFound_ShouldReturnNotFound() throws Exception {
-        when(userService.getUserById(1L)).thenThrow(new ApiException("User not found", HttpStatus.NOT_FOUND));
+        when(userService.getUserById(1L)).thenThrow(new ApiException("errors.user.notFound", HttpStatus.NOT_FOUND));
 
         mockMvc.perform(get("/users/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("User not found"));
+            .andExpect(jsonPath("$.detail").value("errors.user.notFound"));
     }
 }

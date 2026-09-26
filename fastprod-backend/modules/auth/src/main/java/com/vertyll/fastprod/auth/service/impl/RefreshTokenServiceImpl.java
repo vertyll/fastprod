@@ -31,12 +31,12 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     private static final String UNKNOWN = "unknown";
     private static final int MAX_IP_LENGTH = 45;
     private static final int MAX_USER_AGENT_LENGTH = 255;
-    private static final String INVALID_REFRESH_TOKEN = "Invalid refresh token";
-    private static final String INVALID_REFRESH_TOKEN_SIGNATURE = "Invalid refresh token signature";
+    private static final String INVALID_REFRESH_TOKEN = "errors.auth.invalidRefreshToken";
+    private static final String INVALID_REFRESH_TOKEN_SIGNATURE = "errors.auth.invalidRefreshToken";
     private static final String X_FORWARDED_FOR = "X-Forwarded-For";
     private static final String X_REAL_IP = "X-Real-IP";
     private static final String USER_AGENT = "User-Agent";
-    private static final String REFRESH_TOKEN_NOT_FOUND = "Refresh token not found";
+    private static final String REFRESH_TOKEN_NOT_FOUND = "errors.auth.invalidRefreshToken";
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;

@@ -91,7 +91,7 @@ class RoleServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> roleService.createRole(createDto));
 
-        assertEquals("Role already exists", exception.getMessage());
+        assertEquals("errors.role.alreadyExists", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         verify(roleRepository, never()).save(any(Role.class));
     }
@@ -128,7 +128,7 @@ class RoleServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> roleService.updateRole(1L, updateDto));
 
-        assertEquals("Role not found", exception.getMessage());
+        assertEquals("errors.role.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         verify(roleRepository, never()).save(any(Role.class));
     }
@@ -145,7 +145,7 @@ class RoleServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> roleService.updateRole(1L, updateDto));
 
-        assertEquals("Role with this name already exists", exception.getMessage());
+        assertEquals("errors.role.alreadyExists", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         verify(roleRepository, never()).save(any(Role.class));
     }
@@ -193,7 +193,7 @@ class RoleServiceTest {
 
         ApiException exception = assertThrows(ApiException.class, () -> roleService.getRoleById(1L));
 
-        assertEquals("Role not found", exception.getMessage());
+        assertEquals("errors.role.notFound", exception.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 }

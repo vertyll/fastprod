@@ -27,25 +27,35 @@ import static java.util.Objects.requireNonNullElse;
 public class GlobalExceptionHandler {
 
     public static final String ERRORS_PROPERTY = "errors";
+    public static final String CODE_PROPERTY = "code";
+    public static final String ARGS_PROPERTY = "args";
 
-    private static final String AN_UNEXPECTED_ERROR_OCCURRED = "An unexpected error occurred";
-    private static final String INVALID_VALUE = "Invalid value";
-    private static final String VALIDATION_FAILED = "Validation failed";
-    private static final String INVALID_EMAIL_OR_PASSWORD = "Invalid email or password";
-    private static final String ACCOUNT_IS_DISABLED = "Account is disabled";
-    private static final String ACCOUNT_IS_LOCKED = "Account is locked";
-    private static final String NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION =
-            "You do not have permission to perform this action";
-    private static final String ACCESS_DENIED = "Access denied";
-    private static final String AUTHENTICATION_REQUIRED = "Authentication required";
+    private static final String AN_UNEXPECTED_ERROR_OCCURRED = "errors.common.unexpected";
+    private static final String INVALID_VALUE = "validation.invalid";
+    private static final String VALIDATION_FAILED = "errors.common.validationFailed";
+    private static final String INVALID_EMAIL_OR_PASSWORD = "errors.auth.invalidCredentials";
+    private static final String ACCOUNT_IS_DISABLED = "errors.auth.accountDisabled";
+    private static final String ACCOUNT_IS_LOCKED = "errors.auth.accountLocked";
+    private static final String NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION = "errors.auth.forbidden";
+    private static final String ACCESS_DENIED = "errors.auth.accessDenied";
+    private static final String AUTHENTICATION_REQUIRED = "errors.auth.authenticationRequired";
 
-    public static ProblemDetail problem(HttpStatusCode status, String detail) {
-        return ProblemDetail.forStatusAndDetail(status, detail);
+    public static ProblemDetail problem(HttpStatusCode status, String messageKey) {
+        return problem(status, messageKey, Map.of());
+    }
+
+    public static ProblemDetail problem(HttpStatusCode status, String messageKey, Map<String, ?> args) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, messageKey);
+        problem.setProperty(CODE_PROPERTY, messageKey);
+        if (!args.isEmpty()) {
+            problem.setProperty(ARGS_PROPERTY, args);
+        }
+        return problem;
     }
 
     @ExceptionHandler(ApiException.class)
     public ProblemDetail handleApiException(ApiException ex) {
-        return problem(ex.getStatus(), requireNonNullElse(ex.getMessage(), AN_UNEXPECTED_ERROR_OCCURRED));
+        return problem(ex.getStatus(), requireNonNullElse(ex.getMessage(), AN_UNEXPECTED_ERROR_OCCURRED), ex.getArgs());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

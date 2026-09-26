@@ -1,5 +1,6 @@
 [versions]
 java = "25"
+icu4j = "78.3"
 # Plugins
 spring-boot = "4.1.1"
 spring-dependency-management = "1.1.7"
@@ -27,6 +28,7 @@ spotbugs-annotations = "4.10.4"
 findsecbugs = "1.14.0"
 
 [libraries]
+icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
 # Spring Boot Starters
 spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }

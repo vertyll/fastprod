@@ -120,7 +120,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(authService, never()).register(any(RegisterRequestDto.class));
     }
@@ -136,14 +136,14 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(authService, never()).register(any(RegisterRequestDto.class));
     }
 
     @Test
     void register_WhenEmailAlreadyExists_ShouldReturnBadRequest() throws Exception {
-        doThrow(new ApiException("Email already registered", HttpStatus.BAD_REQUEST)).when(authService)
+        doThrow(new ApiException("errors.user.emailTaken", HttpStatus.BAD_REQUEST)).when(authService)
             .register(any(RegisterRequestDto.class));
 
         mockMvc
@@ -153,7 +153,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Email already registered"));
+            .andExpect(jsonPath("$.detail").value("errors.user.emailTaken"));
     }
 
     @Test
@@ -202,7 +202,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(authService, never())
             .authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -219,7 +219,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(authService, never())
             .authenticate(any(AuthRequestDto.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -240,12 +240,12 @@ class AuthControllerTest {
     @Test
     void refreshToken_WhenInvalidRefreshToken_ShouldReturnUnauthorized() throws Exception {
         when(authService.refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
-            .thenThrow(new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED));
+            .thenThrow(new ApiException("errors.auth.invalidRefreshToken", HttpStatus.UNAUTHORIZED));
 
         mockMvc.perform(post("/auth/refresh-token"))
             .andDo(print())
             .andExpect(status().isUnauthorized())
-            .andExpect(jsonPath("$.detail").value("Invalid refresh token"));
+            .andExpect(jsonPath("$.detail").value("errors.auth.invalidRefreshToken"));
     }
 
     @Test
@@ -277,13 +277,13 @@ class AuthControllerTest {
 
     @Test
     void verifyAccount_WhenInvalidCode_ShouldReturnBadRequest() throws Exception {
-        doThrow(new ApiException("Invalid verification code", HttpStatus.BAD_REQUEST)).when(authService)
+        doThrow(new ApiException("errors.verification.invalidCode", HttpStatus.BAD_REQUEST)).when(authService)
             .verifyAccount(anyString());
 
         mockMvc.perform(post("/auth/verify").param("code", "invalid"))
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Invalid verification code"));
+            .andExpect(jsonPath("$.detail").value("errors.verification.invalidCode"));
     }
 
     @Test
@@ -313,7 +313,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(authService, never()).resendVerificationCode(anyString());
     }
@@ -321,7 +321,7 @@ class AuthControllerTest {
     @Test
     void resendVerificationCode_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("nonexistent@example.com");
-        doThrow(new ApiException("User not found", HttpStatus.NOT_FOUND)).when(authService)
+        doThrow(new ApiException("errors.user.notFound", HttpStatus.NOT_FOUND)).when(authService)
             .resendVerificationCode(anyString());
 
         mockMvc
@@ -331,13 +331,13 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("User not found"));
+            .andExpect(jsonPath("$.detail").value("errors.user.notFound"));
     }
 
     @Test
     void resendVerificationCode_WhenAccountAlreadyVerified_ShouldReturnBadRequest() throws Exception {
         ResendVerificationRequestDto request = new ResendVerificationRequestDto("john@example.com");
-        doThrow(new ApiException("Account already verified", HttpStatus.BAD_REQUEST)).when(authService)
+        doThrow(new ApiException("errors.auth.accountAlreadyVerified", HttpStatus.BAD_REQUEST)).when(authService)
             .resendVerificationCode(anyString());
 
         mockMvc
@@ -347,7 +347,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Account already verified"));
+            .andExpect(jsonPath("$.detail").value("errors.auth.accountAlreadyVerified"));
     }
 
     @Test
@@ -376,7 +376,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(authService, never()).requestEmailChange(any(ChangeEmailRequestDto.class));
     }
@@ -459,7 +459,7 @@ class AuthControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(authService, never()).resetPassword(anyString(), any(ResetPasswordRequestDto.class));
     }

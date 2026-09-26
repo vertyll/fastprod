@@ -50,20 +50,20 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 class AuthServiceImpl implements AuthService {
 
-    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
+    private static final String USER_NOT_FOUND_MESSAGE = "errors.user.notFound";
     private static final String BEARER_TOKEN_TYPE = "Bearer";
-    private static final String EMAIL_ALREADY_REGISTERED = "Email already registered";
+    private static final String EMAIL_ALREADY_REGISTERED = "errors.user.emailTaken";
     private static final String ACCOUNT_ACTIVATION = "Account activation";
-    private static final String ACCOUNT_NOT_VERIFIED = "Account not verified";
-    private static final String REFRESH_TOKEN_NOT_FOUND = "Refresh token not found";
-    private static final String ACCOUNT_ALREADY_VERIFIED = "Account already verified";
-    private static final String USER_NOT_AUTHENTICATED = "User not authenticated";
-    private static final String INVALID_CURRENT_PASSWORD = "Invalid current password";
-    private static final String EMAIL_ALREADY_IN_USE = "Email already in use";
+    private static final String ACCOUNT_NOT_VERIFIED = "errors.auth.accountNotVerified";
+    private static final String REFRESH_TOKEN_NOT_FOUND = "errors.auth.invalidRefreshToken";
+    private static final String ACCOUNT_ALREADY_VERIFIED = "errors.auth.accountAlreadyVerified";
+    private static final String USER_NOT_AUTHENTICATED = "errors.auth.authenticationRequired";
+    private static final String INVALID_CURRENT_PASSWORD = "errors.auth.invalidCurrentPassword";
+    private static final String EMAIL_ALREADY_IN_USE = "errors.user.emailTaken";
     private static final String EMAIL_CHANGE_VERIFICATION = "Email Change Verification";
-    private static final String NEW_EMAIL_NOT_FOUND = "New email not found";
+    private static final String NEW_EMAIL_NOT_FOUND = "errors.verification.missingNewEmail";
     private static final String PASSWORD_CHANGE_VERIFICATION = "Password Change Verification";
-    private static final String NEW_PASSWORD_NOT_FOUND = "New password not found";
+    private static final String NEW_PASSWORD_NOT_FOUND = "errors.verification.missingNewPassword";
     private static final String PASSWORD_RESET = "Password Reset";
     private static final String SET_COOKIE = "Set-Cookie";
 

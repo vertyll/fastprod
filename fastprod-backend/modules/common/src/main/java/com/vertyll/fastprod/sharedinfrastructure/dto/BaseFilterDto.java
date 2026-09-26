@@ -13,10 +13,10 @@ import com.google.common.base.Ascii;
 import static java.util.Objects.requireNonNull;
 
 public record BaseFilterDto(
-    @Nullable @Min(value = 0, message = "Page number must be greater than or equal to 0") Integer page,
-    @Nullable @Min(value = 1, message = "Page size must be at least 1") @Max(
+    @Nullable @Min(value = 0, message = "validation.page.numberMin") Integer page,
+    @Nullable @Min(value = 1, message = "validation.page.sizeMin") @Max(
         value = 100,
-        message = "Page size must not exceed 100"
+        message = "validation.page.sizeMax"
     ) Integer size,
     @Nullable String sortBy,
     @Nullable String sortDirection

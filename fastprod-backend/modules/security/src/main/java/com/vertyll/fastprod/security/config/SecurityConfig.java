@@ -33,9 +33,8 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String REQUIRED_TO_ACCESS_THIS_RESOURCE = "Authentication is required to access this resource";
-    private static final String NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE =
-            "You do not have permission to access this resource";
+    private static final String REQUIRED_TO_ACCESS_THIS_RESOURCE = "errors.auth.authenticationRequired";
+    private static final String NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE = "errors.auth.forbidden";
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final ObjectMapper objectMapper;
@@ -54,6 +53,7 @@ public class SecurityConfig {
                         "/auth/refresh-token",
                         "/auth/reset-password-request",
                         "/auth/reset-password",
+                        "/translations/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",

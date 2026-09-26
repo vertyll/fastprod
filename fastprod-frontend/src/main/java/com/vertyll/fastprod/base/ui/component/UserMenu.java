@@ -5,6 +5,7 @@ import java.io.Serial;
 import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
 import com.vaadin.flow.component.UI;
@@ -82,7 +83,7 @@ public final class UserMenu extends HorizontalLayout {
         MenuItem profileItem = subMenu.addItem("My Profile", _ -> UI.getCurrent().navigate("profile"));
         profileItem.addComponentAsFirst(VaadinIcon.USER.create());
 
-        MenuItem logoutItem = subMenu.addItem("Logout", _ -> handleLogout());
+        MenuItem logoutItem = subMenu.addItem(I18n.t("nav.logout"), _ -> handleLogout());
         logoutItem.addComponentAsFirst(VaadinIcon.SIGN_OUT.create());
 
         add(menuBar);

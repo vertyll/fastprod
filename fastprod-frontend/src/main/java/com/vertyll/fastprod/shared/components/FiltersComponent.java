@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
+import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ItemLabelGenerator;
@@ -50,13 +51,13 @@ public final class FiltersComponent extends HorizontalLayout {
         getStyle().set("gap", "var(--lumo-space-s)");
 
         toggleButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_SMALL);
-        Button clearButton = new Button("Clear all");
+        Button clearButton = new Button(I18n.t("filters.clearAll"));
         clearButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
         summaryBar.setWidthFull();
         summaryBar.setSpacing(true);
         summaryBar.setAlignItems(Alignment.CENTER);
-        Span selectedTitle = new Span("Selected filters:");
+        Span selectedTitle = new Span(I18n.t("filters.selected"));
         selectedTitle.getStyle().set("white-space", "nowrap");
         summaryBar.getStyle().set(FLEX_WRAP, "nowrap");
         selectedChips.setSpacing(true);
@@ -107,8 +108,8 @@ public final class FiltersComponent extends HorizontalLayout {
     private void updateToggleLabel() {
         String customShow = toggleButton.getElement().getProperty("data-show-label");
         String customHide = toggleButton.getElement().getProperty("data-hide-label");
-        String show = customShow != null ? customShow : "Show more";
-        String hide = customHide != null ? customHide : "Collapse";
+        String show = customShow != null ? customShow : I18n.t("filters.showMore");
+        String hide = customHide != null ? customHide : I18n.t("filters.collapse");
         toggleButton.setText(expanded ? hide : show);
     }
 

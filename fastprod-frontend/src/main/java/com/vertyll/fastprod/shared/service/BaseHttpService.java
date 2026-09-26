@@ -27,7 +27,8 @@ public class BaseHttpService {
 
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
-    private static final String COMMUNICATION_ERROR = "Error occurred during server communication";
+    private static final String COMMUNICATION_ERROR = "errors.common.communication";
+    private static final String SERVER_ERROR = "errors.common.server";
 
     protected final String backendUrl;
     protected final HttpClient httpClient;
@@ -127,14 +128,29 @@ public class BaseHttpService {
             return new ApiException(COMMUNICATION_ERROR, response.statusCode());
         }
         String detail = problem.detail();
-        String message = detail != null ? detail : "Server error (code: " + response.statusCode() + ")";
-        return new ApiException(message, response.statusCode(), problem.fieldErrors());
+        if (detail == null) {
+            return new ApiException(
+                SERVER_ERROR,
+                response.statusCode(),
+                Map.of(),
+                Map.of("status", response.statusCode())
+            );
+        }
+        return new ApiException(detail, response.statusCode(), problem.fieldErrors(), problem.arguments());
     }
 
-    private record Problem(@Nullable String detail, @Nullable Map<String, List<String>> errors) {
+    private record Problem(
+        @Nullable String detail,
+        @Nullable Map<String, List<String>> errors,
+        @Nullable Map<String, Object> args
+    ) {
 
         Map<String, List<String>> fieldErrors() {
             return errors == null ? Map.of() : errors;
+        }
+
+        Map<String, Object> arguments() {
+            return args == null ? Map.of() : args;
         }
     }
 }

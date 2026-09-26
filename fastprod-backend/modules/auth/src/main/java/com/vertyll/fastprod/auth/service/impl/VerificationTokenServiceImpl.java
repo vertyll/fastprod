@@ -25,10 +25,10 @@ import java.util.Random;
 class VerificationTokenServiceImpl implements VerificationTokenService {
     private static final Random RANDOM = new SecureRandom();
 
-    private static final String INVALID_VERIFICATION_CODE = "Invalid verification code";
-    private static final String VERIFICATION_CODE_ALREADY_USED = "Verification code already used";
-    private static final String VERIFICATION_CODE_EXPIRED = "Verification code expired";
-    private static final String INVALID_VERIFICATION_CODE_TYPE = "Invalid verification code type";
+    private static final String INVALID_VERIFICATION_CODE = "errors.verification.invalidCode";
+    private static final String VERIFICATION_CODE_ALREADY_USED = "errors.verification.codeUsed";
+    private static final String VERIFICATION_CODE_EXPIRED = "errors.verification.codeExpired";
+    private static final String INVALID_VERIFICATION_CODE_TYPE = "errors.verification.invalidCode";
 
     private final VerificationTokenRepository verificationTokenRepository;
 

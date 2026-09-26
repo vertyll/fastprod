@@ -1,4 +1,5 @@
 [versions]
+icu4j = "78.3"
 java = "25"
 # Plugins
 spring-boot = "4.1.1"
@@ -22,6 +23,7 @@ spotbugs-annotations = "4.10.4"
 findsecbugs = "1.14.0"
 
 [libraries]
+icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
 # Vaadin
 vaadin-core = { module = "com.vaadin:vaadin-core" }
 vaadin-spring-boot-starter = { module = "com.vaadin:vaadin-spring-boot-starter" }

@@ -2,8 +2,10 @@ package com.vertyll.fastprod.base.ui;
 
 import java.io.Serial;
 
+import com.vertyll.fastprod.base.ui.component.LanguageSwitcher;
 import com.vertyll.fastprod.base.ui.component.UserMenu;
 import com.vertyll.fastprod.modules.user.service.UserService;
+import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vertyll.fastprod.shared.security.RoleType;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
@@ -66,14 +68,14 @@ public final class MainLayout extends AppLayout {
 
     private HorizontalLayout createAuthenticatedNavbar() {
         DrawerToggle toggle = new DrawerToggle();
-        toggle.setAriaLabel("Menu toggle");
+        toggle.setAriaLabel(I18n.t("nav.menuToggle"));
 
         H1 viewTitle = new H1(APP_NAME);
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE, LumoUtility.Margin.Left.MEDIUM);
 
         UserMenu userMenu = new UserMenu(userService, securityService);
 
-        HorizontalLayout navbar = new HorizontalLayout(toggle, viewTitle, userMenu);
+        HorizontalLayout navbar = new HorizontalLayout(toggle, viewTitle, new LanguageSwitcher(), userMenu);
         navbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         navbar.setWidthFull();
         navbar.expand(viewTitle);
@@ -88,15 +90,15 @@ public final class MainLayout extends AppLayout {
         H1 logo = new H1(APP_NAME);
         logo.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
 
-        Button loginButton = new Button("Login", VaadinIcon.SIGN_IN.create());
+        Button loginButton = new Button(I18n.t("nav.login"), VaadinIcon.SIGN_IN.create());
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         loginButton.addClickListener(_ -> UI.getCurrent().navigate("login"));
 
-        Button registerButton = new Button("Register");
+        Button registerButton = new Button(I18n.t("nav.register"));
         registerButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         registerButton.addClickListener(_ -> UI.getCurrent().navigate("register"));
 
-        HorizontalLayout authButtons = new HorizontalLayout(loginButton, registerButton);
+        HorizontalLayout authButtons = new HorizontalLayout(new LanguageSwitcher(), loginButton, registerButton);
         authButtons.setSpacing(true);
         authButtons.getStyle().set("flex-shrink", "0");
 
@@ -135,18 +137,26 @@ public final class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
         nav.addClassNames(LumoUtility.Margin.Horizontal.MEDIUM);
 
-        SideNavItem dashboard = new SideNavItem("Dashboard", "/", VaadinIcon.DASHBOARD.create());
+        SideNavItem dashboard = new SideNavItem(I18n.t("nav.dashboard"), "/", VaadinIcon.DASHBOARD.create());
         nav.addItem(dashboard);
 
         if (securityService.hasAnyRole(RoleType.ADMIN, RoleType.MANAGER)) {
-            SideNavItem adminSection = new SideNavItem("Administration");
+            SideNavItem adminSection = new SideNavItem(I18n.t("nav.administration"));
             adminSection.setPrefixComponent(VaadinIcon.COG.create());
 
-            SideNavItem employeesLink = new SideNavItem("Employees", "employees", VaadinIcon.USERS.create());
-            employeesLink.addItem(new SideNavItem("List", "employees", VaadinIcon.LIST.create()));
-            employeesLink.addItem(new SideNavItem("Add", "employees/form", VaadinIcon.PLUS.create()));
+            SideNavItem employeesLink =
+                    new SideNavItem(I18n.t("nav.employees"), "employees", VaadinIcon.USERS.create());
+            employeesLink.addItem(new SideNavItem(I18n.t("nav.employeeList"), "employees", VaadinIcon.LIST.create()));
+            employeesLink
+                .addItem(new SideNavItem(I18n.t("nav.employeeAdd"), "employees/form", VaadinIcon.PLUS.create()));
 
             adminSection.addItem(employeesLink);
+
+            if (securityService.hasRole(RoleType.ADMIN)) {
+                adminSection.addItem(
+                    new SideNavItem(I18n.t("nav.translations"), "admin/translations", VaadinIcon.GLOBE.create())
+                );
+            }
 
             nav.addItem(adminSection);
         }

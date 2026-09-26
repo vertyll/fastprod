@@ -52,7 +52,7 @@ class GlobalExceptionHandlerTest {
         ProblemDetail problem = handler.handleValidationException(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), problem.getStatus());
-        assertEquals("Validation failed", problem.getDetail());
+        assertEquals("errors.common.validationFailed", problem.getDetail());
 
         Map<String, List<String>> errors = errorsOf(problem);
         assertEquals(1, errors.size());
@@ -86,7 +86,7 @@ class GlobalExceptionHandlerTest {
         ProblemDetail problem = handler.handleBadCredentialsException(new BadCredentialsException("bad credentials"));
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), problem.getStatus());
-        assertEquals("Invalid email or password", problem.getDetail());
+        assertEquals("errors.auth.invalidCredentials", problem.getDetail());
     }
 
     @Test
@@ -94,7 +94,7 @@ class GlobalExceptionHandlerTest {
         ProblemDetail problem = handler.handleDisabledException(new DisabledException("disabled"));
 
         assertEquals(HttpStatus.FORBIDDEN.value(), problem.getStatus());
-        assertEquals("Account is disabled", problem.getDetail());
+        assertEquals("errors.auth.accountDisabled", problem.getDetail());
     }
 
     @Test
@@ -102,7 +102,7 @@ class GlobalExceptionHandlerTest {
         ProblemDetail problem = handler.handleLockedException(new LockedException("locked"));
 
         assertEquals(HttpStatus.FORBIDDEN.value(), problem.getStatus());
-        assertEquals("Account is locked", problem.getDetail());
+        assertEquals("errors.auth.accountLocked", problem.getDetail());
     }
 
     @Test
@@ -110,7 +110,7 @@ class GlobalExceptionHandlerTest {
         ProblemDetail problem = handler.handleException(new RuntimeException("unexpected error"));
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), problem.getStatus());
-        assertEquals("An unexpected error occurred", problem.getDetail());
+        assertEquals("errors.common.unexpected", problem.getDetail());
     }
 
     @SuppressWarnings("unchecked")

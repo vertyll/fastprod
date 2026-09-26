@@ -118,7 +118,7 @@ class EmployeeControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(employeeService, never()).createEmployee(any(EmployeeCreateDto.class));
     }
@@ -140,7 +140,7 @@ class EmployeeControllerTest {
 
     @Test
     void updateEmployee_WhenEmployeeNotFound_ShouldReturnNotFound() throws Exception {
-        doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND)).when(employeeService)
+        doThrow(new ApiException("errors.employee.notFound", HttpStatus.NOT_FOUND)).when(employeeService)
             .updateEmployee(anyLong(), any(EmployeeUpdateDto.class));
 
         mockMvc
@@ -150,7 +150,7 @@ class EmployeeControllerTest {
             )
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("Employee not found"));
+            .andExpect(jsonPath("$.detail").value("errors.employee.notFound"));
     }
 
     @Test
@@ -169,12 +169,12 @@ class EmployeeControllerTest {
     @Test
     void getEmployee_WhenNotFound_ShouldReturnNotFound() throws Exception {
         when(employeeService.getEmployeeById(1L))
-            .thenThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND));
+            .thenThrow(new ApiException("errors.employee.notFound", HttpStatus.NOT_FOUND));
 
         mockMvc.perform(get("/employees/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("Employee not found"));
+            .andExpect(jsonPath("$.detail").value("errors.employee.notFound"));
     }
 
     @Test
@@ -188,11 +188,12 @@ class EmployeeControllerTest {
 
     @Test
     void deleteEmployee_WhenNotFound_ShouldReturnNotFound() throws Exception {
-        doThrow(new ApiException("Employee not found", HttpStatus.NOT_FOUND)).when(employeeService).deleteEmployee(1L);
+        doThrow(new ApiException("errors.employee.notFound", HttpStatus.NOT_FOUND)).when(employeeService)
+            .deleteEmployee(1L);
 
         mockMvc.perform(delete("/employees/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("Employee not found"));
+            .andExpect(jsonPath("$.detail").value("errors.employee.notFound"));
     }
 }

@@ -39,6 +39,7 @@ dependencyManagement {
 
 dependencies {
     implementation(libs.bundles.vaadin)
+    implementation(libs.icu4j)
     implementation(libs.spring.boot.starter.web)
     implementation(libs.spring.boot.starter.actuator)
 

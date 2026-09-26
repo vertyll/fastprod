@@ -28,8 +28,8 @@ import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 @RequiredArgsConstructor
 class UserServiceImpl implements UserService {
 
-    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
-    private static final String EMAIL_ALREADY_EXISTS = "Email already exists";
+    private static final String USER_NOT_FOUND_MESSAGE = "errors.user.notFound";
+    private static final String EMAIL_ALREADY_EXISTS = "errors.user.emailTaken";
 
     private final UserRepository userRepository;
     private final RoleService roleService;

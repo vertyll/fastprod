@@ -7,6 +7,7 @@ import com.vertyll.fastprod.base.ui.DelayedNavigation;
 import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -21,17 +22,16 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Route("verify-account")
-@PageTitle("Verify Account | FastProd")
 @Slf4j
-public final class VerifyAccountView extends VerticalLayout implements HasUrlParameter<String> {
+public final class VerifyAccountView extends VerticalLayout implements HasUrlParameter<String>, HasDynamicTitle {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -88,31 +88,28 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
         icon.setSize("64px");
         icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        H1 title = new H1("Verify Your Account");
+        H1 title = new H1(I18n.t("auth.verify.title"));
         title.getStyle()
             .set("margin", "0")
             .set("font-size", "var(--lumo-font-size-xxxl)")
             .set("font-weight", "600")
             .set(COLOR, "var(--lumo-primary-text-color)");
 
-        Paragraph description = new Paragraph(
-            "We've sent a verification code to your email address. "
-                    + "Please enter the code below to verify your account."
-        );
+        Paragraph description = new Paragraph(I18n.t("auth.verify.description"));
         description.getStyle()
             .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        emailField = new TextField("Email Address");
+        emailField = new TextField(I18n.t("common.emailAddress"));
         emailField.setWidthFull();
         emailField.setPrefixComponent(VaadinIcon.ENVELOPE.create());
-        emailField.setPlaceholder("your.email@example.com");
+        emailField.setPlaceholder(I18n.t("common.emailPlaceholder"));
         emailField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        codeField = new TextField("Verification Code");
+        codeField = new TextField(I18n.t("verification.code"));
         codeField.setWidthFull();
         codeField.setPrefixComponent(VaadinIcon.KEY.create());
-        codeField.setPlaceholder("Enter 6-digit code");
+        codeField.setPlaceholder(I18n.t("verification.codePlaceholder"));
         codeField.setMaxLength(6);
         codeField.setPattern("[0-9]*");
         codeField.getStyle()
@@ -120,19 +117,19 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
             .set("letter-spacing", "0.3em")
             .set(TEXT_ALIGN, CENTER);
 
-        verifyButton = new Button("Verify Account", VaadinIcon.CHECK.create());
+        verifyButton = new Button(I18n.t("auth.verify.submit"), VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         verifyButton.setWidthFull();
         verifyButton.addClickListener(_ -> handleVerification());
         verifyButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        resendButton = new Button("Resend Code", VaadinIcon.REFRESH.create());
+        resendButton = new Button(I18n.t("auth.verify.resend"), VaadinIcon.REFRESH.create());
         resendButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         resendButton.setWidthFull();
         resendButton.addClickListener(_ -> handleResendCode());
         resendButton.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-s)");
 
-        Button backButton = new Button("Back to Login", VaadinIcon.ARROW_LEFT.create());
+        Button backButton = new Button(I18n.t("auth.backToLogin"), VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         backButton.addClickListener(_ -> UI.getCurrent().navigate(LoginView.class));
 
@@ -145,22 +142,22 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
         String code = codeField.getValue();
 
         if (code == null || code.isBlank()) {
-            showNotification("Please enter the verification code", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("validation.verificationCode.required"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         if (code.length() != 6) {
-            showNotification("Verification code must be 6 digits", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("validation.verificationCode.length"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         verifyButton.setEnabled(false);
-        verifyButton.setText("Verifying...");
+        verifyButton.setText(I18n.t("common.verifying"));
 
         try {
             VerifyAccountRequestDto verifyAccountRequest = new VerifyAccountRequestDto(code);
             authService.verifyAccount(verifyAccountRequest);
-            showNotification("Account verified successfully! You can now log in.", NotificationVariant.LUMO_SUCCESS);
+            showNotification(I18n.t("auth.verify.success"), NotificationVariant.LUMO_SUCCESS);
 
             UI ui = UI.getCurrent();
             DelayedNavigation.navigate(ui, LoginView.class, Duration.ofSeconds(2));
@@ -170,7 +167,7 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
             log.error("API error during verification: {}", e.getMessage());
         } finally {
             verifyButton.setEnabled(true);
-            verifyButton.setText("Verify Account");
+            verifyButton.setText(I18n.t("auth.verify.submit"));
         }
     }
 
@@ -178,30 +175,27 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
         String email = emailField.getValue();
 
         if (email == null || email.isBlank()) {
-            showNotification("Please enter your email address", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("validation.email.required"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         resendButton.setEnabled(false);
-        resendButton.setText("Sending...");
+        resendButton.setText(I18n.t("common.sending"));
 
         try {
             authService.resendVerificationCode(email);
-            showNotification("Verification code sent! Please check your email.", NotificationVariant.LUMO_SUCCESS);
+            showNotification(I18n.t("auth.verify.resent"), NotificationVariant.LUMO_SUCCESS);
             codeField.focus();
         } catch (ApiException e) {
             if (e.getStatusCode() == 404) {
-                showNotification(
-                    "Resend feature is not yet available. Please contact support if you didn't receive the email.",
-                    NotificationVariant.LUMO_WARNING
-                );
+                showNotification(I18n.t("auth.verify.resendUnavailable"), NotificationVariant.LUMO_WARNING);
             } else {
                 showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
             }
             log.error("API error during resend: {}", e.getMessage());
         } finally {
             resendButton.setEnabled(true);
-            resendButton.setText("Resend Code");
+            resendButton.setText(I18n.t("auth.verify.resend"));
         }
     }
 
@@ -217,5 +211,10 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
 
         notification.add(text);
         notification.open();
+    }
+
+    @Override
+    public String getPageTitle() {
+        return I18n.t("pages.verifyAccount");
     }
 }

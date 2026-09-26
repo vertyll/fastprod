@@ -2,6 +2,7 @@ package com.vertyll.fastprod.modules.employee.views;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.annotation.security.RolesAllowed;
 
@@ -16,6 +17,7 @@ import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
+import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -30,14 +32,13 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees", layout = MainLayout.class)
-@PageTitle("Employees | FastProd")
 @RolesAllowed(
     {
         "ADMIN",
@@ -45,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
     }
 )
 @Slf4j
-public final class EmployeeListView extends VerticalLayout {
+public final class EmployeeListView extends VerticalLayout implements HasDynamicTitle {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -72,7 +73,7 @@ public final class EmployeeListView extends VerticalLayout {
         setSpacing(true);
         getStyle().set("position", "relative");
 
-        H2 title = new H2("Employees");
+        H2 title = new H2(I18n.t("employees.title"));
         title.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Margin.Bottom.MEDIUM);
         add(title);
 
@@ -90,12 +91,12 @@ public final class EmployeeListView extends VerticalLayout {
     }
 
     private void createToolbar() {
-        Button refreshButton = new Button("Refresh", VaadinIcon.REFRESH.create());
+        Button refreshButton = new Button(I18n.t("common.refresh"), VaadinIcon.REFRESH.create());
         refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         refreshButton
             .addClickListener(_ -> loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize(), currentFilters));
 
-        Button addButton = new Button("Add Employee", VaadinIcon.PLUS.create());
+        Button addButton = new Button(I18n.t("employees.add"), VaadinIcon.PLUS.create());
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         addButton.addClickListener(_ -> navigateToCreateForm());
 
@@ -114,58 +115,58 @@ public final class EmployeeListView extends VerticalLayout {
         Grid<EmployeeResponseDto> grid = pagedGrid.getGrid();
 
         grid.addColumn(EmployeeResponseDto::id)
-            .setHeader("ID")
+            .setHeader(I18n.t("common.id"))
             .setSortable(true)
             .setAutoWidth(true)
             .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(EmployeeResponseDto::firstName)
-            .setHeader("First Name")
+            .setHeader(I18n.t("common.firstName"))
             .setSortable(true)
             .setAutoWidth(true)
             .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(EmployeeResponseDto::lastName)
-            .setHeader("Last Name")
+            .setHeader(I18n.t("common.lastName"))
             .setSortable(true)
             .setAutoWidth(true)
             .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(EmployeeResponseDto::email)
-            .setHeader("Email")
+            .setHeader(I18n.t("common.email"))
             .setSortable(true)
             .setAutoWidth(true)
             .setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
-            String roles = String.join(", ", employee.roles());
+            String roles = I18n.roles(employee.roles());
             Span span = new Span(roles);
             span.getStyle().set("display", "flex").set("justify-content", "center");
             return span;
-        }).setHeader("Roles").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        }).setHeader(I18n.t("common.roles")).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
-            Span badge = new Span(employee.isVerified() ? "Verified" : "Not Verified");
+            Span badge = new Span(employee.isVerified() ? I18n.t("common.verified") : I18n.t("common.notVerified"));
             badge.getElement().getThemeList().add(employee.isVerified() ? "badge success" : "badge error");
             HorizontalLayout layout = new HorizontalLayout(badge);
             layout.setJustifyContentMode(JustifyContentMode.CENTER);
             layout.setWidthFull();
             return layout;
-        }).setHeader("Status").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        }).setHeader(I18n.t("common.status")).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             Button viewButton = new Button(VaadinIcon.EYE.create());
             viewButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-            viewButton.getElement().setAttribute(TITLE, "View");
+            viewButton.getElement().setAttribute(TITLE, I18n.t("common.view"));
             viewButton.getStyle().set(COLOR, LUMO_CONTRAST).set(BACKGROUND, CONTRAST_COLOR);
             viewButton.addClickListener(_ -> navigateToDetails(employee.id()));
 
             Button editButton = new Button(VaadinIcon.EDIT.create());
             editButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-            editButton.getElement().setAttribute(TITLE, "Edit");
+            editButton.getElement().setAttribute(TITLE, I18n.t("common.edit"));
             editButton.getStyle().set(COLOR, LUMO_CONTRAST).set(BACKGROUND, CONTRAST_COLOR);
             editButton.addClickListener(_ -> navigateToEditForm(employee.id()));
 
             Button deleteButton = new Button(VaadinIcon.TRASH.create());
             deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
-            deleteButton.getElement().setAttribute(TITLE, "Delete");
+            deleteButton.getElement().setAttribute(TITLE, I18n.t("common.delete"));
             deleteButton.getStyle().set(COLOR, LUMO_CONTRAST).set(BACKGROUND, CONTRAST_COLOR);
             deleteButton.addClickListener(_ -> confirmDelete(employee));
 
@@ -173,7 +174,7 @@ public final class EmployeeListView extends VerticalLayout {
             actions.setSpacing(true);
             actions.setJustifyContentMode(JustifyContentMode.CENTER);
             return actions;
-        }).setHeader("Actions").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        }).setHeader(I18n.t("common.actions")).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
     }
 
     private void loadEmployees(int page, int pageSize, FiltersValue filters) {
@@ -186,7 +187,12 @@ public final class EmployeeListView extends VerticalLayout {
             pagedGrid.updateData(pageResponse);
         } catch (ApiException e) {
             log.error("Failed to load employees", e);
-            Notification.show("Failed to load employees: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification
+                .show(
+                    I18n.t("employees.listFailed", Map.of("reason", I18n.error(e))),
+                    3000,
+                    Notification.Position.TOP_CENTER
+                )
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
         } finally {
             loadingSpinner.hide();
@@ -196,10 +202,12 @@ public final class EmployeeListView extends VerticalLayout {
     private void confirmDelete(EmployeeResponseDto employee) {
         com.vaadin.flow.component.confirmdialog.ConfirmDialog dialog =
                 new com.vaadin.flow.component.confirmdialog.ConfirmDialog();
-        dialog.setHeader("Delete Employee");
-        dialog.setText("Are you sure you want to delete " + employee.firstName() + " " + employee.lastName() + "?");
+        dialog.setHeader(I18n.t("employees.delete.title"));
+        dialog.setText(
+            I18n.t("employees.delete.confirm", Map.of("name", employee.firstName() + " " + employee.lastName()))
+        );
         dialog.setCancelable(true);
-        dialog.setConfirmText("Delete");
+        dialog.setConfirmText(I18n.t("common.delete"));
         dialog.setConfirmButtonTheme("error primary");
         dialog.addConfirmListener(_ -> deleteEmployee(employee.id()));
         dialog.open();
@@ -208,12 +216,17 @@ public final class EmployeeListView extends VerticalLayout {
     private void deleteEmployee(Long employeeId) {
         try {
             employeeService.deleteEmployee(employeeId);
-            Notification.show("Employee deleted successfully", 3000, Notification.Position.TOP_CENTER)
+            Notification.show(I18n.t("employees.delete.success"), 3000, Notification.Position.TOP_CENTER)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             loadEmployees(pagedGrid.getCurrentPage(), pagedGrid.getPageSize(), currentFilters);
         } catch (ApiException e) {
             log.error("Failed to delete employee", e);
-            Notification.show("Failed to delete employee: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER)
+            Notification
+                .show(
+                    I18n.t("employees.deleteFailed", Map.of("reason", I18n.error(e))),
+                    3000,
+                    Notification.Position.TOP_CENTER
+                )
                 .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
@@ -237,5 +250,10 @@ public final class EmployeeListView extends VerticalLayout {
             currentFilters = EmployeeFilters.normalize(values);
             loadEmployees(0, pagedGrid.getPageSize(), currentFilters);
         });
+    }
+
+    @Override
+    public String getPageTitle() {
+        return I18n.t("pages.employees");
     }
 }

@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import org.jspecify.annotations.Nullable;
 
 public record AuthRequestDto(
-    @NotBlank(message = "Email is required") @Email(message = "Email should be valid") String email,
-    @NotBlank(message = "Password is required") String password,
+    @NotBlank(message = "validation.email.required") @Email(message = "validation.email.invalid") String email,
+    @NotBlank(message = "validation.password.required") String password,
     @Nullable String deviceInfo
 ) {
 }

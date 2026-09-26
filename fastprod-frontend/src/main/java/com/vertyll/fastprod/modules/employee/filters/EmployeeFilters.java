@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
 import com.vertyll.fastprod.shared.filters.FilterFieldType;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
+import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vertyll.fastprod.shared.security.RoleType;
 
 public final class EmployeeFilters {
@@ -18,7 +19,7 @@ public final class EmployeeFilters {
     private static final String EMAIL = "email";
     private static final String IS_VERIFIED = "isVerified";
     private static final String ROLES = "roles";
-    private static final String VERIFIED_LABEL = "Verified";
+    private static final String VERIFIED_LABEL_KEY = "common.verified";
 
     private EmployeeFilters() {
     }
@@ -26,35 +27,33 @@ public final class EmployeeFilters {
     @SuppressWarnings("java:S1452")
     public static List<FilterFieldConfig<?>> configs() {
         return List.of(
-            FilterFieldConfig.builder(FIRST_NAME, "First name", FilterFieldType.TEXT)
-                .placeholder("Search first name")
+            FilterFieldConfig.builder(FIRST_NAME, I18n.t("common.firstName"), FilterFieldType.TEXT)
+                .placeholder(I18n.t("employees.filters.firstName"))
                 .build(),
-            FilterFieldConfig.builder(LAST_NAME, "Last name", FilterFieldType.TEXT)
-                .placeholder("Search last name")
+            FilterFieldConfig.builder(LAST_NAME, I18n.t("common.lastName"), FilterFieldType.TEXT)
+                .placeholder(I18n.t("employees.filters.lastName"))
                 .build(),
-            FilterFieldConfig.builder(EMAIL, "Email", FilterFieldType.TEXT).placeholder("Search email").build(),
-            FilterFieldConfig.builder(IS_VERIFIED, VERIFIED_LABEL, FilterFieldType.SELECT)
+            FilterFieldConfig.builder(EMAIL, I18n.t("common.email"), FilterFieldType.TEXT)
+                .placeholder(I18n.t("employees.filters.email"))
+                .build(),
+            FilterFieldConfig.builder(IS_VERIFIED, I18n.t(VERIFIED_LABEL_KEY), FilterFieldType.SELECT)
                 .items(List.of(true, false))
                 .itemLabel(v -> {
                     if (v == null) {
                         return "";
                     }
                     if (v instanceof Boolean b) {
-                        return Boolean.TRUE.equals(b) ? VERIFIED_LABEL : "Not verified";
+                        return Boolean.TRUE.equals(b) ? I18n.t(VERIFIED_LABEL_KEY) : I18n.t("common.notVerified");
                     }
-                    return Boolean.parseBoolean(String.valueOf(v)) ? VERIFIED_LABEL : "Not verified";
+                    return Boolean.parseBoolean(String.valueOf(v)) ? I18n.t(VERIFIED_LABEL_KEY)
+                            : I18n.t("common.notVerified");
                 })
-                .placeholder("Any")
+                .placeholder(I18n.t("employees.filters.any"))
                 .build(),
-            FilterFieldConfig.<RoleType>builder(ROLES, "Roles", FilterFieldType.MULTISELECT)
+            FilterFieldConfig.<RoleType>builder(ROLES, I18n.t("common.roles"), FilterFieldType.MULTISELECT)
                 .items(java.util.Arrays.stream(RoleType.values()).toList())
-                .itemLabel(v -> {
-                    if (v == null) {
-                        return "";
-                    }
-                    return v.name();
-                })
-                .placeholder("Any roles")
+                .itemLabel(v -> v == null ? "" : I18n.role(v.name()))
+                .placeholder(I18n.t("employees.filters.anyRoles"))
                 .build()
         );
     }

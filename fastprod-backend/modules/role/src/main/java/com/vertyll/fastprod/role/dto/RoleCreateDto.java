@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotBlank;
 
 import org.jspecify.annotations.Nullable;
 
-public record RoleCreateDto(@NotBlank(message = "Name is required") String name, @Nullable String description) {
+public record RoleCreateDto(@NotBlank(message = "validation.name.required") String name, @Nullable String description) {
 }

@@ -84,7 +84,7 @@ class BaseHttpServiceTest {
         ApiException exception = assertThrows(ApiException.class, () -> service.get("/broken", Item.class));
 
         assertEquals(500, exception.getStatusCode());
-        assertEquals("Error occurred during server communication", exception.getMessage());
+        assertEquals("errors.common.communication", exception.getMessage());
     }
 
     private void respond(String path, int status, String contentType, String body) {

@@ -13,6 +13,7 @@ import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -28,17 +29,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "profile", layout = MainLayout.class)
-@PageTitle("My Profile | FastProd")
 @PermitAll
 @Slf4j
-public final class ProfileView extends VerticalLayout {
+public final class ProfileView extends VerticalLayout implements HasDynamicTitle {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -47,8 +47,8 @@ public final class ProfileView extends VerticalLayout {
     private final LoadingSpinner loadingSpinner;
 
     private transient @Nullable UserProfileDto currentUser;
-    private final TextField firstNameField = new TextField("First Name");
-    private final TextField lastNameField = new TextField("Last Name");
+    private final TextField firstNameField = new TextField(I18n.t("common.firstName"));
+    private final TextField lastNameField = new TextField(I18n.t("common.lastName"));
     private DetailsTableComponent detailsTable;
     private Div editFormContainer;
     private Div detailsContainer;
@@ -73,18 +73,18 @@ public final class ProfileView extends VerticalLayout {
     }
 
     private void createHeader() {
-        H2 title = new H2("My Profile");
+        H2 title = new H2(I18n.t("profile.title"));
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
 
-        Button changePasswordBtn = new Button("Change Password", VaadinIcon.KEY.create());
+        Button changePasswordBtn = new Button(I18n.t("account.password.title"), VaadinIcon.KEY.create());
         changePasswordBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         changePasswordBtn.addClickListener(_ -> UI.getCurrent().navigate("profile/change-password"));
 
-        Button changeEmailBtn = new Button("Change Email", VaadinIcon.ENVELOPE.create());
+        Button changeEmailBtn = new Button(I18n.t("account.email.title"), VaadinIcon.ENVELOPE.create());
         changeEmailBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         changeEmailBtn.addClickListener(_ -> UI.getCurrent().navigate("profile/change-email"));
 
-        Button editBtn = new Button("Edit Profile", VaadinIcon.EDIT.create());
+        Button editBtn = new Button(I18n.t("profile.edit"), VaadinIcon.EDIT.create());
         editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         editBtn.addClickListener(_ -> showEditForm());
 
@@ -130,20 +130,22 @@ public final class ProfileView extends VerticalLayout {
         lastNameField.setRequiredIndicatorVisible(true);
 
         binder.forField(firstNameField)
-            .asRequired("First name is required")
+            .asRequired(I18n.t("validation.firstName.required"))
             .bind(ProfileUpdateDto::firstName, (_, _) -> {
             });
 
-        binder.forField(lastNameField).asRequired("Last name is required").bind(ProfileUpdateDto::lastName, (_, _) -> {
-        });
+        binder.forField(lastNameField)
+            .asRequired(I18n.t("validation.lastName.required"))
+            .bind(ProfileUpdateDto::lastName, (_, _) -> {
+            });
 
         formLayout.add(firstNameField, lastNameField);
 
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button(I18n.t("common.save"));
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(_ -> handleSave());
 
-        Button cancelButton = new Button("Cancel");
+        Button cancelButton = new Button(I18n.t("common.cancel"));
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         cancelButton.addClickListener(_ -> hideEditForm());
 
@@ -172,22 +174,22 @@ public final class ProfileView extends VerticalLayout {
             }
         } catch (ApiException e) {
             log.error("Failed to load user profile", e);
-            showNotification("Failed to load profile", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("profile.loadFailed"), NotificationVariant.LUMO_ERROR);
         }
     }
 
     private void updateDetailsView(UserProfileDto user) {
         detailsTable.removeAll();
-        detailsTable.addRow("First Name", user.firstName());
-        detailsTable.addRow("Last Name", user.lastName());
-        detailsTable.addRow("Email", user.email());
+        detailsTable.addRow(I18n.t("common.firstName"), user.firstName());
+        detailsTable.addRow(I18n.t("common.lastName"), user.lastName());
+        detailsTable.addRow(I18n.t("common.email"), user.email());
 
-        String rolesText = String.join(", ", user.roles());
-        detailsTable.addRow("Roles", rolesText);
+        String rolesText = I18n.roles(user.roles());
+        detailsTable.addRow(I18n.t("common.roles"), rolesText);
 
-        Span verifiedBadge = new Span(user.isVerified() ? "Verified" : "Not Verified");
+        Span verifiedBadge = new Span(user.isVerified() ? I18n.t("common.verified") : I18n.t("common.notVerified"));
         verifiedBadge.getElement().getThemeList().add(user.isVerified() ? "badge success" : "badge error");
-        detailsTable.addRow("Status", verifiedBadge);
+        detailsTable.addRow(I18n.t("common.status"), verifiedBadge);
     }
 
     private void showEditForm() {
@@ -218,12 +220,12 @@ public final class ProfileView extends VerticalLayout {
                     currentUser = user;
                     updateDetailsView(user);
                     hideEditForm();
-                    showNotification("Profile updated successfully", NotificationVariant.LUMO_SUCCESS);
+                    showNotification(I18n.t("profile.updated"), NotificationVariant.LUMO_SUCCESS);
                 }
             }
         } catch (ApiException e) {
             log.error("Failed to update profile", e);
-            showNotification("Failed to update profile", NotificationVariant.LUMO_ERROR);
+            showNotification(I18n.t("profile.updateFailed"), NotificationVariant.LUMO_ERROR);
         } finally {
             loadingSpinner.hide();
         }
@@ -241,5 +243,10 @@ public final class ProfileView extends VerticalLayout {
 
         notification.add(text);
         notification.open();
+    }
+
+    @Override
+    public String getPageTitle() {
+        return I18n.t("pages.profile");
     }
 }

@@ -32,10 +32,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 class EmployeeServiceImpl implements EmployeeService {
 
-    private static final String EMPLOYEE_NOT_FOUND_MESSAGE = "Employee not found";
-    private static final String EMAIL_ALREADY_EXISTS = "Email already exists";
-    private static final String CANNOT_UPDATE_INACTIVE_EMPLOYEE = "Cannot update inactive employee";
-    private static final String EMPLOYEE_ALREADY_DELETED = "Employee already deleted";
+    private static final String EMPLOYEE_NOT_FOUND_MESSAGE = "errors.employee.notFound";
+    private static final String EMAIL_ALREADY_EXISTS = "errors.user.emailTaken";
+    private static final String CANNOT_UPDATE_INACTIVE_EMPLOYEE = "errors.employee.inactive";
+    private static final String EMPLOYEE_ALREADY_DELETED = "errors.employee.alreadyDeleted";
 
     private final UserRepository userRepository;
     private final RoleService roleService;

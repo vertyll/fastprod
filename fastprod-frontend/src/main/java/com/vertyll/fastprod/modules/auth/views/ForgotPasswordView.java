@@ -5,6 +5,7 @@ import java.io.Serial;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
 import com.vertyll.fastprod.shared.exception.ApiException;
+import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -20,17 +21,16 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Route("forgot-password")
-@PageTitle("Forgot Password | FastProd")
 @AnonymousAllowed
 @Slf4j
-public final class ForgotPasswordView extends VerticalLayout {
+public final class ForgotPasswordView extends VerticalLayout implements HasDynamicTitle {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -79,38 +79,37 @@ public final class ForgotPasswordView extends VerticalLayout {
         icon.setSize("64px");
         icon.getStyle().set(COLOR, "var(--lumo-primary-color)").set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        H1 title = new H1("Forgot Password?");
+        H1 title = new H1(I18n.t("auth.forgot.title"));
         title.getStyle()
             .set("margin", "0")
             .set("font-size", "var(--lumo-font-size-xxxl)")
             .set("font-weight", "600")
             .set(COLOR, "var(--lumo-primary-text-color)");
 
-        Paragraph description =
-                new Paragraph("Enter your email address and we'll send you instructions to reset your password.");
+        Paragraph description = new Paragraph(I18n.t("auth.forgot.description"));
         description.getStyle()
             .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        emailField = new EmailField("Email Address");
+        emailField = new EmailField(I18n.t("common.emailAddress"));
         emailField.setWidthFull();
         emailField.setPrefixComponent(VaadinIcon.ENVELOPE.create());
-        emailField.setPlaceholder("your.email@example.com");
+        emailField.setPlaceholder(I18n.t("common.emailPlaceholder"));
         emailField.setRequiredIndicatorVisible(true);
         emailField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
         binder.forField(emailField)
-            .asRequired("Email is required")
-            .withValidator(new EmailValidator("Please enter a valid email address"))
+            .asRequired(I18n.t("validation.email.required"))
+            .withValidator(new EmailValidator(I18n.t("validation.email.invalid")))
             .bind(FormData::email, FormData::setEmail);
 
-        submitButton = new Button("Send Reset Instructions", VaadinIcon.ENVELOPE_OPEN.create());
+        submitButton = new Button(I18n.t("auth.forgot.submit"), VaadinIcon.ENVELOPE_OPEN.create());
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         submitButton.setWidthFull();
         submitButton.addClickListener(_ -> handleSubmit());
         submitButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        Button backButton = new Button("Back to Login", VaadinIcon.ARROW_LEFT.create());
+        Button backButton = new Button(I18n.t("auth.backToLogin"), VaadinIcon.ARROW_LEFT.create());
         backButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         backButton.addClickListener(_ -> UI.getCurrent().navigate(LoginView.class));
 
@@ -126,11 +125,11 @@ public final class ForgotPasswordView extends VerticalLayout {
 
         String email = emailField.getValue();
         submitButton.setEnabled(false);
-        submitButton.setText("Sending...");
+        submitButton.setText(I18n.t("common.sending"));
 
         try {
             authService.requestPasswordReset(email);
-            showNotification("Password reset code sent! Please check your email.", NotificationVariant.LUMO_SUCCESS);
+            showNotification(I18n.t("auth.forgot.sent"), NotificationVariant.LUMO_SUCCESS);
             emailField.setEnabled(false);
             showVerificationDialog();
         } catch (ApiException e) {
@@ -138,14 +137,14 @@ public final class ForgotPasswordView extends VerticalLayout {
             log.error("API error during password reset request: {}", e.getMessage());
         } finally {
             submitButton.setEnabled(true);
-            submitButton.setText("Send Reset Instructions");
+            submitButton.setText(I18n.t("auth.forgot.submit"));
         }
     }
 
     private void showVerificationDialog() {
         VerificationCodeDialog dialog = new VerificationCodeDialog(
-            "Enter Reset Code",
-            "Please enter the 6-digit code sent to your email.",
+            I18n.t("auth.forgot.codeTitle"),
+            I18n.t("auth.forgot.codeDescription"),
             this::handleVerifyCode
         );
         dialog.open();
@@ -179,5 +178,10 @@ public final class ForgotPasswordView extends VerticalLayout {
         void setEmail(String email) {
             this.email = email;
         }
+    }
+
+    @Override
+    public String getPageTitle() {
+        return I18n.t("pages.forgotPassword");
     }
 }

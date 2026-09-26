@@ -100,7 +100,7 @@ class RoleControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(roleService, never()).createRole(any());
     }
@@ -128,7 +128,7 @@ class RoleControllerTest {
         RoleUpdateDto updateDto = new RoleUpdateDto("ADMIN", "Administrator role");
 
         when(roleService.updateRole(anyLong(), any(RoleUpdateDto.class)))
-            .thenThrow(new ApiException("Role not found", HttpStatus.NOT_FOUND));
+            .thenThrow(new ApiException("errors.role.notFound", HttpStatus.NOT_FOUND));
 
         mockMvc
             .perform(
@@ -137,7 +137,7 @@ class RoleControllerTest {
             )
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("Role not found"));
+            .andExpect(jsonPath("$.detail").value("errors.role.notFound"));
     }
 
     @Test
@@ -151,7 +151,7 @@ class RoleControllerTest {
             )
             .andDo(print())
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("Validation failed"));
+            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
 
         verify(roleService, never()).updateRole(anyLong(), any());
     }
@@ -169,12 +169,12 @@ class RoleControllerTest {
 
     @Test
     void getRole_WhenNotExists_ShouldReturnNotFound() throws Exception {
-        when(roleService.getRoleById(1L)).thenThrow(new ApiException("Role not found", HttpStatus.NOT_FOUND));
+        when(roleService.getRoleById(1L)).thenThrow(new ApiException("errors.role.notFound", HttpStatus.NOT_FOUND));
 
         mockMvc.perform(get("/roles/1"))
             .andDo(print())
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("Role not found"));
+            .andExpect(jsonPath("$.detail").value("errors.role.notFound"));
     }
 
     @Test

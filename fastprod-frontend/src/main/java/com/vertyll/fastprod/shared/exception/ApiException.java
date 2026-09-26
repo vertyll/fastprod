@@ -15,15 +15,22 @@ public final class ApiException extends RuntimeException {
 
     private final int statusCode;
     private final transient Map<String, List<String>> fieldErrors;
+    private final transient Map<String, Object> args;
 
-    public ApiException(String message, int statusCode, Map<String, List<String>> fieldErrors) {
+    public ApiException(
+        String message,
+        int statusCode,
+        Map<String, List<String>> fieldErrors,
+        Map<String, Object> args
+    ) {
         super(Objects.requireNonNull(message, "message"));
         this.statusCode = statusCode;
         this.fieldErrors = Map.copyOf(fieldErrors);
+        this.args = Map.copyOf(args);
     }
 
     public ApiException(String message, int statusCode) {
-        this(message, statusCode, Map.of());
+        this(message, statusCode, Map.of(), Map.of());
     }
 
     public ApiException(String message) {
@@ -34,6 +41,7 @@ public final class ApiException extends RuntimeException {
         super(Objects.requireNonNull(message, "message"), cause);
         this.statusCode = DEFAULT_STATUS_CODE;
         this.fieldErrors = Map.of();
+        this.args = Map.of();
     }
 
     @Override
