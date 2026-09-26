@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @ConfigurationProperties(prefix = "spring.mail")
 public record MailProperties(
@@ -12,6 +13,6 @@ public record MailProperties(
     String username,
     String password,
     String from,
-    @Nullable Map<String, String> properties
+    @DefaultValue Map<String, String> properties
 ) {
 }

@@ -1,14 +1,10 @@
 package com.vertyll.fastprod.sharedinfrastructure.config;
 
-import java.util.Map;
-import java.util.Properties;
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.util.CollectionUtils;
 
 @Configuration
 @EnableConfigurationProperties(MailProperties.class)
@@ -27,11 +23,7 @@ public class MailConfig {
         mailSender.setPassword(mailProperties.password());
         mailSender.setDefaultEncoding("UTF-8");
 
-        Map<String, String> properties = mailProperties.properties();
-        if (!CollectionUtils.isEmpty(properties)) {
-            Properties props = mailSender.getJavaMailProperties();
-            props.putAll(properties);
-        }
+        mailSender.getJavaMailProperties().putAll(mailProperties.properties());
 
         return mailSender;
     }
