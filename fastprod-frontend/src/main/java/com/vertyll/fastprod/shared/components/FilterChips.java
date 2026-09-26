@@ -52,7 +52,7 @@ final class FilterChips {
 
     private static Optional<Chip> ofMultiSelect(MultiSelectComboBox<?> multiSelect) {
         Set<?> selected = multiSelect.getSelectedItems();
-        if (selected == null || selected.isEmpty()) {
+        if (selected.isEmpty()) {
             return Optional.empty();
         }
         @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =

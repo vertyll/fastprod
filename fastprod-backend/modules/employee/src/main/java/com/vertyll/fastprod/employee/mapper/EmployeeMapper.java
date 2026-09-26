@@ -29,9 +29,6 @@ public interface EmployeeMapper {
 
     @Named("rolesToNames")
     default Set<RoleType> rolesToNames(Set<Role> roles) {
-        if (roles == null || roles.isEmpty()) {
-            return Set.of();
-        }
         return roles.stream().map(Role::getName).collect(Collectors.toSet());
     }
 }
