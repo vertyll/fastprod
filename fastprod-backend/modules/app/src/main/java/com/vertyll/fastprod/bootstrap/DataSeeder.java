@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,16 +18,19 @@ import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 import com.vertyll.fastprod.user.entity.User;
 import com.vertyll.fastprod.user.service.UserService;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Component
-@EnableConfigurationProperties(DataSeeder.AdminProps.class)
+@EnableConfigurationProperties(
+    {
+        DataSeeder.AdminProps.class,
+        DataSeeder.SeedProps.class
+    }
+)
 @RequiredArgsConstructor
 public class DataSeeder implements ApplicationRunner {
 
@@ -43,7 +47,7 @@ public class DataSeeder implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (!seedProps.isEnabled()) {
+        if (!seedProps.enabled()) {
             log.info("[DataSeeder] Seeding is disabled (app.seed.enabled=false)");
             return;
         }
@@ -78,7 +82,7 @@ public class DataSeeder implements ApplicationRunner {
             .verified(true)
             .build();
 
-        admin.setRoles(adminRoleNames.stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet()));
+        admin.assignRoles(adminRoleNames.stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet()));
 
         userService.saveUser(admin);
         log.info("[DataSeeder] Admin user created: {}", email);
@@ -88,11 +92,7 @@ public class DataSeeder implements ApplicationRunner {
     public record AdminProps(String email, String password, String firstName, String lastName) {
     }
 
-    @Getter
-    @Setter
-    @Component
     @ConfigurationProperties(prefix = "app.seed")
-    public static class SeedProps {
-        private boolean enabled = true;
+    public record SeedProps(@DefaultValue("true") boolean enabled) {
     }
 }

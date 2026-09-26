@@ -2,13 +2,15 @@ package com.vertyll.fastprod.auth.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +29,12 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.vertyll.fastprod.auth.dto.*;
+import com.vertyll.fastprod.auth.dto.AuthRequestDto;
+import com.vertyll.fastprod.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.auth.dto.ChangeEmailRequestDto;
+import com.vertyll.fastprod.auth.dto.ChangePasswordRequestDto;
+import com.vertyll.fastprod.auth.dto.RegisterRequestDto;
+import com.vertyll.fastprod.auth.dto.ResetPasswordRequestDto;
 import com.vertyll.fastprod.auth.entity.VerificationToken;
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
 import com.vertyll.fastprod.auth.mapper.AuthMapper;
@@ -46,13 +53,20 @@ import com.vertyll.fastprod.user.service.UserService;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SuppressFBWarnings(
     value = {
@@ -147,8 +161,17 @@ class AuthServiceTest {
             .token("123456")
             .user(user)
             .expiryDate(LocalDateTime.now(ZoneOffset.UTC).plusHours(24))
-            .used(false)
             .tokenType(VerificationTokenType.ACCOUNT_ACTIVATION)
+            .build();
+    }
+
+    private VerificationToken tokenOf(VerificationTokenType type, @Nullable String additionalData) {
+        return VerificationToken.builder()
+            .token("123456")
+            .user(user)
+            .expiryDate(LocalDateTime.now(ZoneOffset.UTC).plusHours(24))
+            .tokenType(type)
+            .additionalData(additionalData)
             .build();
     }
 
@@ -205,7 +228,7 @@ class AuthServiceTest {
     void authenticate_ShouldReturnToken() {
         // given
         setupCookieProperties();
-        user.setVerified(true);
+        user.markVerified();
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -240,7 +263,6 @@ class AuthServiceTest {
     @Test
     void authenticate_WhenUserNotVerified_ShouldThrowException() {
         // given
-        user.setVerified(false);
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
 
         // when & then
@@ -273,8 +295,7 @@ class AuthServiceTest {
     @Test
     void verifyAccount_WhenAccountAlreadyVerified_ShouldThrowException() {
         // given
-        user.setVerified(true);
-        verificationToken.setUser(user);
+        user.markVerified();
         when(verificationTokenService.getValidToken("123456", VerificationTokenType.ACCOUNT_ACTIVATION))
             .thenReturn(verificationToken);
 
@@ -318,7 +339,7 @@ class AuthServiceTest {
     @Test
     void resendVerificationCode_WhenAccountAlreadyVerified_ShouldThrowException() throws MessagingException {
         // given
-        user.setVerified(true);
+        user.markVerified();
         when(userService.findByEmailWithRoles("john@example.com")).thenReturn(Optional.of(user));
 
         // when & then
@@ -334,7 +355,7 @@ class AuthServiceTest {
     void authenticate_ShouldCallAuthenticationManager() {
         // given
         setupCookieProperties();
-        user.setVerified(true);
+        user.markVerified();
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -354,7 +375,7 @@ class AuthServiceTest {
     void authenticate_ShouldCreateRefreshTokenWhenResponseNotNull() {
         // given
         setupCookieProperties();
-        user.setVerified(true);
+        user.markVerified();
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -375,7 +396,7 @@ class AuthServiceTest {
     @Test
     void authenticate_ShouldNotCreateRefreshTokenWhenResponseNull() {
         // given
-        user.setVerified(true);
+        user.markVerified();
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
 
@@ -392,7 +413,7 @@ class AuthServiceTest {
     void authenticate_ShouldSetRefreshTokenCookie() {
         // given
         setupCookieProperties();
-        user.setVerified(true);
+        user.markVerified();
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -411,7 +432,7 @@ class AuthServiceTest {
     void authenticate_ShouldGenerateJwtToken() {
         // given
         setupCookieProperties();
-        user.setVerified(true);
+        user.markVerified();
         when(userService.findByEmailWithRoles(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("generated-jwt-token");
         when(jwtService.getRefreshTokenCookieName()).thenReturn("refresh_token");
@@ -554,8 +575,7 @@ class AuthServiceTest {
     void verifyEmailChange_ShouldUpdateEmailAndReturnTokens() {
         // given
         setupCookieProperties();
-        verificationToken.setTokenType(VerificationTokenType.EMAIL_CHANGE);
-        verificationToken.setAdditionalData("newemail@example.com");
+        verificationToken = tokenOf(VerificationTokenType.EMAIL_CHANGE, "newemail@example.com");
         when(verificationTokenService.getValidToken("123456", VerificationTokenType.EMAIL_CHANGE))
             .thenReturn(verificationToken);
         when(userService.saveUser(any(User.class))).thenReturn(user);
@@ -609,8 +629,7 @@ class AuthServiceTest {
     @Test
     void verifyPasswordChange_ShouldUpdatePassword() {
         // given
-        verificationToken.setTokenType(VerificationTokenType.PASSWORD_CHANGE);
-        verificationToken.setAdditionalData("encodedNewPassword");
+        verificationToken = tokenOf(VerificationTokenType.PASSWORD_CHANGE, "encodedNewPassword");
         when(verificationTokenService.getValidToken("123456", VerificationTokenType.PASSWORD_CHANGE))
             .thenReturn(verificationToken);
         when(userService.saveUser(any(User.class))).thenReturn(user);
@@ -646,7 +665,7 @@ class AuthServiceTest {
     @Test
     void resetPassword_ShouldUpdatePassword() {
         // given
-        verificationToken.setTokenType(VerificationTokenType.PASSWORD_RESET);
+        verificationToken = tokenOf(VerificationTokenType.PASSWORD_RESET, null);
         when(verificationTokenService.getValidToken("valid-token", VerificationTokenType.PASSWORD_RESET))
             .thenReturn(verificationToken);
         when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");

@@ -5,9 +5,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,13 +24,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(
     name = "\"user\"",
@@ -56,16 +62,76 @@ public class User extends BaseEntity implements UserDetails {
         joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_role_user")),
         inverseJoinColumns = @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name = "fk_user_role_role"))
     )
-    @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     @Column(nullable = false)
-    @Builder.Default
-    private boolean verified = false;
+    private boolean verified;
 
     @Column(nullable = false)
-    @Builder.Default
-    private boolean active = true;
+    private boolean active;
+
+    @SuppressWarnings("NullAway.Init")
+    protected User() {
+        super();
+        this.roles = new HashSet<>();
+    }
+
+    @Builder
+    private User(
+        String firstName,
+        String lastName,
+        String email,
+        String password,
+        @Nullable Set<Role> roles,
+        boolean verified,
+        @Nullable Boolean active
+    ) {
+        super();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.roles = roles == null ? new HashSet<>() : new HashSet<>(roles);
+        this.verified = verified;
+        this.active = active == null || active;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public void assignRoles(Set<Role> assignedRoles) {
+        this.roles = new HashSet<>(assignedRoles);
+    }
+
+    public void markVerified() {
+        this.verified = true;
+    }
+
+    public void deactivate() {
+        this.active = false;
+    }
+
+    public void rename(String newFirstName, String newLastName) {
+        this.firstName = newFirstName;
+        this.lastName = newLastName;
+    }
+
+    public void changeEmail(String newEmail) {
+        this.email = newEmail;
+    }
+
+    public void updateDetails(@Nullable String newFirstName, @Nullable String newLastName, @Nullable String newEmail) {
+        if (newFirstName != null) {
+            this.firstName = newFirstName;
+        }
+        if (newLastName != null) {
+            this.lastName = newLastName;
+        }
+        if (newEmail != null) {
+            this.email = newEmail;
+        }
+    }
 
     @Override
     @NullUnmarked

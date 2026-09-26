@@ -51,7 +51,7 @@ class RoleServiceImpl implements RoleService {
             throw new ApiException(ROLE_WITH_THIS_NAME_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
-        roleMapper.updateFromDto(dto, role);
+        role.update(newName, dto.description());
         Role updatedRole = roleRepository.save(role);
         return roleMapper.toResponseDto(updatedRole);
     }

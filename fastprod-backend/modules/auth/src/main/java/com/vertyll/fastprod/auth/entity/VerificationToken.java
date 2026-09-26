@@ -20,17 +20,10 @@ import com.vertyll.fastprod.auth.enums.VerificationTokenType;
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 import com.vertyll.fastprod.user.entity.User;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
 @Entity
 @Table(
     name = "verification_token",
@@ -56,8 +49,7 @@ public class VerificationToken extends BaseEntity {
     private LocalDateTime expiryDate;
 
     @Column(nullable = false)
-    @Builder.Default
-    private boolean used = false;
+    private boolean used;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -65,4 +57,29 @@ public class VerificationToken extends BaseEntity {
 
     @Column
     private @Nullable String additionalData;
+
+    @SuppressWarnings("NullAway.Init")
+    protected VerificationToken() {
+        super();
+    }
+
+    @Builder
+    private VerificationToken(
+        String token,
+        User user,
+        LocalDateTime expiryDate,
+        VerificationTokenType tokenType,
+        @Nullable String additionalData
+    ) {
+        super();
+        this.token = token;
+        this.user = user;
+        this.expiryDate = expiryDate;
+        this.tokenType = tokenType;
+        this.additionalData = additionalData;
+    }
+
+    public void markUsed() {
+        this.used = true;
+    }
 }

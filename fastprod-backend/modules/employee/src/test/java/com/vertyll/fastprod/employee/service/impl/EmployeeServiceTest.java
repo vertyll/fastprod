@@ -30,10 +30,17 @@ import com.vertyll.fastprod.user.repository.UserRepository;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SuppressFBWarnings(
     value = {
@@ -175,7 +182,7 @@ class EmployeeServiceTest {
     @Test
     void updateEmployee_WhenEmployeeInactive_ShouldThrowException() {
         // given
-        user.setActive(false);
+        user.deactivate();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when & then
@@ -235,7 +242,7 @@ class EmployeeServiceTest {
     @Test
     void getEmployeeById_WhenEmployeeInactive_ShouldThrowException() {
         // given
-        user.setActive(false);
+        user.deactivate();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when & then
@@ -276,7 +283,7 @@ class EmployeeServiceTest {
     @Test
     void deleteEmployee_WhenEmployeeAlreadyDeleted_ShouldThrowException() {
         // given
-        user.setActive(false);
+        user.deactivate();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         // when & then

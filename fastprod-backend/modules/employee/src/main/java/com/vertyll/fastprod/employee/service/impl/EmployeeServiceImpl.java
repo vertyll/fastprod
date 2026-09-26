@@ -50,8 +50,8 @@ class EmployeeServiceImpl implements EmployeeService {
         }
 
         User user = employeeMapper.toUserEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setVerified(true);
+        user.changePassword(passwordEncoder.encode(dto.password()));
+        user.markVerified();
 
         assignRolesToUser(user, dto.roleNames());
 
@@ -73,11 +73,11 @@ class EmployeeServiceImpl implements EmployeeService {
             throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
-        employeeMapper.updateUserFromDto(dto, user);
+        user.updateDetails(dto.firstName(), dto.lastName(), dto.email());
 
         String password = dto.password();
         if (password != null && !password.isBlank()) {
-            user.setPassword(passwordEncoder.encode(password));
+            user.changePassword(passwordEncoder.encode(password));
         }
 
         Set<String> roleNames = dto.roleNames();
@@ -120,7 +120,7 @@ class EmployeeServiceImpl implements EmployeeService {
             throw new ApiException(EMPLOYEE_ALREADY_DELETED, HttpStatus.BAD_REQUEST);
         }
 
-        user.setActive(false);
+        user.deactivate();
         userRepository.save(user);
     }
 

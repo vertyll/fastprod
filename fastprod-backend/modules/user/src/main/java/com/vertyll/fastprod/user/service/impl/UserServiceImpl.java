@@ -54,9 +54,9 @@ class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setRoles(roles);
-        user.setVerified(true);
+        user.changePassword(passwordEncoder.encode(dto.password()));
+        user.assignRoles(roles);
+        user.markVerified();
 
         User savedUser = userRepository.save(user);
         return userMapper.toResponseDto(savedUser);
@@ -72,11 +72,11 @@ class UserServiceImpl implements UserService {
             throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
-        userMapper.updateFromDto(dto, user);
+        user.updateDetails(dto.firstName(), dto.lastName(), dto.email());
 
         String password = dto.password();
         if (password != null) {
-            user.setPassword(passwordEncoder.encode(password));
+            user.changePassword(passwordEncoder.encode(password));
         }
 
         Set<String> roleNames = dto.roleNames();
@@ -84,7 +84,7 @@ class UserServiceImpl implements UserService {
             Set<Role> roles = roleNames.stream()
                     .map(name -> roleService.getOrCreateDefaultRole(RoleType.fromValue(name)))
                     .collect(Collectors.toSet());
-            user.setRoles(roles);
+            user.assignRoles(roles);
         }
 
         User updatedUser = userRepository.save(user);
@@ -126,8 +126,7 @@ class UserServiceImpl implements UserService {
         User user = userRepository.findByEmailWithRoles(email)
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
-        user.setFirstName(dto.firstName());
-        user.setLastName(dto.lastName());
+        user.rename(dto.firstName(), dto.lastName());
 
         User updatedUser = userRepository.save(user);
         return userMapper.toResponseDto(updatedUser);

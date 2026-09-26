@@ -1,6 +1,12 @@
 package com.vertyll.fastprod.auth.service.impl;
 
-import com.vertyll.fastprod.auth.dto.*;
+import com.vertyll.fastprod.auth.dto.AuthRequestDto;
+import com.vertyll.fastprod.auth.dto.AuthResponseDto;
+import com.vertyll.fastprod.auth.dto.ChangeEmailRequestDto;
+import com.vertyll.fastprod.auth.dto.ChangePasswordRequestDto;
+import com.vertyll.fastprod.auth.dto.RegisterRequestDto;
+import com.vertyll.fastprod.auth.dto.ResetPasswordRequestDto;
+import com.vertyll.fastprod.auth.dto.SessionResponseDto;
 import com.vertyll.fastprod.auth.entity.VerificationToken;
 import com.vertyll.fastprod.auth.enums.VerificationTokenType;
 import com.vertyll.fastprod.auth.mapper.AuthMapper;
@@ -34,7 +40,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressFBWarnings(
@@ -82,9 +92,8 @@ class AuthServiceImpl implements AuthService {
 
         User user = authMapper.toUserEntity(request);
                
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setRoles(Set.of(roleService.getOrCreateDefaultRole(RoleType.USER)));
-        user.setVerified(false);
+        user.changePassword(passwordEncoder.encode(request.password()));
+        user.assignRoles(Set.of(roleService.getOrCreateDefaultRole(RoleType.USER)));
 
         userService.saveUser(user);
 
@@ -194,7 +203,7 @@ class AuthServiceImpl implements AuthService {
             throw new ApiException(ACCOUNT_ALREADY_VERIFIED, HttpStatus.BAD_REQUEST);
         }
 
-        user.setVerified(true);
+        user.markVerified();
         userService.saveUser(user);
 
         verificationTokenService.markTokenAsUsed(verificationToken);
@@ -270,7 +279,7 @@ class AuthServiceImpl implements AuthService {
         }
 
         User user = verificationToken.getUser();
-        user.setEmail(newEmail);
+        user.changeEmail(newEmail);
         userService.saveUser(user);
 
         verificationTokenService.markTokenAsUsed(verificationToken);
@@ -328,7 +337,7 @@ class AuthServiceImpl implements AuthService {
         }
 
         User user = verificationToken.getUser();
-        user.setPassword(newPasswordHash);
+        user.changePassword(newPasswordHash);
         userService.saveUser(user);
 
         verificationTokenService.markTokenAsUsed(verificationToken);
@@ -368,7 +377,7 @@ class AuthServiceImpl implements AuthService {
         User user = verificationToken.getUser();
         String newPasswordHash = passwordEncoder.encode(request.newPassword());
 
-        user.setPassword(newPasswordHash);
+        user.changePassword(newPasswordHash);
         userService.saveUser(user);
 
         verificationTokenService.markTokenAsUsed(verificationToken);

@@ -45,7 +45,6 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
                 .token(code)
                 .user(user)
                 .expiryDate(LocalDateTime.now(ZoneOffset.UTC).plusHours(24))
-                .used(false)
                 .tokenType(tokenType)
                 .additionalData(additionalData)
                 .build();
@@ -88,7 +87,7 @@ class VerificationTokenServiceImpl implements VerificationTokenService {
     @Override
     @Transactional
     public void markTokenAsUsed(VerificationToken token) {
-        token.setUsed(true);
+        token.markUsed();
         verificationTokenRepository.save(token);
 
         log.info("Marked verification token as used for user: {}", token.getUser().getEmail());

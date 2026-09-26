@@ -17,17 +17,10 @@ import org.jspecify.annotations.Nullable;
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 import com.vertyll.fastprod.user.entity.User;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
 @Entity
 @Table(
     name = "refresh_token",
@@ -53,9 +46,8 @@ public class RefreshToken extends BaseEntity {
     @Column(nullable = false)
     private Instant expiryDate;
 
-    @Builder.Default
     @Column(nullable = false)
-    private boolean revoked = false;
+    private boolean revoked;
 
     private @Nullable String deviceInfo;
 
@@ -69,5 +61,39 @@ public class RefreshToken extends BaseEntity {
     private Instant lastUsedAt;
 
     @Column
-    private Instant revokedAt;
+    private @Nullable Instant revokedAt;
+
+    @SuppressWarnings("NullAway.Init")
+    protected RefreshToken() {
+        super();
+    }
+
+    @Builder
+    private RefreshToken(
+        String token,
+        User user,
+        Instant expiryDate,
+        @Nullable String deviceInfo,
+        String ipAddress,
+        String userAgent,
+        Instant lastUsedAt
+    ) {
+        super();
+        this.token = token;
+        this.user = user;
+        this.expiryDate = expiryDate;
+        this.deviceInfo = deviceInfo;
+        this.ipAddress = ipAddress;
+        this.userAgent = userAgent;
+        this.lastUsedAt = lastUsedAt;
+    }
+
+    public void revoke(Instant at) {
+        this.revoked = true;
+        this.revokedAt = at;
+    }
+
+    public void markUsed(Instant at) {
+        this.lastUsedAt = at;
+    }
 }

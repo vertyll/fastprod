@@ -2,18 +2,23 @@ package com.vertyll.fastprod.role.entity;
 
 import java.io.Serial;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+
+import org.jspecify.annotations.Nullable;
 
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
 @Entity
 @Table(
     name = "role",
@@ -38,6 +43,25 @@ public class Role extends BaseEntity {
     private String description;
 
     @Column(nullable = false)
-    @Builder.Default
-    private boolean active = true;
+    private boolean active;
+
+    @SuppressWarnings("NullAway.Init")
+    protected Role() {
+        super();
+    }
+
+    @Builder
+    private Role(RoleType name, String description, @Nullable Boolean active) {
+        super();
+        this.name = name;
+        this.description = description;
+        this.active = active == null || active;
+    }
+
+    public void update(RoleType name, @Nullable String description) {
+        this.name = name;
+        if (description != null) {
+            this.description = description;
+        }
+    }
 }

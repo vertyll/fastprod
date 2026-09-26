@@ -54,7 +54,6 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
                 .token(hashedToken)
                 .user(user)
                 .expiryDate(Instant.now().plusMillis(jwtService.getRefreshTokenExpirationTime()))
-                .revoked(false)
                 .deviceInfo(deviceInfo)
                 .ipAddress(extractIpAddress(request))
                 .userAgent(extractUserAgent(request))
@@ -95,8 +94,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
             throw new ApiException(INVALID_REFRESH_TOKEN_SIGNATURE, HttpStatus.UNAUTHORIZED);
         }
 
-        // Update last used timestamp
-        refreshToken.setLastUsedAt(Instant.now());
+        refreshToken.markUsed(Instant.now());
         refreshTokenRepository.save(refreshToken);
 
         return refreshToken.getUser();
@@ -133,8 +131,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 
         try {
             RefreshToken refreshToken = findTokenByValue(token, username);
-            refreshToken.setRevoked(true);
-            refreshToken.setRevokedAt(Instant.now());
+            refreshToken.revoke(Instant.now());
             refreshTokenRepository.save(refreshToken);
 
             log.info("Revoked refresh token for user: {}", refreshToken.getUser().getEmail());
@@ -151,8 +148,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
     public void revokeAllUserTokens(User user) {
         List<RefreshToken> tokens = refreshTokenRepository.findByUserAndRevoked(user, false);
         tokens.forEach(token -> {
-            token.setRevoked(true);
-            token.setRevokedAt(Instant.now());
+            token.revoke(Instant.now());
         });
         refreshTokenRepository.saveAll(tokens);
 
