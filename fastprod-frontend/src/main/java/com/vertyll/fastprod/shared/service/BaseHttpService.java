@@ -117,14 +117,18 @@ public class BaseHttpService {
 
     private ApiException toApiException(HttpResponse<String> response) {
         log.warn("HTTP request failed with status {}", response.statusCode());
+        Problem problem;
         try {
-            Problem problem = objectMapper.readValue(response.body(), Problem.class);
-            String detail =
-                    problem.detail() != null ? problem.detail() : "Server error (code: " + response.statusCode() + ")";
-            return new ApiException(detail, response.statusCode(), problem.fieldErrors());
+            problem = objectMapper.readValue(response.body(), Problem.class);
         } catch (JacksonException e) {
             return new ApiException(COMMUNICATION_ERROR, response.statusCode());
         }
+        if (problem == null) {
+            return new ApiException(COMMUNICATION_ERROR, response.statusCode());
+        }
+        String detail = problem.detail();
+        String message = detail != null ? detail : "Server error (code: " + response.statusCode() + ")";
+        return new ApiException(message, response.statusCode(), problem.fieldErrors());
     }
 
     private record Problem(@Nullable String detail, @Nullable Map<String, List<String>> errors) {

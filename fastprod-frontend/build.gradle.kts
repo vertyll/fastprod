@@ -225,10 +225,7 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     }
 
     format("gradle") {
-        target(
-            "*.gradle.kts",
-            "**/*.gradle.kts",
-        )
+        target("*.gradle.kts")
 
         trimTrailingWhitespace()
         leadingTabsToSpaces(4)

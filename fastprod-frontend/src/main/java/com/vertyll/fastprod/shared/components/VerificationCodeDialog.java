@@ -1,7 +1,6 @@
 package com.vertyll.fastprod.shared.components;
 
 import java.io.Serial;
-import java.util.function.BiConsumer;
 
 import com.vertyll.fastprod.shared.exception.ApiException;
 
@@ -16,6 +15,7 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.function.SerializableBiConsumer;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,12 +28,12 @@ public final class VerificationCodeDialog extends Dialog {
 
     private final TextField codeField;
     private final Button verifyButton;
-    private final transient BiConsumer<String, VerificationCodeDialog> onVerify;
+    private final SerializableBiConsumer<String, VerificationCodeDialog> onVerify;
 
     public VerificationCodeDialog(
         String title,
         String description,
-        BiConsumer<String, VerificationCodeDialog> onVerify
+        SerializableBiConsumer<String, VerificationCodeDialog> onVerify
     ) {
         super();
         this.onVerify = onVerify;

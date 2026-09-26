@@ -52,16 +52,10 @@ public class TokenRefreshService {
             log.debug("Attempting to refresh token using cookie: {}", cookieName);
             AuthResponseDto response = authService.refreshToken();
 
-            if (response != null) {
-                securityService.login(response);
-                setTokenExpiration();
-                log.info("Token refreshed successfully");
-                return true;
-            }
-
-            log.warn("Token refresh returned null data");
-            return false;
-
+            securityService.login(response);
+            setTokenExpiration();
+            log.info("Token refreshed successfully");
+            return true;
         } catch (ApiException e) {
             log.error("Failed to refresh token: {}", e.getMessage());
             return false;

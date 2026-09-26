@@ -2,18 +2,12 @@ package com.vertyll.fastprod.shared.components;
 
 import java.io.Serial;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
-
-import org.jspecify.annotations.Nullable;
 
 import com.vertyll.fastprod.shared.filters.FilterFieldConfig;
 import com.vertyll.fastprod.shared.filters.FiltersValue;
@@ -221,89 +215,16 @@ public final class FiltersComponent extends HorizontalLayout {
     }
 
     public FiltersValue getValues() {
-        FiltersValue fv = FiltersValue.empty();
-        for (Map.Entry<String, Component> e : controls.entrySet()) {
-            String id = e.getKey();
-            Component c = e.getValue();
-            if (c instanceof TextField tf) {
-                fv.set(id, tf.getValue());
-            } else if (c instanceof Select<?> sel) {
-                Object value = sel.getValue();
-                Object token = selectEmptyTokens.get(id);
-                if (token != null && Objects.equals(value, token)) {
-                    fv.remove(id);
-                } else {
-                    fv.set(id, value);
-                }
-            } else if (c instanceof MultiSelectComboBox<?> ms) {
-                fv.set(id, new ArrayList<>(ms.getSelectedItems()));
-            }
-        }
-        return fv;
+        return FilterControls.read(controls, selectEmptyTokens);
     }
 
     public void setValues(FiltersValue values) {
-        controls.forEach((key, component) -> setComponentValue(key, component, values.asMap().get(key)));
+        FilterControls.write(controls, selectEmptyTokens, values);
         updateSelectedSummary();
     }
 
-    private void setComponentValue(String key, Component component, @Nullable Object value) {
-        if (component instanceof TextField tf) {
-            setTextFieldValue(tf, value);
-        } else if (component instanceof Select<?> select) {
-            setSelectValue(key, select, value);
-        } else if (component instanceof MultiSelectComboBox<?> multiSelect) {
-            setMultiSelectValue(multiSelect, value);
-        }
-    }
-
-    private void setTextFieldValue(TextField textField, @Nullable Object value) {
-        textField.setValue(value != null ? String.valueOf(value) : "");
-    }
-
-    private void setSelectValue(String key, Select<?> select, @Nullable Object value) {
-        @SuppressWarnings("unchecked") Select<Object> s = (Select<Object>) select;
-
-        if (value == null) {
-            Object token = selectEmptyTokens.get(key);
-            if (token != null) {
-                s.setValue(token);
-            } else {
-                s.clear();
-            }
-        } else {
-            s.setValue(value);
-        }
-    }
-
-    private void setMultiSelectValue(MultiSelectComboBox<?> multiSelect, @Nullable Object value) {
-        @SuppressWarnings("unchecked") MultiSelectComboBox<Object> ms = (MultiSelectComboBox<Object>) multiSelect;
-        ms.clear();
-
-        if (value instanceof Collection<?> col) {
-            ms.setValue(new HashSet<>(col));
-        }
-    }
-
     public void clear() {
-        for (Map.Entry<String, Component> e : controls.entrySet()) {
-            Component c = e.getValue();
-            if (c instanceof TextField tf) {
-                tf.clear();
-            }
-            if (c instanceof Select<?> sel) {
-                @SuppressWarnings("unchecked") Select<Object> s = (Select<Object>) sel;
-                Object token = selectEmptyTokens.get(e.getKey());
-                if (token != null) {
-                    s.setValue(token);
-                } else {
-                    s.clear();
-                }
-            }
-            if (c instanceof MultiSelectComboBox<?> ms) {
-                ms.clear();
-            }
-        }
+        FilterControls.clear(controls, selectEmptyTokens);
         emitChange();
     }
 
@@ -323,65 +244,12 @@ public final class FiltersComponent extends HorizontalLayout {
     }
 
     private void addChipIfHasValue(String id, Component component) {
-        extractChipData(id, component).ifPresent(this::createAndAddChip);
+        FilterChips.of(component, selectEmptyTokens.get(id)).ifPresent(this::createAndAddChip);
     }
 
-    private Optional<ChipData> extractChipData(String id, Component component) {
-        if (component instanceof TextField tf) {
-            return extractTextFieldChipData(tf);
-        } else if (component instanceof Select<?> select) {
-            return extractSelectChipData(id, select);
-        } else if (component instanceof MultiSelectComboBox<?> multiSelect) {
-            return extractMultiSelectChipData(multiSelect);
-        }
-        return Optional.empty();
-    }
-
-    private static Optional<ChipData> extractTextFieldChipData(TextField textField) {
-        String value = textField.getValue();
-        if (value != null && !value.isBlank()) {
-            return Optional.of(new ChipData(textField.getLabel(), value));
-        }
-        return Optional.empty();
-    }
-
-    private Optional<ChipData> extractSelectChipData(String id, Select<?> select) {
-        Object value = select.getValue();
-        Object token = selectEmptyTokens.get(id);
-
-        if (token != null && Objects.equals(value, token)) {
-            return Optional.empty();
-        }
-
-        if (value != null) {
-            @SuppressWarnings("unchecked") ItemLabelGenerator<Object> gen =
-                    (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
-            String valueText = gen != null ? gen.apply(value) : String.valueOf(value);
-            return Optional.of(new ChipData(select.getLabel(), valueText));
-        }
-        return Optional.empty();
-    }
-
-    private static Optional<ChipData> extractMultiSelectChipData(MultiSelectComboBox<?> multiSelect) {
-        Set<?> selected = multiSelect.getSelectedItems();
-
-        if (selected != null && !selected.isEmpty()) {
-            @SuppressWarnings("unchecked") ItemLabelGenerator<Object> gen =
-                    (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
-
-            List<String> labels = selected.stream().map(o -> gen != null ? gen.apply(o) : String.valueOf(o)).toList();
-
-            return Optional.of(new ChipData(multiSelect.getLabel(), String.join(", ", labels)));
-        }
-        return Optional.empty();
-    }
-
-    private void createAndAddChip(ChipData data) {
-        Span chip = new Span(data.label + ": " + data.value);
+    private void createAndAddChip(FilterChips.Chip data) {
+        Span chip = new Span(data.label() + ": " + data.value());
         chip.getElement().getThemeList().add("badge contrast");
         selectedChips.add(chip);
-    }
-
-    private record ChipData(String label, String value) {
     }
 }
