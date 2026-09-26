@@ -38,6 +38,7 @@ public class BackendI18NProvider implements I18NProvider {
     public String getTranslation(String key, Locale locale, Object... params) {
         String pattern = catalogues.messages(language(locale)).get(key);
         if (pattern == null) {
+            log.warn("Missing translation {} for {}", key, locale);
             return key;
         }
         try {
@@ -48,7 +49,7 @@ public class BackendI18NProvider implements I18NProvider {
             return format.format(params);
         } catch (IllegalArgumentException e) {
             log.warn("Invalid translation {} for {}", key, locale, e);
-            return pattern;
+            return key;
         }
     }
 
