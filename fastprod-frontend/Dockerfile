@@ -1,42 +1,32 @@
-ARG GRADLE_VERSION=9.7.1
-ARG JAVA_VERSION=25
+ARG JDK_IMAGE=azul/zulu-openjdk:25-latest
+ARG JRE_IMAGE=azul/zulu-openjdk:25-jre-headless-latest
 
-# Build stage
-FROM gradle:${GRADLE_VERSION}-jdk${JAVA_VERSION}-alpine AS build
+FROM ${JDK_IMAGE} AS build
+WORKDIR /workspace
+COPY fastprod-frontend/ ./
+RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -Pvaadin.productionMode=true vaadinBuildFrontend bootJar
+
+FROM ${JDK_IMAGE} AS extract
+WORKDIR /extract
+COPY --from=build /workspace/build/libs/fastprod-frontend.jar app.jar
+RUN java -Djarmode=tools -jar app.jar extract --layers --launcher --destination layers
+
+FROM ${JRE_IMAGE} AS runtime
 WORKDIR /app
+RUN groupadd --system --gid 1001 fastprod && useradd --system --uid 1001 --gid fastprod fastprod
 
-# Vaadin requires Node.js for building the production package
-RUN apk add --no-cache nodejs npm
+COPY --from=extract --chown=fastprod:fastprod /extract/layers/dependencies/ ./
+COPY --from=extract --chown=fastprod:fastprod /extract/layers/spring-boot-loader/ ./
+COPY --from=extract --chown=fastprod:fastprod /extract/layers/snapshot-dependencies/ ./
+COPY --from=extract --chown=fastprod:fastprod /extract/layers/application/ ./
 
-# Copy the entire frontend folder
-COPY fastprod-frontend/ .
-
-RUN chmod +x gradlew
-
-# Build the application (Vaadin + Spring Boot Jar)
-RUN ./gradlew vaadinBuildFrontend bootJar --no-daemon --parallel
-
-# Production stage
-FROM azul/zulu-openjdk-alpine:${JAVA_VERSION}-jre AS production
-WORKDIR /app
-
-RUN apk add --no-cache bash curl && \
-    addgroup --system --gid 1001 appuser && \
-    adduser --system --uid 1001 --ingroup appuser appuser
-
-# Copy the built JAR from the build stage
-COPY --from=build /app/build/libs/*.jar app.jar
-
-USER appuser
-
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
-ENV SPRING_PROFILES_ACTIVE=prod
-ENV SERVER_PORT=8001
-
+USER fastprod
 EXPOSE 8001
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8001/actuator/health || exit 1
+ENV SPRING_PROFILES_ACTIVE=prod \
+    JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
 
-# Use exec form to ensure signals are received properly
-CMD ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD ["bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8001 && printf 'GET /actuator/health/liveness HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q '\"UP\"' <&3"]
+
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]

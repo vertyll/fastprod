@@ -258,3 +258,7 @@ tasks.named("build").configure {
 tasks.named("spotlessGradle").configure {
     mustRunAfter("vaadinPrepareFrontend")
 }
+
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    archiveFileName.set("fastprod-frontend.jar")
+}

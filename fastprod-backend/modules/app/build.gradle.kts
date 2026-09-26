@@ -58,7 +58,7 @@ tasks.withType<Test> {
 }
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    enabled = true
+    archiveFileName.set("fastprod-backend.jar")
 }
 
 tasks.named<Jar>("jar") {
