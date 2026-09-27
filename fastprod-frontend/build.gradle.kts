@@ -165,7 +165,12 @@ tasks.withType<Test> {
 
     maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 
-    jvmArgs("-XX:+EnableDynamicAgentLoading", "-Xshare:off")
+    jvmArgumentProviders.add(
+        CommandLineArgumentProvider {
+            classpath.filter { it.name.startsWith("mockito-core") }.files.map { "-javaagent:${it.absolutePath}" } +
+                "-Xshare:off"
+        },
+    )
 }
 
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
