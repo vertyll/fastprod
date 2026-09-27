@@ -1,9 +1,7 @@
-/* Add your styles here */
 vaadin-button {
     cursor: pointer;
 }
 
-/* Badge styles */
 [theme~="badge"] {
     display: inline-flex;
     align-items: center;
@@ -39,15 +37,11 @@ vaadin-button {
     background-color: var(--lumo-contrast-10pct);
 }
 
-/* ── Responsive styles ──────────────────────────────────────── */
-
-/* Public navbar: Login/Register buttons wrap on small screens */
 .public-navbar {
     flex-wrap: wrap;
     gap: 0.5rem;
 }
 
-/* Auth cards: reduce padding on mobile */
 @media (max-width: 480px) {
     .login-card,
     .register-card,
@@ -59,7 +53,6 @@ vaadin-button {
     }
 }
 
-/* DetailsTable: stack label above value on mobile */
 .details-table {
     display: block;
     width: 100%;
@@ -101,7 +94,6 @@ vaadin-button {
     }
 }
 
-/* Page header: buttons wrap and stretch on mobile */
 .page-header {
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -118,7 +110,6 @@ vaadin-button {
     }
 }
 
-/* Employee toolbar: stack buttons on mobile */
 .employee-toolbar {
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -134,14 +125,12 @@ vaadin-button {
     }
 }
 
-/* Pagination: wrap and center on mobile */
 .pagination-bar {
     flex-wrap: wrap;
     gap: 0.25rem;
     justify-content: center;
 }
 
-/* Filters: wrap on mobile */
 .filters-bar {
     flex-wrap: wrap;
     gap: 0.5rem;
