@@ -237,8 +237,9 @@ tasks.withType<Pmd> {
     }
 }
 
-tasks.named("bootRun").configure {
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
     dependsOn("vaadinPrepareFrontend")
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
 }
 
 tasks.named("build").configure {
