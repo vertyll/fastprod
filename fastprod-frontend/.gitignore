@@ -1,6 +1,11 @@
 ### General ###
 HELP.md
 
+### JVM crash dumps ###
+hs_err_pid*.log
+replay_pid*.log
+*.hprof
+
 ### Gradle ###
 .gradle
 build/
@@ -50,7 +55,19 @@ bin/
 .DS_Store
 Thumbs.db
 
-# The following files are generated/updated by vaadin-maven-plugin
+### Logs ###
+*.log
+logs/
+
+### Environment files ###
+.env
+*.env
+!.env.example
+
+### Compiled class files ###
+*.class
+
+### Vaadin generated files ###
 node_modules/
 src/main/bundles/
 src/main/frontend/generated/
