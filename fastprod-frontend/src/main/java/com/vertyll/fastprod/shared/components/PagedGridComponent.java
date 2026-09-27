@@ -19,9 +19,6 @@ public final class PagedGridComponent<T> extends VerticalLayout {
     @Getter
     private final PaginationComponent pagination;
 
-    private SerializableBiConsumer<Integer, Integer> onPageChange = (_, _) -> {
-    };
-
     public PagedGridComponent(Class<T> beanType) {
         this(new Grid<>(beanType, false));
     }
@@ -37,15 +34,13 @@ public final class PagedGridComponent<T> extends VerticalLayout {
 
         grid.setSizeFull();
 
-        pagination.setOnPageChange(page -> onPageChange.accept(page, pagination.getPageSize()));
-        pagination.setOnPageSizeChange(pageSize -> onPageChange.accept(0, pageSize));
-
         add(grid);
         add(pagination);
     }
 
     public void setOnPageChange(SerializableBiConsumer<Integer, Integer> onPageChange) {
-        this.onPageChange = onPageChange;
+        pagination.setOnPageChange(page -> onPageChange.accept(page, pagination.getPageSize()));
+        pagination.setOnPageSizeChange(pageSize -> onPageChange.accept(0, pageSize));
     }
 
     public void updateData(PageResponse<T> pageResponse) {
