@@ -10,7 +10,6 @@ spring:
     port: ${MAIL_PORT}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
-    from: ${MAIL_FROM}
     properties:
       mail:
         smtp:
@@ -29,6 +28,8 @@ security:
     secure: true
 
 application:
+  mail:
+    from: ${MAIL_FROM}
   file:
     uploads:
       file-output-path: ${FILE_UPLOAD_PATH}

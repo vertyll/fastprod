@@ -16,7 +16,6 @@ spring:
     port: 3025
     username: test
     password: test
-    from: no-reply@fastprod.local
     properties:
       mail:
         smtp:
@@ -44,6 +43,8 @@ security:
     path: /
 
 application:
+  mail:
+    from: no-reply@fastprod.local
   file:
     uploads:
       file-output-path: ./test-uploads

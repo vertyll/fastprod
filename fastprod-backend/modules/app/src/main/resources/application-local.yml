@@ -6,7 +6,6 @@ spring:
   mail:
     host: localhost
     port: 1025
-    from: no-reply@fastprod.local
 
 springdoc:
   api-docs:
@@ -24,6 +23,8 @@ security:
     secure: false
 
 application:
+  mail:
+    from: no-reply@fastprod.local
   file:
     uploads:
       file-output-path: ./uploads
