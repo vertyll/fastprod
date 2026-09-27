@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     private static final String AN_UNEXPECTED_ERROR_OCCURRED = "errors.common.unexpected";
     private static final String INVALID_VALUE = "validation.invalid";
     private static final String VALIDATION_FAILED = "errors.common.validationFailed";
-    private static final String INVALID_EMAIL_OR_PASSWORD = "errors.auth.invalidCredentials";
+    private static final String INVALID_CREDENTIALS = "errors.auth.invalidCredentials";
     private static final String ACCOUNT_IS_DISABLED = "errors.auth.accountDisabled";
     private static final String ACCOUNT_IS_LOCKED = "errors.auth.accountLocked";
     private static final String NOT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION = "errors.auth.forbidden";
@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentialsException(BadCredentialsException ignoredEx) {
-        return problem(HttpStatus.UNAUTHORIZED, INVALID_EMAIL_OR_PASSWORD);
+        return problem(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
     }
 
     @ExceptionHandler(DisabledException.class)

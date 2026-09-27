@@ -13,8 +13,8 @@ RUN java -Djarmode=tools -jar app.jar extract --layers --launcher --destination 
 
 FROM ${JRE_IMAGE} AS runtime
 WORKDIR /app
-RUN groupadd --system --gid 1001 fastprod && useradd --system --uid 1001 --gid fastprod fastprod
-RUN mkdir -p /var/app/uploads && chown fastprod:fastprod /var/app/uploads
+RUN groupadd --system --gid 1001 fastprod && useradd --system --uid 1001 --gid fastprod fastprod \
+    && mkdir -p /var/app/uploads && chown fastprod:fastprod /var/app/uploads
 
 COPY --from=extract --chown=fastprod:fastprod /extract/layers/dependencies/ ./
 COPY --from=extract --chown=fastprod:fastprod /extract/layers/spring-boot-loader/ ./

@@ -185,7 +185,7 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
         String rolesText = I18n.roles(user.roles());
         detailsTable.addRow(I18n.t("common.roles"), rolesText);
 
-        Span verifiedBadge = new Span(user.isVerified() ? I18n.t("common.verified") : I18n.t("common.notVerified"));
+        Span verifiedBadge = new Span(I18n.t(user.isVerified() ? "common.verified" : "common.notVerified"));
         verifiedBadge.getElement().getThemeList().add(user.isVerified() ? "badge success" : "badge error");
         detailsTable.addRow(I18n.t("common.status"), verifiedBadge);
     }

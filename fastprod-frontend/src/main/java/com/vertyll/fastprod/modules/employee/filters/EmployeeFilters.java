@@ -43,10 +43,9 @@ public final class EmployeeFilters {
                         return "";
                     }
                     if (v instanceof Boolean b) {
-                        return b ? I18n.t(VERIFIED_LABEL_KEY) : I18n.t("common.notVerified");
+                        return I18n.t(b ? VERIFIED_LABEL_KEY : "common.notVerified");
                     }
-                    return Boolean.parseBoolean(String.valueOf(v)) ? I18n.t(VERIFIED_LABEL_KEY)
-                            : I18n.t("common.notVerified");
+                    return I18n.t(Boolean.parseBoolean(String.valueOf(v)) ? VERIFIED_LABEL_KEY : "common.notVerified");
                 })
                 .placeholder(I18n.t("employees.filters.any"))
                 .build(),

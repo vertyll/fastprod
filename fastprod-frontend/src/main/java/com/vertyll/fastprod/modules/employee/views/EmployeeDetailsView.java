@@ -141,7 +141,7 @@ public final class EmployeeDetailsView extends VerticalLayout implements BeforeE
         detailsTable.addRow(I18n.t("common.email"), employee.email());
         detailsTable.addRow(I18n.t("common.roles"), I18n.roles(employee.roles()));
 
-        Span statusBadge = new Span(employee.isVerified() ? I18n.t("common.verified") : I18n.t("common.notVerified"));
+        Span statusBadge = new Span(I18n.t(employee.isVerified() ? "common.verified" : "common.notVerified"));
         statusBadge.getElement().getThemeList().clear();
         statusBadge.getElement().getThemeList().add("badge");
         if (employee.isVerified()) {

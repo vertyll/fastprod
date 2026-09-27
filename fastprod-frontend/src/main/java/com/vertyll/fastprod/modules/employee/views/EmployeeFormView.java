@@ -49,7 +49,6 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
     private PasswordField passwordField;
     private PasswordField confirmPasswordField;
     private @Nullable Long employeeId;
-    private boolean isEditMode = false;
 
     public EmployeeFormView(EmployeeService employeeService) {
         super();
@@ -67,7 +66,6 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
     public void beforeEnter(BeforeEnterEvent event) {
         Long id = event.getRouteParameters().get("id").map(Long::parseLong).orElse(null);
         employeeId = id;
-        isEditMode = id != null;
 
         if (id != null) {
             loadEmployee(id);
@@ -125,7 +123,7 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
             .bind(EmployeeFormData::getEmail, EmployeeFormData::setEmail);
 
         binder.forField(passwordField).withValidator(pass -> {
-            if (isEditMode) {
+            if (employeeId != null) {
                 return pass == null || pass.isEmpty() || pass.length() >= 6;
             }
             return pass != null && pass.length() >= 6;

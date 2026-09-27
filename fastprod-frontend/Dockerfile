@@ -4,7 +4,8 @@ ARG JRE_IMAGE=azul/zulu-openjdk:25-jre-headless-latest
 FROM ${JDK_IMAGE} AS build
 WORKDIR /workspace
 COPY fastprod-frontend/ ./
-RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -Pvaadin.productionMode=true vaadinBuildFrontend bootJar
+RUN --mount=type=cache,target=/root/.gradle \
+    ./gradlew --no-daemon -Pvaadin.productionMode=true vaadinBuildFrontend bootJar
 
 FROM ${JDK_IMAGE} AS extract
 WORKDIR /extract
