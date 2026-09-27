@@ -1,3 +1,9 @@
+spring:
+  application:
+    name: fastprod-frontend
+  profiles:
+    default: local
+
 server:
   port: 8001
   shutdown: graceful
