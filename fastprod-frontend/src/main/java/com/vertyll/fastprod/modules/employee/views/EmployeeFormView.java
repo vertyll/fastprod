@@ -187,7 +187,7 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
             EmployeeFormData formData = new EmployeeFormData();
             binder.writeBean(formData);
 
-            if (formData.getPassword() != null && !formData.getPassword().isEmpty()) {
+            if (!formData.getPassword().isEmpty()) {
                 String confirmPass = confirmPasswordField.getValue();
                 if (!formData.getPassword().equals(confirmPass)) {
                     Notification.show(I18n.t("validation.password.mismatch"), 3000, Notification.Position.TOP_CENTER)
@@ -199,8 +199,7 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
 
             Long id = employeeId;
             if (id != null) {
-                String passwordToSend = (formData.getPassword() != null && !formData.getPassword().isEmpty())
-                        ? formData.getPassword() : null;
+                String passwordToSend = formData.getPassword().isEmpty() ? null : formData.getPassword();
 
                 EmployeeUpdateDto updateDto = new EmployeeUpdateDto(
                     formData.getFirstName(),

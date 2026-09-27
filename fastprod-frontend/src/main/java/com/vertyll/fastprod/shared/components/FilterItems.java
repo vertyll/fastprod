@@ -19,10 +19,7 @@ final class FilterItems {
     }
 
     static List<Object> itemsOf(FilterFieldConfig<?> cfg) {
-        return cfg.staticItems()
-            .map(FilterItems::normalizeItems)
-            .or(() -> cfg.itemsSupplier().map(supplier -> normalizeItems(supplier.get())))
-            .orElseGet(List::of);
+        return cfg.staticItems().map(FilterItems::normalizeItems).orElseGet(List::of);
     }
 
     @SuppressWarnings("unchecked")

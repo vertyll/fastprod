@@ -23,7 +23,7 @@ public final class ApiException extends RuntimeException {
         Map<String, List<String>> fieldErrors,
         Map<String, Object> args
     ) {
-        super(Objects.requireNonNull(message, "message"));
+        super(message);
         this.statusCode = statusCode;
         this.fieldErrors = Map.copyOf(fieldErrors);
         this.args = Map.copyOf(args);
@@ -38,7 +38,7 @@ public final class ApiException extends RuntimeException {
     }
 
     public ApiException(String message, Throwable cause) {
-        super(Objects.requireNonNull(message, "message"), cause);
+        super(message, cause);
         this.statusCode = DEFAULT_STATUS_CODE;
         this.fieldErrors = Map.of();
         this.args = Map.of();

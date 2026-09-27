@@ -22,7 +22,7 @@ public final class LanguageSwitcher extends Select<Locale> {
         setAriaLabel(I18n.t("language.label"));
         setWidth("8rem");
         addValueChangeListener(event -> {
-            if (event.isFromClient() && event.getValue() != null) {
+            if (event.isFromClient()) {
                 VaadinSession.getCurrent().setLocale(event.getValue());
                 UI.getCurrent().getPage().reload();
             }

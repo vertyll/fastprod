@@ -85,7 +85,7 @@ public final class VerificationCodeDialog extends Dialog {
     private void handleVerification() {
         String code = codeField.getValue();
 
-        if (code == null || code.isBlank()) {
+        if (code.isBlank()) {
             showNotification(I18n.t("validation.verificationCode.required"), NotificationVariant.LUMO_ERROR);
             return;
         }

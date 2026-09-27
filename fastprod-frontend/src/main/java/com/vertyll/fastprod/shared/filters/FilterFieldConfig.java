@@ -1,9 +1,7 @@
 package com.vertyll.fastprod.shared.filters;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
@@ -16,7 +14,6 @@ public final class FilterFieldConfig<T> {
     private final String label;
     private final FilterFieldType type;
     private final @Nullable List<T> staticItems;
-    private final @Nullable Supplier<List<T>> itemsSupplier;
     private final @Nullable ItemLabelGenerator<T> itemLabelGenerator;
     private final @Nullable String placeholder;
 
@@ -25,7 +22,6 @@ public final class FilterFieldConfig<T> {
         this.label = b.label;
         this.type = b.type;
         this.staticItems = b.staticItems;
-        this.itemsSupplier = b.itemsSupplier;
         this.itemLabelGenerator = b.itemLabelGenerator;
         this.placeholder = b.placeholder;
     }
@@ -46,10 +42,6 @@ public final class FilterFieldConfig<T> {
         return Optional.ofNullable(staticItems);
     }
 
-    public Optional<Supplier<List<T>>> itemsSupplier() {
-        return Optional.ofNullable(itemsSupplier);
-    }
-
     public Optional<ItemLabelGenerator<T>> itemLabelGenerator() {
         return Optional.ofNullable(itemLabelGenerator);
     }
@@ -67,14 +59,13 @@ public final class FilterFieldConfig<T> {
         private final String label;
         private final FilterFieldType type;
         private @Nullable List<T> staticItems;
-        private @Nullable Supplier<List<T>> itemsSupplier;
         private @Nullable ItemLabelGenerator<T> itemLabelGenerator;
         private @Nullable String placeholder;
 
         private Builder(String id, String label, FilterFieldType type) {
-            this.id = Objects.requireNonNull(id, "id");
-            this.label = Objects.requireNonNull(label, "label");
-            this.type = Objects.requireNonNull(type, "type");
+            this.id = id;
+            this.label = label;
+            this.type = type;
         }
 
         public Builder<T> items(List<T> items) {
@@ -82,18 +73,13 @@ public final class FilterFieldConfig<T> {
             return this;
         }
 
-        public Builder<T> itemsSupplier(Supplier<List<T>> supplier) {
-            this.itemsSupplier = Objects.requireNonNull(supplier, "supplier");
-            return this;
-        }
-
         public Builder<T> itemLabel(ItemLabelGenerator<T> generator) {
-            this.itemLabelGenerator = Objects.requireNonNull(generator, "generator");
+            this.itemLabelGenerator = generator;
             return this;
         }
 
         public Builder<T> placeholder(String placeholder) {
-            this.placeholder = Objects.requireNonNull(placeholder, "placeholder");
+            this.placeholder = placeholder;
             return this;
         }
 

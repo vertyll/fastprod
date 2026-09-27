@@ -38,27 +38,18 @@ public final class EmployeeFilters {
                 .build(),
             FilterFieldConfig.builder(IS_VERIFIED, I18n.t(VERIFIED_LABEL_KEY), FilterFieldType.SELECT)
                 .items(List.of(true, false))
-                .itemLabel(v -> {
-                    if (v == null) {
-                        return "";
-                    }
-                    if (v instanceof Boolean b) {
-                        return I18n.t(b ? VERIFIED_LABEL_KEY : "common.notVerified");
-                    }
-                    return I18n.t(Boolean.parseBoolean(String.valueOf(v)) ? VERIFIED_LABEL_KEY : "common.notVerified");
-                })
+                .itemLabel(v -> I18n.t(Boolean.TRUE.equals(v) ? VERIFIED_LABEL_KEY : "common.notVerified"))
                 .placeholder(I18n.t("employees.filters.any"))
                 .build(),
             FilterFieldConfig.<RoleType>builder(ROLES, I18n.t("common.roles"), FilterFieldType.MULTISELECT)
                 .items(java.util.Arrays.stream(RoleType.values()).toList())
-                .itemLabel(v -> v == null ? "" : I18n.role(v.name()))
+                .itemLabel(v -> I18n.role(v.name()))
                 .placeholder(I18n.t("employees.filters.anyRoles"))
                 .build()
         );
     }
 
     public static FiltersValue normalize(FiltersValue raw) {
-        Objects.requireNonNull(raw, "raw");
         FiltersValue out = FiltersValue.empty();
 
         raw.get(FIRST_NAME, String.class).ifPresent(value -> out.set(FIRST_NAME, value));

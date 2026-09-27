@@ -1,6 +1,5 @@
 package com.vertyll.fastprod.user.mapper;
 
-import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -23,7 +22,7 @@ public interface UserMapper {
     @Mapping(target = "isVerified", source = "verified")
     UserResponseDto toResponseDto(User user);
 
-    default @Nullable RoleType roleToName(Role role) {
-        return role != null ? role.getName() : null;
+    default RoleType roleToName(Role role) {
+        return role.getName();
     }
 }

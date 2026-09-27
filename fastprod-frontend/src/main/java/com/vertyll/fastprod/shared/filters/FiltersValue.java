@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -24,7 +23,6 @@ public final class FiltersValue {
     }
 
     public void set(String key, @Nullable Object value) {
-        Objects.requireNonNull(key, "key");
         switch (value) {
             case null -> values.remove(key);
             case String s when s.isBlank() -> values.remove(key);
@@ -34,12 +32,10 @@ public final class FiltersValue {
     }
 
     public void remove(String key) {
-        values.remove(Objects.requireNonNull(key, "key"));
+        values.remove(key);
     }
 
     public <T> Optional<T> get(String key, Class<T> type) {
-        Objects.requireNonNull(key, "key");
-        Objects.requireNonNull(type, "type");
         return Optional.ofNullable(values.get(key)).map(type::cast);
     }
 

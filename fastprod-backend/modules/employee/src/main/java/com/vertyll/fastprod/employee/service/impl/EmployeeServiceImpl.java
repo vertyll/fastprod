@@ -70,7 +70,7 @@ class EmployeeServiceImpl implements EmployeeService {
             throw new ApiException(CANNOT_UPDATE_INACTIVE_EMPLOYEE, HttpStatus.BAD_REQUEST);
         }
 
-        if (dto.email() != null && !dto.email().equals(user.getEmail()) && userRepository.existsByEmail(dto.email())) {
+        if (!dto.email().equals(user.getEmail()) && userRepository.existsByEmail(dto.email())) {
             throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 

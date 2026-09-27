@@ -19,16 +19,12 @@ final class FilterChips {
     }
 
     static Optional<Chip> of(Component component, @Nullable Object selectEmptyToken) {
-        if (component instanceof TextField textField) {
-            return ofTextField(textField);
-        }
-        if (component instanceof Select<?> select) {
-            return ofSelect(select, selectEmptyToken);
-        }
-        if (component instanceof MultiSelectComboBox<?> multiSelect) {
-            return ofMultiSelect(multiSelect);
-        }
-        return Optional.empty();
+        return switch (component) {
+            case TextField textField -> ofTextField(textField);
+            case Select<?> select -> ofSelect(select, selectEmptyToken);
+            case MultiSelectComboBox<?> multiSelect -> ofMultiSelect(multiSelect);
+            default -> Optional.empty();
+        };
     }
 
     private static Optional<Chip> ofTextField(TextField textField) {
@@ -46,7 +42,7 @@ final class FilterChips {
         }
         @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =
                 (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
-        String text = generator != null ? generator.apply(value) : String.valueOf(value);
+        String text = generator.apply(value);
         return Optional.of(new Chip(select.getLabel(), text));
     }
 
@@ -57,9 +53,7 @@ final class FilterChips {
         }
         @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =
                 (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
-        List<String> labels = selected.stream()
-            .map(item -> generator != null ? generator.apply(item) : String.valueOf(item))
-            .toList();
+        List<String> labels = selected.stream().map(generator).toList();
         return Optional.of(new Chip(multiSelect.getLabel(), String.join(", ", labels)));
     }
 

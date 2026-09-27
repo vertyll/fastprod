@@ -1,7 +1,6 @@
 package com.vertyll.fastprod.shared.components;
 
 import java.io.Serial;
-import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
@@ -133,11 +132,11 @@ public final class PaginationComponent extends HorizontalLayout {
     }
 
     public void setOnPageChange(SerializableConsumer<Integer> onPageChange) {
-        this.onPageChange = Objects.requireNonNull(onPageChange, "onPageChange");
+        this.onPageChange = onPageChange;
     }
 
     public void setOnPageSizeChange(SerializableConsumer<Integer> onPageSizeChange) {
-        this.onPageSizeChange = Objects.requireNonNull(onPageSizeChange, "onPageSizeChange");
+        this.onPageSizeChange = onPageSizeChange;
     }
 
     private void handlePageSizeChange(@Nullable Integer newPageSize) {
@@ -180,6 +179,6 @@ public final class PaginationComponent extends HorizontalLayout {
     }
 
     public int getPageSize() {
-        return pageSizeSelect.getValue() != null ? pageSizeSelect.getValue() : 10;
+        return pageSizeSelect.getValue();
     }
 }

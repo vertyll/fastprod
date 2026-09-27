@@ -69,7 +69,7 @@ class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
         String email = dto.email();
-        if (email != null && !email.equals(user.getEmail()) && userRepository.existsByEmail(email)) {
+        if (!email.equals(user.getEmail()) && userRepository.existsByEmail(email)) {
             throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 

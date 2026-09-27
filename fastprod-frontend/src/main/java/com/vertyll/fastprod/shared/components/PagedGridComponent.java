@@ -1,7 +1,6 @@
 package com.vertyll.fastprod.shared.components;
 
 import java.io.Serial;
-import java.util.Objects;
 
 import com.vertyll.fastprod.shared.dto.PageResponse;
 
@@ -46,7 +45,7 @@ public final class PagedGridComponent<T> extends VerticalLayout {
     }
 
     public void setOnPageChange(SerializableBiConsumer<Integer, Integer> onPageChange) {
-        this.onPageChange = Objects.requireNonNull(onPageChange, "onPageChange");
+        this.onPageChange = onPageChange;
     }
 
     public void updateData(PageResponse<T> pageResponse) {

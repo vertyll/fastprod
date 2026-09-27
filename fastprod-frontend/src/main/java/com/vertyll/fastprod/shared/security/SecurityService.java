@@ -1,7 +1,6 @@
 package com.vertyll.fastprod.shared.security;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -69,15 +68,6 @@ public class SecurityService {
             .map(session -> (String) session.getAttribute(TOKEN_SESSION_KEY));
     }
 
-    public String getTokenType() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            String type = (String) session.getAttribute(TOKEN_TYPE_SESSION_KEY);
-            return type != null ? type : "Bearer";
-        }
-        return "Bearer";
-    }
-
     public List<String> getCurrentUserRoles() {
         VaadinSession session = VaadinSession.getCurrent();
         if (session != null) {
@@ -88,7 +78,6 @@ public class SecurityService {
     }
 
     public boolean hasRole(RoleType role) {
-        Objects.requireNonNull(role, "role");
         List<String> userRoles = getCurrentUserRoles();
         String roleName = role.name();
         String roleAuthority = role.getAuthority();
