@@ -23,10 +23,6 @@ spring:
           starttls:
             enable: false
 
-  task:
-    scheduling:
-      enabled: false
-
 security:
   jwt:
     access-token:
