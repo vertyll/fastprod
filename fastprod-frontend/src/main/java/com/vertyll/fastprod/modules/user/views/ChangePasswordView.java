@@ -8,6 +8,7 @@ import jakarta.annotation.security.PermitAll;
 import com.vertyll.fastprod.base.ui.MainLayout;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
 import com.vertyll.fastprod.modules.user.dto.ChangePasswordDto;
+import com.vertyll.fastprod.shared.components.Toast;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
@@ -15,9 +16,7 @@ import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -120,7 +119,7 @@ public final class ChangePasswordView extends VerticalLayout implements HasDynam
             String confirmPwd = confirmPasswordField.getValue();
 
             if (!newPwd.equals(confirmPwd)) {
-                showNotification(I18n.t("validation.password.mismatch"), NotificationVariant.LUMO_ERROR);
+                Toast.show(I18n.t("validation.password.mismatch"), NotificationVariant.LUMO_ERROR);
                 return;
             }
 
@@ -128,13 +127,13 @@ public final class ChangePasswordView extends VerticalLayout implements HasDynam
 
             if (binder.validate().isOk()) {
                 authService.requestPasswordChange(dto);
-                showNotification(I18n.t("account.password.codeSent"), NotificationVariant.LUMO_SUCCESS);
+                Toast.show(I18n.t("account.password.codeSent"), NotificationVariant.LUMO_SUCCESS);
                 clearFormAndValidation();
                 showVerificationDialog();
             }
         } catch (ApiException e) {
             log.error("Failed to request password change", e);
-            showNotification(I18n.t("account.password.failed"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("account.password.failed"), NotificationVariant.LUMO_ERROR);
         }
     }
 
@@ -168,20 +167,6 @@ public final class ChangePasswordView extends VerticalLayout implements HasDynam
             log.error("Failed to verify password change", e);
             dialog.showError(I18n.t("verification.failed"));
         }
-    }
-
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification();
-        notification.addThemeVariants(variant);
-        notification.setPosition(Notification.Position.TOP_CENTER);
-        notification.setDuration(3000);
-
-        Div text = new Div();
-        text.setText(message);
-        text.getStyle().set("white-space", "normal").set("max-width", "400px").set("text-align", "center");
-
-        notification.add(text);
-        notification.open();
     }
 
     @Override

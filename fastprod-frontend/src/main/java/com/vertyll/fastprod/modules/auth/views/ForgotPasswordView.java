@@ -3,6 +3,7 @@ package com.vertyll.fastprod.modules.auth.views;
 import java.io.Serial;
 
 import com.vertyll.fastprod.modules.auth.service.AuthService;
+import com.vertyll.fastprod.shared.components.Toast;
 import com.vertyll.fastprod.shared.components.VerificationCodeDialog;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
@@ -15,7 +16,6 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -129,11 +129,11 @@ public final class ForgotPasswordView extends VerticalLayout implements HasDynam
 
         try {
             authService.requestPasswordReset(email);
-            showNotification(I18n.t("auth.forgot.sent"), NotificationVariant.LUMO_SUCCESS);
+            Toast.show(I18n.t("auth.forgot.sent"), NotificationVariant.LUMO_SUCCESS);
             emailField.setEnabled(false);
             showVerificationDialog();
         } catch (ApiException e) {
-            showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
+            Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during password reset request: {}", e.getMessage());
         } finally {
             submitButton.setEnabled(true);
@@ -155,19 +155,6 @@ public final class ForgotPasswordView extends VerticalLayout implements HasDynam
         UI.getCurrent().navigate(ResetPasswordView.class, code);
     }
 
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification();
-        notification.addThemeVariants(variant);
-        notification.setPosition(Notification.Position.TOP_CENTER);
-        notification.setDuration(5000);
-
-        Div text = new Div();
-        text.setText(message);
-        text.getStyle().set("white-space", "normal").set("max-width", "400px").set(TEXT_ALIGN, CENTER);
-
-        notification.add(text);
-        notification.open();
-    }
     private static final class FormData {
         private String email = "";
 

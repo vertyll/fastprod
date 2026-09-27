@@ -9,6 +9,7 @@ import org.jspecify.annotations.Nullable;
 import com.vertyll.fastprod.base.ui.DelayedNavigation;
 import com.vertyll.fastprod.modules.auth.dto.ResetPasswordRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
+import com.vertyll.fastprod.shared.components.Toast;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
 
@@ -20,7 +21,6 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -74,7 +74,7 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
         if (token != null && !token.isEmpty()) {
             this.resetToken = token;
         } else {
-            showNotification(I18n.t("auth.reset.missingToken"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("auth.reset.missingToken"), NotificationVariant.LUMO_ERROR);
             UI.getCurrent().navigate(LoginView.class);
         }
     }
@@ -158,13 +158,13 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
         String confirmPwd = confirmPasswordField.getValue();
 
         if (!newPwd.equals(confirmPwd)) {
-            showNotification(I18n.t("validation.password.mismatch"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("validation.password.mismatch"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         String token = resetToken;
         if (token == null || token.isEmpty()) {
-            showNotification(I18n.t("auth.reset.invalidToken"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("auth.reset.invalidToken"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
@@ -175,12 +175,12 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
             ResetPasswordRequestDto request = new ResetPasswordRequestDto(newPwd);
             authService.resetPassword(token, request);
 
-            showNotification(I18n.t("auth.reset.success"), NotificationVariant.LUMO_SUCCESS);
+            Toast.show(I18n.t("auth.reset.success"), NotificationVariant.LUMO_SUCCESS);
 
             UI ui = UI.getCurrent();
             DelayedNavigation.navigate(ui, LoginView.class, Duration.ofSeconds(2));
         } catch (ApiException e) {
-            showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
+            Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during password reset: {}", e.getMessage());
         } finally {
             submitButton.setEnabled(true);
@@ -188,19 +188,6 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
         }
     }
 
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification();
-        notification.addThemeVariants(variant);
-        notification.setPosition(Notification.Position.TOP_CENTER);
-        notification.setDuration(5000);
-
-        Div text = new Div();
-        text.setText(message);
-        text.getStyle().set("white-space", "normal").set("max-width", "400px").set("text-align", "center");
-
-        notification.add(text);
-        notification.open();
-    }
     @SuppressWarnings("PMD.DataClass")
     private static final class FormData {
         private String newPassword = "";

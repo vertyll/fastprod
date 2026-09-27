@@ -12,6 +12,7 @@ import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
+import com.vertyll.fastprod.shared.components.Toast;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
 
@@ -23,7 +24,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -172,7 +172,7 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
             updateDetailsView(user);
         } catch (ApiException e) {
             log.error("Failed to load user profile", e);
-            showNotification(I18n.t("profile.loadFailed"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("profile.loadFailed"), NotificationVariant.LUMO_ERROR);
         }
     }
 
@@ -217,28 +217,14 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
                 currentUser = user;
                 updateDetailsView(user);
                 hideEditForm();
-                showNotification(I18n.t("profile.updated"), NotificationVariant.LUMO_SUCCESS);
+                Toast.show(I18n.t("profile.updated"), NotificationVariant.LUMO_SUCCESS);
             }
         } catch (ApiException e) {
             log.error("Failed to update profile", e);
-            showNotification(I18n.t("profile.updateFailed"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("profile.updateFailed"), NotificationVariant.LUMO_ERROR);
         } finally {
             loadingSpinner.hide();
         }
-    }
-
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification();
-        notification.addThemeVariants(variant);
-        notification.setPosition(Notification.Position.TOP_CENTER);
-        notification.setDuration(3000);
-
-        Div text = new Div();
-        text.setText(message);
-        text.getStyle().set("white-space", "normal").set("max-width", "400px").set("text-align", "center");
-
-        notification.add(text);
-        notification.open();
     }
 
     @Override

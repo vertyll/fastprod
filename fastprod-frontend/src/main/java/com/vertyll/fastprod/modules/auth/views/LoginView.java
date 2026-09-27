@@ -6,6 +6,7 @@ import com.vertyll.fastprod.modules.auth.dto.AuthResponseDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto;
 import com.vertyll.fastprod.modules.auth.dto.LoginRequestDto.FormBuilder;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
+import com.vertyll.fastprod.shared.components.Toast;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vertyll.fastprod.shared.security.SecurityService;
@@ -18,7 +19,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -171,7 +171,7 @@ public final class LoginView extends VerticalLayout implements HasDynamicTitle {
             tokenRefreshService.setTokenExpiration();
 
             String message = I18n.t("auth.login.success");
-            showNotification(message, NotificationVariant.LUMO_SUCCESS);
+            Toast.show(message, NotificationVariant.LUMO_SUCCESS);
 
             UI.getCurrent().getPage().setLocation("/");
 
@@ -179,31 +179,17 @@ public final class LoginView extends VerticalLayout implements HasDynamicTitle {
             log.error("Validation error during login", e);
         } catch (ApiException e) {
             if (e.getStatusCode() == 403 && "errors.auth.accountNotVerified".equals(e.getMessage())) {
-                showNotification(I18n.t("auth.login.notVerified"), NotificationVariant.LUMO_WARNING);
+                Toast.show(I18n.t("auth.login.notVerified"), NotificationVariant.LUMO_WARNING);
                 String email = emailField.getValue();
                 UI.getCurrent().navigate(VerifyAccountView.class, email);
             } else {
-                showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
+                Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
                 log.error("API error during login: {} (status: {})", e.getMessage(), e.getStatusCode());
             }
         } finally {
             loginButton.setEnabled(true);
             loginButton.setText(I18n.t(SIGN_IN_KEY));
         }
-    }
-
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification();
-        notification.addThemeVariants(variant);
-        notification.setPosition(Notification.Position.TOP_CENTER);
-        notification.setDuration(5000);
-
-        Div text = new Div();
-        text.setText(message);
-        text.getStyle().set("white-space", "normal").set("max-width", "400px").set(TEXT_ALIGN, CENTER);
-
-        notification.add(text);
-        notification.open();
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 import com.vertyll.fastprod.base.ui.DelayedNavigation;
 import com.vertyll.fastprod.modules.auth.dto.VerifyAccountRequestDto;
 import com.vertyll.fastprod.modules.auth.service.AuthService;
+import com.vertyll.fastprod.shared.components.Toast;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
 
@@ -19,7 +20,6 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -144,12 +144,12 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
         String code = codeField.getValue();
 
         if (code.isBlank()) {
-            showNotification(I18n.t("validation.verificationCode.required"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("validation.verificationCode.required"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
         if (code.length() != 6) {
-            showNotification(I18n.t("validation.verificationCode.length"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("validation.verificationCode.length"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
@@ -159,13 +159,13 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
         try {
             VerifyAccountRequestDto verifyAccountRequest = new VerifyAccountRequestDto(code);
             authService.verifyAccount(verifyAccountRequest);
-            showNotification(I18n.t("auth.verify.success"), NotificationVariant.LUMO_SUCCESS);
+            Toast.show(I18n.t("auth.verify.success"), NotificationVariant.LUMO_SUCCESS);
 
             UI ui = UI.getCurrent();
             DelayedNavigation.navigate(ui, LoginView.class, Duration.ofSeconds(2));
 
         } catch (ApiException e) {
-            showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
+            Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
             log.error("API error during verification: {}", e.getMessage());
         } finally {
             verifyButton.setEnabled(true);
@@ -177,7 +177,7 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
         String email = emailField.getValue();
 
         if (email == null || email.isBlank()) {
-            showNotification(I18n.t("validation.email.required"), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.t("validation.email.required"), NotificationVariant.LUMO_ERROR);
             return;
         }
 
@@ -186,33 +186,19 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
 
         try {
             authService.resendVerificationCode(email);
-            showNotification(I18n.t("auth.verify.resent"), NotificationVariant.LUMO_SUCCESS);
+            Toast.show(I18n.t("auth.verify.resent"), NotificationVariant.LUMO_SUCCESS);
             codeField.focus();
         } catch (ApiException e) {
             if (e.getStatusCode() == 404) {
-                showNotification(I18n.t("auth.verify.resendUnavailable"), NotificationVariant.LUMO_WARNING);
+                Toast.show(I18n.t("auth.verify.resendUnavailable"), NotificationVariant.LUMO_WARNING);
             } else {
-                showNotification(e.getMessage(), NotificationVariant.LUMO_ERROR);
+                Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
             }
             log.error("API error during resend: {}", e.getMessage());
         } finally {
             resendButton.setEnabled(true);
             resendButton.setText(I18n.t("auth.verify.resend"));
         }
-    }
-
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = new Notification();
-        notification.addThemeVariants(variant);
-        notification.setPosition(Notification.Position.TOP_CENTER);
-        notification.setDuration(5000);
-
-        Div text = new Div();
-        text.setText(message);
-        text.getStyle().set("white-space", "normal").set("max-width", "400px").set(TEXT_ALIGN, CENTER);
-
-        notification.add(text);
-        notification.open();
     }
 
     @Override
