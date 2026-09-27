@@ -1,7 +1,8 @@
 [versions]
 java = "25"
+
 icu4j = "78.3"
-# Plugins
+
 spring-boot = "4.1.1"
 spring-dependency-management = "1.1.7"
 spotless = "8.10.3"
@@ -9,7 +10,6 @@ errorprone-plugin = "5.1.1"
 nullaway-plugin = "3.2.0"
 pmd = "7.28.0"
 
-# Dependencies
 flyway = "13.8.0"
 mapstruct = "1.6.3"
 lombok = "1.18.48"
@@ -23,13 +23,13 @@ nullaway = "0.14.2"
 jspecify = "1.0.1"
 eclipse-jdt = "4.40"
 beta-checker = "1.0"
-spotbugs = "6.5.11"
+spotbugs = "6.5.12"
 spotbugs-annotations = "4.10.4"
 findsecbugs = "1.14.0"
 
 [libraries]
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
-# Spring Boot Starters
+
 spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
@@ -40,7 +40,6 @@ spring-boot-starter-thymeleaf = { module = "org.springframework.boot:spring-boot
 spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway" }
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
 
-# Spring Boot Test Starters
 spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
 spring-boot-starter-security-test = { module = "org.springframework.boot:spring-boot-starter-security-test" }
 spring-boot-starter-data-jpa-test = { module = "org.springframework.boot:spring-boot-starter-data-jpa-test" }
@@ -50,58 +49,43 @@ spring-boot-starter-mail-test = { module = "org.springframework.boot:spring-boot
 spring-boot-starter-thymeleaf-test = { module = "org.springframework.boot:spring-boot-starter-thymeleaf-test" }
 spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
 
-# JWT
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
-# Database
 postgresql = { module = "org.postgresql:postgresql" }
 
-# Flyway
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 
-# Thymeleaf
 thymeleaf-extras-springsecurity6 = { module = "org.thymeleaf.extras:thymeleaf-extras-springsecurity6" }
 
-# Apache Commons
 commons-lang3 = { module = "org.apache.commons:commons-lang3" }
 
-# MapStruct
 mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
 mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
 
-# Lombok
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-binding", version.ref = "lombok-mapstruct-binding" }
 
-# Guava
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 guava-beta-checker = { module = "com.google.guava:guava-beta-checker", version.ref = "beta-checker" }
 
-# JSpecify
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 
-# OpenAPI/Swagger
 springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 
-# Error Prone & NullAway
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
 
-# SpotBugs & FindSecBugs
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs-annotations" }
 findsecbugs = { module = "com.h3xstream.findsecbugs:findsecbugs-plugin", version.ref = "findsecbugs" }
 
-# Testcontainers
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
 
-# JUnit
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
-# BOMs
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 
 [plugins]

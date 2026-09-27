@@ -1,7 +1,8 @@
 [versions]
-icu4j = "78.3"
 java = "25"
-# Plugins
+
+icu4j = "78.3"
+
 spring-boot = "4.1.1"
 spring-dependency-management = "1.1.7"
 vaadin = "25.3.0"
@@ -11,46 +12,39 @@ errorprone-plugin = "5.1.1"
 nullaway-plugin = "3.2.0"
 pmd = "7.28.0"
 
-# Dependencies
 errorprone = "2.50.0"
 nullaway = "0.14.2"
 jspecify = "1.0.1"
 eclipse-jdt = "4.40"
 beta-checker = "1.0"
 lombok = "1.18.48"
-spotbugs = "6.5.11"
+spotbugs = "6.5.12"
 spotbugs-annotations = "4.10.4"
 findsecbugs = "1.14.0"
 
 [libraries]
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
-# Vaadin
+
 vaadin-core = { module = "com.vaadin:vaadin-core" }
 vaadin-spring-boot-starter = { module = "com.vaadin:vaadin-spring-boot-starter" }
 
-# Spring Boot
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 
-# Lombok & JSpecify
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 
-# Guava
 guava-beta-checker = { module = "com.google.guava:guava-beta-checker", version.ref = "beta-checker" }
 
-# Error Prone & NullAway
 errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
 
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs-annotations" }
 findsecbugs = { module = "com.h3xstream.findsecbugs:findsecbugs-plugin", version.ref = "findsecbugs" }
 
-# JUnit
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
-# BOMs
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 vaadin-bom = { module = "com.vaadin:vaadin-bom", version.ref = "vaadin" }
 
