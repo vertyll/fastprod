@@ -243,25 +243,6 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_WhenNullFieldsProvided_ShouldNotUpdateNullFields() {
-        @SuppressWarnings("NullAway") UserUpdateDto partialUpdateDto =
-                new UserUpdateDto("Updated Name", null, null, null, null);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        UserResponseDto result = userService.updateUser(1L, partialUpdateDto);
-
-        verify(userRepository).save(userCaptor.capture());
-        User capturedUser = userCaptor.getValue();
-
-        assertNotNull(result);
-        assertEquals("Updated Name", capturedUser.getFirstName());
-        assertEquals("Doe", capturedUser.getLastName());
-        assertEquals("john@example.com", capturedUser.getEmail());
-    }
-
-    @Test
     void existsByEmail_WhenEmailExists_ShouldReturnTrue() {
         when(userRepository.existsByEmail("john@example.com")).thenReturn(true);
 

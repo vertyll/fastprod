@@ -121,16 +121,10 @@ public class User extends BaseEntity implements UserDetails {
         this.email = newEmail;
     }
 
-    public void updateDetails(@Nullable String newFirstName, @Nullable String newLastName, @Nullable String newEmail) {
-        if (newFirstName != null) {
-            this.firstName = newFirstName;
-        }
-        if (newLastName != null) {
-            this.lastName = newLastName;
-        }
-        if (newEmail != null) {
-            this.email = newEmail;
-        }
+    public void updateDetails(String newFirstName, String newLastName, String newEmail) {
+        this.firstName = newFirstName;
+        this.lastName = newLastName;
+        this.email = newEmail;
     }
 
     @Override

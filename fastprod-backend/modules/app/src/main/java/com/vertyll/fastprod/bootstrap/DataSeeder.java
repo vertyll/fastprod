@@ -1,8 +1,6 @@
 package com.vertyll.fastprod.bootstrap;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -70,19 +68,16 @@ public class DataSeeder implements ApplicationRunner {
             return;
         }
 
-        @SuppressWarnings("NullAway") String nonNullPassword = password;
-        Set<RoleType> adminRoleNames = Stream.of(RoleType.ADMIN).collect(Collectors.toSet());
-
         User admin = User.builder()
             .firstName(adminProps.firstName().isBlank() ? DEFAULT_ADMIN_FIRST_NAME : adminProps.firstName())
             .lastName(adminProps.lastName().isBlank() ? DEFAULT_ADMIN_LAST_NAME : adminProps.lastName())
             .email(email)
-            .password(requireNonNull(passwordEncoder.encode(nonNullPassword)))
+            .password(requireNonNull(passwordEncoder.encode(password)))
             .active(true)
             .verified(true)
             .build();
 
-        admin.assignRoles(adminRoleNames.stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet()));
+        admin.assignRoles(Set.of(roleService.getOrCreateDefaultRole(RoleType.ADMIN)));
 
         userService.saveUser(admin);
         log.info("[DataSeeder] Admin user created: {}", email);
