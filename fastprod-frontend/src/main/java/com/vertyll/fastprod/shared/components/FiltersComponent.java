@@ -75,7 +75,7 @@ public final class FiltersComponent extends HorizontalLayout {
         clearButton.addClickListener(_ -> clear());
     }
 
-    public void setConfig(List<? extends FilterFieldConfig<?>> configs) {
+    public void setConfig(List<FilterFieldConfig<?>> configs) {
         removeAll();
         controls.clear();
         selectEmptyTokens.clear();

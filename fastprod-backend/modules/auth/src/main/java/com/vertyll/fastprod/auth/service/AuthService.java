@@ -18,7 +18,7 @@ import com.vertyll.fastprod.auth.dto.ResetPasswordRequestDto;
 import com.vertyll.fastprod.auth.dto.SessionResponseDto;
 
 public interface AuthService {
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     void register(RegisterRequestDto request) throws MessagingException;
 
     @Transactional
@@ -43,22 +43,22 @@ public interface AuthService {
     @Transactional
     void verifyAccount(String code);
 
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     void resendVerificationCode(String email) throws MessagingException;
 
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     void requestEmailChange(ChangeEmailRequestDto request) throws MessagingException;
 
     @Transactional
     AuthResponseDto verifyEmailChange(String code, HttpServletRequest httpRequest, HttpServletResponse response);
 
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     void requestPasswordChange(ChangePasswordRequestDto request) throws MessagingException;
 
     @Transactional
     void verifyPasswordChange(String code);
 
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     void sendPasswordResetEmail(String email) throws MessagingException;
 
     @Transactional

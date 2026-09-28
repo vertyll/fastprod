@@ -45,6 +45,7 @@ class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
+    @SuppressWarnings("java:S4449")
     public EmployeeResponseDto createEmployee(EmployeeCreateDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
             throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);

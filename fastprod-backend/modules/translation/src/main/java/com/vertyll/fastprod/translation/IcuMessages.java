@@ -15,7 +15,7 @@ final class IcuMessages {
         try {
             new MessageFormat(message);
             return true;
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             return false;
         }
     }

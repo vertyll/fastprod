@@ -49,9 +49,9 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     private transient @Nullable UserProfileDto currentUser;
     private final TextField firstNameField = new TextField(I18n.t("common.firstName"));
     private final TextField lastNameField = new TextField(I18n.t("common.lastName"));
-    private DetailsTableComponent detailsTable;
-    private Div editFormContainer;
-    private Div detailsContainer;
+    private final DetailsTableComponent detailsTable = new DetailsTableComponent();
+    private final Div editFormContainer;
+    private final Div detailsContainer = new Div();
 
     public ProfileView(UserService userService) {
         super();
@@ -64,6 +64,8 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
 
         loadingSpinner = new LoadingSpinner();
         getStyle().set("position", "relative");
+
+        editFormContainer = createEditForm();
 
         createHeader();
         createContent();
@@ -103,8 +105,6 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     }
 
     private void createContent() {
-        detailsTable = new DetailsTableComponent();
-
         VerticalLayout detailsLayout = new VerticalLayout(detailsTable);
         detailsLayout.setSpacing(true);
         detailsLayout.setPadding(true);
@@ -113,10 +113,9 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
             .set("border-radius", "var(--lumo-border-radius-m)")
             .set("box-shadow", "var(--lumo-box-shadow-s)");
 
-        detailsContainer = new Div(detailsLayout);
+        detailsContainer.add(detailsLayout);
         detailsContainer.setWidthFull();
 
-        editFormContainer = createEditForm();
         editFormContainer.setVisible(false);
 
         add(detailsContainer, editFormContainer);

@@ -41,8 +41,8 @@ public final class ChangeEmailView extends VerticalLayout implements HasDynamicT
     private final Binder<ChangeEmailDto> binder;
     private final transient AuthService authService;
 
-    private EmailField newEmailField;
-    private PasswordField passwordField;
+    private final EmailField newEmailField = new EmailField(I18n.t("account.email.newEmail"));
+    private final PasswordField passwordField = new PasswordField(I18n.t("account.email.confirmPassword"));
 
     public ChangeEmailView(SecurityService securityService, AuthService authService) {
         super();
@@ -74,11 +74,9 @@ public final class ChangeEmailView extends VerticalLayout implements HasDynamicT
         H2 title = new H2(I18n.t("account.email.title"));
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
 
-        newEmailField = new EmailField(I18n.t("account.email.newEmail"));
         newEmailField.setWidthFull();
         newEmailField.setRequiredIndicatorVisible(true);
 
-        passwordField = new PasswordField(I18n.t("account.email.confirmPassword"));
         passwordField.setWidthFull();
         passwordField.setRequiredIndicatorVisible(true);
         passwordField.setHelperText(I18n.t("account.email.confirmPasswordHint"));

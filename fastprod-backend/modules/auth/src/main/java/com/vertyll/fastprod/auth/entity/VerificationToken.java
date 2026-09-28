@@ -58,7 +58,7 @@ public class VerificationToken extends BaseEntity {
     @Column
     private @Nullable String additionalData;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings({"NullAway.Init", "java:S2637"})
     protected VerificationToken() {
         super();
     }

@@ -50,9 +50,9 @@ public final class LoginView extends VerticalLayout implements HasDynamicTitle {
     private final transient TokenRefreshService tokenRefreshService;
     private final Binder<FormBuilder> binder;
 
-    private EmailField emailField;
-    private PasswordField passwordField;
-    private Button loginButton;
+    private final EmailField emailField = new EmailField(I18n.t("common.email"));
+    private final PasswordField passwordField = new PasswordField(I18n.t("common.password"));
+    private final Button loginButton = new Button(I18n.t(SIGN_IN_KEY));
 
     public LoginView(
         AuthService authService,
@@ -100,20 +100,17 @@ public final class LoginView extends VerticalLayout implements HasDynamicTitle {
             .set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        emailField = new EmailField(I18n.t("common.email"));
         emailField.setRequiredIndicatorVisible(true);
         emailField.setErrorMessage(I18n.t("validation.email.invalid"));
         emailField.setClearButtonVisible(true);
         emailField.setWidthFull();
         emailField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        passwordField = new PasswordField(I18n.t("common.password"));
         passwordField.setRequiredIndicatorVisible(true);
         passwordField.setClearButtonVisible(true);
         passwordField.setWidthFull();
         passwordField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
-        loginButton = new Button(I18n.t(SIGN_IN_KEY));
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         loginButton.setWidthFull();
         loginButton.addClickListener(_ -> handleLogin());

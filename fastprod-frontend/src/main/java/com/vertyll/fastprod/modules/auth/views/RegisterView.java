@@ -46,12 +46,12 @@ public final class RegisterView extends VerticalLayout implements HasDynamicTitl
     private final transient AuthService authService;
     private final Binder<FormBuilder> binder;
 
-    private TextField firstNameField;
-    private TextField lastNameField;
-    private EmailField emailField;
-    private PasswordField passwordField;
-    private PasswordField confirmPasswordField;
-    private Button registerButton;
+    private final TextField firstNameField = new TextField(I18n.t("common.firstName"));
+    private final TextField lastNameField = new TextField(I18n.t("common.lastName"));
+    private final EmailField emailField = new EmailField(I18n.t("common.email"));
+    private final PasswordField passwordField = new PasswordField(I18n.t("common.password"));
+    private final PasswordField confirmPasswordField = new PasswordField(I18n.t("common.confirmPassword"));
+    private final Button registerButton = new Button(I18n.t(CREATE_ACCOUNT_KEY));
 
     public RegisterView(AuthService authService) {
         super();
@@ -93,12 +93,10 @@ public final class RegisterView extends VerticalLayout implements HasDynamicTitl
             .set("margin", "var(--lumo-space-xs) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        firstNameField = new TextField(I18n.t("common.firstName"));
         firstNameField.setRequiredIndicatorVisible(true);
         firstNameField.setClearButtonVisible(true);
         firstNameField.setWidthFull();
 
-        lastNameField = new TextField(I18n.t("common.lastName"));
         lastNameField.setRequiredIndicatorVisible(true);
         lastNameField.setClearButtonVisible(true);
         lastNameField.setWidthFull();
@@ -107,27 +105,23 @@ public final class RegisterView extends VerticalLayout implements HasDynamicTitl
         nameLayout.setWidthFull();
         nameLayout.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M).set("flex-wrap", "wrap");
 
-        emailField = new EmailField(I18n.t("common.email"));
         emailField.setRequiredIndicatorVisible(true);
         emailField.setErrorMessage(I18n.t("validation.email.invalid"));
         emailField.setClearButtonVisible(true);
         emailField.setWidthFull();
         emailField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        passwordField = new PasswordField(I18n.t("common.password"));
         passwordField.setRequiredIndicatorVisible(true);
         passwordField.setHelperText(I18n.t("validation.password.hint"));
         passwordField.setClearButtonVisible(true);
         passwordField.setWidthFull();
         passwordField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        confirmPasswordField = new PasswordField(I18n.t("common.confirmPassword"));
         confirmPasswordField.setRequiredIndicatorVisible(true);
         confirmPasswordField.setClearButtonVisible(true);
         confirmPasswordField.setWidthFull();
         confirmPasswordField.getStyle().set(MARGIN_BOTTOM, "var(--lumo-space-l)");
 
-        registerButton = new Button(I18n.t(CREATE_ACCOUNT_KEY));
         registerButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         registerButton.setWidthFull();
         registerButton.addClickListener(_ -> handleRegistration());

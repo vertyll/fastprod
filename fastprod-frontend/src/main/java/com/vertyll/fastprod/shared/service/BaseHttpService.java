@@ -121,7 +121,7 @@ public class BaseHttpService {
         Problem problem;
         try {
             problem = objectMapper.readValue(response.body(), Problem.class);
-        } catch (JacksonException e) {
+        } catch (JacksonException _) {
             return new ApiException(COMMUNICATION_ERROR, response.statusCode());
         }
         if (problem == null) {

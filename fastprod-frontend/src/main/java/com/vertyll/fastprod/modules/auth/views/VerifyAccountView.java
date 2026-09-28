@@ -45,10 +45,10 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
 
     private final transient AuthService authService;
 
-    private TextField codeField;
-    private TextField emailField;
-    private Button verifyButton;
-    private Button resendButton;
+    private final TextField codeField = new TextField(I18n.t("verification.code"));
+    private final TextField emailField = new TextField(I18n.t("common.emailAddress"));
+    private final Button verifyButton = new Button(I18n.t("auth.verify.submit"), VaadinIcon.CHECK.create());
+    private final Button resendButton = new Button(I18n.t("auth.verify.resend"), VaadinIcon.REFRESH.create());
 
     public VerifyAccountView(AuthService authService) {
         super();
@@ -102,13 +102,11 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
             .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        emailField = new TextField(I18n.t("common.emailAddress"));
         emailField.setWidthFull();
         emailField.setPrefixComponent(VaadinIcon.ENVELOPE.create());
         emailField.setPlaceholder(I18n.t("common.emailPlaceholder"));
         emailField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        codeField = new TextField(I18n.t("verification.code"));
         codeField.setWidthFull();
         codeField.setPrefixComponent(VaadinIcon.KEY.create());
         codeField.setPlaceholder(I18n.t("verification.codePlaceholder"));
@@ -119,13 +117,11 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
             .set("letter-spacing", "0.3em")
             .set(TEXT_ALIGN, CENTER);
 
-        verifyButton = new Button(I18n.t("auth.verify.submit"), VaadinIcon.CHECK.create());
         verifyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         verifyButton.setWidthFull();
         verifyButton.addClickListener(_ -> handleVerification());
         verifyButton.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        resendButton = new Button(I18n.t("auth.verify.resend"), VaadinIcon.REFRESH.create());
         resendButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         resendButton.setWidthFull();
         resendButton.addClickListener(_ -> handleResendCode());

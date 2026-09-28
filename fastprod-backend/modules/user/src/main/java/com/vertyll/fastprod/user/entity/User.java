@@ -70,7 +70,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private boolean active;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings({"NullAway.Init", "java:S2637"})
     protected User() {
         super();
         this.roles = new HashSet<>();
@@ -93,7 +93,7 @@ public class User extends BaseEntity implements UserDetails {
         this.password = password;
         this.roles = roles == null ? new HashSet<>() : new HashSet<>(roles);
         this.verified = verified;
-        this.active = active == null || active;
+        this.active = !Boolean.FALSE.equals(active);
     }
 
     public void changePassword(String encodedPassword) {

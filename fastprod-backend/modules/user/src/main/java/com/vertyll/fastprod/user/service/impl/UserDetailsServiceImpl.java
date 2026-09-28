@@ -2,8 +2,6 @@ package com.vertyll.fastprod.user.service.impl;
 
 import com.vertyll.fastprod.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NullUnmarked;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,9 +15,8 @@ class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    @NullUnmarked
     @SuppressWarnings("PMD.AvoidUncheckedExceptionsInSignatures")
-    public UserDetails loadUserByUsername(@Nullable String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository
                 .findByEmailWithRoles(username)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND_WITH_EMAIL + username));

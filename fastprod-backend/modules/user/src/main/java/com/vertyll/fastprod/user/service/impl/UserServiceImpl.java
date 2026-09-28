@@ -39,6 +39,7 @@ class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @SuppressWarnings("java:S4449")
     public UserResponseDto createUser(UserCreateDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
             throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);

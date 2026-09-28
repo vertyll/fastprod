@@ -49,9 +49,9 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
     private final Binder<FormData> binder;
 
     private @Nullable String resetToken;
-    private PasswordField newPasswordField;
-    private PasswordField confirmPasswordField;
-    private Button submitButton;
+    private final PasswordField newPasswordField = new PasswordField(I18n.t("common.newPassword"));
+    private final PasswordField confirmPasswordField = new PasswordField(I18n.t("common.confirmNewPassword"));
+    private final Button submitButton = new Button(I18n.t("auth.reset.submit"), VaadinIcon.CHECK.create());
 
     public ResetPasswordView(AuthService authService) {
         super();
@@ -108,14 +108,12 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
             .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        newPasswordField = new PasswordField(I18n.t("common.newPassword"));
         newPasswordField.setWidthFull();
         newPasswordField.setPrefixComponent(VaadinIcon.LOCK.create());
         newPasswordField.setRequiredIndicatorVisible(true);
         newPasswordField.setHelperText(I18n.t("validation.password.hint"));
         newPasswordField.getStyle().set(MARGIN_BOTTOM, LUMO_SPACE_M);
 
-        confirmPasswordField = new PasswordField(I18n.t("common.confirmNewPassword"));
         confirmPasswordField.setWidthFull();
         confirmPasswordField.setPrefixComponent(VaadinIcon.LOCK.create());
         confirmPasswordField.setRequiredIndicatorVisible(true);
@@ -134,7 +132,6 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
             .asRequired(I18n.t("validation.password.confirmRequired"))
             .bind(FormData::confirmPassword, FormData::setConfirmPassword);
 
-        submitButton = new Button(I18n.t("auth.reset.submit"), VaadinIcon.CHECK.create());
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         submitButton.setWidthFull();
         submitButton.addClickListener(_ -> handleSubmit());

@@ -37,9 +37,9 @@ public final class ChangePasswordView extends VerticalLayout implements HasDynam
     private final Binder<ChangePasswordDto> binder;
     private final transient AuthService authService;
 
-    private PasswordField currentPasswordField;
-    private PasswordField newPasswordField;
-    private PasswordField confirmPasswordField;
+    private final PasswordField currentPasswordField = new PasswordField(I18n.t("common.currentPassword"));
+    private final PasswordField newPasswordField = new PasswordField(I18n.t("common.newPassword"));
+    private final PasswordField confirmPasswordField = new PasswordField(I18n.t("common.confirmNewPassword"));
 
     public ChangePasswordView(AuthService authService) {
         super();
@@ -70,16 +70,13 @@ public final class ChangePasswordView extends VerticalLayout implements HasDynam
         H2 title = new H2(I18n.t("account.password.title"));
         title.addClassNames(LumoUtility.Margin.Bottom.LARGE);
 
-        currentPasswordField = new PasswordField(I18n.t("common.currentPassword"));
         currentPasswordField.setWidthFull();
         currentPasswordField.setRequiredIndicatorVisible(true);
 
-        newPasswordField = new PasswordField(I18n.t("common.newPassword"));
         newPasswordField.setWidthFull();
         newPasswordField.setRequiredIndicatorVisible(true);
         newPasswordField.setHelperText(I18n.t("validation.password.hint"));
 
-        confirmPasswordField = new PasswordField(I18n.t("common.confirmNewPassword"));
         confirmPasswordField.setWidthFull();
         confirmPasswordField.setRequiredIndicatorVisible(true);
 

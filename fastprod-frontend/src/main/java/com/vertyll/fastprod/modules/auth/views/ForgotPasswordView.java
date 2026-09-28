@@ -43,8 +43,8 @@ public final class ForgotPasswordView extends VerticalLayout implements HasDynam
     private final transient AuthService authService;
     private final Binder<FormData> binder;
 
-    private EmailField emailField;
-    private Button submitButton;
+    private final EmailField emailField = new EmailField(I18n.t("common.emailAddress"));
+    private final Button submitButton = new Button(I18n.t("auth.forgot.submit"), VaadinIcon.ENVELOPE_OPEN.create());
 
     public ForgotPasswordView(AuthService authService) {
         super();
@@ -91,7 +91,6 @@ public final class ForgotPasswordView extends VerticalLayout implements HasDynam
             .set("margin", "var(--lumo-space-s) 0 var(--lumo-space-xl) 0")
             .set(COLOR, "var(--lumo-secondary-text-color)");
 
-        emailField = new EmailField(I18n.t("common.emailAddress"));
         emailField.setWidthFull();
         emailField.setPrefixComponent(VaadinIcon.ENVELOPE.create());
         emailField.setPlaceholder(I18n.t("common.emailPlaceholder"));
@@ -103,7 +102,6 @@ public final class ForgotPasswordView extends VerticalLayout implements HasDynam
             .withValidator(new EmailValidator(I18n.t("validation.email.invalid")))
             .bind(FormData::email, FormData::setEmail);
 
-        submitButton = new Button(I18n.t("auth.forgot.submit"), VaadinIcon.ENVELOPE_OPEN.create());
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
         submitButton.setWidthFull();
         submitButton.addClickListener(_ -> handleSubmit());

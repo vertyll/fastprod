@@ -40,6 +40,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
 
     @Bean
+    @SuppressWarnings("java:S4502")
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(AbstractHttpConfigurer::disable)

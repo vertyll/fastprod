@@ -45,7 +45,7 @@ public class Role extends BaseEntity {
     @Column(nullable = false)
     private boolean active;
 
-    @SuppressWarnings("NullAway.Init")
+    @SuppressWarnings({"NullAway.Init", "java:S2637"})
     protected Role() {
         super();
     }
@@ -55,7 +55,7 @@ public class Role extends BaseEntity {
         super();
         this.name = name;
         this.description = description;
-        this.active = active == null || active;
+        this.active = !Boolean.FALSE.equals(active);
     }
 
     public void update(RoleType name, @Nullable String description) {

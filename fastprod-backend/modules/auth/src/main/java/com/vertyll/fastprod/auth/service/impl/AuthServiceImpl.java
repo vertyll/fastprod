@@ -79,7 +79,7 @@ class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     public void register(RegisterRequestDto request) throws MessagingException {
         if (userService.existsByEmail(request.email())) {
             throw new ApiException(EMAIL_ALREADY_REGISTERED, HttpStatus.BAD_REQUEST);
@@ -205,7 +205,7 @@ class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     public void resendVerificationCode(String email) throws MessagingException {
         User user = userService.findByEmailWithRoles(email)
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
@@ -230,7 +230,7 @@ class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     public void requestEmailChange(ChangeEmailRequestDto request) throws MessagingException {
         String currentEmail = getCurrentUserEmail();
 
@@ -290,7 +290,7 @@ class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     public void requestPasswordChange(ChangePasswordRequestDto request) throws MessagingException {
         String email = getCurrentUserEmail();
 
@@ -341,7 +341,7 @@ class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = MessagingException.class)
     public void sendPasswordResetEmail(String email) throws MessagingException {
         User user = userService.findByEmailWithRoles(email)
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));

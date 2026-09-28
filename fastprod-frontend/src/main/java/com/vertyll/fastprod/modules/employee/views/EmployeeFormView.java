@@ -46,8 +46,8 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
     private final transient EmployeeService employeeService;
     private final Binder<EmployeeFormData> binder;
 
-    private PasswordField passwordField;
-    private PasswordField confirmPasswordField;
+    private final PasswordField passwordField = new PasswordField(I18n.t("common.password"));
+    private final PasswordField confirmPasswordField = new PasswordField(I18n.t("common.confirmPassword"));
     private @Nullable Long employeeId;
 
     public EmployeeFormView(EmployeeService employeeService) {
@@ -101,10 +101,8 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
         rolesField.setPlaceholder(I18n.t("employees.form.selectRoles"));
         rolesField.setRequiredIndicatorVisible(true);
 
-        passwordField = new PasswordField(I18n.t("common.password"));
         passwordField.setRequiredIndicatorVisible(true);
 
-        confirmPasswordField = new PasswordField(I18n.t("common.confirmPassword"));
         confirmPasswordField.setRequiredIndicatorVisible(true);
 
         formLayout.add(firstNameField, lastNameField, emailField, rolesField, passwordField, confirmPasswordField);
