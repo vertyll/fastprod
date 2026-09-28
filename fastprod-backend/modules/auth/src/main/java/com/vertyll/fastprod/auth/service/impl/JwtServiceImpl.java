@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("java:S2143")
 class JwtServiceImpl implements JwtService {
 
     private static final String REFRESH = "refresh";
