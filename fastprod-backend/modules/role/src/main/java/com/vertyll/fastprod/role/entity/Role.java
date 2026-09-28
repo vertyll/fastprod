@@ -45,7 +45,12 @@ public class Role extends BaseEntity {
     @Column(nullable = false)
     private boolean active;
 
-    @SuppressWarnings({"NullAway.Init", "java:S2637"})
+    @SuppressWarnings(
+        {
+            "NullAway.Init",
+            "java:S2637"
+        }
+    )
     protected Role() {
         super();
     }

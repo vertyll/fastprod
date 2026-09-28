@@ -62,7 +62,12 @@ public class RefreshToken extends BaseEntity {
     @Column
     private @Nullable Instant revokedAt;
 
-    @SuppressWarnings({"NullAway.Init", "java:S2637"})
+    @SuppressWarnings(
+        {
+            "NullAway.Init",
+            "java:S2637"
+        }
+    )
     protected RefreshToken() {
         super();
     }

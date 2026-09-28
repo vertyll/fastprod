@@ -70,7 +70,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private boolean active;
 
-    @SuppressWarnings({"NullAway.Init", "java:S2637"})
+    @SuppressWarnings(
+        {
+            "NullAway.Init",
+            "java:S2637"
+        }
+    )
     protected User() {
         super();
         this.roles = new HashSet<>();
