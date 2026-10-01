@@ -63,6 +63,7 @@ class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
+    @SuppressWarnings("java:S4449")
     public EmployeeResponseDto updateEmployee(Long id, EmployeeUpdateDto dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));

@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.errorprone)
     alias(libs.plugins.nullaway)
     alias(libs.plugins.spotbugs)
+    alias(libs.plugins.sonarqube)
+    jacoco
 }
 
 group = "com.vertyll.fastprod"
@@ -257,4 +259,25 @@ tasks.named("spotlessGradle").configure {
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     archiveFileName.set("fastprod-frontend.jar")
+}
+
+jacoco {
+    toolVersion = libs.versions.jacoco.get()
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "fastprod-frontend")
+        property("sonar.projectName", "fastprod-frontend")
+        property("sonar.issue.ignore.multicriteria", "localSecrets")
+        property("sonar.issue.ignore.multicriteria.localSecrets.ruleKey", "java:S6437")
+        property("sonar.issue.ignore.multicriteria.localSecrets.resourceKey", "**/application-local.*")
+    }
 }

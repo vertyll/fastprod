@@ -80,6 +80,7 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(rollbackFor = MessagingException.class)
+    @SuppressWarnings("java:S4449")
     public void register(RegisterRequestDto request) throws MessagingException {
         if (userService.existsByEmail(request.email())) {
             throw new ApiException(EMAIL_ALREADY_REGISTERED, HttpStatus.BAD_REQUEST);

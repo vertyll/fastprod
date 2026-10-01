@@ -3,12 +3,14 @@ import net.ltgt.gradle.errorprone.errorprone
 plugins {
     java
     pmd
+    `jacoco-report-aggregation`
     alias(libs.plugins.spring.boot) apply false
     alias(libs.plugins.spring.dependency.management) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.errorprone) apply false
     alias(libs.plugins.nullaway) apply false
     alias(libs.plugins.spotbugs) apply false
+    alias(libs.plugins.sonarqube)
 }
 
 group = "com.vertyll"
@@ -33,11 +35,23 @@ subprojects {
         plugin("net.ltgt.errorprone")
         plugin("net.ltgt.nullaway")
         plugin("com.github.spotbugs")
+        plugin("jacoco")
     }
 
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(rootProject.libs.versions.java.get()))
+        }
+    }
+
+    configure<JacocoPluginExtension> {
+        toolVersion = rootProject.libs.versions.jacoco.get()
+    }
+
+    tasks.withType<JacocoReport> {
+        dependsOn(tasks.withType<Test>())
+        reports {
+            xml.required = true
         }
     }
 
@@ -356,4 +370,43 @@ tasks.register("testAll") {
 
     dependsOn(subprojects.map { it.tasks.withType<Test>() })
     finalizedBy("testReport")
+}
+
+dependencies {
+    jacocoAggregation(platform(libs.spring.boot.dependencies))
+    subprojects.forEach { jacocoAggregation(it) }
+}
+
+val aggregatedCoverage = layout.buildDirectory.file("reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml")
+
+tasks.named<JacocoReport>("testCodeCoverageReport") {
+    reports {
+        xml.required = true
+    }
+}
+
+subprojects {
+    sonar {
+        properties {
+            property("sonar.coverage.jacoco.xmlReportPaths", aggregatedCoverage.get().asFile.path)
+        }
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "fastprod-backend")
+        property("sonar.projectName", "fastprod-backend")
+        property("sonar.issue.ignore.multicriteria", "emailTables,emailAttributes,localSecrets,uploadLimitsYaml,jjwtDates")
+        property("sonar.issue.ignore.multicriteria.emailTables.ruleKey", "Web:S5257")
+        property("sonar.issue.ignore.multicriteria.emailTables.resourceKey", "**/templates/**/*.html")
+        property("sonar.issue.ignore.multicriteria.emailAttributes.ruleKey", "Web:S1827")
+        property("sonar.issue.ignore.multicriteria.emailAttributes.resourceKey", "**/templates/**/*.html")
+        property("sonar.issue.ignore.multicriteria.localSecrets.ruleKey", "java:S6437")
+        property("sonar.issue.ignore.multicriteria.localSecrets.resourceKey", "**/application-local.*")
+        property("sonar.issue.ignore.multicriteria.uploadLimitsYaml.ruleKey", "java:S5693")
+        property("sonar.issue.ignore.multicriteria.uploadLimitsYaml.resourceKey", "**/application*.yml")
+        property("sonar.issue.ignore.multicriteria.jjwtDates.ruleKey", "java:S2143")
+        property("sonar.issue.ignore.multicriteria.jjwtDates.resourceKey", "**/*Jwt*.java")
+    }
 }

@@ -1,4 +1,6 @@
 [versions]
+jacoco = "0.8.15"
+sonarqube = "7.5.0.8588"
 java = "25"
 
 icu4j = "78.3"
@@ -95,6 +97,7 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 errorprone = { id = "net.ltgt.errorprone", version.ref = "errorprone-plugin" }
 nullaway = { id = "net.ltgt.nullaway", version.ref = "nullaway-plugin" }
 spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 
 [bundles]
 spring-boot-starters-common = [
