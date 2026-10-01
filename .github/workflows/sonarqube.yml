@@ -1,0 +1,30 @@
+name: SonarQube
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sonarqube-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend
+    uses: vertyll/sonarqube-local/.github/workflows/scan.yml@main
+    with:
+      path: fastprod-backend
+      java: true
+    secrets: inherit
+
+  frontend:
+    name: Frontend
+    uses: vertyll/sonarqube-local/.github/workflows/scan.yml@main
+    with:
+      path: fastprod-frontend
+      java: true
+    secrets: inherit
