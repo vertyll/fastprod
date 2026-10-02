@@ -2,30 +2,54 @@ package com.vertyll.fastprod.shared.security;
 
 import java.util.Optional;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.ClientAuthorizationException;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.vaadin.flow.server.VaadinSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class AuthTokenProvider {
-    private static final String TOKEN_SESSION_KEY = "token";
-    private static final String TOKEN_TYPE_SESSION_KEY = "token_type";
 
-    public Optional<String> getToken() {
-        return Optional.ofNullable(VaadinSession.getCurrent())
-            .map(session -> (String) session.getAttribute(TOKEN_SESSION_KEY));
-    }
+    private static final String BEARER = "Bearer ";
 
-    public String getTokenType() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            String type = (String) session.getAttribute(TOKEN_TYPE_SESSION_KEY);
-            return type != null ? type : "Bearer";
-        }
-        return "Bearer";
-    }
+    private final OAuth2AuthorizedClientManager authorizedClients;
 
     public Optional<String> getAuthorizationHeader() {
-        return getToken().map(token -> getTokenType() + " " + token);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof OAuth2AuthenticationToken token)
+                || !(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes)) {
+            return Optional.empty();
+        }
+        HttpServletResponse response = attributes.getResponse();
+        if (response == null) {
+            return Optional.empty();
+        }
+        try {
+            OAuth2AuthorizedClient client = authorizedClients.authorize(
+                OAuth2AuthorizeRequest.withClientRegistrationId(token.getAuthorizedClientRegistrationId())
+                    .principal(token)
+                    .attribute(HttpServletRequest.class.getName(), attributes.getRequest())
+                    .attribute(HttpServletResponse.class.getName(), response)
+                    .build()
+            );
+            return Optional.ofNullable(client).map(authorized -> BEARER + authorized.getAccessToken().getTokenValue());
+        } catch (ClientAuthorizationException e) {
+            log.info("Keycloak session ended: {}", e.getError().getErrorCode());
+            return Optional.empty();
+        }
     }
 }

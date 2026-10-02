@@ -5,7 +5,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":modules:auth"))
     implementation(project(":modules:security"))
     implementation(project(":modules:employee"))
     implementation(project(":modules:role"))
@@ -16,8 +15,6 @@ dependencies {
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.actuator)
-
-    implementation(libs.thymeleaf.extras.springsecurity6)
 
     implementation(libs.spring.boot.starter.flyway) {
         exclude(group = "org.flywaydb", module = "flyway-core")

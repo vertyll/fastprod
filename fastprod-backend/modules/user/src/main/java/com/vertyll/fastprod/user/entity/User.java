@@ -1,7 +1,6 @@
 package com.vertyll.fastprod.user.entity;
 
 import java.io.Serial;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,11 +14,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
-import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
@@ -39,10 +34,13 @@ import lombok.Getter;
         @Index(name = "idx_user_is_active_is_verified", columnList = "is_active, is_verified"),
     }
 )
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    @Column(name = "keycloak_id", nullable = false, unique = true, updatable = false)
+    private String keycloakId;
 
     @Column(nullable = false)
     private String firstName;
@@ -52,9 +50,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false)
-    private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -83,34 +78,33 @@ public class User extends BaseEntity implements UserDetails {
 
     @Builder
     private User(
+        String keycloakId,
         String firstName,
         String lastName,
         String email,
-        String password,
         @Nullable Set<Role> roles,
         boolean verified,
         @Nullable Boolean active
     ) {
         super();
+        this.keycloakId = keycloakId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
         this.roles = roles == null ? new HashSet<>() : new HashSet<>(roles);
         this.verified = verified;
         this.active = !Boolean.FALSE.equals(active);
-    }
-
-    public void changePassword(String encodedPassword) {
-        this.password = encodedPassword;
     }
 
     public void assignRoles(Set<Role> assignedRoles) {
         this.roles = new HashSet<>(assignedRoles);
     }
 
-    public void markVerified() {
-        this.verified = true;
+    public void syncIdentity(String newEmail, String newFirstName, String newLastName, boolean emailVerified) {
+        this.email = newEmail;
+        this.firstName = newFirstName;
+        this.lastName = newLastName;
+        this.verified = emailVerified;
     }
 
     public void deactivate() {
@@ -130,22 +124,5 @@ public class User extends BaseEntity implements UserDetails {
         this.firstName = newFirstName;
         this.lastName = newLastName;
         this.email = newEmail;
-    }
-
-    @Override
-    @NullUnmarked
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).toList();
-    }
-
-    @Override
-    @NullUnmarked
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
     }
 }

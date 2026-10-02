@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
     api(libs.bundles.spring.boot.starters.common)
-    api(libs.bundles.spring.boot.starters.mail)
     api(libs.bundles.spring.boot.starters.security)
     api(libs.mapstruct)
     api(libs.jspecify)
@@ -23,6 +22,5 @@ dependencies {
     testAnnotationProcessor(libs.mapstruct.processor)
 
     testImplementation(libs.bundles.spring.boot.test.common)
-    testImplementation(libs.bundles.spring.boot.test.mail)
     testImplementation(libs.bundles.spring.boot.test.security)
 }

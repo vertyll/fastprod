@@ -3,9 +3,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/fastprod
     username: postgres
     password: postgres
-  mail:
-    host: localhost
-    port: 1025
 
 springdoc:
   api-docs:
@@ -14,32 +11,20 @@ springdoc:
     enabled: true
 
 security:
-  jwt:
-    access-token:
-      secret-key: CbIKeXKAkneVUn5me1nHZ+V74qpmZ36InUDFEXsg6YY=
-    refresh-token:
-      secret-key: isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA=
-  cookie:
-    secure: false
+  keycloak:
+    realm-url: http://localhost:8182/realms/fastprod
+
+keycloak:
+  admin:
+    server-url: http://localhost:8182
+    client-secret: fastprod-backend-local-secret
 
 application:
-  mail:
-    from: no-reply@fastprod.local
   file:
     uploads:
       file-output-path: ./uploads
   frontend:
     url: http://localhost:8001
-
-admin:
-  email: admin@fastprod.local
-  password: zaq1@WSX
-  first-name: System
-  last-name: Administrator
-
-app:
-  seed:
-    enabled: true
 
 logging:
   level:

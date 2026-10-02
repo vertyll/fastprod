@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
@@ -26,6 +25,7 @@ import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.identity.IdentityProvider;
 import com.vertyll.fastprod.user.repository.UserRepository;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -42,11 +42,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SuppressFBWarnings(
-    value = {
-        "URF_UNREAD_FIELD",
-        "HARD_CODE_PASSWORD"
-    },
-    justification = "Test class: employeeMapper is used by Mockito injection; hardcoded test passwords are safe in unit tests"
+    value = "URF_UNREAD_FIELD",
+    justification = "Test class: employeeMapper is used by Mockito injection"
 )
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -57,7 +54,7 @@ class EmployeeServiceTest {
     private RoleService roleService;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private IdentityProvider identityProvider;
 
     @Spy
 
@@ -99,8 +96,8 @@ class EmployeeServiceTest {
         user = User.builder()
             .firstName("John")
             .lastName("Doe")
+            .keycloakId("kc-john")
             .email("john@example.com")
-            .password("encodedPassword")
             .roles(roles)
             .verified(true)
             .active(true)
@@ -110,7 +107,7 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_WhenValidData_ShouldCreateEmployee() {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+        when(identityProvider.createUser(any(), anyString(), any())).thenReturn("kc-new");
         when(roleService.getOrCreateDefaultRole(any(RoleType.class))).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -123,8 +120,13 @@ class EmployeeServiceTest {
         assertEquals(createDto.firstName(), capturedUser.getFirstName());
         assertEquals(createDto.lastName(), capturedUser.getLastName());
         assertEquals(createDto.email(), capturedUser.getEmail());
-        assertTrue(capturedUser.isVerified());
-        verify(passwordEncoder).encode(createDto.password());
+        assertEquals("kc-new", capturedUser.getKeycloakId());
+        assertFalse(capturedUser.isVerified());
+        verify(identityProvider).createUser(
+            new IdentityProvider.NewIdentity("john@example.com", "John", "Doe"),
+            "password123",
+            Set.of(RoleType.EMPLOYEE)
+        );
     }
 
     @Test
@@ -157,6 +159,11 @@ class EmployeeServiceTest {
 
         verify(roleService).getOrCreateDefaultRole(RoleType.EMPLOYEE);
         verify(roleService).getOrCreateDefaultRole(RoleType.ADMIN);
+        verify(identityProvider).updateUser(
+            "kc-john",
+            new IdentityProvider.NewIdentity("john.updated@example.com", "John Updated", "Doe Updated")
+        );
+        verify(identityProvider).replaceRoles("kc-john", Set.of(RoleType.EMPLOYEE, RoleType.ADMIN));
     }
 
     @Test
@@ -242,6 +249,7 @@ class EmployeeServiceTest {
         User capturedUser = userCaptor.getValue();
 
         assertFalse(capturedUser.isActive());
+        verify(identityProvider).disable("kc-john");
     }
 
     @Test
@@ -290,7 +298,7 @@ class EmployeeServiceTest {
                 new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", null);
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+        when(identityProvider.createUser(any(), anyString(), any())).thenReturn("kc-new");
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -306,7 +314,7 @@ class EmployeeServiceTest {
                 new EmployeeCreateDto("Jane", "Doe", "jane@example.com", "password123", Set.of());
 
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+        when(identityProvider.createUser(any(), anyString(), any())).thenReturn("kc-new");
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -317,12 +325,11 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void updateEmployee_WhenPasswordProvided_ShouldEncodePassword() {
+    void updateEmployee_WhenPasswordProvided_ShouldResetItInKeycloak() {
         EmployeeUpdateDto updateWithPassword =
                 new EmployeeUpdateDto("John", "Doe", "john@example.com", "newPassword123", Set.of("EMPLOYEE"));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(passwordEncoder.encode("newPassword123")).thenReturn("encodedNewPassword");
         when(roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE)).thenReturn(employeeRole);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -331,11 +338,11 @@ class EmployeeServiceTest {
         verify(userRepository).save(userCaptor.capture());
 
         assertNotNull(result);
-        verify(passwordEncoder).encode("newPassword123");
+        verify(identityProvider).resetPassword("kc-john", "newPassword123");
     }
 
     @Test
-    void updateEmployee_WhenPasswordNull_ShouldNotEncodePassword() {
+    void updateEmployee_WhenPasswordNull_ShouldNotResetPassword() {
         EmployeeUpdateDto updateWithoutPassword =
                 new EmployeeUpdateDto("John", "Doe", "john@example.com", null, Set.of("EMPLOYEE"));
 
@@ -346,11 +353,11 @@ class EmployeeServiceTest {
         EmployeeResponseDto result = employeeService.updateEmployee(1L, updateWithoutPassword);
 
         assertNotNull(result);
-        verify(passwordEncoder, never()).encode(anyString());
+        verify(identityProvider, never()).resetPassword(anyString(), anyString());
     }
 
     @Test
-    void updateEmployee_WhenPasswordBlank_ShouldNotEncodePassword() {
+    void updateEmployee_WhenPasswordBlank_ShouldNotResetPassword() {
         EmployeeUpdateDto updateWithBlankPassword =
                 new EmployeeUpdateDto("John", "Doe", "john@example.com", "   ", Set.of("EMPLOYEE"));
 
@@ -361,6 +368,6 @@ class EmployeeServiceTest {
         EmployeeResponseDto result = employeeService.updateEmployee(1L, updateWithBlankPassword);
 
         assertNotNull(result);
-        verify(passwordEncoder, never()).encode(anyString());
+        verify(identityProvider, never()).resetPassword(anyString(), anyString());
     }
 }

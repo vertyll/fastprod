@@ -62,11 +62,4 @@ public class Role extends BaseEntity {
         this.description = description;
         this.active = !Boolean.FALSE.equals(active);
     }
-
-    public void update(RoleType name, @Nullable String description) {
-        this.name = name;
-        if (description != null) {
-            this.description = description;
-        }
-    }
 }

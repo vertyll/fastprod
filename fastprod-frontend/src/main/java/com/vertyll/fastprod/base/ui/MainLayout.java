@@ -6,10 +6,10 @@ import com.vertyll.fastprod.base.ui.component.LanguageSwitcher;
 import com.vertyll.fastprod.base.ui.component.UserMenu;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.i18n.I18n;
+import com.vertyll.fastprod.shared.security.KeycloakPages;
 import com.vertyll.fastprod.shared.security.RoleType;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -25,11 +25,13 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.Layout;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Layout
+@AnonymousAllowed
 @Slf4j
 public final class MainLayout extends AppLayout {
     @Serial
@@ -92,11 +94,11 @@ public final class MainLayout extends AppLayout {
 
         Button loginButton = new Button(I18n.t("nav.login"), VaadinIcon.SIGN_IN.create());
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        loginButton.addClickListener(_ -> UI.getCurrent().navigate("login"));
+        loginButton.addClickListener(_ -> KeycloakPages.signIn());
 
         Button registerButton = new Button(I18n.t("nav.register"));
         registerButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        registerButton.addClickListener(_ -> UI.getCurrent().navigate("register"));
+        registerButton.addClickListener(_ -> KeycloakPages.signUp());
 
         HorizontalLayout authButtons = new HorizontalLayout(new LanguageSwitcher(), loginButton, registerButton);
         authButtons.setSpacing(true);
@@ -160,6 +162,9 @@ public final class MainLayout extends AppLayout {
 
             nav.addItem(adminSection);
         }
+
+        nav.addItem(new SideNavItem(I18n.t("footer.terms"), "terms", VaadinIcon.FILE_TEXT_O.create()));
+        nav.addItem(new SideNavItem(I18n.t("footer.privacy"), "privacy", VaadinIcon.LOCK.create()));
 
         return nav;
     }

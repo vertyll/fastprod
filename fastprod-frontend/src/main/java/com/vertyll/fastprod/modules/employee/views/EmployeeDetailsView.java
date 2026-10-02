@@ -3,6 +3,8 @@ package com.vertyll.fastprod.modules.employee.views;
 import java.io.Serial;
 import java.util.Map;
 
+import jakarta.annotation.security.RolesAllowed;
+
 import org.jspecify.annotations.Nullable;
 
 import com.vertyll.fastprod.base.ui.MainLayout;
@@ -31,6 +33,12 @@ import com.vaadin.flow.router.Route;
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees/details/:id", layout = MainLayout.class)
+@RolesAllowed(
+    {
+        "ADMIN",
+        "MANAGER"
+    }
+)
 @Slf4j
 public final class EmployeeDetailsView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
     @Serial

@@ -8,7 +8,7 @@ dependencies {
 
     api(libs.bundles.spring.boot.starters.common)
     api(libs.bundles.spring.boot.starters.security)
-    api(libs.spring.boot.starter.mail)
+    implementation(libs.keycloak.admin.client)
     api(libs.mapstruct)
 
     compileOnly(libs.lombok)

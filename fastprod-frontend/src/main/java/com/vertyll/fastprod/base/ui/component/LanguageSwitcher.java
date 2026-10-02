@@ -14,6 +14,8 @@ public final class LanguageSwitcher extends Select<Locale> {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    public static final String LANGUAGE_ATTRIBUTE = "fastprod.language";
+
     public LanguageSwitcher() {
         super();
         setItems(BackendI18NProvider.POLISH, BackendI18NProvider.ENGLISH);
@@ -23,7 +25,9 @@ public final class LanguageSwitcher extends Select<Locale> {
         setWidth("8rem");
         addValueChangeListener(event -> {
             if (event.isFromClient()) {
-                VaadinSession.getCurrent().setLocale(event.getValue());
+                VaadinSession session = VaadinSession.getCurrent();
+                session.setLocale(event.getValue());
+                session.getSession().setAttribute(LANGUAGE_ATTRIBUTE, event.getValue().getLanguage());
                 UI.getCurrent().getPage().reload();
             }
         });

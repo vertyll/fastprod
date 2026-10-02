@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import com.vertyll.fastprod.shared.config.BackendApiProperties;
-import com.vertyll.fastprod.shared.config.SecurityProperties;
+import com.vertyll.fastprod.shared.config.KeycloakProperties;
 
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.page.AppShellConfigurator;
@@ -17,7 +17,7 @@ import com.vaadin.flow.theme.lumo.Lumo;
 @SpringBootApplication
 @EnableConfigurationProperties(
     {
-        SecurityProperties.class,
+        KeycloakProperties.class,
         BackendApiProperties.class
     }
 )

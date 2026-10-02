@@ -7,6 +7,7 @@ spring:
 server:
   port: 8001
   shutdown: graceful
+  forward-headers-strategy: framework
 
 management:
   endpoints:
@@ -23,13 +24,8 @@ vaadin:
   launch-browser: false
   allowed-packages: com.vaadin,org.vaadin,com.flowingcode,com.vertyll.fastprod
 
-security:
-  jwt:
-    access-token:
-      expiration: 900000
-      refresh-before-expiry: 120000
-    refresh-token:
-      cookie-name: refresh_token
+keycloak:
+  client-id: fastprod-frontend
 
 logging:
   level:

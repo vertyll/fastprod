@@ -9,10 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import com.vertyll.fastprod.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
-    Optional<User> findByEmail(String email);
-
     boolean existsByEmail(String email);
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email = :email")
-    Optional<User> findByEmailWithRoles(String email);
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.keycloakId = :keycloakId")
+    Optional<User> findByKeycloakIdWithRoles(String keycloakId);
 }

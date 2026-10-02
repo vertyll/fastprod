@@ -55,7 +55,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "Get employee by ID")
     public ResponseEntity<EmployeeResponseDto> getEmployee(@PathVariable Long id) {
         EmployeeResponseDto employee = employeeService.getEmployeeById(id);
@@ -63,7 +63,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "Get all employees with pagination and filters")
     public ResponseEntity<PageResponse<EmployeeResponseDto>> getAllEmployees(
         @Valid @ModelAttribute EmployeeFilterDto filterDto

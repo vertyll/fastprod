@@ -5,46 +5,22 @@ spring:
     password: ${DB_PASSWORD}
   flyway:
     clean-disabled: true
-  mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
 
 security:
-  jwt:
-    access-token:
-      secret-key: ${JWT_ACCESS_SECRET}
-    refresh-token:
-      secret-key: ${JWT_REFRESH_SECRET}
-  cookie:
-    secure: true
+  keycloak:
+    realm-url: ${KEYCLOAK_REALM_URL}
+
+keycloak:
+  admin:
+    server-url: ${KEYCLOAK_SERVER_URL}
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
 
 application:
-  mail:
-    from: ${MAIL_FROM}
   file:
     uploads:
       file-output-path: ${FILE_UPLOAD_PATH}
   frontend:
     url: ${FRONTEND_URL}
-
-admin:
-  email: ${ADMIN_EMAIL}
-  password: ${ADMIN_PASSWORD}
-  first-name: ${ADMIN_FIRST_NAME}
-  last-name: ${ADMIN_LAST_NAME}
-
-app:
-  seed:
-    enabled: ${APP_SEED_ENABLED}
 
 logging:
   level:

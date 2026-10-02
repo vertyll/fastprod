@@ -1,141 +1,91 @@
 package com.vertyll.fastprod.user.service.impl;
 
-import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
-import com.vertyll.fastprod.role.entity.Role;
-import com.vertyll.fastprod.role.service.RoleService;
-
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.vertyll.fastprod.user.dto.UserCreateDto;
-import com.vertyll.fastprod.user.dto.UserResponseDto;
-import com.vertyll.fastprod.user.dto.UserUpdateDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.vertyll.fastprod.role.entity.Role;
+import com.vertyll.fastprod.role.service.RoleService;
+import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
+import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.user.dto.ProfileUpdateDto;
+import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.identity.IdentityProvider;
 import com.vertyll.fastprod.user.mapper.UserMapper;
 import com.vertyll.fastprod.user.repository.UserRepository;
 import com.vertyll.fastprod.user.service.UserService;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
 @Service
 @RequiredArgsConstructor
 class UserServiceImpl implements UserService {
 
     private static final String USER_NOT_FOUND_MESSAGE = "errors.user.notFound";
-    private static final String EMAIL_ALREADY_EXISTS = "errors.user.emailTaken";
+    private static final String EMAIL_MISSING = "errors.auth.authenticationRequired";
 
     private final UserRepository userRepository;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
+    private final IdentityProvider identityProvider;
     private final UserMapper userMapper;
 
     @Override
     @Transactional
-    @SuppressWarnings("java:S4449")
-    public UserResponseDto createUser(UserCreateDto dto) {
-        if (userRepository.existsByEmail(dto.email())) {
-            throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+    public UserResponseDto currentUser(Jwt token) {
+        String email = token.getClaimAsString(StandardClaimNames.EMAIL);
+        if (email == null || email.isBlank()) {
+            throw new ApiException(EMAIL_MISSING, HttpStatus.UNAUTHORIZED);
         }
+        String firstName = Objects.requireNonNullElse(token.getClaimAsString(StandardClaimNames.GIVEN_NAME), email);
+        String lastName = Objects.requireNonNullElse(token.getClaimAsString(StandardClaimNames.FAMILY_NAME), "");
+        boolean emailVerified = Boolean.TRUE.equals(token.getClaimAsBoolean(StandardClaimNames.EMAIL_VERIFIED));
+        Set<Role> roles = realmRoles(token).stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet());
 
-        Set<Role> roles = new HashSet<>();
-        Set<String> roleNames = dto.roleNames();
-        if (CollectionUtils.isEmpty(roleNames)) {
-            roles.add(roleService.getOrCreateDefaultRole(RoleType.USER));
-        } else {
-            for (String roleName : roleNames) {
-                roles.add(roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName)));
-            }
-        }
-
-        User user = userMapper.toEntity(dto);
-        user.changePassword(passwordEncoder.encode(dto.password()));
+        User user = userRepository.findByKeycloakIdWithRoles(token.getSubject())
+            .orElseGet(
+                () -> User.builder()
+                    .keycloakId(token.getSubject())
+                    .email(email)
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .verified(emailVerified)
+                    .build()
+            );
+        user.syncIdentity(email, firstName, lastName, emailVerified);
         user.assignRoles(roles);
-        user.markVerified();
-
-        User savedUser = userRepository.save(user);
-        return userMapper.toResponseDto(savedUser);
+        return userMapper.toResponseDto(userRepository.save(user));
     }
 
     @Override
     @Transactional
-    public UserResponseDto updateUser(Long id, UserUpdateDto dto) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
-
-        String email = dto.email();
-        if (!email.equals(user.getEmail()) && userRepository.existsByEmail(email)) {
-            throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
-        }
-
-        user.updateDetails(dto.firstName(), dto.lastName(), dto.email());
-
-        String password = dto.password();
-        if (password != null) {
-            user.changePassword(passwordEncoder.encode(password));
-        }
-
-        Set<String> roleNames = dto.roleNames();
-        if (roleNames != null) {
-            Set<Role> roles = roleNames.stream()
-                    .map(name -> roleService.getOrCreateDefaultRole(RoleType.fromValue(name)))
-                    .collect(Collectors.toSet());
-            user.assignRoles(roles);
-        }
-
-        User updatedUser = userRepository.save(user);
-        return userMapper.toResponseDto(updatedUser);
-    }
-
-    @Override
-    public UserResponseDto getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
-        return userMapper.toResponseDto(user);
-    }
-
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    @Transactional
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
-
-    @Override
-    public Optional<User> findByEmailWithRoles(String email) {
-        return userRepository.findByEmailWithRoles(email);
-    }
-
-    @Override
-    public UserResponseDto getCurrentUser(String email) {
-        User user = userRepository.findByEmailWithRoles(email)
-                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
-        return userMapper.toResponseDto(user);
-    }
-
-    @Override
-    @Transactional
-    public UserResponseDto updateCurrentUserProfile(String email, ProfileUpdateDto dto) {
-        User user = userRepository.findByEmailWithRoles(email)
-                .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
-
+    public UserResponseDto updateCurrentUserProfile(Jwt token, ProfileUpdateDto dto) {
+        User user = userRepository.findByKeycloakIdWithRoles(token.getSubject())
+            .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
+        identityProvider.rename(user.getKeycloakId(), dto.firstName(), dto.lastName());
         user.rename(dto.firstName(), dto.lastName());
-
-        User updatedUser = userRepository.save(user);
-        return userMapper.toResponseDto(updatedUser);
+        return userMapper.toResponseDto(userRepository.save(user));
     }
 
-    @Override
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    private static List<RoleType> realmRoles(Jwt token) {
+        Map<String, Object> realmAccess = token.getClaimAsMap("realm_access");
+        if (realmAccess == null || !(realmAccess.get("roles") instanceof Collection<?> roles)) {
+            return List.of(RoleType.USER);
+        }
+        return roles.stream()
+            .map(String::valueOf)
+            .filter(name -> Arrays.stream(RoleType.values()).anyMatch(role -> role.getValue().equals(name)))
+            .map(RoleType::fromValue)
+            .toList();
     }
 }

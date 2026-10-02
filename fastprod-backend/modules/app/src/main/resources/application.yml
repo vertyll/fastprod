@@ -13,13 +13,6 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-  mail:
-    properties:
-      mail:
-        smtp:
-          connectiontimeout: 5000
-          timeout: 3000
-          writetimeout: 5000
 
 server:
   port: 8080
@@ -44,14 +37,7 @@ springdoc:
   swagger-ui:
     enabled: false
 
-security:
-  jwt:
-    access-token:
-      expiration: 900000
-    refresh-token:
-      expiration: 2592000000
-      cookie-name: refresh_token
-  cookie:
-    http-only: true
-    same-site: Strict
-    path: /
+keycloak:
+  admin:
+    realm: fastprod
+    client-id: fastprod-backend

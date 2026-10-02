@@ -11,47 +11,22 @@ spring:
     enabled: true
     validate-on-migrate: true
 
-  mail:
-    host: localhost
-    port: 3025
-    username: test
-    password: test
-    properties:
-      mail:
-        smtp:
-          auth: false
-          starttls:
-            enable: false
-
 security:
-  jwt:
-    access-token:
-      secret-key: "CbIKeXKAkneVUn5me1nHZ+V74qpmZ36InUDFEXsg6YY="
-      expiration: 900000
-    refresh-token:
-      secret-key: "isN5Z1EinzeD2JyjXq6SZqoBd+QpOJMxZsBHwfhXHAA="
-      expiration: 2592000000
-      cookie-name: "refresh_token"
-  cookie:
-    http-only: true
-    secure: false
-    same-site: Strict
-    path: /
+  keycloak:
+    realm-url: http://localhost:8182/realms/fastprod
+
+keycloak:
+  admin:
+    server-url: http://localhost:8182
+    client-secret: test-secret
 
 application:
-  mail:
-    from: no-reply@fastprod.local
   file:
     uploads:
       file-output-path: ./test-uploads
 
   frontend:
-    url: http://localhost:4200
+    url: http://localhost:8001
 
 server:
   port: 0
-admin:
-  email: admin@fastprod.test
-  password: test-admin-password
-  first-name: Test
-  last-name: Administrator

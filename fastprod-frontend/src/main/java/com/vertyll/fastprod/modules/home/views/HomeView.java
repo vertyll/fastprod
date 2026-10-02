@@ -3,7 +3,10 @@ package com.vertyll.fastprod.modules.home.views;
 import java.io.Serial;
 
 import com.vertyll.fastprod.base.ui.MainLayout;
+import com.vertyll.fastprod.modules.legal.views.PrivacyView;
+import com.vertyll.fastprod.modules.legal.views.TermsView;
 import com.vertyll.fastprod.shared.i18n.I18n;
+import com.vertyll.fastprod.shared.security.KeycloakPages;
 import com.vertyll.fastprod.shared.security.SecurityService;
 
 import com.vaadin.flow.component.button.Button;
@@ -16,9 +19,12 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @Route(value = "", layout = MainLayout.class)
+@AnonymousAllowed
 public final class HomeView extends VerticalLayout implements HasDynamicTitle {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -58,18 +64,23 @@ public final class HomeView extends VerticalLayout implements HasDynamicTitle {
 
         Button loginButton = new Button(I18n.t("nav.login"), VaadinIcon.SIGN_IN.create());
         loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
-        loginButton.addClickListener(_ -> getUI().ifPresent(ui -> ui.navigate("login")));
+        loginButton.addClickListener(_ -> KeycloakPages.signIn());
 
         Button registerButton = new Button(I18n.t("nav.register"));
         registerButton.addThemeVariants(ButtonVariant.LUMO_LARGE);
-        registerButton.addClickListener(_ -> getUI().ifPresent(ui -> ui.navigate("register")));
+        registerButton.addClickListener(_ -> KeycloakPages.signUp());
 
         HorizontalLayout buttonLayout = new HorizontalLayout(loginButton, registerButton);
         buttonLayout.setSpacing(true);
         buttonLayout.getStyle().set("flex-wrap", "wrap").set("justify-content", "center");
         buttonLayout.addClassNames(LumoUtility.Margin.Top.MEDIUM);
 
-        add(title, tagline, buttonLayout);
+        RouterLink terms = new RouterLink(I18n.t("footer.terms"), TermsView.class);
+        RouterLink privacy = new RouterLink(I18n.t("footer.privacy"), PrivacyView.class);
+        HorizontalLayout legalLinks = new HorizontalLayout(terms, privacy);
+        legalLinks.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.FontSize.SMALL);
+
+        add(title, tagline, buttonLayout, legalLinks);
     }
 
     @Override

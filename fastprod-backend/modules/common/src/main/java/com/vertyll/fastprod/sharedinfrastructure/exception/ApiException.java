@@ -26,6 +26,12 @@ public class ApiException extends RuntimeException {
         this.args = new LinkedHashMap<>(args);
     }
 
+    public ApiException(String messageKey, HttpStatus status, Throwable cause) {
+        super(messageKey, cause);
+        this.status = status;
+        this.args = new LinkedHashMap<>();
+    }
+
     public HttpStatus getStatus() {
         return status;
     }

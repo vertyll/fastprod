@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.annotation.security.RolesAllowed;
+
 import org.jspecify.annotations.Nullable;
 
 import com.vertyll.fastprod.base.ui.MainLayout;
@@ -38,6 +40,7 @@ import com.vaadin.flow.router.Route;
 import lombok.extern.slf4j.Slf4j;
 
 @Route(value = "employees/form/:id?", layout = MainLayout.class)
+@RolesAllowed("ADMIN")
 @Slf4j
 public final class EmployeeFormView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
     @Serial

@@ -21,7 +21,7 @@ Production management application.
 - Spring Security.
 - Spring Data.
 - Spring Web.
-- Spring Mail.
+- Keycloak.
 - Flyway.
 - OpenAPI (Swagger).
 
@@ -38,17 +38,24 @@ Production management application.
 
 ### Authentication:
 
-- JWT-based authentication – the application uses JWT tokens for user authentication and includes token refresh 
-mechanism (http only secure cookie).
-- The application allows login on multiple devices simultaneously.
+- Keycloak (realm `fastprod`) handles sign-up, sign-in, email verification, password reset, two-factor authentication
+and acceptance of the terms of use.
+- The front-end signs users in with the authorization code flow and PKCE, keeps the tokens in its server-side session
+and calls the back-end with the Keycloak access token, refreshing it when needed.
+- The back-end is an OAuth2 resource server: it verifies Keycloak tokens and takes the roles (`ADMIN`, `MANAGER`,
+`EMPLOYEE`, `USER`) from them. It creates the local account on the first request and mirrors names and roles.
+- Administrators create employees through the Keycloak Admin API with a temporary password; at the first sign-in the
+employee confirms their email address and sets their own password.
+- Locally, `docker-compose.local.yml` runs Keycloak on `:8182` (admin/admin) with the realm from
+`keycloak/realm-export.json` and two accounts with the password `fastprod`: `admin@fastprod.local` (`ADMIN`) and
+`user@fastprod.local`. The production realm lives in [`k8s-infra`](https://github.com/vertyll/k8s-infra)
+(`apps/keycloak-realms/fastprod.json`).
 
 ### Core back-end:
 
 - Gradle multi-module build system.
 - The application has an exception handling mechanism.
 - The application has a logging mechanism.
-- The application has an email sending mechanism.
-- The application has a scheduled task handling mechanism (cron).
 - The application has separate environments for local and prod.
 - The application has a dedicated configuration file.
 - The application has RBAC (Role Based Access Control).

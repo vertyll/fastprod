@@ -11,6 +11,7 @@ import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 import com.vertyll.fastprod.role.service.RoleService;
 import com.vertyll.fastprod.user.entity.User;
+import com.vertyll.fastprod.user.identity.IdentityProvider;
 import com.vertyll.fastprod.user.repository.UserRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.transaction.Transactional;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,22 +41,31 @@ class EmployeeServiceImpl implements EmployeeService {
 
     private final UserRepository userRepository;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
+    private final IdentityProvider identityProvider;
     private final EmployeeMapper employeeMapper;
 
     @Override
     @Transactional
-    @SuppressWarnings("java:S4449")
     public EmployeeResponseDto createEmployee(EmployeeCreateDto dto) {
         if (userRepository.existsByEmail(dto.email())) {
             throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
-        User user = employeeMapper.toUserEntity(dto);
-        user.changePassword(passwordEncoder.encode(dto.password()));
-        user.markVerified();
+        Set<RoleType> roles = roleTypes(dto.roleNames());
+        String keycloakId = identityProvider.createUser(
+            new IdentityProvider.NewIdentity(dto.email(), dto.firstName(), dto.lastName()),
+            dto.password(),
+            roles
+        );
 
-        assignRolesToUser(user, dto.roleNames());
+        User user = User.builder()
+            .keycloakId(keycloakId)
+            .firstName(dto.firstName())
+            .lastName(dto.lastName())
+            .email(dto.email())
+            .verified(false)
+            .build();
+        user.assignRoles(roleEntities(roles));
 
         User savedUser = userRepository.save(user);
         return employeeMapper.toResponseDto(savedUser);
@@ -63,7 +73,6 @@ class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    @SuppressWarnings("java:S4449")
     public EmployeeResponseDto updateEmployee(Long id, EmployeeUpdateDto dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
@@ -76,17 +85,22 @@ class EmployeeServiceImpl implements EmployeeService {
             throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
+        identityProvider.updateUser(
+            user.getKeycloakId(),
+            new IdentityProvider.NewIdentity(dto.email(), dto.firstName(), dto.lastName())
+        );
         user.updateDetails(dto.firstName(), dto.lastName(), dto.email());
 
         String password = dto.password();
         if (password != null && !password.isBlank()) {
-            user.changePassword(passwordEncoder.encode(password));
+            identityProvider.resetPassword(user.getKeycloakId(), password);
         }
 
         Set<String> roleNames = dto.roleNames();
         if (!CollectionUtils.isEmpty(roleNames)) {
-            user.getRoles().clear();
-            assignRolesToUser(user, roleNames);
+            Set<RoleType> roles = roleTypes(roleNames);
+            identityProvider.replaceRoles(user.getKeycloakId(), roles);
+            user.assignRoles(roleEntities(roles));
         }
 
         User updatedUser = userRepository.save(user);
@@ -123,6 +137,7 @@ class EmployeeServiceImpl implements EmployeeService {
             throw new ApiException(EMPLOYEE_ALREADY_DELETED, HttpStatus.BAD_REQUEST);
         }
 
+        identityProvider.disable(user.getKeycloakId());
         user.deactivate();
         userRepository.save(user);
     }
@@ -204,15 +219,14 @@ class EmployeeServiceImpl implements EmployeeService {
         ));
     }
 
-    private void assignRolesToUser(User user, @Nullable Set<String> roleNames) {
+    private static Set<RoleType> roleTypes(@Nullable Set<String> roleNames) {
         if (CollectionUtils.isEmpty(roleNames)) {
-            Role employeeRole = roleService.getOrCreateDefaultRole(RoleType.EMPLOYEE);
-            user.getRoles().add(employeeRole);
-        } else {
-            roleNames.forEach(roleName -> {
-                Role role = roleService.getOrCreateDefaultRole(RoleType.fromValue(roleName));
-                user.getRoles().add(role);
-            });
+            return Set.of(RoleType.EMPLOYEE);
         }
+        return roleNames.stream().map(RoleType::fromValue).collect(Collectors.toSet());
+    }
+
+    private Set<Role> roleEntities(Set<RoleType> roles) {
+        return roles.stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet());
     }
 }

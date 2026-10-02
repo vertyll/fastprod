@@ -13,6 +13,7 @@ import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.components.Toast;
+import com.vertyll.fastprod.shared.config.KeycloakProperties;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
 
@@ -43,6 +44,7 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     private static final long serialVersionUID = 1L;
 
     private final transient UserService userService;
+    private final String accountUrl;
     private final Binder<ProfileUpdateDto> binder;
     private final LoadingSpinner loadingSpinner;
 
@@ -53,9 +55,10 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     private final Div editFormContainer;
     private final Div detailsContainer = new Div();
 
-    public ProfileView(UserService userService) {
+    public ProfileView(UserService userService, KeycloakProperties keycloak) {
         super();
         this.userService = userService;
+        this.accountUrl = keycloak.accountUrl();
         this.binder = new Binder<>(ProfileUpdateDto.class);
 
         setSizeFull();
@@ -78,19 +81,17 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
         H2 title = new H2(I18n.t("profile.title"));
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
 
-        Button changePasswordBtn = new Button(I18n.t("account.password.title"), VaadinIcon.KEY.create());
-        changePasswordBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        changePasswordBtn.addClickListener(_ -> UI.getCurrent().navigate("profile/change-password"));
-
-        Button changeEmailBtn = new Button(I18n.t("account.email.title"), VaadinIcon.ENVELOPE.create());
-        changeEmailBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        changeEmailBtn.addClickListener(_ -> UI.getCurrent().navigate("profile/change-email"));
+        Button accountBtn = new Button(I18n.t("account.settings"), VaadinIcon.KEY.create());
+        accountBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+        accountBtn.addClickListener(
+            _ -> UI.getCurrent().getPage().setLocation(accountUrl + "?kc_locale=" + I18n.locale().getLanguage())
+        );
 
         Button editBtn = new Button(I18n.t("profile.edit"), VaadinIcon.EDIT.create());
         editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         editBtn.addClickListener(_ -> showEditForm());
 
-        HorizontalLayout actions = new HorizontalLayout(changePasswordBtn, changeEmailBtn, editBtn);
+        HorizontalLayout actions = new HorizontalLayout(accountBtn, editBtn);
         actions.setSpacing(true);
         actions.getStyle().set("flex-wrap", "wrap");
 

@@ -5,6 +5,11 @@ api:
   backend:
     url: ${API_BACKEND_URL}
 
+keycloak:
+  realm-url: ${KEYCLOAK_REALM_URL}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET}
+  app-url: ${APP_URL}
+
 logging:
   level:
     com.vertyll.fastprod: INFO

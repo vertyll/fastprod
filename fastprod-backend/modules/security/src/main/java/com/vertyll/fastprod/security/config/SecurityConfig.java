@@ -4,21 +4,22 @@ import java.io.IOException;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.vertyll.fastprod.sharedinfrastructure.exception.GlobalExceptionHandler;
@@ -29,6 +30,7 @@ import tools.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties(KeycloakResourceServerProperties.class)
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -36,7 +38,6 @@ public class SecurityConfig {
     private static final String REQUIRED_TO_ACCESS_THIS_RESOURCE = "errors.auth.authenticationRequired";
     private static final String NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE = "errors.auth.forbidden";
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -47,13 +48,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                 auth -> auth
                     .requestMatchers(
-                        "/auth/register",
-                        "/auth/authenticate",
-                        "/auth/verify",
-                        "/auth/resend-verification-code",
-                        "/auth/refresh-token",
-                        "/auth/reset-password-request",
-                        "/auth/reset-password",
                         "/translations/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
@@ -68,7 +62,9 @@ public class SecurityConfig {
                     .authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .oauth2ResourceServer(
+                resourceServer -> resourceServer.jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakTokens()))
+            )
             .exceptionHandling(
                 exception -> exception
                     .authenticationEntryPoint(
@@ -101,12 +97,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
-        return config.getAuthenticationManager();
+    public JwtDecoder jwtDecoder(KeycloakResourceServerProperties keycloak) {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(keycloak.jwkSetUri()).build();
+        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(keycloak.realmUrl()));
+        return decoder;
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    private static JwtAuthenticationConverter keycloakTokens() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoles());
+        converter.setPrincipalClaimName(StandardClaimNames.EMAIL);
+        return converter;
     }
 }

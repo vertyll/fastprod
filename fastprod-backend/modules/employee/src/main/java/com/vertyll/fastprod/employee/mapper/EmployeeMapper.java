@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.vertyll.fastprod.employee.dto.EmployeeCreateDto;
 import com.vertyll.fastprod.employee.dto.EmployeeResponseDto;
 import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
@@ -16,12 +15,6 @@ import com.vertyll.fastprod.user.entity.User;
 
 @Mapper(config = MapStructConfig.class)
 public interface EmployeeMapper {
-
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "verified", ignore = true)
-    @Mapping(target = "active", ignore = true)
-    User toUserEntity(EmployeeCreateDto dto);
 
     @Mapping(target = "roles", source = "roles", qualifiedByName = "rolesToNames")
     @Mapping(target = "isVerified", source = "verified")

@@ -1,5 +1,6 @@
 package com.vertyll.fastprod.user.controller;
 
+import java.time.Instant;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -9,33 +10,28 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
-import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.sharedinfrastructure.exception.GlobalExceptionHandler;
-import com.vertyll.fastprod.user.dto.UserCreateDto;
+import com.vertyll.fastprod.user.dto.ProfileUpdateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
-import com.vertyll.fastprod.user.dto.UserUpdateDto;
 import com.vertyll.fastprod.user.service.UserService;
 
-import tools.jackson.databind.ObjectMapper;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
+    private Jwt token;
 
     @SuppressWarnings("NullAway")
     @Mock
@@ -52,125 +49,65 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private UserCreateDto createDto;
-    private UserUpdateDto updateDto;
-    private UserResponseDto responseDto;
-
     @BeforeEach
     void setUp() {
         validator = new LocalValidatorFactoryBean();
         validator.afterPropertiesSet();
-
         mockMvc = MockMvcBuilders.standaloneSetup(userController)
             .setControllerAdvice(new GlobalExceptionHandler())
             .setValidator(validator)
+            .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
             .build();
-
-        createDto = new UserCreateDto("John", "Doe", "john@example.com", "password123", Set.of("USER"));
-
-        updateDto = new UserUpdateDto(
-            "John Updated",
-            "Doe Updated",
-            "john.updated@example.com",
-            null,
-            Set.of("USER", "ADMIN")
-        );
-
-        responseDto = new UserResponseDto(1L, "John", "Doe", "john@example.com", Set.of(RoleType.USER), true);
+        token = Jwt.withTokenValue("t")
+            .header("alg", "none")
+            .subject("kc-1")
+            .claim("email", "jan@example.com")
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusSeconds(60))
+            .build();
+        SecurityContextHolder.getContext().setAuthentication(new JwtAuthenticationToken(token));
     }
 
     @AfterEach
     void tearDown() {
-        if (validator != null) {
-            validator.close();
-        }
+        SecurityContextHolder.clearContext();
+        validator.close();
     }
 
     @Test
-    void createUser_WhenValidInput_ShouldReturnCreated() throws Exception {
-        when(userService.createUser(any(UserCreateDto.class))).thenReturn(responseDto);
+    void getCurrentUser_ShouldReturnTheSignedInAccount() throws Exception {
+        when(userService.currentUser(eq(token)))
+            .thenReturn(new UserResponseDto(1L, "Jan", "Kowalski", "jan@example.com", Set.of(RoleType.USER), true));
 
-        mockMvc
-            .perform(
-                post("/users").contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(createDto))
-            )
-            .andDo(print())
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.firstName").value("John"));
-
-        verify(userService).createUser(any(UserCreateDto.class));
-    }
-
-    @Test
-    void createUser_WhenInvalidInput_ShouldReturnBadRequest() throws Exception {
-        UserCreateDto invalidCreateDto =
-                new UserCreateDto("John", "Doe", "invalid-email", "password123", Set.of("USER"));
-
-        mockMvc
-            .perform(
-                post("/users").contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(invalidCreateDto))
-            )
-            .andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.detail").value("errors.common.validationFailed"));
-
-        verify(userService, never()).createUser(any(UserCreateDto.class));
-    }
-
-    @Test
-    void updateUser_WhenValidInput_ShouldReturnSuccess() throws Exception {
-        when(userService.updateUser(anyLong(), any(UserUpdateDto.class))).thenReturn(responseDto);
-
-        mockMvc
-            .perform(
-                put("/users/1").contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updateDto))
-            )
-            .andDo(print())
-            .andExpect(status().isOk());
-
-        verify(userService).updateUser(eq(1L), any(UserUpdateDto.class));
-    }
-
-    @Test
-    void updateUser_WhenUserNotFound_ShouldReturnNotFound() throws Exception {
-        doThrow(new ApiException("errors.user.notFound", HttpStatus.NOT_FOUND)).when(userService)
-            .updateUser(anyLong(), any(UserUpdateDto.class));
-
-        mockMvc
-            .perform(
-                put("/users/1").contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updateDto))
-            )
-            .andDo(print())
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("errors.user.notFound"));
-    }
-
-    @Test
-    void getUser_WhenExists_ShouldReturnUser() throws Exception {
-        when(userService.getUserById(1L)).thenReturn(responseDto);
-
-        mockMvc.perform(get("/users/1"))
-            .andDo(print())
+        mockMvc.perform(get("/users/me"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.firstName").value("John"));
-
-        verify(userService).getUserById(1L);
+            .andExpect(jsonPath("$.email").value("jan@example.com"))
+            .andExpect(jsonPath("$.roles[0]").value("USER"));
     }
 
     @Test
-    void getUser_WhenNotFound_ShouldReturnNotFound() throws Exception {
-        when(userService.getUserById(1L)).thenThrow(new ApiException("errors.user.notFound", HttpStatus.NOT_FOUND));
+    void updateProfile_WhenValid_ShouldReturnUpdatedAccount() throws Exception {
+        when(userService.updateCurrentUserProfile(eq(token), eq(new ProfileUpdateDto("Janusz", "Nowak"))))
+            .thenReturn(new UserResponseDto(1L, "Janusz", "Nowak", "jan@example.com", Set.of(RoleType.USER), true));
 
-        mockMvc.perform(get("/users/1"))
-            .andDo(print())
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.detail").value("errors.user.notFound"));
+        mockMvc
+            .perform(
+                put("/users/me/profile").contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"firstName\":\"Janusz\",\"lastName\":\"Nowak\"}")
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstName").value("Janusz"));
+    }
+
+    @Test
+    void updateProfile_WhenNameBlank_ShouldReturnBadRequest() throws Exception {
+        mockMvc
+            .perform(
+                put("/users/me/profile").contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"firstName\":\"\",\"lastName\":\"\"}")
+            )
+            .andExpect(status().isBadRequest());
+
+        verify(userService, never()).updateCurrentUserProfile(any(), any());
     }
 }

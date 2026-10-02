@@ -104,7 +104,7 @@ class BaseHttpServiceTest {
     private static final class TestService extends BaseHttpService {
 
         TestService(String baseUrl) {
-            super(baseUrl, JsonMapper.builder().build(), new AuthTokenProvider());
+            super(baseUrl, JsonMapper.builder().build(), new AuthTokenProvider(_ -> null));
         }
     }
 }

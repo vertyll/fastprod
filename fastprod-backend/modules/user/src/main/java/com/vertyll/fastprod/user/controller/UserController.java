@@ -2,22 +2,18 @@ package com.vertyll.fastprod.user.controller;
 
 import jakarta.validation.Valid;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vertyll.fastprod.user.dto.ProfileUpdateDto;
-import com.vertyll.fastprod.user.dto.UserCreateDto;
 import com.vertyll.fastprod.user.dto.UserResponseDto;
-import com.vertyll.fastprod.user.dto.UserUpdateDto;
 import com.vertyll.fastprod.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,35 +28,11 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create new user")
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserCreateDto dto) {
-        UserResponseDto user = userService.createUser(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
-    }
-
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update existing user")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody @Valid UserUpdateDto dto) {
-        UserResponseDto user = userService.updateUser(id, dto);
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @Operation(summary = "Get user by ID")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
-        UserResponseDto user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
-    }
-
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get current user profile")
-    public ResponseEntity<UserResponseDto> getCurrentUser(Authentication authentication) {
-        UserResponseDto user = userService.getCurrentUser(authentication.getName());
+    public ResponseEntity<UserResponseDto> getCurrentUser(@AuthenticationPrincipal Jwt token) {
+        UserResponseDto user = userService.currentUser(token);
         return ResponseEntity.ok(user);
     }
 
@@ -69,9 +41,9 @@ public class UserController {
     @Operation(summary = "Update current user profile")
     public ResponseEntity<UserResponseDto> updateProfile(
         @RequestBody @Valid ProfileUpdateDto dto,
-        Authentication authentication
+        @AuthenticationPrincipal Jwt token
     ) {
-        UserResponseDto user = userService.updateCurrentUserProfile(authentication.getName(), dto);
+        UserResponseDto user = userService.updateCurrentUserProfile(token, dto);
         return ResponseEntity.ok(user);
     }
 }

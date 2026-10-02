@@ -105,6 +105,5 @@ public final class UserMenu extends HorizontalLayout {
 
     private void handleLogout() {
         securityService.logout();
-        UI.getCurrent().navigate("login");
     }
 }
