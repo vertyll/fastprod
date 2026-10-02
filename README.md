@@ -48,8 +48,7 @@ and calls the back-end with the Keycloak access token, refreshing it when needed
 employee confirms their email address and sets their own password.
 - Locally, `docker-compose.local.yml` runs Keycloak on `:9000` (admin/admin) with the realm from
 `keycloak/realm-export.json` and two accounts with the password `fastprod`: `admin@fastprod.local` (`ADMIN`) and
-`user@fastprod.local`. The production realm lives in [`k8s-infra`](https://github.com/vertyll/k8s-infra)
-(`apps/keycloak-realms/fastprod.json`).
+`user@fastprod.local`.
 
 ### Core back-end:
 
