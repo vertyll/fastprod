@@ -13,11 +13,11 @@ spring:
 
 security:
   keycloak:
-    realm-url: http://localhost:8182/realms/fastprod
+    realm-url: http://localhost:9000/realms/fastprod
 
 keycloak:
   admin:
-    server-url: http://localhost:8182
+    server-url: http://localhost:9000
     client-secret: test-secret
 
 application:

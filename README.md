@@ -46,7 +46,7 @@ and calls the back-end with the Keycloak access token, refreshing it when needed
 `EMPLOYEE`, `USER`) from them. It creates the local account on the first request and mirrors names and roles.
 - Administrators create employees through the Keycloak Admin API with a temporary password; at the first sign-in the
 employee confirms their email address and sets their own password.
-- Locally, `docker-compose.local.yml` runs Keycloak on `:8182` (admin/admin) with the realm from
+- Locally, `docker-compose.local.yml` runs Keycloak on `:9000` (admin/admin) with the realm from
 `keycloak/realm-export.json` and two accounts with the password `fastprod`: `admin@fastprod.local` (`ADMIN`) and
 `user@fastprod.local`. The production realm lives in [`k8s-infra`](https://github.com/vertyll/k8s-infra)
 (`apps/keycloak-realms/fastprod.json`).

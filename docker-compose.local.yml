@@ -37,13 +37,13 @@ services:
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-      KC_HOSTNAME: http://localhost:8182
+      KC_HOSTNAME: http://localhost:9000
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
       KC_HEALTH_ENABLED: "true"
     depends_on:
       - maildev
     ports:
-      - "127.0.0.1:8182:8080"
+      - "127.0.0.1:9000:8080"
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
       - keycloak-data:/opt/keycloak/data/h2
