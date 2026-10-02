@@ -161,7 +161,7 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
             DelayedNavigation.navigate(ui, LoginView.class, Duration.ofSeconds(2));
 
         } catch (ApiException e) {
-            Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.error(e), NotificationVariant.LUMO_ERROR);
             log.error("API error during verification: {}", e.getMessage());
         } finally {
             verifyButton.setEnabled(true);
@@ -188,7 +188,7 @@ public final class VerifyAccountView extends VerticalLayout implements HasUrlPar
             if (e.getStatusCode() == 404) {
                 Toast.show(I18n.t("auth.verify.resendUnavailable"), NotificationVariant.LUMO_WARNING);
             } else {
-                Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
+                Toast.show(I18n.error(e), NotificationVariant.LUMO_ERROR);
             }
             log.error("API error during resend: {}", e.getMessage());
         } finally {

@@ -131,7 +131,7 @@ public final class ForgotPasswordView extends VerticalLayout implements HasDynam
             emailField.setEnabled(false);
             showVerificationDialog();
         } catch (ApiException e) {
-            Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.error(e), NotificationVariant.LUMO_ERROR);
             log.error("API error during password reset request: {}", e.getMessage());
         } finally {
             submitButton.setEnabled(true);

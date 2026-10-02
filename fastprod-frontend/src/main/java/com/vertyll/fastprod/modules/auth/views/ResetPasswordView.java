@@ -177,7 +177,7 @@ public final class ResetPasswordView extends VerticalLayout implements HasUrlPar
             UI ui = UI.getCurrent();
             DelayedNavigation.navigate(ui, LoginView.class, Duration.ofSeconds(2));
         } catch (ApiException e) {
-            Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.error(e), NotificationVariant.LUMO_ERROR);
             log.error("API error during password reset: {}", e.getMessage());
         } finally {
             submitButton.setEnabled(true);

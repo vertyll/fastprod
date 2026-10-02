@@ -202,7 +202,7 @@ public final class RegisterView extends VerticalLayout implements HasDynamicTitl
         } catch (ValidationException e) {
             log.error("Validation error during registration", e);
         } catch (ApiException e) {
-            Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
+            Toast.show(I18n.error(e), NotificationVariant.LUMO_ERROR);
             log.error("API error during registration: {} (status: {})", e.getMessage(), e.getStatusCode());
         } finally {
             registerButton.setEnabled(true);

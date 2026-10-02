@@ -180,7 +180,7 @@ public final class LoginView extends VerticalLayout implements HasDynamicTitle {
                 String email = emailField.getValue();
                 UI.getCurrent().navigate(VerifyAccountView.class, email);
             } else {
-                Toast.show(e.getMessage(), NotificationVariant.LUMO_ERROR);
+                Toast.show(I18n.error(e), NotificationVariant.LUMO_ERROR);
                 log.error("API error during login: {} (status: {})", e.getMessage(), e.getStatusCode());
             }
         } finally {
