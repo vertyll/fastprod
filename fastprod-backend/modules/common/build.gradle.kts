@@ -5,6 +5,7 @@ plugins {
 dependencies {
     api(libs.bundles.spring.boot.starters.common)
     api(libs.bundles.spring.boot.starters.security)
+    api(libs.spring.boot.starter.mail)
     api(libs.mapstruct)
     api(libs.jspecify)
 

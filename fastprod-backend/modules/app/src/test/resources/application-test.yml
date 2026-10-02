@@ -21,6 +21,8 @@ keycloak:
     client-secret: test-secret
 
 application:
+  mail:
+    from: test@fastprod.local
   file:
     uploads:
       file-output-path: ./test-uploads

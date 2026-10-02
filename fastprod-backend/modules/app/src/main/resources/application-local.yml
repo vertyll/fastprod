@@ -3,6 +3,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/fastprod
     username: postgres
     password: postgres
+  mail:
+    host: localhost
+    port: 1025
 
 springdoc:
   api-docs:
@@ -20,6 +23,8 @@ keycloak:
     client-secret: fastprod-backend-local-secret
 
 application:
+  mail:
+    from: no-reply@fastprod.local
   file:
     uploads:
       file-output-path: ./uploads

@@ -7,7 +7,10 @@ import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "application")
 @Validated
-public record ApplicationProperties(Frontend frontend) {
+public record ApplicationProperties(Frontend frontend, Mail mail) {
     public record Frontend(@NotBlank(message = "Frontend URL is required") String url) {
+    }
+
+    public record Mail(@NotBlank(message = "Mail sender address is required") String from) {
     }
 }
