@@ -26,7 +26,6 @@ import com.vertyll.fastprod.user.dto.UserResponseDto;
 import com.vertyll.fastprod.user.service.UserService;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,7 +75,7 @@ class UserControllerTest {
 
     @Test
     void getCurrentUser_ShouldReturnTheSignedInAccount() throws Exception {
-        when(userService.currentUser(eq(token)))
+        when(userService.currentUser(token))
             .thenReturn(new UserResponseDto(1L, "Jan", "Kowalski", "jan@example.com", Set.of(RoleType.USER), true));
 
         mockMvc.perform(get("/users/me"))
@@ -87,7 +86,7 @@ class UserControllerTest {
 
     @Test
     void updateProfile_WhenValid_ShouldReturnUpdatedAccount() throws Exception {
-        when(userService.updateCurrentUserProfile(eq(token), eq(new ProfileUpdateDto("Janusz", "Nowak"))))
+        when(userService.updateCurrentUserProfile(token, new ProfileUpdateDto("Janusz", "Nowak")))
             .thenReturn(new UserResponseDto(1L, "Janusz", "Nowak", "jan@example.com", Set.of(RoleType.USER), true));
 
         mockMvc

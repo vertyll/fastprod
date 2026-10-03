@@ -31,7 +31,6 @@ application:
   keycloak:
     audience: fastprod-api
     admin:
-      realm: fastprod
       client-id: fastprod-backend
 
 management:

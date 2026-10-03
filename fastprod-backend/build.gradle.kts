@@ -374,7 +374,7 @@ tasks.register("testAll") {
 
 dependencies {
     jacocoAggregation(platform(libs.spring.boot.dependencies))
-    subprojects.forEach { jacocoAggregation(it) }
+    subprojects.forEach { jacocoAggregation(project(it.path)) }
 }
 
 val aggregatedCoverage = layout.buildDirectory.file("reports/jacoco/testCodeCoverageReport/testCodeCoverageReport.xml")

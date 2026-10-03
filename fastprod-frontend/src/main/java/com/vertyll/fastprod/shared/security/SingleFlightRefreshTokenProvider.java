@@ -61,7 +61,7 @@ final class SingleFlightRefreshTokenProvider implements OAuth2AuthorizedClientPr
 
     private void forgetOldRefreshes() {
         Instant oldest = clock.instant().minus(REUSE_WINDOW);
-        refreshes.values().removeIf(refresh -> refresh.finishedBefore(oldest));
+        refreshes.values().removeIf(pending -> pending.finishedBefore(oldest));
     }
 
     private record Outcome(@Nullable OAuth2AuthorizedClient client, boolean completed, Instant at) {

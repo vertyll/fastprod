@@ -47,15 +47,18 @@ class UserServiceImpl implements UserService {
         if (email == null || email.isBlank()) {
             throw new ApiException(EMAIL_MISSING, HttpStatus.UNAUTHORIZED);
         }
-        String firstName = Objects.requireNonNullElse(token.getClaimAsString(StandardClaimNames.GIVEN_NAME), email);
-        String lastName = Objects.requireNonNullElse(token.getClaimAsString(StandardClaimNames.FAMILY_NAME), "");
+        String givenName = token.getClaimAsString(StandardClaimNames.GIVEN_NAME);
+        String familyName = token.getClaimAsString(StandardClaimNames.FAMILY_NAME);
+        String firstName = givenName != null ? givenName : email;
+        String lastName = familyName != null ? familyName : "";
         boolean emailVerified = Boolean.TRUE.equals(token.getClaimAsBoolean(StandardClaimNames.EMAIL_VERIFIED));
         Set<Role> roles = realmRoles(token).stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet());
 
-        User user = userRepository.findByKeycloakIdWithRoles(token.getSubject())
+        String keycloakId = subject(token);
+        User user = userRepository.findByKeycloakIdWithRoles(keycloakId)
             .orElseGet(
                 () -> User.builder()
-                    .keycloakId(token.getSubject())
+                    .keycloakId(keycloakId)
                     .email(email)
                     .firstName(firstName)
                     .lastName(lastName)
@@ -70,7 +73,7 @@ class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDto updateCurrentUserProfile(Jwt token, ProfileUpdateDto dto) {
-        User user = userRepository.findByKeycloakIdWithRoles(token.getSubject())
+        User user = userRepository.findByKeycloakIdWithRoles(subject(token))
             .orElseThrow(() -> new ApiException(USER_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
         identityProvider.rename(user.getKeycloakId(), dto.firstName(), dto.lastName());
         user.rename(dto.firstName(), dto.lastName());
@@ -87,5 +90,9 @@ class UserServiceImpl implements UserService {
             .filter(name -> Arrays.stream(RoleType.values()).anyMatch(role -> role.getValue().equals(name)))
             .map(RoleType::fromValue)
             .toList();
+    }
+
+    private static String subject(Jwt token) {
+        return Objects.requireNonNull(token.getSubject(), "A Keycloak access token always carries a subject");
     }
 }

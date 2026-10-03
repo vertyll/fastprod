@@ -85,11 +85,10 @@ class SingleFlightRefreshTokenProviderTest {
             throw new OAuth2AuthorizationException(new OAuth2Error("invalid_grant"));
         };
         SingleFlightRefreshTokenProvider provider = new SingleFlightRefreshTokenProvider(refusing, fixedClock());
+        OAuth2AuthorizationContext context = context(client("access-1", "refresh-1"));
 
-        assertThatThrownBy(() -> provider.authorize(context(client("access-1", "refresh-1"))))
-            .isInstanceOf(OAuth2AuthorizationException.class);
-        assertThatThrownBy(() -> provider.authorize(context(client("access-1", "refresh-1"))))
-            .isInstanceOf(OAuth2AuthorizationException.class);
+        assertThatThrownBy(() -> provider.authorize(context)).isInstanceOf(OAuth2AuthorizationException.class);
+        assertThatThrownBy(() -> provider.authorize(context)).isInstanceOf(OAuth2AuthorizationException.class);
         assertThat(calls).hasValue(2);
     }
 
@@ -115,7 +114,7 @@ class SingleFlightRefreshTokenProviderTest {
     private static void awaitQuietly(CountDownLatch latch) {
         try {
             assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }

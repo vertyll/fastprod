@@ -60,23 +60,17 @@ class KeycloakIdentityProvider implements IdentityProvider {
             update.setEmailVerified(current.isEmailVerified());
             update.setRequiredActions(current.getRequiredActions());
         }
-        call(() -> {
-            resource.update(update);
-            return null;
-        });
+        run(() -> resource.update(update));
     }
 
     @Override
     public void resetPassword(String keycloakId, String temporaryPassword) {
-        call(() -> {
-            realm().users().get(keycloakId).resetPassword(temporaryPassword(temporaryPassword));
-            return null;
-        });
+        run(() -> realm().users().get(keycloakId).resetPassword(temporaryPassword(temporaryPassword)));
     }
 
     @Override
     public void replaceRoles(String keycloakId, Set<RoleType> roles) {
-        call(() -> {
+        run(() -> {
             RoleScopeResource mappings = realm().users().get(keycloakId).roles().realmLevel();
             List<RoleRepresentation> managed = Arrays.stream(RoleType.values())
                 .map(role -> realm().roles().get(role.getValue()).toRepresentation())
@@ -85,31 +79,28 @@ class KeycloakIdentityProvider implements IdentityProvider {
                     managed.stream().filter(role -> roles.contains(RoleType.fromValue(role.getName()))).toList();
             mappings.remove(managed.stream().filter(role -> !granted.contains(role)).toList());
             mappings.add(granted);
-            return null;
         });
     }
 
     @Override
     public void rename(String keycloakId, String firstName, String lastName) {
         UserResource resource = realm().users().get(keycloakId);
-        call(() -> {
+        run(() -> {
             UserRepresentation user = resource.toRepresentation();
             user.setFirstName(firstName);
             user.setLastName(lastName);
             resource.update(user);
-            return null;
         });
     }
 
     @Override
     public void disable(String keycloakId) {
         UserResource resource = realm().users().get(keycloakId);
-        call(() -> {
+        run(() -> {
             UserRepresentation user = resource.toRepresentation();
             user.setEnabled(false);
             resource.update(user);
             resource.logout();
-            return null;
         });
     }
 
@@ -139,6 +130,14 @@ class KeycloakIdentityProvider implements IdentityProvider {
     private static <T> T call(KeycloakCall<T> call) {
         try {
             return call.run();
+        } catch (WebApplicationException e) {
+            throw unavailable(e);
+        }
+    }
+
+    private static void run(Runnable action) {
+        try {
+            action.run();
         } catch (WebApplicationException e) {
             throw unavailable(e);
         }

@@ -17,7 +17,6 @@ application:
   keycloak:
     realm-url: http://localhost:9000/realms/fastprod
     admin:
-      server-url: http://localhost:9000
       client-secret: fastprod-backend-local-secret
   mail:
     from: no-reply@fastprod.local

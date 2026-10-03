@@ -1,6 +1,5 @@
 package com.vertyll.fastprod.modules.legal.views;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.vertyll.fastprod.shared.i18n.I18n;
@@ -13,7 +12,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 final class LegalContent {
-    private static final Pattern EMAIL = Pattern.compile("[\\w.+-]+@[\\w.-]+\\w");
     private static final Pattern PARAGRAPHS = Pattern.compile("\n\n");
 
     private LegalContent() {
@@ -33,19 +31,55 @@ final class LegalContent {
 
     static Paragraph paragraph(String text) {
         Paragraph paragraph = new Paragraph();
-        Matcher email = EMAIL.matcher(text);
         int last = 0;
-        while (email.find()) {
-            if (email.start() > last) {
-                paragraph.add(new Text(text.substring(last, email.start())));
+        for (int at = text.indexOf('@'); at != -1; at = text.indexOf('@', Math.max(at + 1, last))) {
+            int start = emailStart(text, at, last);
+            int end = emailEnd(text, at);
+            if (start == at || end == at + 1) {
+                continue;
             }
-            paragraph.add(new Anchor("mailto:" + email.group(), email.group()));
-            last = email.end();
+            if (start > last) {
+                paragraph.add(new Text(text.substring(last, start)));
+            }
+            String email = text.substring(start, end);
+            paragraph.add(new Anchor("mailto:" + email, email));
+            last = end;
         }
         if (last < text.length()) {
             paragraph.add(new Text(text.substring(last)));
         }
         return paragraph;
+    }
+
+    private static int emailStart(String text, int at, int from) {
+        int start = at;
+        while (start > from && isLocalPart(text.charAt(start - 1))) {
+            start--;
+        }
+        return start;
+    }
+
+    private static int emailEnd(String text, int at) {
+        int end = at + 1;
+        while (end < text.length() && isDomain(text.charAt(end))) {
+            end++;
+        }
+        while (end > at + 1 && !isWord(text.charAt(end - 1))) {
+            end--;
+        }
+        return end;
+    }
+
+    private static boolean isWord(char c) {
+        return Character.isLetterOrDigit(c) || c == '_';
+    }
+
+    private static boolean isDomain(char c) {
+        return isWord(c) || c == '.' || c == '-';
+    }
+
+    private static boolean isLocalPart(char c) {
+        return isDomain(c) || c == '+';
     }
 
     static String title(String document) {

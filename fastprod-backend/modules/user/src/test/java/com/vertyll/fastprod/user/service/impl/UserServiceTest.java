@@ -33,7 +33,6 @@ import com.vertyll.fastprod.user.repository.UserRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -154,14 +153,14 @@ class UserServiceTest {
     void updateCurrentUserProfile_WhenAccountMissing_ShouldThrowNotFound() {
         when(userRepository.findByKeycloakIdWithRoles("kc-1")).thenReturn(Optional.empty());
 
-        ApiException exception = assertThrows(
-            ApiException.class,
-            () -> userService
-                .updateCurrentUserProfile(token("kc-1", "jan@example.com", false), new ProfileUpdateDto("Jan", "Nowak"))
-        );
+        Jwt token = token("kc-1", "jan@example.com", false);
+        ProfileUpdateDto update = new ProfileUpdateDto("Jan", "Nowak");
+
+        ApiException exception =
+                assertThrows(ApiException.class, () -> userService.updateCurrentUserProfile(token, update));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-        assertFalse(exception.getMessage().isBlank());
+        assertEquals("errors.user.notFound", exception.getMessage());
         verify(identityProvider, never()).rename(any(), any(), any());
     }
 

@@ -17,8 +17,8 @@ class KeycloakAdminConfig {
             .serverUrl(properties.serverUrl())
             .realm(properties.realm())
             .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-            .clientId(properties.clientId())
-            .clientSecret(properties.clientSecret())
+            .clientId(properties.admin().clientId())
+            .clientSecret(properties.admin().clientSecret())
             .build();
     }
 }
