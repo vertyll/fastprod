@@ -163,7 +163,7 @@ public final class MainLayout extends AppLayout {
             nav.addItem(adminSection);
         }
 
-        nav.addItem(new SideNavItem(I18n.t("footer.terms"), "terms", VaadinIcon.FILE_TEXT_O.create()));
+        nav.addItem(new SideNavItem(I18n.t("footer.terms"), "terms", VaadinIcon.FILE_TEXT.create()));
         nav.addItem(new SideNavItem(I18n.t("footer.privacy"), "privacy", VaadinIcon.LOCK.create()));
 
         return nav;
