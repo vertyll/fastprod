@@ -27,12 +27,6 @@ server:
   servlet:
     context-path: /api/v1
 
-application:
-  keycloak:
-    audience: fastprod-api
-    admin:
-      client-id: fastprod-backend
-
 management:
   endpoints:
     web:
@@ -49,3 +43,9 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+application:
+  keycloak:
+    audience: fastprod-api
+    admin:
+      client-id: fastprod-backend

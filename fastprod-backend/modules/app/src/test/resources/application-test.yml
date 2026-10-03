@@ -1,15 +1,5 @@
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
-
-  flyway:
-    enabled: true
-    validate-on-migrate: true
+server:
+  port: 0
 
 application:
   keycloak:
@@ -21,9 +11,5 @@ application:
   file:
     uploads:
       file-output-path: ./test-uploads
-
   frontend:
     url: http://localhost:8001
-
-server:
-  port: 0
