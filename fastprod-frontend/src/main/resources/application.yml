@@ -32,8 +32,9 @@ vaadin:
   launch-browser: false
   allowed-packages: com.vaadin,org.vaadin,com.flowingcode,com.vertyll.fastprod
 
-keycloak:
-  client-id: fastprod-frontend
+application:
+  keycloak:
+    client-id: fastprod-frontend
 
 logging:
   level:

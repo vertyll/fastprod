@@ -13,16 +13,12 @@ springdoc:
   swagger-ui:
     enabled: true
 
-security:
+application:
   keycloak:
     realm-url: http://localhost:9000/realms/fastprod
-
-keycloak:
-  admin:
-    server-url: http://localhost:9000
-    client-secret: fastprod-backend-local-secret
-
-application:
+    admin:
+      server-url: http://localhost:9000
+      client-secret: fastprod-backend-local-secret
   mail:
     from: no-reply@fastprod.local
   file:

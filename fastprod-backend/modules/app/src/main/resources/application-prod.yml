@@ -18,16 +18,12 @@ spring:
             enable: true
             required: true
 
-security:
+application:
   keycloak:
     realm-url: ${KEYCLOAK_REALM_URL}
-
-keycloak:
-  admin:
-    server-url: ${KEYCLOAK_SERVER_URL}
-    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
-
-application:
+    admin:
+      server-url: ${KEYCLOAK_SERVER_URL}
+      client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
   mail:
     from: ${MAIL_FROM}
   file:
