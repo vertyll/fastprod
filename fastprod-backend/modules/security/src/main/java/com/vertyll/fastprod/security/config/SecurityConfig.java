@@ -1,6 +1,7 @@
 package com.vertyll.fastprod.security.config;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -14,7 +15,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
+import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -99,8 +105,18 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder(KeycloakResourceServerProperties keycloak) {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(keycloak.jwkSetUri()).build();
-        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(keycloak.realmUrl()));
+        decoder.setJwtValidator(tokenValidator(keycloak));
         return decoder;
+    }
+
+    static OAuth2TokenValidator<Jwt> tokenValidator(KeycloakResourceServerProperties keycloak) {
+        return new DelegatingOAuth2TokenValidator<>(
+            JwtValidators.createDefaultWithIssuer(keycloak.realmUrl()),
+            new JwtClaimValidator<Collection<String>>(
+                JwtClaimNames.AUD,
+                audience -> audience != null && audience.contains(keycloak.audience())
+            )
+        );
     }
 
     private static JwtAuthenticationConverter keycloakTokens() {

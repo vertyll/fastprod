@@ -8,7 +8,11 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties("security.keycloak")
-public record KeycloakResourceServerProperties(@NotBlank String realmUrl, @Nullable String backchannelRealmUrl) {
+public record KeycloakResourceServerProperties(
+    @NotBlank String realmUrl,
+    @Nullable String backchannelRealmUrl,
+    @NotBlank String audience
+) {
 
     String jwkSetUri() {
         String base = backchannelRealmUrl == null || backchannelRealmUrl.isBlank() ? realmUrl : backchannelRealmUrl;

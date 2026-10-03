@@ -1,3 +1,9 @@
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false
+
 api:
   backend:
     url: http://localhost:8080/api/v1

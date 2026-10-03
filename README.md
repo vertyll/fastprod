@@ -41,9 +41,12 @@ Production management application.
 - Keycloak (realm `fastprod`) handles sign-up, sign-in, email verification, password reset, two-factor authentication
 and acceptance of the terms of use.
 - The front-end signs users in with the authorization code flow and PKCE, keeps the tokens in its server-side session
-and calls the back-end with the Keycloak access token, refreshing it when needed.
-- The back-end is an OAuth2 resource server: it verifies Keycloak tokens and takes the roles (`ADMIN`, `MANAGER`,
-`EMPLOYEE`, `USER`) from them. It creates the local account on the first request and mirrors names and roles.
+(cookie `FASTPROD_SESSION`: `HttpOnly`, `SameSite=Lax`, `Secure` in production) and calls the back-end with the
+Keycloak access token. Access tokens live five minutes; every refresh returns a new refresh token and invalidates the
+old one, and concurrent requests of one session share a single refresh.
+- The back-end is a stateless OAuth2 resource server: it verifies the token's signature, issuer, expiry and audience
+(`fastprod-api`, so a token issued to another client is refused) and takes the roles (`ADMIN`, `MANAGER`, `EMPLOYEE`,
+`USER`) from it. It creates the local account on the first request and mirrors names and roles.
 - Administrators create employees through the Keycloak Admin API with a temporary password; at the first sign-in the
 employee confirms their email address and sets their own password.
 - Locally, `docker-compose.local.yml` runs Keycloak on `:9000` (admin/admin) with the realm from

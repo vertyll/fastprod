@@ -1,11 +1,13 @@
 package com.vertyll.fastprod.shared.security;
 
+import java.time.Clock;
 import java.util.Map;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.DelegatingOAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -92,7 +94,13 @@ class SecurityConfig {
         DefaultOAuth2AuthorizedClientManager manager =
                 new DefaultOAuth2AuthorizedClientManager(clientRegistrations, authorizedClients);
         manager.setAuthorizedClientProvider(
-            OAuth2AuthorizedClientProviderBuilder.builder().authorizationCode().refreshToken().build()
+            new DelegatingOAuth2AuthorizedClientProvider(
+                OAuth2AuthorizedClientProviderBuilder.builder().authorizationCode().build(),
+                new SingleFlightRefreshTokenProvider(
+                    OAuth2AuthorizedClientProviderBuilder.builder().refreshToken().build(),
+                    Clock.systemUTC()
+                )
+            )
         );
         return manager;
     }
