@@ -47,20 +47,22 @@ Production management application.
 
 ### Authentication:
 
-- Keycloak (realm `fastprod`) handles sign-up, sign-in, email verification, password reset, two-factor authentication
-and acceptance of the terms of use.
-- The front-end signs users in with the authorization code flow and PKCE, keeps the tokens in its server-side session
-(cookie `FASTPROD_SESSION`: `HttpOnly`, `SameSite=Lax`, `Secure` in production) and calls the back-end with the
-Keycloak access token. Access tokens live five minutes; every refresh returns a new refresh token and invalidates the
-old one, and concurrent requests of one session share a single refresh.
-- The back-end is a stateless OAuth2 resource server: it verifies the token's signature, issuer, expiry and audience
-(`fastprod-api`, so a token issued to another client is refused) and takes the roles (`ADMIN`, `MANAGER`, `EMPLOYEE`,
-`USER`) from it. It creates the local account on the first request and mirrors names and roles.
-- Administrators create employees through the Keycloak Admin API with a temporary password; at the first sign-in the
-employee confirms their email address and sets their own password.
-- Locally, `docker-compose.local.yml` runs Keycloak on `:9000` (admin/admin) with the realm from
-`keycloak/realm-export.json` and two accounts with the password `fastprod`: `admin@fastprod.local` (`ADMIN`) and
-`user@fastprod.local`.
+- **Identity provider**: Keycloak (realm `fastprod`) owns every page that touches a credential: sign-up, sign-in, email
+  verification, password reset, two-factor authentication and acceptance of the terms of use. The application never sees
+  a password.
+- **Pattern**: BFF. The Vaadin front-end signs users in with the authorization code flow and PKCE and keeps the tokens
+  in its server-side session; the browser holds only the `FASTPROD_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure`
+  in production), and Vaadin protects every request against CSRF.
+- **Session store**: the front-end's memory (Vaadin keeps the UI state on the server anyway), so a restart signs users
+  out.
+- **JWT**: the front-end calls the back-end with the Keycloak access token. The back-end is a stateless OAuth2 resource
+  server: it verifies the token's signature (Keycloak's JWKS), issuer, expiry and audience (`fastprod-api`) and takes
+  the roles (`ADMIN`, `MANAGER`, `EMPLOYEE`, `USER`) from it.
+- **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
+  old one, and concurrent requests of one session share a single refresh. Signing out revokes the refresh token at
+  Keycloak.
+- **Accounts**: the back-end creates the local account in PostgreSQL on the first request and mirrors names and roles
+  from the token. Administrators create employees through the Keycloak Admin API with a temporary password.
 
 ### Core back-end:
 
