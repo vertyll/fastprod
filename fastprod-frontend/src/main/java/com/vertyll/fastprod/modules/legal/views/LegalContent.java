@@ -5,9 +5,13 @@ import java.util.regex.Pattern;
 import com.vertyll.fastprod.shared.i18n.I18n;
 
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
@@ -21,6 +25,10 @@ final class LegalContent {
         layout.setMaxWidth("800px");
         layout.setPadding(true);
         layout.getStyle().set("margin", "0 auto");
+        Button back = new Button(I18n.t("common.back"), VaadinIcon.ARROW_LEFT.create());
+        back.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        back.addClickListener(_ -> UI.getCurrent().getPage().getHistory().back());
+        layout.add(back);
         H2 title = new H2(title(document));
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
         layout.add(title);
