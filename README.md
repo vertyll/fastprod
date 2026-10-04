@@ -58,7 +58,8 @@ Production management application.
   server: it verifies the token's signature (Keycloak's JWKS), issuer, expiry and audience (`fastprod-api`) and takes
   the roles (`ADMIN`, `MANAGER`, `EMPLOYEE`, `USER`) from it.
 - **State**: the back-end is stateless: every request is authorized by the JWT alone, so any instance can serve it. The
-  front-end is not: Vaadin keeps the UI and the session in its own memory.
+  front-end is not, by Vaadin's design: it keeps the whole UI state together with the session in its own memory. A
+  restart sends the user through Keycloak again, which signs them straight back in while the Keycloak session lasts.
 - **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
   old one, and concurrent requests of one session share a single refresh. Signing out revokes the refresh token at
   Keycloak.
