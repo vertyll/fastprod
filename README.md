@@ -53,11 +53,12 @@ Production management application.
 - **Pattern**: BFF. The Vaadin front-end signs users in with the authorization code flow and PKCE and keeps the tokens
   in its server-side session; the browser holds only the `FASTPROD_SESSION` cookie (`HttpOnly`, `SameSite=Lax`, `Secure`
   in production), and Vaadin protects every request against CSRF.
-- **Session store**: the front-end's memory (Vaadin keeps the UI state on the server anyway), so a restart signs users
-  out.
+- **Session store**: the front-end's memory (Vaadin keeps the UI state on the server anyway).
 - **JWT**: the front-end calls the back-end with the Keycloak access token. The back-end is a stateless OAuth2 resource
   server: it verifies the token's signature (Keycloak's JWKS), issuer, expiry and audience (`fastprod-api`) and takes
   the roles (`ADMIN`, `MANAGER`, `EMPLOYEE`, `USER`) from it.
+- **State**: the back-end is stateless: every request is authorized by the JWT alone, so any instance can serve it. The
+  front-end is not: Vaadin keeps the UI and the session in its own memory.
 - **Token lifecycle**: access tokens live five minutes; every refresh returns a new refresh token and invalidates the
   old one, and concurrent requests of one session share a single refresh. Signing out revokes the refresh token at
   Keycloak.
