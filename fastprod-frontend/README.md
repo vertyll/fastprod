@@ -25,6 +25,11 @@ Every label and every error is a key of the back-end's catalog, rendered with `I
 call, `I18n.error(exception)` ([Errors and translations](../docs/architecture.md#errors-and-translations)). The
 language is picked in the application and kept in the session.
 
+## Mechanisms
+
+- [Token refresh](docs/mechanisms/token-refresh.md) – How the session keeps a valid access token without signing the
+  user out when requests race.
+
 ## Running it
 
 Start the infrastructure and the back-end first ([Development Setup](../docs/development-setup.md)), then:

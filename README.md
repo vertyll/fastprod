@@ -51,7 +51,7 @@ Production management application.
 - **Pattern**: BFF; the Vaadin front-end keeps the tokens, the browser holds only a session cookie.
 - **JWT**: the back-end is a stateless resource server; roles come from the token.
 - **Accounts**: mirrored into PostgreSQL; employees are created by an admin through Keycloak.
-- **Details**: [Authentication](./docs/authentication.md).
+- **Details**: [Authentication](docs/authentication.md).
 
 ### Core back-end:
 
@@ -85,13 +85,9 @@ Production management application.
 
 ## Documentation
 
-- [Glossary](./GLOSSARY.md) – every term the docs use, and where it is explained.
-- [Standards](./STANDARDS.md) – the RFCs and specifications the code implements or depends on.
-- [Development Setup](./docs/development-setup.md) – the infrastructure and starting both applications.
-- [Architecture](./docs/architecture.md) – the two applications, and the errors and translations they share.
-- [Authentication](./docs/authentication.md) – sign-in, back-end calls, the session and refreshing.
-- [Back-end](./fastprod-backend/README.md) – modules, accounts and employees, translations, running and production.
-- [Front-end](./fastprod-frontend/README.md) – layout, routes, text, running and production.
+- [Contents](CONTENTS.md) – every document in the repository, the module it belongs to, and what it covers.
+- [Glossary](GLOSSARY.md) – every term the docs use, and where it is explained.
+- [Standards](STANDARDS.md) – the RFCs and specifications the code implements or depends on.
 
 ## Preview Screenshots
 
