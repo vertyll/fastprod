@@ -7,6 +7,27 @@ session cookie.
 
 ## Signing in
 
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant F as Front-end (Vaadin)
+    participant K as Keycloak
+    participant A as Back-end
+
+    B->>F: open a protected view
+    F-->>B: 302 to Keycloak, with state and the PKCE challenge
+    B->>K: sign in on Keycloak's page
+    K-->>B: 302 to /login/oauth2/code/keycloak?code&state
+    B->>F: GET /login/oauth2/code/keycloak?code&state
+    F->>K: code + client secret + PKCE verifier
+    K-->>F: access, refresh and ID token
+    Note over F: tokens kept in the session, in memory
+    F-->>B: the view, FASTPROD_SESSION cookie
+    B->>F: UI event + cookie
+    F->>A: REST call + Bearer access token
+    A-->>F: data, or a problem document
+```
+
 1. An anonymous user who opens a protected view, or chooses to sign in, goes to `/oauth2/authorization/keycloak`.
    `LocalizedAuthorizationRequestResolver` builds the authorization request with PKCE, passes the language picked in the
    application (`pl` unless `en` was chosen), and adds `prompt=create` for the sign-up button.
