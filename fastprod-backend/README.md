@@ -8,16 +8,16 @@ sends ([Authentication](../docs/authentication.md)) and answers errors as transl
 
 A Gradle multi-module build; `app` assembles the others into one Spring Boot application.
 
-| Module        | Holds                                                       |
-|---------------|-------------------------------------------------------------|
-| `app`         | the application class, configuration and Flyway migrations  |
-| `security`    | the resource server, CORS and auditing                      |
-| `user`        | the local account and the Keycloak Admin API client         |
-| `employee`    | employee management                                         |
-| `role`        | the roles the application knows                             |
-| `translation` | the message catalogue, its defaults and the admin overrides |
-| `file`        | file storage on the local disk                              |
-| `common`      | the base entity, error handling and shared DTOs             |
+| Module        | Holds                                                      |
+|---------------|------------------------------------------------------------|
+| `app`         | the application class, configuration and Flyway migrations |
+| `security`    | the resource server, CORS and auditing                     |
+| `user`        | the local account and the Keycloak Admin API client        |
+| `employee`    | employee management                                        |
+| `role`        | the roles the application knows                            |
+| `translation` | the message catalog, its defaults and the admin overrides  |
+| `file`        | file storage on the local disk                             |
+| `common`      | the base entity, error handling and shared DTOs            |
 
 ## API
 
@@ -38,7 +38,7 @@ account and deactivates the local one; nothing is erased.
 
 ## Translations
 
-The catalogue ships in `modules/translation/src/main/resources/i18n`. At startup the stored catalogue is brought in
+The catalog ships in `modules/translation/src/main/resources/i18n`. At startup the stored catalog is brought in
 line with those files: new keys are added, changed defaults adopted and keys the code no longer uses dropped. An admin
 override survives a new default until it is reset, and must parse as ICU MessageFormat using only the placeholders of
 its default.

@@ -11,7 +11,7 @@ A Vaadin Flow application: the UI is rendered on the server, which also holds th
 | `modules/<feature>/service`, `dto` | the calls to the back-end and what they exchange             |
 | `shared/service`                   | `BaseHttpService`: HTTP, the access token, problem documents |
 | `shared/security`                  | sign-in, roles and the access token for back-end calls       |
-| `shared/i18n`                      | the catalogue from the back-end and ICU formatting           |
+| `shared/i18n`                      | the catalog from the back-end and ICU formatting             |
 | `shared/components`, `base/ui`     | shared components and the main layout                        |
 
 ## Access
@@ -21,7 +21,7 @@ before the view is built.
 
 ## Text
 
-Every label and every error is a key of the back-end's catalogue, rendered with `I18n.t(key, args)` and, for a failed
+Every label and every error is a key of the back-end's catalog, rendered with `I18n.t(key, args)` and, for a failed
 call, `I18n.error(exception)` ([Errors and translations](../docs/architecture.md#errors-and-translations)). The
 language is picked in the application and kept in the session.
 
