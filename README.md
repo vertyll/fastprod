@@ -85,7 +85,8 @@ Production management application.
 
 ## Documentation
 
-- [Glossary](./GLOSSARY.md) – the terms, the standards they come from, and where each is explained.
+- [Glossary](./GLOSSARY.md) – every term the docs use, and where it is explained.
+- [Standards](./STANDARDS.md) – the RFCs and specifications the code implements or depends on.
 - [Development Setup](./docs/development-setup.md) – the infrastructure and starting both applications.
 - [Architecture](./docs/architecture.md) – the two applications, and the errors and translations they share.
 - [Authentication](./docs/authentication.md) – sign-in, back-end calls, the session and refreshing.
