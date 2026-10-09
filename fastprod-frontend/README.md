@@ -14,15 +14,7 @@ A Vaadin Flow application: the UI is rendered on the server, which also holds th
 | `shared/i18n`                      | the catalogue from the back-end and ICU formatting           |
 | `shared/components`, `base/ui`     | shared components and the main layout                        |
 
-## Routes
-
-| Route                                  | Access             |
-|----------------------------------------|--------------------|
-| `/`, `/terms`, `/privacy`              | anyone             |
-| `/profile`                             | signed in          |
-| `/employees`, `/employees/details/:id` | `ADMIN`, `MANAGER` |
-| `/employees/form/:id?`                 | `ADMIN`            |
-| `/admin/translations`                  | `ADMIN`            |
+## Access
 
 A view states its access with `@AnonymousAllowed`, `@PermitAll` or `@RolesAllowed`; Vaadin refuses the navigation
 before the view is built.
