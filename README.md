@@ -50,7 +50,7 @@ Production management application.
 - **Identity provider**: Keycloak (realm `fastprod`); the application never sees a password.
 - **Pattern**: BFF; the Vaadin front-end keeps the tokens, the browser holds only a session cookie.
 - **JWT**: the back-end is a stateless resource server; roles come from the token.
-- **Accounts**: created in PostgreSQL on the first request; employees are added through Keycloak.
+- **Accounts**: mirrored into PostgreSQL; employees are created by an admin through Keycloak.
 - **Details**: [Authentication](./docs/authentication.md).
 
 ### Core back-end:
@@ -82,6 +82,14 @@ Production management application.
 - NullAway for null-safety checks.
 - Error Prone for static code analysis.
 - Spotless for code formatting.
+
+## Documentation
+
+- [Development Setup](./docs/development-setup.md) – the infrastructure and starting both applications.
+- [Architecture](./docs/architecture.md) – the two applications, and the errors and translations they share.
+- [Authentication](./docs/authentication.md) – sign-in, back-end calls, the session and refreshing.
+- [Back-end](./fastprod-backend/README.md) – modules, accounts and employees, translations, running and production.
+- [Front-end](./fastprod-frontend/README.md) – layout, routes, text, running and production.
 
 ## Preview Screenshots
 
