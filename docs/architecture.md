@@ -2,6 +2,21 @@
 
 ## Two applications
 
+```mermaid
+flowchart LR
+    browser([Browser])
+    front["fastprod-frontend<br/>Vaadin, session in memory"]
+    back["fastprod-backend<br/>REST API, stateless"]
+    kc[Keycloak]
+    db[(PostgreSQL)]
+
+    browser -- "FASTPROD_SESSION cookie" --> front
+    front -- "Bearer access token" --> back
+    front -- "sign-in, refresh" --> kc
+    back -- "token keys, Admin API for employees" --> kc
+    back --> db
+```
+
 | Application                                           | What it is                                                                        |
 |-------------------------------------------------------|-----------------------------------------------------------------------------------|
 | [`fastprod-frontend`](../fastprod-frontend/README.md) | a Vaadin Flow application: the UI, rendered on the server, and the user's session |
