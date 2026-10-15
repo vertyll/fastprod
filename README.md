@@ -7,15 +7,17 @@
     <img alt="" src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
 </p>
 
+# FastProd
+
 ## Project Assumptions
 
 Production management application.
 
-## Link: https://fastprod.vertyll.dev
+## Link: <https://fastprod.vertyll.dev>
 
 ## Technology Stack
 
-### Back-end:
+### Back-end
 
 - Spring Boot.
 - Java.
@@ -34,7 +36,7 @@ Production management application.
 - Flyway.
 - OpenAPI (Swagger).
 
-### Front-end:
+### Front-end
 
 - Vaadin (Java-only – Flow).
 - Spring Boot.
@@ -45,7 +47,7 @@ Production management application.
 - Lombok.
 - Spring Web.
 
-### Authentication:
+### Authentication
 
 - **Identity provider**: Keycloak (realm `fastprod`); the application never sees a password.
 - **Pattern**: BFF; the Vaadin front-end keeps the tokens, the browser holds only a session cookie.
@@ -53,7 +55,7 @@ Production management application.
 - **Accounts**: mirrored into PostgreSQL; employees are created by an admin through Keycloak.
 - **Details**: [Authentication](docs/authentication.md).
 
-### Core back-end:
+### Core back-end
 
 - Gradle multi-module build system.
 - The application has an exception handling mechanism.
@@ -65,7 +67,7 @@ Production management application.
 - The application has Flyway database migration mechanism.
 - And many other features that can be found in the application code.
 
-### Core front-end:
+### Core front-end
 
 - Gradle build system.
 - Vaadin.
@@ -73,7 +75,7 @@ Production management application.
 - The application has a dedicated configuration file.
 - And many other features that can be found in the application code.
 
-### Other:
+### Other
 
 - Docker for development environment.
 - PMD for static code analysis.
