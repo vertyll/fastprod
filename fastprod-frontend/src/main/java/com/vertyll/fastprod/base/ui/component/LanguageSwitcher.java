@@ -19,10 +19,10 @@ public final class LanguageSwitcher extends Select<Locale> {
     public LanguageSwitcher() {
         super();
         setItems(BackendI18NProvider.POLISH, BackendI18NProvider.ENGLISH);
-        setItemLabelGenerator(locale -> I18n.t("language." + locale.getLanguage()));
+        setItemLabelGenerator(locale -> locale.getLanguage().toUpperCase(Locale.ROOT));
         setValue(matching(I18n.locale()));
         setAriaLabel(I18n.t("language.label"));
-        setWidth("8rem");
+        setWidth("5rem");
         addValueChangeListener(event -> {
             if (event.isFromClient()) {
                 VaadinSession session = VaadinSession.getCurrent();

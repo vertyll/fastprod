@@ -33,6 +33,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @Route(value = "admin/translations", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
@@ -59,7 +60,8 @@ public final class TranslationsView extends VerticalLayout implements HasDynamic
         search.setPlaceholder(I18n.t("translations.search"));
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
         search.setValueChangeMode(ValueChangeMode.LAZY);
-        search.setWidth("24rem");
+        search.setWidthFull();
+        search.setMaxWidth("24rem");
         search.addValueChangeListener(_ -> applyFilter());
 
         grid.addColumn(TranslationRow::key).setHeader(I18n.t("translations.key")).setAutoWidth(true);
@@ -68,12 +70,15 @@ public final class TranslationsView extends VerticalLayout implements HasDynamic
         grid.addColumn(row -> row.customized() ? "✓" : "")
             .setHeader(I18n.t("translations.customized"))
             .setAutoWidth(true);
+        grid.addComponentColumn(this::editButton).setAutoWidth(true).setFlexGrow(0);
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.addItemDoubleClickListener(event -> edit(event.getItem()));
         grid.setSizeFull();
 
         HorizontalLayout toolbar = new HorizontalLayout(new H2(I18n.t("translations.title")), search, count);
         toolbar.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
+        toolbar.setWidthFull();
+        toolbar.addClassName(LumoUtility.FlexWrap.WRAP);
 
         setSizeFull();
         add(toolbar, grid);
@@ -106,10 +111,19 @@ public final class TranslationsView extends VerticalLayout implements HasDynamic
                 || row.messages().en().toLowerCase(Locale.ROOT).contains(needle);
     }
 
+    /** Opens the editor with one tap, as a double click is not something a touch screen has. */
+    private Button editButton(TranslationRow row) {
+        Button button = new Button(VaadinIcon.EDIT.create(), _ -> edit(row));
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ICON);
+        button.setAriaLabel(I18n.t("translations.edit.title", Map.of("key", row.key())));
+        return button;
+    }
+
     private void edit(TranslationRow row) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle(I18n.t("translations.edit.title", Map.of("key", row.key())));
         dialog.setWidth("40rem");
+        dialog.setMaxWidth("100%");
 
         TextArea polish = textArea(I18n.t("translations.polish"), row.messages().pl(), row.defaults().pl());
         TextArea english = textArea(I18n.t("translations.english"), row.messages().en(), row.defaults().en());

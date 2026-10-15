@@ -11,6 +11,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -30,11 +31,15 @@ final class LegalContent {
         back.addClickListener(_ -> UI.getCurrent().getPage().getHistory().back());
         layout.add(back);
         H2 title = new H2(title(document));
-        title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
-        layout.add(title);
-        PARAGRAPHS.splitAsStream(I18n.t("legal." + document + ".content"))
-            .map(LegalContent::paragraph)
-            .forEach(layout::add);
+        title.addClassNames(LumoUtility.Margin.Bottom.NONE);
+        Span modified = new Span(I18n.t("legal.lastModified") + ": " + I18n.t(key(document, "lastModified")));
+        modified.addClassNames(
+            LumoUtility.FontSize.SMALL,
+            LumoUtility.TextColor.SECONDARY,
+            LumoUtility.Margin.Bottom.MEDIUM
+        );
+        layout.add(title, modified);
+        PARAGRAPHS.splitAsStream(I18n.t(key(document, "content"))).map(LegalContent::paragraph).forEach(layout::add);
     }
 
     static Paragraph paragraph(String text) {
@@ -91,6 +96,10 @@ final class LegalContent {
     }
 
     static String title(String document) {
-        return I18n.t("legal." + document + ".title");
+        return I18n.t(key(document, "title"));
+    }
+
+    private static String key(String document, String part) {
+        return "legal." + document + "." + part;
     }
 }
