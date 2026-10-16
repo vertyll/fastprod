@@ -52,7 +52,8 @@ final class FilterControls {
             textField.setValue(value != null ? String.valueOf(value) : "");
         } else if (component instanceof Select<?> select) {
             // The value was read from this select, so it is of its item type.
-            @SuppressWarnings("unchecked") Select<Object> typed = (Select<Object>) select;
+            @SuppressWarnings("unchecked")
+            Select<Object> typed = (Select<Object>) select;
             if (value != null) {
                 typed.setValue(value);
             } else if (emptyToken != null) {
@@ -62,8 +63,8 @@ final class FilterControls {
             }
         } else if (component instanceof MultiSelectComboBox<?> multiSelect) {
             // The values were read from this combo box, so they are of its item type.
-            @SuppressWarnings("unchecked") MultiSelectComboBox<Object> typed =
-                    (MultiSelectComboBox<Object>) multiSelect;
+            @SuppressWarnings("unchecked")
+            MultiSelectComboBox<Object> typed = (MultiSelectComboBox<Object>) multiSelect;
             typed.clear();
             if (value instanceof Collection<?> collection) {
                 typed.setValue(new HashSet<>(collection));

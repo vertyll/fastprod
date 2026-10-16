@@ -28,8 +28,8 @@ public class TranslationClient extends BaseHttpService {
 
     public Map<String, String> messages(String language) {
         // The catalog of a language is a flat JSON object of strings.
-        @SuppressWarnings("unchecked") Map<String, String> messages =
-                get(PUBLIC_ENDPOINT + encode(language), Map.class);
+        @SuppressWarnings("unchecked")
+        Map<String, String> messages = get(PUBLIC_ENDPOINT + encode(language), Map.class);
         return messages == null ? Map.of() : messages;
     }
 

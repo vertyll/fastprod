@@ -41,8 +41,8 @@ final class FilterChips {
             return Optional.empty();
         }
         // The generator was made for this select's items, and the value is one of them.
-        @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =
-                (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
+        @SuppressWarnings("unchecked")
+        ItemLabelGenerator<Object> generator = (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
         String text = generator.apply(value);
         return Optional.of(new Chip(select.getLabel(), text));
     }
@@ -53,8 +53,8 @@ final class FilterChips {
             return Optional.empty();
         }
         // The generator was made for this combo box's items, and the selected ones are among them.
-        @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =
-                (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
+        @SuppressWarnings("unchecked")
+        ItemLabelGenerator<Object> generator = (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
         List<String> labels = selected.stream().map(generator).toList();
         return Optional.of(new Chip(multiSelect.getLabel(), String.join(", ", labels)));
     }
