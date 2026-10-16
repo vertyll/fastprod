@@ -113,6 +113,7 @@ class GlobalExceptionHandlerTest {
         assertEquals("errors.common.unexpected", problem.getDetail());
     }
 
+    // The handler stores the field errors under this property as a Map<String, List<String>>.
     @SuppressWarnings("unchecked")
     private static Map<String, List<String>> errorsOf(ProblemDetail problem) {
         return (Map<String, List<String>>) requireNonNull(

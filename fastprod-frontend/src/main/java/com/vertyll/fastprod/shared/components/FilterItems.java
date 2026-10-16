@@ -22,6 +22,7 @@ final class FilterItems {
         return cfg.staticItems().map(FilterItems::normalizeItems).orElseGet(List::of);
     }
 
+    // The generator is applied only to the items of the same config, which are of its type.
     @SuppressWarnings("unchecked")
     static ItemLabelGenerator<Object> labelGeneratorOf(FilterFieldConfig<?> cfg) {
         return cfg.itemLabelGenerator()

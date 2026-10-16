@@ -40,6 +40,7 @@ final class FilterChips {
         if (value == null || (emptyToken != null && Objects.equals(value, emptyToken))) {
             return Optional.empty();
         }
+        // The generator was made for this select's items, and the value is one of them.
         @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =
                 (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
         String text = generator.apply(value);
@@ -51,6 +52,7 @@ final class FilterChips {
         if (selected.isEmpty()) {
             return Optional.empty();
         }
+        // The generator was made for this combo box's items, and the selected ones are among them.
         @SuppressWarnings("unchecked") ItemLabelGenerator<Object> generator =
                 (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
         List<String> labels = selected.stream().map(generator).toList();
