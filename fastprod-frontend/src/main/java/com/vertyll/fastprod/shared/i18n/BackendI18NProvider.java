@@ -21,7 +21,7 @@ public class BackendI18NProvider implements I18NProvider {
     public static final Locale POLISH = Locale.forLanguageTag("pl");
     public static final Locale ENGLISH = Locale.ENGLISH;
 
-    private static final List<Locale> LOCALES = List.of(POLISH, ENGLISH);
+    static final List<Locale> LOCALES = List.of(POLISH, ENGLISH);
 
     private final transient TranslationCatalogues catalogues;
 

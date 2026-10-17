@@ -20,7 +20,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Keycloak's account API, called with the signed-in person's own access token: it answers about that person alone, so
@@ -32,8 +34,11 @@ public class KeycloakAccount {
 
     private static final String OTP_CREDENTIAL = "otp";
 
+    private static final String LOCALE_ATTRIBUTE = "locale";
+
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
+    private final String accountUrl;
     private final String credentialsUrl;
     private final AuthTokenProvider tokens;
     private final ObjectMapper objectMapper;
@@ -41,11 +46,12 @@ public class KeycloakAccount {
 
     @Autowired
     public KeycloakAccount(KeycloakProperties keycloak, AuthTokenProvider tokens, ObjectMapper objectMapper) {
-        this(keycloak.backchannelAccountEndpoint("credentials?type=" + OTP_CREDENTIAL), tokens, objectMapper);
+        this(keycloak.backchannelAccountEndpoint(""), tokens, objectMapper);
     }
 
-    KeycloakAccount(String credentialsUrl, AuthTokenProvider tokens, ObjectMapper objectMapper) {
-        this.credentialsUrl = credentialsUrl;
+    KeycloakAccount(String accountUrl, AuthTokenProvider tokens, ObjectMapper objectMapper) {
+        this.accountUrl = accountUrl;
+        this.credentialsUrl = accountUrl + "credentials?type=" + OTP_CREDENTIAL;
         this.tokens = tokens;
         this.objectMapper = objectMapper;
     }
@@ -88,6 +94,56 @@ public class KeycloakAccount {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return Optional.empty();
+        }
+    }
+
+    /**
+     * Stores the language on the signed-in person's account, which Keycloak's pages show a signed-in person in, over the
+     * language the application asks for. The account is read and written back whole, so nothing else on it changes; a
+     * failure leaves Keycloak's pages in the language they had, and is only logged.
+     */
+    public void keepLanguage(String language) {
+        tokens.getAuthorizationHeader().ifPresent(authorization -> keepLanguage(authorization, language));
+    }
+
+    void keepLanguage(String authorization, String language) {
+        try {
+            HttpResponse<String> read = httpClient.send(
+                HttpRequest.newBuilder(URI.create(accountUrl))
+                    .timeout(TIMEOUT)
+                    .header("Authorization", authorization)
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build(),
+                HttpResponse.BodyHandlers.ofString()
+            );
+            if (read.statusCode() != 200 || !(objectMapper.readTree(read.body()) instanceof ObjectNode account)) {
+                log.warn("Keycloak's account API answered {}", read.statusCode());
+                return;
+            }
+            ObjectNode attributes =
+                    account.get("attributes") instanceof ObjectNode stored ? stored : account.putObject("attributes");
+            JsonNode stored = attributes.get(LOCALE_ATTRIBUTE);
+            if (stored != null && stored.size() == 1 && language.equals(stored.get(0).asString())) {
+                return;
+            }
+            attributes.putArray(LOCALE_ATTRIBUTE).add(language);
+            HttpResponse<String> written = httpClient.send(
+                HttpRequest.newBuilder(URI.create(accountUrl))
+                    .timeout(TIMEOUT)
+                    .header("Authorization", authorization)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(account)))
+                    .build(),
+                HttpResponse.BodyHandlers.ofString()
+            );
+            if (written.statusCode() >= 300) {
+                log.warn("Keycloak did not store the account's language: {}", written.statusCode());
+            }
+        } catch (IOException | JacksonException e) {
+            log.warn("Could not store the account's language in Keycloak: {}", e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 

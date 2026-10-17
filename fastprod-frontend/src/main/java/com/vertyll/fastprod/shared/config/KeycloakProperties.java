@@ -16,6 +16,11 @@ public record KeycloakProperties(
     @NotBlank String appUrl
 ) {
 
+    /** The realm's name, the last segment of {@code realmUrl}. */
+    public String realm() {
+        return realmUrl.substring(realmUrl.lastIndexOf('/') + 1);
+    }
+
     public String endpoint(String path) {
         return realmUrl + "/protocol/openid-connect/" + path;
     }

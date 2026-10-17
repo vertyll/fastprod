@@ -85,14 +85,14 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
 
         Button passwordBtn = new Button(I18n.t("account.password"), VaadinIcon.KEY.create());
         passwordBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        passwordBtn.addClickListener(_ -> KeycloakPages.start(AccountAction.UPDATE_PASSWORD));
+        passwordBtn.addClickListener(_ -> startAccountAction(() -> KeycloakPages.start(AccountAction.UPDATE_PASSWORD)));
 
         Button editBtn = new Button(I18n.t("profile.edit"), VaadinIcon.EDIT.create());
         editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         editBtn.addClickListener(_ -> showEditForm());
 
         HorizontalLayout actions = new HorizontalLayout(passwordBtn);
-        keycloakAccount.secondFactor().map(ProfileView::secondFactorButton).ifPresent(actions::add);
+        keycloakAccount.secondFactor().map(this::secondFactorButton).ifPresent(actions::add);
         actions.add(editBtn);
         actions.setSpacing(true);
         actions.getStyle().set("flex-wrap", "wrap");
@@ -107,8 +107,17 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
         add(header);
     }
 
+    /**
+     * Keycloak shows a signed-in person their account's language, so the application's language is stored there before
+     * an account action sends them to Keycloak's pages.
+     */
+    private void startAccountAction(Runnable sendToKeycloak) {
+        keycloakAccount.keepLanguage(I18n.locale().getLanguage());
+        sendToKeycloak.run();
+    }
+
     /** Turns the second factor on when there is none, and off, after Keycloak asks to confirm, when there is one. */
-    private static Button secondFactorButton(SecondFactor factor) {
+    private Button secondFactorButton(SecondFactor factor) {
         String credentialId = factor.credentialId();
         Button button = credentialId == null ? new Button(I18n.t("account.twoFactorOn"), VaadinIcon.LOCK.create())
                 : new Button(I18n.t("account.twoFactorOff"), VaadinIcon.UNLOCK.create());

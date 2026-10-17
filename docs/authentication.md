@@ -74,16 +74,24 @@ session and returns to the application's home page.
 Keycloak draws the sign-in, sign-up, password reset and second-factor pages, and the mails it sends, with the theme in
 [`keycloak/themes/fastprod`](../keycloak/themes/fastprod), so they look like the front-end:
 
-| Part                      | Holds                                                                                |
-|---------------------------|--------------------------------------------------------------------------------------|
-| `login/theme.properties`  | extends `keycloak.v2`, whose templates draw every page, and names the legal pages    |
-| `login/template.ftl`      | the page frame: a top bar with the name and the menus, a footer with the legal pages |
-| `login/resources`         | `css/app.css`, the colors, type and card on PatternFly                               |
-| `login/messages`          | the texts of the bar and the footer, in Polish and English                           |
-| `email/html/template.ftl` | the frame of every mail; its texts stay Keycloak's own                               |
+| Part                      | Holds                                                                                              |
+|---------------------------|----------------------------------------------------------------------------------------------------|
+| `login/theme.properties`  | extends `keycloak.v2`, whose templates draw every page, and names the legal pages                  |
+| `login/template.ftl`      | the page frame: a top bar with the name and the menus, a footer with the legal pages               |
+| `login/resources`         | `css/app.css`, the colors, type and card on PatternFly; `js/language.js`, the language handed back |
+| `login/messages`          | the texts of the bar and the footer, in Polish and English                                         |
+| `email/html/template.ftl` | the frame of every mail; its texts stay Keycloak's own                                             |
 
 The pages are light only, as the app is: `darkMode=false` in `theme.properties` turns off Keycloak's dark mode, and the
 theme menu with it.
+
+The language goes both ways. The sign-in page opens in the application's language, sent as `ui_locales`; Keycloak shows
+a signed-in person their account's language instead, so before an account action the profile view stores the
+application's language on the account, with the person's own token, through Keycloak's account API. A language chosen in
+Keycloak's own menu goes back to the application, as the sign-in returns to an address that carries nothing else:
+`language.js` leaves it in the cookie `ui_locale_fastprod`, under the domain Keycloak shares with the application, the
+parent of Keycloak's host (on localhost, every port), and `HtmlLangListener` takes it over into the session's language
+when the page loads after the sign-in, and removes it.
 
 `template.ftl` is a copy of `keycloak.v2`'s own, changed only where it says `Changed from keycloak.v2`. Keycloak builds
 its pages from that template, so after an upgrade of Keycloak the copy is compared with the new release's and brought up
