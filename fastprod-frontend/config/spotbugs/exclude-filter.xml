@@ -42,11 +42,5 @@
     <Match>
         <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
-    <!-- FindSecBugs: this cookie removes the language Keycloak's pages handed back; it is Secure whenever the connection is,
-         and locally, over plain HTTP, it must not be -->
-    <Match>
-        <Class name="com.vertyll.fastprod.shared.i18n.HtmlLangListener"/>
-        <Bug pattern="INSECURE_COOKIE"/>
-    </Match>
 
 </FindBugsFilter>

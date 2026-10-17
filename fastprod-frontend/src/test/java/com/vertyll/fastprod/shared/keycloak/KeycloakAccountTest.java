@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.shared.security;
+package com.vertyll.fastprod.shared.keycloak;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import com.vertyll.fastprod.shared.security.KeycloakAccount.SecondFactor;
+import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 
 import com.sun.net.httpserver.HttpServer;
 

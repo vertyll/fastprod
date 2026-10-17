@@ -12,6 +12,7 @@ A Vaadin Flow application: the UI is rendered on the server, which also holds th
 | `shared/service`                   | `BaseHttpService`: HTTP, the access token, problem documents |
 | `shared/security`                  | sign-in, roles and the access token for back-end calls       |
 | `shared/i18n`                      | the catalog from the back-end and ICU formatting             |
+| `shared/keycloak`                  | Keycloak's pages: account actions, the shared language       |
 | `shared/components`, `base/ui`     | shared components and the main layout                        |
 
 ## Access

@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.shared.security;
+package com.vertyll.fastprod.shared.keycloak;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.vertyll.fastprod.shared.config.KeycloakProperties;
+import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -30,11 +31,15 @@ import tools.jackson.databind.node.ObjectNode;
  */
 @Slf4j
 @Component
-public class KeycloakAccount {
+class KeycloakAccount {
 
     private static final String OTP_CREDENTIAL = "otp";
 
     private static final String LOCALE_ATTRIBUTE = "locale";
+
+    private static final String AUTHORIZATION = "Authorization";
+
+    private static final String JSON = "application/json";
 
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
@@ -45,7 +50,7 @@ public class KeycloakAccount {
     private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(TIMEOUT).build();
 
     @Autowired
-    public KeycloakAccount(KeycloakProperties keycloak, AuthTokenProvider tokens, ObjectMapper objectMapper) {
+    KeycloakAccount(KeycloakProperties keycloak, AuthTokenProvider tokens, ObjectMapper objectMapper) {
         this(keycloak.backchannelAccountEndpoint(""), tokens, objectMapper);
     }
 
@@ -60,15 +65,15 @@ public class KeycloakAccount {
      * The signed-in person's second factor, or empty when Keycloak could not be asked, so the profile offers neither
      * turning it on nor off.
      */
-    public Optional<SecondFactor> secondFactor() {
+    Optional<SecondFactor> secondFactor() {
         return tokens.getAuthorizationHeader().flatMap(this::secondFactor);
     }
 
     Optional<SecondFactor> secondFactor(String authorization) {
         HttpRequest request = HttpRequest.newBuilder(URI.create(credentialsUrl))
             .timeout(TIMEOUT)
-            .header("Authorization", authorization)
-            .header("Accept", "application/json")
+            .header(AUTHORIZATION, authorization)
+            .header("Accept", JSON)
             .GET()
             .build();
         try {
@@ -91,7 +96,7 @@ public class KeycloakAccount {
         } catch (IOException | JacksonException e) {
             log.warn("Could not read the second factor from Keycloak: {}", e.getMessage());
             return Optional.empty();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             return Optional.empty();
         }
@@ -102,7 +107,7 @@ public class KeycloakAccount {
      * language the application asks for. The account is read and written back whole, so nothing else on it changes; a
      * failure leaves Keycloak's pages in the language they had, and is only logged.
      */
-    public void keepLanguage(String language) {
+    void keepLanguage(String language) {
         tokens.getAuthorizationHeader().ifPresent(authorization -> keepLanguage(authorization, language));
     }
 
@@ -111,8 +116,8 @@ public class KeycloakAccount {
             HttpResponse<String> read = httpClient.send(
                 HttpRequest.newBuilder(URI.create(accountUrl))
                     .timeout(TIMEOUT)
-                    .header("Authorization", authorization)
-                    .header("Accept", "application/json")
+                    .header(AUTHORIZATION, authorization)
+                    .header("Accept", JSON)
                     .GET()
                     .build(),
                 HttpResponse.BodyHandlers.ofString()
@@ -131,8 +136,8 @@ public class KeycloakAccount {
             HttpResponse<String> written = httpClient.send(
                 HttpRequest.newBuilder(URI.create(accountUrl))
                     .timeout(TIMEOUT)
-                    .header("Authorization", authorization)
-                    .header("Content-Type", "application/json")
+                    .header(AUTHORIZATION, authorization)
+                    .header("Content-Type", JSON)
                     .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(account)))
                     .build(),
                 HttpResponse.BodyHandlers.ofString()
@@ -142,13 +147,9 @@ public class KeycloakAccount {
             }
         } catch (IOException | JacksonException e) {
             log.warn("Could not store the account's language in Keycloak: {}", e.getMessage());
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    /** The one-time-password credential, by the id Keycloak's {@code delete_credential} action takes; null when none. */
-    public record SecondFactor(@Nullable String credentialId) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

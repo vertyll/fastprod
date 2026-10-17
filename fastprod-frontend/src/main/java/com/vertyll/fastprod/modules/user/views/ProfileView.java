@@ -15,10 +15,8 @@ import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.components.Toast;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
-import com.vertyll.fastprod.shared.security.KeycloakAccount;
-import com.vertyll.fastprod.shared.security.KeycloakAccount.SecondFactor;
-import com.vertyll.fastprod.shared.security.KeycloakPages;
-import com.vertyll.fastprod.shared.security.KeycloakPages.AccountAction;
+import com.vertyll.fastprod.shared.keycloak.KeycloakAccounts;
+import com.vertyll.fastprod.shared.keycloak.SecondFactor;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -46,7 +44,7 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     private static final long serialVersionUID = 1L;
 
     private final transient UserService userService;
-    private final transient KeycloakAccount keycloakAccount;
+    private final KeycloakAccounts keycloakAccounts;
     private final Binder<ProfileUpdateDto> binder;
     private final LoadingSpinner loadingSpinner;
 
@@ -57,10 +55,10 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     private final Div editFormContainer;
     private final Div detailsContainer = new Div();
 
-    public ProfileView(UserService userService, KeycloakAccount keycloakAccount) {
+    public ProfileView(UserService userService, KeycloakAccounts keycloakAccounts) {
         super();
         this.userService = userService;
-        this.keycloakAccount = keycloakAccount;
+        this.keycloakAccounts = keycloakAccounts;
         this.binder = new Binder<>(ProfileUpdateDto.class);
 
         setSizeFull();
@@ -85,14 +83,14 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
 
         Button passwordBtn = new Button(I18n.t("account.password"), VaadinIcon.KEY.create());
         passwordBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        passwordBtn.addClickListener(_ -> startAccountAction(() -> KeycloakPages.start(AccountAction.UPDATE_PASSWORD)));
+        passwordBtn.addClickListener(_ -> keycloakAccounts.changePassword(I18n.locale().getLanguage()));
 
         Button editBtn = new Button(I18n.t("profile.edit"), VaadinIcon.EDIT.create());
         editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         editBtn.addClickListener(_ -> showEditForm());
 
         HorizontalLayout actions = new HorizontalLayout(passwordBtn);
-        keycloakAccount.secondFactor().map(this::secondFactorButton).ifPresent(actions::add);
+        keycloakAccounts.secondFactor().map(this::secondFactorButton).ifPresent(actions::add);
         actions.add(editBtn);
         actions.setSpacing(true);
         actions.getStyle().set("flex-wrap", "wrap");
@@ -107,15 +105,6 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
         add(header);
     }
 
-    /**
-     * Keycloak shows a signed-in person their account's language, so the application's language is stored there before
-     * an account action sends them to Keycloak's pages.
-     */
-    private void startAccountAction(Runnable sendToKeycloak) {
-        keycloakAccount.keepLanguage(I18n.locale().getLanguage());
-        sendToKeycloak.run();
-    }
-
     /** Turns the second factor on when there is none, and off, after Keycloak asks to confirm, when there is one. */
     private Button secondFactorButton(SecondFactor factor) {
         String credentialId = factor.credentialId();
@@ -123,10 +112,11 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
                 : new Button(I18n.t("account.twoFactorOff"), VaadinIcon.UNLOCK.create());
         button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         button.addClickListener(_ -> {
+            String language = I18n.locale().getLanguage();
             if (credentialId == null) {
-                KeycloakPages.start(AccountAction.CONFIGURE_TOTP);
+                keycloakAccounts.turnOnSecondFactor(language);
             } else {
-                KeycloakPages.removeCredential(credentialId);
+                keycloakAccounts.turnOffSecondFactor(credentialId, language);
             }
         });
         return button;

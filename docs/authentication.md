@@ -42,10 +42,11 @@ Vaadin protects every request against CSRF on its own.
 ## Account actions
 
 The profile view changes the password and turns the second factor on and off on Keycloak's own pages, so no password
-and no TOTP secret passes through the application. `KeycloakAccount` reads the caller's OTP credential from Keycloak's
+and no TOTP secret passes through the application. `KeycloakAccounts` reads the caller's OTP credential from Keycloak's
 account API (`/realms/fastprod/account/credentials`) with the caller's own access token, which carries the `account`
 audience and the `manage-account` role every account gets, so the application needs no right to read anyone else's
-credentials; when Keycloak cannot be asked, the view offers neither. `KeycloakPages` sends the signed-in browser to
+credentials; when Keycloak cannot be asked, the view offers neither. It stores the application's language on the
+account, then `KeycloakPages` sends the signed-in browser to
 `/oauth2/authorization/keycloak?kc_action=…`, and `LocalizedAuthorizationRequestResolver` passes `kc_action` on to
 Keycloak when it names one of `KeycloakPages.AccountAction`, `UPDATE_PASSWORD` or `CONFIGURE_TOTP`, or is
 `delete_credential:<id>` with a UUID, and drops any other value. Keycloak shows only that page, asks to confirm a
@@ -86,12 +87,13 @@ The pages are light only, as the app is: `darkMode=false` in `theme.properties` 
 theme menu with it.
 
 The language goes both ways. The sign-in page opens in the application's language, sent as `ui_locales`; Keycloak shows
-a signed-in person their account's language instead, so before an account action the profile view stores the
-application's language on the account, with the person's own token, through Keycloak's account API. A language chosen in
-Keycloak's own menu goes back to the application, as the sign-in returns to an address that carries nothing else:
-`language.js` leaves it in the cookie `ui_locale_fastprod`, under the domain Keycloak shares with the application, the
-parent of Keycloak's host (on localhost, every port), and `HtmlLangListener` takes it over into the session's language
-when the page loads after the sign-in, and removes it.
+a signed-in person their account's language instead, so the application stores a signed-in person's choice there at
+once, through Keycloak's account API with the person's own token, and again before an account action. The language the
+reader last chose, in the application or in Keycloak's own menu, is kept in the cookie `ui_locale_fastprod`, which both
+write, under the domain Keycloak shares with the application, the parent of Keycloak's host (on localhost, every port),
+and for a year: `KeycloakPreferences`, which `HtmlLangListener` and the language switcher use, reads it whenever a
+page loads and writes it when the reader picks a language, and `language.js` writes it on a choice in Keycloak's menu.
+Being a shared record rather than a message, it keeps the two in step however the reader moves between them.
 
 `template.ftl` is a copy of `keycloak.v2`'s own, changed only where it says `Changed from keycloak.v2`. Keycloak builds
 its pages from that template, so after an upgrade of Keycloak the copy is compared with the new release's and brought up
@@ -115,4 +117,6 @@ image holding it in `/themes`, which the Keycloak theme workflow publishes on a 
 | `.../shared/security/KeycloakOidcUserService`               | the roles read from the access token               |
 | `.../shared/security/AuthTokenProvider`                     | the access token for back-end calls, refreshed     |
 | `.../shared/security/SingleFlightRefreshTokenProvider`      | one refresh per refresh token                      |
+| `.../shared/keycloak/KeycloakAccounts`                      | the password and the second factor on Keycloak     |
+| `.../shared/keycloak/KeycloakPreferences`                   | the language shared with Keycloak's pages          |
 | `fastprod-backend/modules/security/.../SecurityConfig`      | the resource server and its token checks           |

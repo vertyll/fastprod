@@ -6,6 +6,7 @@ import com.vertyll.fastprod.base.ui.component.LanguageSwitcher;
 import com.vertyll.fastprod.base.ui.component.UserMenu;
 import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.i18n.I18n;
+import com.vertyll.fastprod.shared.keycloak.KeycloakPreferences;
 import com.vertyll.fastprod.shared.security.KeycloakPages;
 import com.vertyll.fastprod.shared.security.RoleType;
 import com.vertyll.fastprod.shared.security.SecurityService;
@@ -41,11 +42,17 @@ public final class MainLayout extends AppLayout {
 
     private final transient SecurityService securityService;
     private final transient UserService userService;
+    private final KeycloakPreferences keycloakPreferences;
 
-    public MainLayout(SecurityService securityService, UserService userService) {
+    public MainLayout(
+        SecurityService securityService,
+        UserService userService,
+        KeycloakPreferences keycloakPreferences
+    ) {
         super();
         this.securityService = securityService;
         this.userService = userService;
+        this.keycloakPreferences = keycloakPreferences;
 
         if (securityService.isAuthenticated()) {
             createAuthenticatedLayout();
@@ -77,7 +84,8 @@ public final class MainLayout extends AppLayout {
 
         UserMenu userMenu = new UserMenu(userService, securityService);
 
-        HorizontalLayout navbar = new HorizontalLayout(toggle, viewTitle, new LanguageSwitcher(), userMenu);
+        HorizontalLayout navbar =
+                new HorizontalLayout(toggle, viewTitle, new LanguageSwitcher(keycloakPreferences), userMenu);
         navbar.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         navbar.setWidthFull();
         navbar.expand(viewTitle);
@@ -100,7 +108,8 @@ public final class MainLayout extends AppLayout {
         registerButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         registerButton.addClickListener(_ -> KeycloakPages.signUp());
 
-        HorizontalLayout authButtons = new HorizontalLayout(new LanguageSwitcher(), loginButton, registerButton);
+        HorizontalLayout authButtons =
+                new HorizontalLayout(new LanguageSwitcher(keycloakPreferences), loginButton, registerButton);
         authButtons.setSpacing(true);
         authButtons.getStyle().set("flex-shrink", "0");
 
