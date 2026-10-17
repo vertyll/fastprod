@@ -30,6 +30,16 @@ public final class KeycloakPages {
             );
     }
 
+    /** Sends a signed-in person to Keycloak's page removing the credential with this id, after they confirm. */
+    public static void removeCredential(String credentialId) {
+        UI.getCurrent()
+            .getPage()
+            .setLocation(
+                SecurityConfig.LOGIN_PATH + "?" + LocalizedAuthorizationRequestResolver.ACCOUNT_ACTION_PARAMETER + "="
+                        + LocalizedAuthorizationRequestResolver.DELETE_CREDENTIAL + credentialId
+            );
+    }
+
     /** The Keycloak pages a signed-in person may be sent to, by the names Keycloak gives them in {@code kc_action}. */
     public enum AccountAction {
         UPDATE_PASSWORD,

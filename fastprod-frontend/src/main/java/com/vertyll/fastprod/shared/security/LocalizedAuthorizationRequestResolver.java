@@ -2,6 +2,7 @@ package com.vertyll.fastprod.shared.security;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -22,6 +23,12 @@ final class LocalizedAuthorizationRequestResolver implements OAuth2Authorization
     static final String REGISTER_PARAMETER = "register";
 
     static final String ACCOUNT_ACTION_PARAMETER = "kc_action";
+
+    /** Keycloak's action removing one credential, named by its id: {@code delete_credential:<id>}. */
+    static final String DELETE_CREDENTIAL = "delete_credential:";
+
+    private static final Pattern CREDENTIAL_ID =
+            Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     private static final String DEFAULT_LANGUAGE = "pl";
 
@@ -54,19 +61,30 @@ final class LocalizedAuthorizationRequestResolver implements OAuth2Authorization
         }
         boolean register = request.getParameter(REGISTER_PARAMETER) != null;
         String language = language(request);
-        Optional<AccountAction> action = accountAction(request);
+        Optional<String> action = accountAction(request);
         return OAuth2AuthorizationRequest.from(authorization).additionalParameters(parameters -> {
             parameters.put("ui_locales", language);
             if (register) {
                 parameters.put("prompt", "create");
             }
-            action.ifPresent(allowed -> parameters.put(ACCOUNT_ACTION_PARAMETER, allowed.name()));
+            action.ifPresent(allowed -> parameters.put(ACCOUNT_ACTION_PARAMETER, allowed));
         }).build();
     }
 
-    private static Optional<AccountAction> accountAction(HttpServletRequest request) {
+    /**
+     * The action Keycloak may run for a signed-in person: one of {@link AccountAction}, or removing a credential named
+     * by its UUID, which Keycloak asks to confirm and removes only when it is the person's own.
+     */
+    private static Optional<String> accountAction(HttpServletRequest request) {
         String requested = request.getParameter(ACCOUNT_ACTION_PARAMETER);
-        return Arrays.stream(AccountAction.values()).filter(action -> action.name().equals(requested)).findFirst();
+        if (requested == null) {
+            return Optional.empty();
+        }
+        if (requested.startsWith(DELETE_CREDENTIAL)) {
+            return CREDENTIAL_ID.matcher(requested.substring(DELETE_CREDENTIAL.length())).matches()
+                    ? Optional.of(requested) : Optional.empty();
+        }
+        return Arrays.stream(AccountAction.values()).map(AccountAction::name).filter(requested::equals).findFirst();
     }
 
     private static String language(HttpServletRequest request) {

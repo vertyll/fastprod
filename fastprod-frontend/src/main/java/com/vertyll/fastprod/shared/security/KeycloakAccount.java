@@ -1,0 +1,113 @@
+package com.vertyll.fastprod.shared.security;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import org.jspecify.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.vertyll.fastprod.shared.config.KeycloakProperties;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+
+/**
+ * Keycloak's account API, called with the signed-in person's own access token: it answers about that person alone, so
+ * the application needs no right to read anyone else's credentials.
+ */
+@Slf4j
+@Component
+public class KeycloakAccount {
+
+    private static final String OTP_CREDENTIAL = "otp";
+
+    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+
+    private final String credentialsUrl;
+    private final AuthTokenProvider tokens;
+    private final ObjectMapper objectMapper;
+    private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(TIMEOUT).build();
+
+    @Autowired
+    public KeycloakAccount(KeycloakProperties keycloak, AuthTokenProvider tokens, ObjectMapper objectMapper) {
+        this(keycloak.backchannelAccountEndpoint("credentials?type=" + OTP_CREDENTIAL), tokens, objectMapper);
+    }
+
+    KeycloakAccount(String credentialsUrl, AuthTokenProvider tokens, ObjectMapper objectMapper) {
+        this.credentialsUrl = credentialsUrl;
+        this.tokens = tokens;
+        this.objectMapper = objectMapper;
+    }
+
+    /**
+     * The signed-in person's second factor, or empty when Keycloak could not be asked, so the profile offers neither
+     * turning it on nor off.
+     */
+    public Optional<SecondFactor> secondFactor() {
+        return tokens.getAuthorizationHeader().flatMap(this::secondFactor);
+    }
+
+    Optional<SecondFactor> secondFactor(String authorization) {
+        HttpRequest request = HttpRequest.newBuilder(URI.create(credentialsUrl))
+            .timeout(TIMEOUT)
+            .header("Authorization", authorization)
+            .header("Accept", "application/json")
+            .GET()
+            .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                log.warn("Keycloak's account API answered {}", response.statusCode());
+                return Optional.empty();
+            }
+            CredentialType[] types = objectMapper.readValue(response.body(), CredentialType[].class);
+            return Optional.of(
+                new SecondFactor(
+                    Arrays.stream(types)
+                        .filter(type -> OTP_CREDENTIAL.equals(type.type()))
+                        .flatMap(type -> type.credentials().stream())
+                        .map(metadata -> metadata.credential().id())
+                        .findFirst()
+                        .orElse(null)
+                )
+            );
+        } catch (IOException | JacksonException e) {
+            log.warn("Could not read the second factor from Keycloak: {}", e.getMessage());
+            return Optional.empty();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return Optional.empty();
+        }
+    }
+
+    /** The one-time-password credential, by the id Keycloak's {@code delete_credential} action takes; null when none. */
+    public record SecondFactor(@Nullable String credentialId) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    record CredentialType(String type, @Nullable List<CredentialMetadata> userCredentialMetadatas) {
+
+        List<CredentialMetadata> credentials() {
+            return userCredentialMetadatas == null ? List.of() : userCredentialMetadatas;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    record CredentialMetadata(Credential credential) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    record Credential(String id) {
+    }
+}

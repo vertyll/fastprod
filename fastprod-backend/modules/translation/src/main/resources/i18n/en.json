@@ -1,6 +1,7 @@
 {
   "account.password": "Change password",
-  "account.twoFactor": "Two-step verification",
+  "account.twoFactorOff": "Turn off two-step verification",
+  "account.twoFactorOn": "Turn on two-step verification",
   "common.actions": "Actions",
   "common.back": "Back",
   "common.cancel": "Cancel",

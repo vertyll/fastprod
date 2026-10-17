@@ -1,6 +1,7 @@
 {
   "account.password": "Zmień hasło",
-  "account.twoFactor": "Weryfikacja dwuetapowa",
+  "account.twoFactorOff": "Wyłącz weryfikację dwuetapową",
+  "account.twoFactorOn": "Włącz weryfikację dwuetapową",
   "common.actions": "Akcje",
   "common.back": "Wstecz",
   "common.cancel": "Anuluj",

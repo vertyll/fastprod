@@ -21,7 +21,15 @@ public record KeycloakProperties(
     }
 
     public String backchannelEndpoint(String path) {
-        String base = backchannelRealmUrl == null || backchannelRealmUrl.isBlank() ? realmUrl : backchannelRealmUrl;
-        return base + "/protocol/openid-connect/" + path;
+        return backchannelRealm() + "/protocol/openid-connect/" + path;
+    }
+
+    /** A path of Keycloak's account API, which answers about the person whose access token calls it. */
+    public String backchannelAccountEndpoint(String path) {
+        return backchannelRealm() + "/account/" + path;
+    }
+
+    private String backchannelRealm() {
+        return backchannelRealmUrl == null || backchannelRealmUrl.isBlank() ? realmUrl : backchannelRealmUrl;
     }
 }

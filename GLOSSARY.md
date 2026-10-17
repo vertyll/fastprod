@@ -6,7 +6,7 @@ them are in [STANDARDS.md](STANDARDS.md).
 | Term                       | Meaning                                                                                        | Explained in                                                                          |
 |----------------------------|------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
 | Access token               | Short-lived JWT (five minutes) that authorizes one request.                                    | [Authentication: Calls to the back-end](docs/authentication.md#calls-to-the-back-end) |
-| Account action             | A Keycloak page alone, `kc_action`: changing the password or setting up the second factor.     | [Authentication: Account actions](docs/authentication.md#account-actions)             |
+| Account action             | A Keycloak page alone, `kc_action`: the password, or turning the second factor on or off.      | [Authentication: Account actions](docs/authentication.md#account-actions)             |
 | Audience                   | The `aud` claim naming whom a token is for; a token for anyone else is refused.                | [Authentication: Calls to the back-end](docs/authentication.md#calls-to-the-back-end) |
 | Authorization code flow    | Sign-in by redirecting to Keycloak and exchanging the code it returns, on the server.          | [Authentication: Signing in](docs/authentication.md#signing-in)                       |
 | BFF (backend for frontend) | The front-end signs the user in and keeps the tokens; the browser holds only a session cookie. | [Authentication](docs/authentication.md)                                              |

@@ -3,6 +3,8 @@ package com.vertyll.fastprod.shared.security;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -31,8 +33,22 @@ class LocalizedAuthorizationRequestResolverTest {
     }
 
     @Test
-    void anUnknownAccountActionIsDropped() {
-        OAuth2AuthorizationRequest authorization = resolve("delete_account");
+    void removingACredentialNamedByItsIdIsPassedOnToKeycloak() {
+        String action = "delete_credential:90062308-97cf-410a-afe5-06680a07a349";
+
+        assertThat(resolve(action).getAdditionalParameters()).containsEntry("kc_action", action);
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "delete_account",
+            "delete_credential",
+            "delete_credential:otp"
+        }
+    )
+    void anUnknownAccountActionIsDropped(String action) {
+        OAuth2AuthorizationRequest authorization = resolve(action);
 
         assertThat(authorization.getAdditionalParameters()).doesNotContainKey("kc_action");
     }
