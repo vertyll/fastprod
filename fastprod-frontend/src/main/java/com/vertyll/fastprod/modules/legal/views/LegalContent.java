@@ -1,15 +1,19 @@
 package com.vertyll.fastprod.modules.legal.views;
 
-import java.util.regex.Pattern;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import com.vertyll.fastprod.shared.i18n.I18n;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -17,7 +21,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 final class LegalContent {
-    private static final Pattern PARAGRAPHS = Pattern.compile("\n\n");
+    /** The sections of each document: `legal.<document>.h<n>` and `p<n>`, the heading and paragraph of section n. */
+    private static final Map<String, Integer> SECTIONS = Map.of("terms", 5, "privacy", 8);
 
     private LegalContent() {
     }
@@ -39,7 +44,16 @@ final class LegalContent {
             LumoUtility.Margin.Bottom.MEDIUM
         );
         layout.add(title, modified);
-        PARAGRAPHS.splitAsStream(I18n.t(key(document, "content"))).map(LegalContent::paragraph).forEach(layout::add);
+        int sections = Objects.requireNonNull(SECTIONS.get(document), () -> "no sections for " + document);
+        for (int number = 1; number <= sections; number++) {
+            layout.add(section(I18n.t(key(document, "h" + number)), I18n.t(key(document, "p" + number))));
+        }
+    }
+
+    static List<Component> section(String heading, String text) {
+        H3 title = new H3(heading);
+        title.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.Bottom.NONE);
+        return List.of(title, paragraph(text));
     }
 
     static Paragraph paragraph(String text) {
