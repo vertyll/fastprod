@@ -25,5 +25,6 @@ them are in [STANDARDS.md](STANDARDS.md).
 | Route access               | `@AnonymousAllowed`, `@PermitAll` or `@RolesAllowed` on a view, checked before it is built.    | [fastprod — front-end: Access](fastprod-frontend/README.md#access)                    |
 | Service account            | The `fastprod-backend` client acting as itself to manage employees in Keycloak.                | [Accounts and employees](fastprod-backend/docs/mechanisms/accounts-and-employees.md)  |
 | Session                    | `FASTPROD_SESSION`, kept in the front-end's memory for ten hours, holding the tokens.          | [Token refresh](fastprod-frontend/docs/mechanisms/token-refresh.md)                   |
+| Sign-in theme              | The look Keycloak gives its pages and mails, the app's own, as `keycloak/themes/fastprod`.     | [Authentication: The sign-in pages](docs/authentication.md#the-sign-in-pages)         |
 | Sign-out                   | Ends the local session and the Keycloak session.                                               | [Authentication: Signing out](docs/authentication.md#signing-out)                     |
 | Single-flight refresh      | One refresh per refresh token, shared by every request of the session that needs it at once.   | [Token refresh](fastprod-frontend/docs/mechanisms/token-refresh.md)                   |
