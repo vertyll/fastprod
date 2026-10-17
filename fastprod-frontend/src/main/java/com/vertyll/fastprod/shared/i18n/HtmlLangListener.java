@@ -4,14 +4,13 @@ import java.io.Serial;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.vertyll.fastprod.base.ui.component.LanguageSwitcher;
 import com.vertyll.fastprod.shared.keycloak.KeycloakPreferences;
+import com.vertyll.fastprod.shared.security.SessionLanguage;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinServiceInitListener;
-import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
 /** Sets each page's language: the one the reader last chose, here or on Keycloak's pages, else the reader's. */
@@ -36,9 +35,7 @@ public class HtmlLangListener implements VaadinServiceInitListener {
                     .flatMap(HtmlLangListener::supported)
                     .filter(locale -> !locale.equals(ui.getLocale()))
                     .ifPresent(locale -> {
-                        VaadinSession session = ui.getSession();
-                        session.setLocale(locale);
-                        session.getSession().setAttribute(LanguageSwitcher.LANGUAGE_ATTRIBUTE, locale.getLanguage());
+                        SessionLanguage.use(ui.getSession(), locale);
                         ui.setLocale(locale);
                     });
             }

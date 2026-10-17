@@ -15,6 +15,12 @@ A Vaadin Flow application: the UI is rendered on the server, which also holds th
 | `shared/keycloak`                  | Keycloak's pages: account actions, the shared language       |
 | `shared/components`, `base/ui`     | shared components and the main layout                        |
 
+## Package dependencies
+
+`ArchitectureTest` checks them on every build: `shared` knows neither `base` nor the modules, `shared.security` knows
+neither `shared.keycloak` nor the UI, only `shared.keycloak` opens Keycloak's account pages, and the `shared` packages
+have no cycle between them.
+
 ## Access
 
 A view states its access with `@AnonymousAllowed`, `@PermitAll` or `@RolesAllowed`; Vaadin refuses the navigation

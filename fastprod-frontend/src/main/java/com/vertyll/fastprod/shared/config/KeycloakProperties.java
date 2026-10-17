@@ -29,12 +29,8 @@ public record KeycloakProperties(
         return backchannelRealm() + "/protocol/openid-connect/" + path;
     }
 
-    /** A path of Keycloak's account API, which answers about the person whose access token calls it. */
-    public String backchannelAccountEndpoint(String path) {
-        return backchannelRealm() + "/account/" + path;
-    }
-
-    private String backchannelRealm() {
+    /** The realm as the application reaches it from inside the cluster, which may differ from the browser's address. */
+    public String backchannelRealm() {
         return backchannelRealmUrl == null || backchannelRealmUrl.isBlank() ? realmUrl : backchannelRealmUrl;
     }
 }

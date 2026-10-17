@@ -46,9 +46,9 @@ and no TOTP secret passes through the application. `KeycloakAccounts` reads the 
 account API (`/realms/fastprod/account/credentials`) with the caller's own access token, which carries the `account`
 audience and the `manage-account` role every account gets, so the application needs no right to read anyone else's
 credentials; when Keycloak cannot be asked, the view offers neither. It stores the application's language on the
-account, then `KeycloakPages` sends the signed-in browser to
-`/oauth2/authorization/keycloak?kc_action=…`, and `LocalizedAuthorizationRequestResolver` passes `kc_action` on to
-Keycloak when it names one of `KeycloakPages.AccountAction`, `UPDATE_PASSWORD` or `CONFIGURE_TOTP`, or is
+account, then `AccountActionPages` sends the signed-in browser to `/oauth2/authorization/keycloak?kc_action=…`, and
+`LocalizedAuthorizationRequestResolver` passes `kc_action` on to Keycloak when it names one of
+`AccountActionPages.AccountAction`, `UPDATE_PASSWORD` or `CONFIGURE_TOTP`, or is
 `delete_credential:<id>` with a UUID, and drops any other value. Keycloak shows only that page, asks to confirm a
 removal and removes a credential only when it is the person's own, then returns through the usual sign-in.
 
@@ -110,13 +110,15 @@ image holding it in `/themes`, which the Keycloak theme workflow publishes on a 
 
 ## Code
 
-| Class                                                       | Role                                               |
-|-------------------------------------------------------------|----------------------------------------------------|
-| `fastprod-frontend/.../shared/security/SecurityConfig`      | the OAuth2 login, Vaadin's security and the client |
-| `.../shared/security/LocalizedAuthorizationRequestResolver` | PKCE, language and sign-up                         |
-| `.../shared/security/KeycloakOidcUserService`               | the roles read from the access token               |
-| `.../shared/security/AuthTokenProvider`                     | the access token for back-end calls, refreshed     |
-| `.../shared/security/SingleFlightRefreshTokenProvider`      | one refresh per refresh token                      |
-| `.../shared/keycloak/KeycloakAccounts`                      | the password and the second factor on Keycloak     |
-| `.../shared/keycloak/KeycloakPreferences`                   | the language shared with Keycloak's pages          |
-| `fastprod-backend/modules/security/.../SecurityConfig`      | the resource server and its token checks           |
+| Class                                                       | Role                                                        |
+|-------------------------------------------------------------|-------------------------------------------------------------|
+| `fastprod-frontend/.../shared/security/SecurityConfig`      | the OAuth2 login, Vaadin's security and the client          |
+| `.../shared/security/LocalizedAuthorizationRequestResolver` | PKCE, language and sign-up                                  |
+| `.../shared/security/KeycloakOidcUserService`               | the roles read from the access token                        |
+| `.../shared/security/AuthTokenProvider`                     | the access token for back-end calls, refreshed              |
+| `.../shared/security/SingleFlightRefreshTokenProvider`      | one refresh per refresh token                               |
+| `.../shared/keycloak/KeycloakAccounts`                      | the password and the second factor on Keycloak              |
+| `.../shared/keycloak/KeycloakPreferences`                   | the language shared with Keycloak's pages                   |
+| `.../shared/security/AccountActionPages`                    | Keycloak's account pages, opened only by `KeycloakAccounts` |
+| `.../shared/security/SessionLanguage`                       | the session's language, which the sign-in reads             |
+| `fastprod-backend/modules/security/.../SecurityConfig`      | the resource server and its token checks                    |

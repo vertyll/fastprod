@@ -6,6 +6,7 @@ import java.util.Locale;
 import com.vertyll.fastprod.shared.i18n.BackendI18NProvider;
 import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vertyll.fastprod.shared.keycloak.KeycloakPreferences;
+import com.vertyll.fastprod.shared.security.SessionLanguage;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.select.Select;
@@ -14,8 +15,6 @@ import com.vaadin.flow.server.VaadinSession;
 public final class LanguageSwitcher extends Select<Locale> {
     @Serial
     private static final long serialVersionUID = 1L;
-
-    public static final String LANGUAGE_ATTRIBUTE = "fastprod.language";
 
     public LanguageSwitcher(KeycloakPreferences keycloakPreferences) {
         super();
@@ -26,9 +25,7 @@ public final class LanguageSwitcher extends Select<Locale> {
         setWidth("5rem");
         addValueChangeListener(event -> {
             if (event.isFromClient()) {
-                VaadinSession session = VaadinSession.getCurrent();
-                session.setLocale(event.getValue());
-                session.getSession().setAttribute(LANGUAGE_ATTRIBUTE, event.getValue().getLanguage());
+                SessionLanguage.use(VaadinSession.getCurrent(), event.getValue());
                 keycloakPreferences.languageChosen(UI.getCurrent(), event.getValue().getLanguage());
                 UI.getCurrent().getPage().reload();
             }

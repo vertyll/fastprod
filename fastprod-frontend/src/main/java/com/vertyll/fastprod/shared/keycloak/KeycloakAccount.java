@@ -51,7 +51,7 @@ class KeycloakAccount {
 
     @Autowired
     KeycloakAccount(KeycloakProperties keycloak, AuthTokenProvider tokens, ObjectMapper objectMapper) {
-        this(keycloak.backchannelAccountEndpoint(""), tokens, objectMapper);
+        this(keycloak.backchannelRealm() + "/account/", tokens, objectMapper);
     }
 
     KeycloakAccount(String accountUrl, AuthTokenProvider tokens, ObjectMapper objectMapper) {

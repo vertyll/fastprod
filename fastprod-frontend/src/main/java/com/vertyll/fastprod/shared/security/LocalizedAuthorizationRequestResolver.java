@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -15,8 +14,7 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 
-import com.vertyll.fastprod.base.ui.component.LanguageSwitcher;
-import com.vertyll.fastprod.shared.security.KeycloakPages.AccountAction;
+import com.vertyll.fastprod.shared.security.AccountActionPages.AccountAction;
 
 final class LocalizedAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
 
@@ -88,8 +86,6 @@ final class LocalizedAuthorizationRequestResolver implements OAuth2Authorization
     }
 
     private static String language(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Object language = session == null ? null : session.getAttribute(LanguageSwitcher.LANGUAGE_ATTRIBUTE);
-        return "en".equals(language) ? "en" : DEFAULT_LANGUAGE;
+        return SessionLanguage.of(request.getSession(false)).orElse(DEFAULT_LANGUAGE);
     }
 }

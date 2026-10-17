@@ -4,8 +4,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Optional;
 
-import com.vertyll.fastprod.shared.security.KeycloakPages;
-import com.vertyll.fastprod.shared.security.KeycloakPages.AccountAction;
+import com.vertyll.fastprod.shared.security.AccountActionPages;
+import com.vertyll.fastprod.shared.security.AccountActionPages.AccountAction;
 
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
@@ -20,9 +20,11 @@ public class KeycloakAccounts implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final transient KeycloakAccount account;
+    private final AccountActionPages pages;
 
-    KeycloakAccounts(KeycloakAccount account) {
+    KeycloakAccounts(KeycloakAccount account, AccountActionPages pages) {
         this.account = account;
+        this.pages = pages;
     }
 
     /** The person's second factor, or empty when Keycloak could not be asked. */
@@ -32,17 +34,17 @@ public class KeycloakAccounts implements Serializable {
 
     public void changePassword(String language) {
         account.keepLanguage(language);
-        KeycloakPages.start(AccountAction.UPDATE_PASSWORD);
+        pages.start(AccountAction.UPDATE_PASSWORD);
     }
 
     public void turnOnSecondFactor(String language) {
         account.keepLanguage(language);
-        KeycloakPages.start(AccountAction.CONFIGURE_TOTP);
+        pages.start(AccountAction.CONFIGURE_TOTP);
     }
 
     /** Opens Keycloak's page removing the second factor, which asks the person to confirm. */
     public void turnOffSecondFactor(String credentialId, String language) {
         account.keepLanguage(language);
-        KeycloakPages.removeCredential(credentialId);
+        pages.removeCredential(credentialId);
     }
 }

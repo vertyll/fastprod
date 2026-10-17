@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -51,6 +52,41 @@ class LocalizedAuthorizationRequestResolverTest {
         OAuth2AuthorizationRequest authorization = resolve(action);
 
         assertThat(authorization.getAdditionalParameters()).doesNotContainKey("kc_action");
+    }
+
+    @Test
+    void theSignInOpensInTheLanguageTheSessionShows() {
+        MockHttpServletRequest request = signIn();
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("fastprod.language", "en");
+        request.setSession(session);
+
+        assertThat(resolved(request).getAdditionalParameters()).containsEntry("ui_locales", "en");
+    }
+
+    @Test
+    void aSessionWithoutALanguageOpensInTheDefaultOne() {
+        assertThat(resolved(signIn()).getAdditionalParameters()).containsEntry("ui_locales", "pl");
+    }
+
+    @Test
+    void aValueThatIsNoLanguageNeverReachesKeycloak() {
+        MockHttpServletRequest request = signIn();
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("fastprod.language", "en&prompt=none");
+        request.setSession(session);
+
+        assertThat(resolved(request).getAdditionalParameters()).containsEntry("ui_locales", "pl");
+    }
+
+    private static MockHttpServletRequest signIn() {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", SecurityConfig.LOGIN_PATH);
+        request.setServletPath(SecurityConfig.LOGIN_PATH);
+        return request;
+    }
+
+    private OAuth2AuthorizationRequest resolved(MockHttpServletRequest request) {
+        return Objects.requireNonNull(resolver.resolve(request), "a sign-in request resolves");
     }
 
     private OAuth2AuthorizationRequest resolve(String action) {

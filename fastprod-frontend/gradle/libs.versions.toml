@@ -23,6 +23,7 @@ lombok = "1.18.48"
 spotbugs = "6.5.12"
 spotbugs-annotations = "4.10.4"
 findsecbugs = "1.14.0"
+archunit = "1.5.1"
 
 [libraries]
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
@@ -47,6 +48,7 @@ spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", ve
 findsecbugs = { module = "com.h3xstream.findsecbugs:findsecbugs-plugin", version.ref = "findsecbugs" }
 
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 vaadin-bom = { module = "com.vaadin:vaadin-bom", version.ref = "vaadin" }
