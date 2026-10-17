@@ -13,11 +13,11 @@ import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.components.DetailsTableComponent;
 import com.vertyll.fastprod.shared.components.LoadingSpinner;
 import com.vertyll.fastprod.shared.components.Toast;
-import com.vertyll.fastprod.shared.config.KeycloakProperties;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
+import com.vertyll.fastprod.shared.security.KeycloakPages;
+import com.vertyll.fastprod.shared.security.KeycloakPages.AccountAction;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -44,7 +44,6 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     private static final long serialVersionUID = 1L;
 
     private final transient UserService userService;
-    private final String accountUrl;
     private final Binder<ProfileUpdateDto> binder;
     private final LoadingSpinner loadingSpinner;
 
@@ -55,10 +54,9 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
     private final Div editFormContainer;
     private final Div detailsContainer = new Div();
 
-    public ProfileView(UserService userService, KeycloakProperties keycloak) {
+    public ProfileView(UserService userService) {
         super();
         this.userService = userService;
-        this.accountUrl = keycloak.accountUrl();
         this.binder = new Binder<>(ProfileUpdateDto.class);
 
         setSizeFull();
@@ -81,17 +79,19 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
         H2 title = new H2(I18n.t("profile.title"));
         title.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
 
-        Button accountBtn = new Button(I18n.t("account.settings"), VaadinIcon.KEY.create());
-        accountBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        accountBtn.addClickListener(
-            _ -> UI.getCurrent().getPage().setLocation(accountUrl + "?kc_locale=" + I18n.locale().getLanguage())
-        );
+        Button passwordBtn = new Button(I18n.t("account.password"), VaadinIcon.KEY.create());
+        passwordBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+        passwordBtn.addClickListener(_ -> KeycloakPages.start(AccountAction.UPDATE_PASSWORD));
+
+        Button twoFactorBtn = new Button(I18n.t("account.twoFactor"), VaadinIcon.LOCK.create());
+        twoFactorBtn.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+        twoFactorBtn.addClickListener(_ -> KeycloakPages.start(AccountAction.CONFIGURE_TOTP));
 
         Button editBtn = new Button(I18n.t("profile.edit"), VaadinIcon.EDIT.create());
         editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         editBtn.addClickListener(_ -> showEditForm());
 
-        HorizontalLayout actions = new HorizontalLayout(accountBtn, editBtn);
+        HorizontalLayout actions = new HorizontalLayout(passwordBtn, twoFactorBtn, editBtn);
         actions.setSpacing(true);
         actions.getStyle().set("flex-wrap", "wrap");
 

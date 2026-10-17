@@ -24,8 +24,4 @@ public record KeycloakProperties(
         String base = backchannelRealmUrl == null || backchannelRealmUrl.isBlank() ? realmUrl : backchannelRealmUrl;
         return base + "/protocol/openid-connect/" + path;
     }
-
-    public String accountUrl() {
-        return realmUrl + "/account";
-    }
 }

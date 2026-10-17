@@ -1,5 +1,6 @@
 {
-  "account.settings": "Account settings",
+  "account.password": "Change password",
+  "account.twoFactor": "Two-step verification",
   "common.actions": "Actions",
   "common.back": "Back",
   "common.cancel": "Cancel",

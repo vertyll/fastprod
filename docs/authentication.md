@@ -39,6 +39,14 @@ sequenceDiagram
 The browser holds only the `FASTPROD_SESSION` cookie: `HttpOnly`, `SameSite=Lax`, `Secure` outside the local profile.
 Vaadin protects every request against CSRF on its own.
 
+## Account actions
+
+The profile view changes the password and sets up the second factor on Keycloak's own pages, so no password and no
+TOTP secret passes through the application. `KeycloakPages.start` sends the signed-in browser to
+`/oauth2/authorization/keycloak?kc_action=…`, and `LocalizedAuthorizationRequestResolver` passes `kc_action` on to
+Keycloak when it names one of `KeycloakPages.AccountAction`, `UPDATE_PASSWORD` or `CONFIGURE_TOTP`, and drops any other
+value. Keycloak shows only that page, then returns through the usual sign-in.
+
 ## Calls to the back-end
 
 The front-end calls the back-end with `Authorization: Bearer` and the session's access token (`AuthTokenProvider`,

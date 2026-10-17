@@ -1,5 +1,6 @@
 {
-  "account.settings": "Ustawienia konta",
+  "account.password": "Zmień hasło",
+  "account.twoFactor": "Weryfikacja dwuetapowa",
   "common.actions": "Akcje",
   "common.back": "Wstecz",
   "common.cancel": "Anuluj",

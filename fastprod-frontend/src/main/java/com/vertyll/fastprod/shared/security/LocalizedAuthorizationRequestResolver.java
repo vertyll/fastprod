@@ -1,5 +1,8 @@
 package com.vertyll.fastprod.shared.security;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -12,10 +15,13 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 
 import com.vertyll.fastprod.base.ui.component.LanguageSwitcher;
+import com.vertyll.fastprod.shared.security.KeycloakPages.AccountAction;
 
 final class LocalizedAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
 
     static final String REGISTER_PARAMETER = "register";
+
+    static final String ACCOUNT_ACTION_PARAMETER = "kc_action";
 
     private static final String DEFAULT_LANGUAGE = "pl";
 
@@ -48,12 +54,19 @@ final class LocalizedAuthorizationRequestResolver implements OAuth2Authorization
         }
         boolean register = request.getParameter(REGISTER_PARAMETER) != null;
         String language = language(request);
+        Optional<AccountAction> action = accountAction(request);
         return OAuth2AuthorizationRequest.from(authorization).additionalParameters(parameters -> {
             parameters.put("ui_locales", language);
             if (register) {
                 parameters.put("prompt", "create");
             }
+            action.ifPresent(allowed -> parameters.put(ACCOUNT_ACTION_PARAMETER, allowed.name()));
         }).build();
+    }
+
+    private static Optional<AccountAction> accountAction(HttpServletRequest request) {
+        String requested = request.getParameter(ACCOUNT_ACTION_PARAMETER);
+        return Arrays.stream(AccountAction.values()).filter(action -> action.name().equals(requested)).findFirst();
     }
 
     private static String language(HttpServletRequest request) {
