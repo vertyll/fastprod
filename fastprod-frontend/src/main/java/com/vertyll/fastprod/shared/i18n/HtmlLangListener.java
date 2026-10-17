@@ -1,6 +1,7 @@
 package com.vertyll.fastprod.shared.i18n;
 
 import java.io.Serial;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
@@ -31,8 +32,12 @@ public class HtmlLangListener implements VaadinServiceInitListener {
 
     private final String signInLanguageCookie;
 
+    /** The domain Keycloak's pages set the hand-back cookie under, from Keycloak's own host, whatever proxy is between. */
+    private final @Nullable String cookieDomain;
+
     public HtmlLangListener(KeycloakProperties keycloak) {
         this.signInLanguageCookie = "ui_locale_" + keycloak.realm();
+        this.cookieDomain = sharedDomain(URI.create(keycloak.realmUrl()).getHost()).orElse(null);
     }
 
     @Override
@@ -62,7 +67,9 @@ public class HtmlLangListener implements VaadinServiceInitListener {
         removal.setMaxAge(0);
         removal.setHttpOnly(true);
         removal.setSecure(request.isSecure());
-        sharedDomain(serverName(request)).ifPresent(removal::setDomain);
+        if (cookieDomain != null) {
+            removal.setDomain(cookieDomain);
+        }
         response.addCookie(removal);
     }
 
@@ -70,17 +77,8 @@ public class HtmlLangListener implements VaadinServiceInitListener {
         return BackendI18NProvider.LOCALES.stream().filter(locale -> locale.getLanguage().equals(language)).findFirst();
     }
 
-    private static String serverName(VaadinRequest request) {
-        String host = request.getHeader("Host");
-        if (host == null) {
-            return "";
-        }
-        int port = host.indexOf(':');
-        return port < 0 ? host : host.substring(0, port);
-    }
-
     /**
-     * The domain a cookie shared with Keycloak lives under: the parent of this host. {@code localhost} and an IP
+     * The domain a cookie shared with Keycloak lives under: the parent of Keycloak's host. {@code localhost} and an IP
      * address have none, as every port there already shares cookies.
      */
     static Optional<String> sharedDomain(String host) {
