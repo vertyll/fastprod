@@ -227,6 +227,8 @@ subprojects {
                     val failed = result.failedTestCount
                     val skipped = result.skippedTestCount
                     val duration = result.endTime - result.startTime
+                    val failedMark = if (failed > 0) "$ansiRed$crossMark$ansiReset" else ""
+                    val skippedMark = if (skipped > 0) "$ansiYellow$skipMark$ansiReset" else ""
 
                     println()
                     println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
@@ -235,8 +237,8 @@ subprojects {
                     println()
                     println("  Total:   $ansiBold$total$ansiReset tests")
                     println("  Passed:  $ansiGreen$ansiBold$passed$ansiReset $ansiGreen$checkMark$ansiReset")
-                    println("  Failed:  $ansiRed$ansiBold$failed$ansiReset ${if (failed > 0) "$ansiRed$crossMark$ansiReset" else ""}")
-                    println("  Skipped: $ansiYellow$ansiBold$skipped$ansiReset ${if (skipped > 0) "$ansiYellow$skipMark$ansiReset" else ""}")
+                    println("  Failed:  $ansiRed$ansiBold$failed$ansiReset $failedMark")
+                    println("  Skipped: $ansiYellow$ansiBold$skipped$ansiReset $skippedMark")
                     println()
                     println("  Duration: $ansiCyan${duration}ms$ansiReset")
                     println()
@@ -301,11 +303,12 @@ subprojects {
             toggleOffOn()
         }
 
-        format("gradle") {
+        kotlinGradle {
             target(
                 "*.gradle.kts",
                 "**/*.gradle.kts",
             )
+            ktlint(rootProject.libs.versions.ktlint.get())
 
             trimTrailingWhitespace()
             leadingTabsToSpaces(4)
@@ -401,7 +404,10 @@ sonar {
     properties {
         property("sonar.projectKey", "fastprod-backend")
         property("sonar.projectName", "fastprod-backend")
-        property("sonar.issue.ignore.multicriteria", "emailTables,emailAttributes,localSecrets,uploadLimitsYaml,jjwtDates")
+        property(
+            "sonar.issue.ignore.multicriteria",
+            "emailTables,emailAttributes,localSecrets,uploadLimitsYaml,jjwtDates",
+        )
         property("sonar.issue.ignore.multicriteria.emailTables.ruleKey", "Web:S5257")
         property("sonar.issue.ignore.multicriteria.emailTables.resourceKey", "**/templates/**/*.html")
         property("sonar.issue.ignore.multicriteria.emailAttributes.ruleKey", "Web:S1827")

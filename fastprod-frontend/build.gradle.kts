@@ -34,8 +34,16 @@ java {
 
 dependencyManagement {
     imports {
-        mavenBom(libs.spring.boot.dependencies.get().toString())
-        mavenBom(libs.vaadin.bom.get().toString())
+        mavenBom(
+            libs.spring.boot.dependencies
+                .get()
+                .toString(),
+        )
+        mavenBom(
+            libs.vaadin.bom
+                .get()
+                .toString(),
+        )
     }
 }
 
@@ -85,13 +93,13 @@ tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
 
     reports.maybeCreate("html").apply {
         required.set(true)
-        outputLocation.set(file("${buildDir}/reports/spotbugs/${projectName}-${taskName}.html"))
+        outputLocation.set(file("$buildDir/reports/spotbugs/$projectName-$taskName.html"))
         setStylesheet("fancy-hist.xsl")
     }
 
     reports.maybeCreate("xml").apply {
         required.set(true)
-        outputLocation.set(file("${buildDir}/reports/spotbugs/${projectName}-${taskName}.xml"))
+        outputLocation.set(file("$buildDir/reports/spotbugs/$projectName-$taskName.xml"))
     }
 
     doLast {
@@ -100,23 +108,34 @@ tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
         val ansiRed = "\u001B[31m"
         val ansiBold = "\u001B[1m"
 
-        val xmlReport = reports.maybeCreate("xml").outputLocation.get().asFile
-        val htmlReport = reports.maybeCreate("html").outputLocation.get().asFile
+        val xmlReport =
+            reports
+                .maybeCreate("xml")
+                .outputLocation
+                .get()
+                .asFile
+        val htmlReport =
+            reports
+                .maybeCreate("html")
+                .outputLocation
+                .get()
+                .asFile
 
         if (xmlReport.exists()) {
             val xml = xmlReport.readText()
-            val bugCount = xml.substringAfter("<BugInstance", "").let {
-                if (it.isEmpty()) 0 else xml.split("<BugInstance").size - 1
-            }
+            val bugCount =
+                xml.substringAfter("<BugInstance", "").let {
+                    if (it.isEmpty()) 0 else xml.split("<BugInstance").size - 1
+                }
 
             println("\n$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
             println("$ansiBold  SpotBugs: $projectName - $taskName")
             println("$ansiBold═══════════════════════════════════════════════════════════════$ansiReset")
 
             if (bugCount == 0) {
-                println("  ${ansiGreen}✓ No bugs found!$ansiReset")
+                println("  $ansiGreen✓ No bugs found!$ansiReset")
             } else {
-                println("  ${ansiRed}✗ Found $bugCount bug(s)$ansiReset")
+                println("  $ansiRed✗ Found $bugCount bug(s)$ansiReset")
 
                 val categories = mutableMapOf<String, Int>()
                 xml.split("<BugInstance").drop(1).forEach { bugXml ->
@@ -210,12 +229,14 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 
         formatAnnotations()
 
-        eclipse(rootProject.libs.versions.eclipse.jdt.get())
-            .configFile(
-                rootProject.file(
-                    "config/formatter/eclipse-java-custom-style.xml",
-                ),
-            )
+        eclipse(
+            rootProject.libs.versions.eclipse.jdt
+                .get(),
+        ).configFile(
+            rootProject.file(
+                "config/formatter/eclipse-java-custom-style.xml",
+            ),
+        )
 
         trimTrailingWhitespace()
         endWithNewline()
@@ -223,8 +244,9 @@ configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         toggleOffOn()
     }
 
-    format("gradle") {
+    kotlinGradle {
         target("*.gradle.kts")
+        ktlint(libs.versions.ktlint.get())
 
         trimTrailingWhitespace()
         leadingTabsToSpaces(4)
@@ -255,7 +277,7 @@ tasks.named("build").configure {
     dependsOn("vaadinBuildFrontend")
 }
 
-tasks.named("spotlessGradle").configure {
+tasks.named("spotlessKotlinGradle").configure {
     mustRunAfter("vaadinPrepareFrontend")
 }
 
