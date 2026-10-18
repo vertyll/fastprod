@@ -15,12 +15,16 @@ A Gradle multi-module build; `app` assembles the others into one Spring Boot app
 | `user`        | accounts and their roles, and the Keycloak Admin API client |
 | `employee`    | employee management, through `user`'s API                   |
 | `translation` | the message catalog, its defaults and the admin overrides   |
-| `file`        | file storage on the local disk                              |
+| `file`        | file storage on the local disk; not yet assembled by `app`  |
 | `common`      | the base entity, error handling and shared DTOs             |
 
 A module reaches another only through that module's `api` package, such as `user.api.UserAccounts`, and the modules
 depend on one another without cycles; `common` is the shared kernel every module may use. `ModuleBoundariesTest` in
 `app` checks both on every build.
+
+`file` is built but not assembled: no feature stores files yet, and assembling it makes the upload folder
+(`application.file.uploads.file-output-path`) a required setting. The first feature that stores a file adds it to
+`app`'s dependencies and that setting to every profile.
 
 ## API
 
