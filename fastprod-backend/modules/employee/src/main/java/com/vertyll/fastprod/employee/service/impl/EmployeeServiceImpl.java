@@ -7,26 +7,18 @@ import com.vertyll.fastprod.employee.dto.EmployeeFilterDto;
 import com.vertyll.fastprod.employee.dto.EmployeeUpdateDto;
 import com.vertyll.fastprod.employee.mapper.EmployeeMapper;
 import com.vertyll.fastprod.employee.service.EmployeeService;
-import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
-import com.vertyll.fastprod.role.service.RoleService;
-import com.vertyll.fastprod.user.entity.User;
-import com.vertyll.fastprod.user.identity.IdentityProvider;
-import com.vertyll.fastprod.user.repository.UserRepository;
-import jakarta.persistence.criteria.Join;
+import com.vertyll.fastprod.user.api.UserAccounts;
+import com.vertyll.fastprod.user.api.UserAccounts.Account;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,188 +27,78 @@ import java.util.stream.Collectors;
 class EmployeeServiceImpl implements EmployeeService {
 
     private static final String EMPLOYEE_NOT_FOUND_MESSAGE = "errors.employee.notFound";
-    private static final String EMAIL_ALREADY_EXISTS = "errors.user.emailTaken";
     private static final String CANNOT_UPDATE_INACTIVE_EMPLOYEE = "errors.employee.inactive";
     private static final String EMPLOYEE_ALREADY_DELETED = "errors.employee.alreadyDeleted";
 
-    private final UserRepository userRepository;
-    private final RoleService roleService;
-    private final IdentityProvider identityProvider;
+    private final UserAccounts accounts;
     private final EmployeeMapper employeeMapper;
 
     @Override
     @Transactional
     public EmployeeResponseDto createEmployee(EmployeeCreateDto dto) {
-        if (userRepository.existsByEmail(dto.email())) {
-            throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
-        }
-
-        Set<RoleType> roles = roleTypes(dto.roleNames());
-        String keycloakId = identityProvider.createUser(
-            new IdentityProvider.NewIdentity(dto.email(), dto.firstName(), dto.lastName()),
+        Account account = accounts.create(new UserAccounts.NewAccount(
+            dto.firstName(),
+            dto.lastName(),
+            dto.email(),
             dto.password(),
-            roles
-        );
-
-        User user = User.builder()
-            .keycloakId(keycloakId)
-            .firstName(dto.firstName())
-            .lastName(dto.lastName())
-            .email(dto.email())
-            .verified(false)
-            .build();
-        user.assignRoles(roleEntities(roles));
-
-        User savedUser = userRepository.save(user);
-        return employeeMapper.toResponseDto(savedUser);
+            roleTypes(dto.roleNames())
+        ));
+        return employeeMapper.toResponseDto(account);
     }
 
     @Override
     @Transactional
     public EmployeeResponseDto updateEmployee(Long id, EmployeeUpdateDto dto) {
-        User user = userRepository.findById(id)
+        Account account = accounts.find(id)
                 .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
-        if (!user.isActive()) {
+        if (!account.active()) {
             throw new ApiException(CANNOT_UPDATE_INACTIVE_EMPLOYEE, HttpStatus.BAD_REQUEST);
         }
 
-        if (!dto.email().equals(user.getEmail()) && userRepository.existsByEmail(dto.email())) {
-            throw new ApiException(EMAIL_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
-        }
-
-        identityProvider.updateUser(
-            user.getKeycloakId(),
-            new IdentityProvider.NewIdentity(dto.email(), dto.firstName(), dto.lastName())
-        );
-        user.updateDetails(dto.firstName(), dto.lastName(), dto.email());
-
-        String password = dto.password();
-        if (password != null && !password.isBlank()) {
-            identityProvider.resetPassword(user.getKeycloakId(), password);
-        }
-
         Set<String> roleNames = dto.roleNames();
-        if (!CollectionUtils.isEmpty(roleNames)) {
-            Set<RoleType> roles = roleTypes(roleNames);
-            identityProvider.replaceRoles(user.getKeycloakId(), roles);
-            user.assignRoles(roleEntities(roles));
-        }
-
-        User updatedUser = userRepository.save(user);
-        return employeeMapper.toResponseDto(updatedUser);
+        Account updated = accounts.update(id, new UserAccounts.AccountChanges(
+            dto.firstName(),
+            dto.lastName(),
+            dto.email(),
+            dto.password(),
+            CollectionUtils.isEmpty(roleNames) ? null : roleTypes(roleNames)
+        ));
+        return employeeMapper.toResponseDto(updated);
     }
 
     @Override
     public EmployeeResponseDto getEmployeeById(Long id) {
-        User user = userRepository.findById(id)
+        return accounts.find(id)
+                .filter(Account::active)
+                .map(employeeMapper::toResponseDto)
                 .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
-
-        if (!user.isActive()) {
-            throw new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND);
-        }
-
-        return employeeMapper.toResponseDto(user);
     }
 
     @Override
     public Page<EmployeeResponseDto> getAllEmployees(EmployeeFilterDto filterDto) {
-        Pageable pageable = filterDto.toPageable();
-        Specification<User> spec = buildEmployeeSpecification(filterDto);
-        Page<User> page = userRepository.findAll(spec, pageable);
-        return page.map(employeeMapper::toResponseDto);
+        UserAccounts.AccountSearch search = new UserAccounts.AccountSearch(
+            filterDto.firstName(),
+            filterDto.lastName(),
+            filterDto.email(),
+            filterDto.isVerified(),
+            roleNames(filterDto.roles()),
+            filterDto.search()
+        );
+        return accounts.findActive(search, filterDto.toPageable()).map(employeeMapper::toResponseDto);
     }
 
     @Override
     @Transactional
     public void deleteEmployee(Long id) {
-        User user = userRepository.findById(id)
+        Account account = accounts.find(id)
                 .orElseThrow(() -> new ApiException(EMPLOYEE_NOT_FOUND_MESSAGE, HttpStatus.NOT_FOUND));
 
-        if (!user.isActive()) {
+        if (!account.active()) {
             throw new ApiException(EMPLOYEE_ALREADY_DELETED, HttpStatus.BAD_REQUEST);
         }
 
-        identityProvider.disable(user.getKeycloakId());
-        user.deactivate();
-        userRepository.save(user);
-    }
-
-    private Specification<User> buildEmployeeSpecification(EmployeeFilterDto filterDto) {
-        Specification<User> spec = Specification.where((root, _, cb) -> cb.isTrue(root.get("active")));
-
-        spec = addFirstNameFilter(spec, filterDto.firstName());
-        spec = addLastNameFilter(spec, filterDto.lastName());
-        spec = addEmailFilter(spec, filterDto.email());
-        spec = addVerifiedFilter(spec, filterDto.isVerified());
-        spec = addRolesFilter(spec, filterDto.roles());
-        spec = addSearchFilter(spec, filterDto.search());
-
-        return spec;
-    }
-
-    private Specification<User> addFirstNameFilter(Specification<User> spec, @Nullable String firstName) {
-        if (firstName == null || firstName.isBlank()) {
-            return spec;
-        }
-        String likePattern = "%" + firstName.trim().toLowerCase(Locale.ROOT) + "%";
-        return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("firstName")), likePattern));
-    }
-
-    private Specification<User> addLastNameFilter(Specification<User> spec, @Nullable String lastName) {
-        if (lastName == null || lastName.isBlank()) {
-            return spec;
-        }
-        String likePattern = "%" + lastName.trim().toLowerCase(Locale.ROOT) + "%";
-        return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("lastName")), likePattern));
-    }
-
-    private Specification<User> addEmailFilter(Specification<User> spec, @Nullable String email) {
-        if (email == null || email.isBlank()) {
-            return spec;
-        }
-        String likePattern = "%" + email.trim().toLowerCase(Locale.ROOT) + "%";
-        return spec.and((root, _, cb) -> cb.like(cb.lower(root.get("email")), likePattern));
-    }
-
-    private Specification<User> addVerifiedFilter(Specification<User> spec, @Nullable Boolean isVerified) {
-        if (isVerified == null) {
-            return spec;
-        }
-        return spec.and((root, _, cb) -> cb.equal(root.get("verified"), isVerified));
-    }
-
-    private Specification<User> addRolesFilter(Specification<User> spec, @Nullable String roles) {
-        if (roles == null || roles.isBlank()) {
-            return spec;
-        }
-
-        List<String> roleNames = Arrays.stream(roles.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isBlank())
-                .map(String::toUpperCase)
-                .toList();
-
-        if (roleNames.isEmpty()) {
-            return spec;
-        }
-
-        return spec.and((root, _, cb) -> {
-            Join<User, Role> rolesJoin = root.join("roles");
-            return cb.upper(rolesJoin.get("name")).in(roleNames);
-        });
-    }
-
-    private Specification<User> addSearchFilter(Specification<User> spec, @Nullable String searchTerm) {
-        if (searchTerm == null || searchTerm.isBlank()) {
-            return spec;
-        }
-        String likePattern = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
-        return spec.and((root, _, cb) -> cb.or(
-                cb.like(cb.lower(root.get("firstName")), likePattern),
-                cb.like(cb.lower(root.get("lastName")), likePattern),
-                cb.like(cb.lower(root.get("email")), likePattern)
-        ));
+        accounts.deactivate(id);
     }
 
     private static Set<RoleType> roleTypes(@Nullable Set<String> roleNames) {
@@ -226,7 +108,13 @@ class EmployeeServiceImpl implements EmployeeService {
         return roleNames.stream().map(RoleType::fromValue).collect(Collectors.toSet());
     }
 
-    private Set<Role> roleEntities(Set<RoleType> roles) {
-        return roles.stream().map(roleService::getOrCreateDefaultRole).collect(Collectors.toSet());
+    private static Set<String> roleNames(@Nullable String roles) {
+        if (roles == null || roles.isBlank()) {
+            return Set.of();
+        }
+        return Arrays.stream(roles.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .collect(Collectors.toSet());
     }
 }

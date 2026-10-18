@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation(project(":modules:security"))
     implementation(project(":modules:employee"))
-    implementation(project(":modules:role"))
     implementation(project(":modules:user"))
     implementation(project(":modules:translation"))
 
@@ -38,6 +37,7 @@ dependencies {
 
     testImplementation(libs.bundles.test.starters)
     testImplementation(libs.bundles.testcontainers)
+    testImplementation(libs.archunit.junit5)
 }
 
 tasks.withType<Test> {

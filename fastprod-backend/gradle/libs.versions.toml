@@ -28,8 +28,10 @@ beta-checker = "1.0"
 spotbugs = "6.5.12"
 spotbugs-annotations = "4.10.4"
 findsecbugs = "1.14.0"
+archunit = "1.5.1"
 
 [libraries]
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
 
 spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }

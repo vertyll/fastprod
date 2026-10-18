@@ -1,11 +1,11 @@
-package com.vertyll.fastprod.role.service.impl;
+package com.vertyll.fastprod.user.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.vertyll.fastprod.role.entity.Role;
-import com.vertyll.fastprod.role.repository.RoleRepository;
-import com.vertyll.fastprod.role.service.RoleService;
+import com.vertyll.fastprod.user.entity.Role;
+import com.vertyll.fastprod.user.repository.RoleRepository;
+import com.vertyll.fastprod.user.service.RoleService;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
 
 import lombok.RequiredArgsConstructor;

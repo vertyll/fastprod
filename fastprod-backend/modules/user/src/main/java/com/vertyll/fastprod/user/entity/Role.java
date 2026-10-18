@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.role.entity;
+package com.vertyll.fastprod.user.entity;
 
 import java.io.Serial;
 

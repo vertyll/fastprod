@@ -16,7 +16,6 @@ import jakarta.persistence.Table;
 
 import org.jspecify.annotations.Nullable;
 
-import com.vertyll.fastprod.role.entity.Role;
 import com.vertyll.fastprod.sharedinfrastructure.entity.BaseEntity;
 
 import lombok.Builder;

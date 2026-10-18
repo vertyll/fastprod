@@ -1,4 +1,4 @@
-package com.vertyll.fastprod.role.service.impl;
+package com.vertyll.fastprod.user.service.impl;
 
 import java.util.Optional;
 
@@ -11,9 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.vertyll.fastprod.role.entity.Role;
-import com.vertyll.fastprod.role.repository.RoleRepository;
 import com.vertyll.fastprod.sharedinfrastructure.enums.RoleType;
+import com.vertyll.fastprod.user.entity.Role;
+import com.vertyll.fastprod.user.repository.RoleRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

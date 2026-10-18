@@ -10,3 +10,8 @@ Employees are created by an administrator rather than by signing up. The back-en
 the Admin API (client `fastprod-backend`, a service account) with a temporary password and the `VERIFY_EMAIL` action, so
 the employee confirms the address and sets a password at the first sign-in. Deleting an employee disables the Keycloak
 account and deactivates the local one; nothing is erased.
+
+The `user` module owns accounts and their roles: the `user`, `role` and `user_role` tables and the Keycloak Admin API
+client. The `employee` module keeps none of that; it decides what an employee is, such as the `EMPLOYEE` role a new
+one gets and the errors an inactive one gives, and asks `user.api.UserAccounts` to create, change, find and deactivate
+the accounts.

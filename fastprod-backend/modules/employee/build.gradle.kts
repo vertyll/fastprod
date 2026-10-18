@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
     api(project(":modules:common"))
-    api(project(":modules:role"))
     api(project(":modules:user"))
 
     api(libs.bundles.spring.boot.starters.common)

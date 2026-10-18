@@ -8,16 +8,19 @@ sends ([Authentication](../docs/authentication.md)) and answers errors as transl
 
 A Gradle multi-module build; `app` assembles the others into one Spring Boot application.
 
-| Module        | Holds                                                      |
-|---------------|------------------------------------------------------------|
-| `app`         | the application class, configuration and Flyway migrations |
-| `security`    | the resource server, CORS and auditing                     |
-| `user`        | the local account and the Keycloak Admin API client        |
-| `employee`    | employee management                                        |
-| `role`        | the roles the application knows                            |
-| `translation` | the message catalog, its defaults and the admin overrides  |
-| `file`        | file storage on the local disk                             |
-| `common`      | the base entity, error handling and shared DTOs            |
+| Module        | Holds                                                       |
+|---------------|-------------------------------------------------------------|
+| `app`         | the application class, configuration and Flyway migrations  |
+| `security`    | the resource server, CORS and auditing                      |
+| `user`        | accounts and their roles, and the Keycloak Admin API client |
+| `employee`    | employee management, through `user`'s API                   |
+| `translation` | the message catalog, its defaults and the admin overrides   |
+| `file`        | file storage on the local disk                              |
+| `common`      | the base entity, error handling and shared DTOs             |
+
+A module reaches another only through that module's `api` package, such as `user.api.UserAccounts`, and the modules
+depend on one another without cycles; `common` is the shared kernel every module may use. `ModuleBoundariesTest` in
+`app` checks both on every build.
 
 ## API
 
