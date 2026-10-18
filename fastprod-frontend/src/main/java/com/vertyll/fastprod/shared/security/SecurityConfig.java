@@ -27,6 +27,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.vertyll.fastprod.shared.config.KeycloakProperties;
 
+import com.vaadin.flow.spring.security.VaadinDefaultRequestCache;
 import com.vaadin.flow.spring.security.VaadinSecurityConfigurer;
 
 @Configuration(proxyBeanMethods = false)
@@ -42,8 +43,11 @@ class SecurityConfig {
         ClientRegistrationRepository clientRegistrations,
         OAuth2AuthorizedClientRepository authorizedClients,
         JwtDecoder accessTokens,
-        KeycloakProperties keycloak
+        KeycloakProperties keycloak,
+        VaadinDefaultRequestCache requestCache
     ) {
+        // A sign-in started from a button returns to the view it was started on, see ReturnPage.
+        requestCache.setDelegateRequestCache(new ReturnPage());
         http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/actuator/health/**").permitAll());
         http.oauth2Login(
             login -> login

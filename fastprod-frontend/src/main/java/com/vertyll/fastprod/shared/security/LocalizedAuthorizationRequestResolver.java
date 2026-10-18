@@ -57,6 +57,7 @@ final class LocalizedAuthorizationRequestResolver implements OAuth2Authorization
         if (authorization == null) {
             return null;
         }
+        ReturnPage.remember(request);
         boolean register = request.getParameter(REGISTER_PARAMETER) != null;
         String language = language(request);
         Optional<String> action = accountAction(request);

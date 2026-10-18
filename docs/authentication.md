@@ -35,6 +35,9 @@ sequenceDiagram
    `fastprod-frontend` and its secret, and keeps the tokens in the HTTP session.
 3. `KeycloakOidcUserService` takes the realm roles from the access token, so Vaadin's `@RolesAllowed` and the menu see
    `ADMIN`, `MANAGER`, `EMPLOYEE` and `USER` as Keycloak grants them.
+4. The browser returns to the view it came from: a protected view through the request Spring Security saved, and a
+   sign-in started from a button through `return_to`, which `ReturnPage` keeps in the session (a path on this site
+   only).
 
 The browser holds only the `FASTPROD_SESSION` cookie: `HttpOnly`, `SameSite=Lax`, `Secure` outside the local profile.
 Vaadin protects every request against CSRF on its own.

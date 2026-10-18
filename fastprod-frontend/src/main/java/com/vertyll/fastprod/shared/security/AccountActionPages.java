@@ -26,11 +26,11 @@ public class AccountActionPages implements Serializable {
     }
 
     private static void open(String action) {
-        UI.getCurrent()
-            .getPage()
+        UI ui = UI.getCurrent();
+        ui.getPage()
             .setLocation(
                 SecurityConfig.LOGIN_PATH + "?" + LocalizedAuthorizationRequestResolver.ACCOUNT_ACTION_PARAMETER + "="
-                        + action
+                        + action + "&" + KeycloakPages.returnTo(ui)
             );
     }
 
