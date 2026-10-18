@@ -17,9 +17,10 @@ A Vaadin Flow application: the UI is rendered on the server, which also holds th
 
 ## Package dependencies
 
-`ArchitectureTest` checks them on every build: `shared` knows neither `base` nor the modules, `shared.security` knows
-neither `shared.keycloak` nor the UI, only `shared.keycloak` opens Keycloak's account pages, and the `shared` packages
-have no cycle between them.
+`ArchitectureTest` checks them on every build: `shared` knows neither `base` nor the modules, `base` knows no
+module (the layout shows the signed-in person through `SignedInPerson`, which `modules/user` implements),
+`shared.security` knows neither `shared.keycloak` nor the UI, only `shared.keycloak` opens Keycloak's account pages,
+and the `shared` packages have no cycle between them.
 
 ## Access
 

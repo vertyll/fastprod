@@ -2,8 +2,6 @@ package com.vertyll.fastprod.base.ui.component;
 
 import java.io.Serial;
 
-import com.vertyll.fastprod.modules.user.dto.UserProfileDto;
-import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vertyll.fastprod.shared.security.SecurityService;
@@ -28,14 +26,14 @@ public final class UserMenu extends HorizontalLayout {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final transient UserService userService;
+    private final transient SignedInPerson signedInPerson;
     private final transient SecurityService securityService;
     private final Avatar avatar;
     private final Span userName;
 
-    public UserMenu(UserService userService, SecurityService securityService) {
+    public UserMenu(SignedInPerson signedInPerson, SecurityService securityService) {
         super();
-        this.userService = userService;
+        this.signedInPerson = signedInPerson;
         this.securityService = securityService;
 
         setAlignItems(FlexComponent.Alignment.CENTER);
@@ -93,11 +91,10 @@ public final class UserMenu extends HorizontalLayout {
 
     private void loadUserData(Span emailSpan) {
         try {
-            UserProfileDto user = userService.getCurrentUser();
-            String fullName = user.firstName() + " " + user.lastName();
-            avatar.setName(fullName);
-            userName.setText(fullName);
-            emailSpan.setText(user.email());
+            SignedInPerson.Profile person = signedInPerson.current();
+            avatar.setName(person.fullName());
+            userName.setText(person.fullName());
+            emailSpan.setText(person.email());
         } catch (ApiException e) {
             log.error("Failed to load user data", e);
         }

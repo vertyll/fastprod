@@ -3,8 +3,8 @@ package com.vertyll.fastprod.base.ui;
 import java.io.Serial;
 
 import com.vertyll.fastprod.base.ui.component.LanguageSwitcher;
+import com.vertyll.fastprod.base.ui.component.SignedInPerson;
 import com.vertyll.fastprod.base.ui.component.UserMenu;
-import com.vertyll.fastprod.modules.user.service.UserService;
 import com.vertyll.fastprod.shared.i18n.I18n;
 import com.vertyll.fastprod.shared.keycloak.KeycloakPreferences;
 import com.vertyll.fastprod.shared.security.KeycloakPages;
@@ -41,17 +41,17 @@ public final class MainLayout extends AppLayout {
     private static final String APP_NAME = "FastProd";
 
     private final transient SecurityService securityService;
-    private final transient UserService userService;
+    private final transient SignedInPerson signedInPerson;
     private final KeycloakPreferences keycloakPreferences;
 
     public MainLayout(
         SecurityService securityService,
-        UserService userService,
+        SignedInPerson signedInPerson,
         KeycloakPreferences keycloakPreferences
     ) {
         super();
         this.securityService = securityService;
-        this.userService = userService;
+        this.signedInPerson = signedInPerson;
         this.keycloakPreferences = keycloakPreferences;
 
         if (securityService.isAuthenticated()) {
@@ -82,7 +82,7 @@ public final class MainLayout extends AppLayout {
         H1 viewTitle = new H1(APP_NAME);
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE, LumoUtility.Margin.Left.MEDIUM);
 
-        UserMenu userMenu = new UserMenu(userService, securityService);
+        UserMenu userMenu = new UserMenu(signedInPerson, securityService);
 
         HorizontalLayout navbar =
                 new HorizontalLayout(toggle, viewTitle, new LanguageSwitcher(keycloakPreferences), userMenu);

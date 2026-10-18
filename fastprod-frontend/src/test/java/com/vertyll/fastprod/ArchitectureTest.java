@@ -21,6 +21,13 @@ final class ArchitectureTest {
         .resideInAnyPackage("com.vertyll.fastprod.base..", "com.vertyll.fastprod.modules..");
 
     @ArchTest
+    static final ArchRule BASE_KNOWS_NO_FEATURE = noClasses().that()
+        .resideInAPackage("com.vertyll.fastprod.base..")
+        .should()
+        .dependOnClassesThat()
+        .resideInAPackage("com.vertyll.fastprod.modules..");
+
+    @ArchTest
     static final ArchRule SHARED_PACKAGES_ARE_FREE_OF_CYCLES =
             slices().matching("com.vertyll.fastprod.shared.(*)..").should().beFreeOfCycles();
 
