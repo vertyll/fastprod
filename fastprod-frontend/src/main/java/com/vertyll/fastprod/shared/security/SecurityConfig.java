@@ -46,8 +46,8 @@ class SecurityConfig {
         KeycloakProperties keycloak,
         VaadinDefaultRequestCache requestCache
     ) {
-        // A sign-in started from a button returns to the view it was started on, see ReturnPage.
-        requestCache.setDelegateRequestCache(new ReturnPage());
+        // Spring Security's saved request, which a sign-in started from a button also returns through, see ReturnPage.
+        requestCache.setDelegateRequestCache(ReturnPage.requestCache());
         http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/actuator/health/**").permitAll());
         http.oauth2Login(
             login -> login

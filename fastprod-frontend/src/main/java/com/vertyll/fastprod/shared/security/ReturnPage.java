@@ -3,22 +3,19 @@ package com.vertyll.fastprod.shared.security;
 import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.security.web.savedrequest.SimpleSavedRequest;
 
 /**
- * The view a sign-in started from a button returns to, named in {@code return_to} and kept in the session while Keycloak
- * signs the person in. Only a path on the application's own site is kept, so the sign-in cannot send the browser
- * elsewhere. A view that needs a session is returned to by Spring Security's own saved request, which this cache keeps
- * doing for every other sign-in.
+ * The page a sign-in returns to, named by the front-end in {@code return_to}. It is kept as Spring Security's saved
+ * request, so Spring's own success handler returns there; only a path on the application's own site is kept, so the sign-in cannot
+ * send the browser elsewhere.
  */
-final class ReturnPage implements RequestCache {
+final class ReturnPage {
 
     static final String PARAMETER = "return_to";
 
@@ -26,17 +23,28 @@ final class ReturnPage implements RequestCache {
 
     private static final int MOST_LENGTH = 2048;
 
-    private final RequestCache sessions = new HttpSessionRequestCache();
+    private ReturnPage() {
+    }
 
-    /** Keeps the view this sign-in names, or forgets an earlier one when it names none on this site. */
+    /** Spring Security's request cache, in the session, under the name this class saves the page under. */
+    static RequestCache requestCache() {
+        HttpSessionRequestCache cache = new HttpSessionRequestCache();
+        cache.setSessionAttrName(ATTRIBUTE);
+        return cache;
+    }
+
+    /**
+     * Saves the page this sign-in names as the request it returns to. A sign-in that names none forgets a page an
+     * earlier one named, and leaves a request Spring Security saved itself.
+     */
     static void remember(HttpServletRequest request) {
         Optional<String> page = onThisSite(request.getParameter(PARAMETER));
         if (page.isPresent()) {
-            request.getSession().setAttribute(ATTRIBUTE, page.get());
+            request.getSession().setAttribute(ATTRIBUTE, new SimpleSavedRequest(page.get()));
             return;
         }
         HttpSession session = request.getSession(false);
-        if (session != null) {
+        if (session != null && session.getAttribute(ATTRIBUTE) instanceof SimpleSavedRequest) {
             session.removeAttribute(ATTRIBUTE);
         }
     }
@@ -48,32 +56,5 @@ final class ReturnPage implements RequestCache {
                 candidate -> candidate.startsWith("/") && !candidate.startsWith("//") && candidate.indexOf('\\') < 0
                         && candidate.chars().noneMatch(Character::isISOControl) && candidate.length() <= MOST_LENGTH
             );
-    }
-
-    @Override
-    public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
-        sessions.saveRequest(request, response);
-    }
-
-    /** The view a button's sign-in named, once, else the request Spring Security saved. */
-    @Override
-    public @Nullable SavedRequest getRequest(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession(false);
-        Object page = session == null ? null : session.getAttribute(ATTRIBUTE);
-        if (session != null && page instanceof String path && onThisSite(path).isPresent()) {
-            session.removeAttribute(ATTRIBUTE);
-            return new SimpleSavedRequest(path);
-        }
-        return sessions.getRequest(request, response);
-    }
-
-    @Override
-    public @Nullable HttpServletRequest getMatchingRequest(HttpServletRequest request, HttpServletResponse response) {
-        return sessions.getMatchingRequest(request, response);
-    }
-
-    @Override
-    public void removeRequest(HttpServletRequest request, HttpServletResponse response) {
-        sessions.removeRequest(request, response);
     }
 }
