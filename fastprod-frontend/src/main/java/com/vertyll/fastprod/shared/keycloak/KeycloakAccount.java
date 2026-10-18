@@ -103,9 +103,9 @@ class KeycloakAccount {
     }
 
     /**
-     * Stores the language on the signed-in person's account, which Keycloak's pages show a signed-in person in, over the
-     * language the application asks for. The account is read and written back whole, so nothing else on it changes; a
-     * failure leaves Keycloak's pages in the language they had, and is only logged.
+     * Stores the language on the signed-in person's account, which Keycloak's pages show a signed-in person in, over
+     * the language the application asks for. The account is read and written back whole, so nothing else on it changes;
+     * a failure leaves Keycloak's pages in the language they had, and is only logged.
      */
     void keepLanguage(String language) {
         tokens.getAuthorizationHeader().ifPresent(authorization -> keepLanguage(authorization, language));

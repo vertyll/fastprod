@@ -18,8 +18,8 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 
 /**
  * The language the reader last chose, in the application or on Keycloak's pages, kept in the cookie
- * {@code ui_locale_<realm>}, which both write: a shared record rather than a message, so the two agree however the reader
- * moves between them. It lives under the domain the application shares with Keycloak, the parent of Keycloak's host.
+ * {@code ui_locale_<realm>}, which both write: a shared record rather than a message, so the two agree however the
+ * reader moves between them. It lives under the parent of Keycloak's host, the domain the application shares with it.
  */
 @SpringComponent
 public class KeycloakPreferences implements Serializable {
@@ -51,8 +51,8 @@ public class KeycloakPreferences implements Serializable {
     }
 
     /**
-     * Writes the language to the shared cookie, and, for a signed-in reader, to their Keycloak account, which Keycloak's
-     * pages show a signed-in person in.
+     * Writes the language to the shared cookie, and, for a signed-in reader, to their Keycloak account, which
+     * Keycloak's pages show a signed-in person in.
      */
     public void languageChosen(UI ui, String language) {
         String domain = cookieDomain == null ? "" : "; Domain=" + cookieDomain;
