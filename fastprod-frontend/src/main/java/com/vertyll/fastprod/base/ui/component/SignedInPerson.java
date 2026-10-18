@@ -14,7 +14,6 @@ public interface SignedInPerson {
      */
     Profile current();
 
-    /** What the user menu shows. */
     record Profile(String fullName, String email) {
     }
 }
