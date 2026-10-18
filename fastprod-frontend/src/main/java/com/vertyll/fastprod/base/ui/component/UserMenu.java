@@ -1,6 +1,7 @@
 package com.vertyll.fastprod.base.ui.component;
 
 import java.io.Serial;
+import java.util.List;
 
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.i18n.I18n;
@@ -48,6 +49,7 @@ public final class UserMenu extends HorizontalLayout {
 
         MenuBar menuBar = new MenuBar();
         menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
+        menuBar.addClassName("user-menu");
 
         Div menuContainer = new Div();
         menuContainer.add(avatar);
@@ -58,10 +60,10 @@ public final class UserMenu extends HorizontalLayout {
 
         Div profileHeader = new Div();
         profileHeader.getStyle()
-            .set("padding", "var(--lumo-space-m)")
+            .set("padding", "var(--lumo-space-xs) 0 var(--lumo-space-s)")
             .set("border-bottom", "1px solid var(--lumo-contrast-10pct)")
-            .set("background", "var(--lumo-contrast-5pct)")
-            .set("min-width", "250px");
+            .set("min-width", "250px")
+            .set("flex", "1");
 
         userName.getStyle()
             .set("display", "block")
@@ -76,13 +78,19 @@ public final class UserMenu extends HorizontalLayout {
             .set("margin-top", "var(--lumo-space-xs)");
 
         profileHeader.add(userName, userEmailSpan);
-        subMenu.addItem(profileHeader).setEnabled(false);
+        MenuItem headerItem = subMenu.addItem(profileHeader);
+        headerItem.setEnabled(false);
 
-        MenuItem profileItem = subMenu.addItem("My Profile", _ -> UI.getCurrent().navigate("profile"));
+        MenuItem profileItem = subMenu.addItem(I18n.t("profile.title"), _ -> UI.getCurrent().navigate("profile"));
         profileItem.addComponentAsFirst(VaadinIcon.USER.create());
 
         MenuItem logoutItem = subMenu.addItem(I18n.t("nav.logout"), _ -> handleLogout());
         logoutItem.addComponentAsFirst(VaadinIcon.SIGN_OUT.create());
+
+        // Lumo keeps room at an item's end for a submenu arrow; this menu has none, so both sides get the same space.
+        for (MenuItem item : List.of(headerItem, profileItem, logoutItem)) {
+            item.getElement().getStyle().set("padding-inline", "var(--lumo-space-xs)");
+        }
 
         add(menuBar);
 

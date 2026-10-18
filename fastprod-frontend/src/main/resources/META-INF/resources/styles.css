@@ -136,3 +136,7 @@ vaadin-button {
     gap: 0.5rem;
 }
 
+/* The account menu has nothing to check, so its items keep no space for a checkmark. */
+.user-menu vaadin-menu-bar-item::part(checkmark) {
+    display: none;
+}
