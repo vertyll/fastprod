@@ -144,7 +144,7 @@ public final class EmployeeListView extends VerticalLayout implements HasDynamic
 
         grid.addComponentColumn(employee -> {
             Span badge = new Span(I18n.t(employee.isVerified() ? "common.verified" : "common.notVerified"));
-            badge.getElement().getThemeList().add(employee.isVerified() ? "badge success" : "badge error");
+            badge.getElement().getThemeList().addAll(List.of("badge", employee.isVerified() ? "success" : "error"));
             HorizontalLayout layout = new HorizontalLayout(badge);
             layout.setJustifyContentMode(JustifyContentMode.CENTER);
             layout.setWidthFull();

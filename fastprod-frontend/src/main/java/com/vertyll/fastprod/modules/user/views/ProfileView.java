@@ -1,6 +1,7 @@
 package com.vertyll.fastprod.modules.user.views;
 
 import java.io.Serial;
+import java.util.List;
 
 import jakarta.annotation.security.PermitAll;
 
@@ -203,7 +204,7 @@ public final class ProfileView extends VerticalLayout implements HasDynamicTitle
         detailsTable.addRow(I18n.t("common.roles"), rolesText);
 
         Span verifiedBadge = new Span(I18n.t(user.isVerified() ? "common.verified" : "common.notVerified"));
-        verifiedBadge.getElement().getThemeList().add(user.isVerified() ? "badge success" : "badge error");
+        verifiedBadge.getElement().getThemeList().addAll(List.of("badge", user.isVerified() ? "success" : "error"));
         detailsTable.addRow(I18n.t("common.status"), verifiedBadge);
     }
 

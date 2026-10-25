@@ -239,7 +239,7 @@ public final class FiltersComponent extends HorizontalLayout {
 
     private void createAndAddChip(FilterChips.Chip data) {
         Span chip = new Span(data.label() + ": " + data.value());
-        chip.getElement().getThemeList().add("badge contrast");
+        chip.getElement().getThemeList().addAll(List.of("badge", "contrast"));
         selectedChips.add(chip);
     }
 }
