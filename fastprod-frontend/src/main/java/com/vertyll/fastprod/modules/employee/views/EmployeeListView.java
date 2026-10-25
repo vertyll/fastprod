@@ -114,33 +114,34 @@ public final class EmployeeListView extends VerticalLayout implements HasDynamic
     private void configureGrid() {
         Grid<EmployeeResponseDto> grid = pagedGrid.getGrid();
 
-        grid.addColumn(EmployeeResponseDto::id)
+        Grid.Column<EmployeeResponseDto> idColumn = grid.addColumn(EmployeeResponseDto::id)
             .setHeader(I18n.t("common.id"))
             .setSortable(true)
             .setAutoWidth(true)
+            .setFlexGrow(0)
             .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(EmployeeResponseDto::firstName)
             .setHeader(I18n.t("common.firstName"))
             .setSortable(true)
-            .setAutoWidth(true)
+            .setFlexGrow(1)
             .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(EmployeeResponseDto::lastName)
             .setHeader(I18n.t("common.lastName"))
             .setSortable(true)
-            .setAutoWidth(true)
+            .setFlexGrow(1)
             .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addColumn(EmployeeResponseDto::email)
+        Grid.Column<EmployeeResponseDto> emailColumn = grid.addColumn(EmployeeResponseDto::email)
             .setHeader(I18n.t("common.email"))
             .setSortable(true)
-            .setAutoWidth(true)
+            .setFlexGrow(1)
             .setTextAlign(ColumnTextAlign.CENTER);
 
-        grid.addComponentColumn(employee -> {
+        Grid.Column<EmployeeResponseDto> rolesColumn = grid.addComponentColumn(employee -> {
             String roles = I18n.roles(employee.roles());
             Span span = new Span(roles);
             span.getStyle().set("display", "flex").set("justify-content", "center");
             return span;
-        }).setHeader(I18n.t("common.roles")).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        }).setHeader(I18n.t("common.roles")).setFlexGrow(1).setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             Span badge = new Span(I18n.t(employee.isVerified() ? "common.verified" : "common.notVerified"));
@@ -149,7 +150,7 @@ public final class EmployeeListView extends VerticalLayout implements HasDynamic
             layout.setJustifyContentMode(JustifyContentMode.CENTER);
             layout.setWidthFull();
             return layout;
-        }).setHeader(I18n.t("common.status")).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        }).setHeader(I18n.t("common.status")).setAutoWidth(true).setFlexGrow(0).setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(employee -> {
             Button viewButton = new Button(VaadinIcon.EYE.create());
@@ -171,10 +172,20 @@ public final class EmployeeListView extends VerticalLayout implements HasDynamic
             deleteButton.addClickListener(_ -> confirmDelete(employee));
 
             HorizontalLayout actions = new HorizontalLayout(viewButton, editButton, deleteButton);
-            actions.setSpacing(true);
+            actions.setSpacing(false);
+            actions.getStyle().set("gap", "var(--lumo-space-xs)");
             actions.setJustifyContentMode(JustifyContentMode.CENTER);
             return actions;
-        }).setHeader(I18n.t("common.actions")).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        })
+            .setHeader(I18n.t("common.actions"))
+            .setAutoWidth(true)
+            .setFlexGrow(0)
+            .setFrozenToEnd(true)
+            .setTextAlign(ColumnTextAlign.CENTER);
+
+        pagedGrid.hideWhenNarrow(idColumn);
+        pagedGrid.hideWhenNarrow(emailColumn);
+        pagedGrid.hideWhenNarrow(rolesColumn);
     }
 
     private void loadEmployees(int page, int pageSize, FiltersValue filters) {
