@@ -243,7 +243,7 @@ public final class EmployeeFormView extends VerticalLayout implements BeforeEnte
     private void navigateToList() {
         UI.getCurrent().navigate(EmployeeListView.class);
     }
-    @SuppressWarnings("PMD.DataClass")
+
     public static class EmployeeFormData {
         private String firstName = "";
         private String lastName = "";
