@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.vertyll.fastprod.shared.config.BackendApiProperties;
 import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
@@ -25,6 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BaseHttpServiceTest {
+
+    private static final Duration READ_TIMEOUT = Duration.ofMillis(200);
+    private static final Duration SLOW_ANSWER = Duration.ofSeconds(2);
 
     private HttpServer server;
     private TestService service;
@@ -41,6 +46,15 @@ class BaseHttpServiceTest {
                 {"status":400,"title":"Bad Request","detail":"Validation failed",
                  "errors":{"email":["Email should be valid"]}}""");
         respond("/broken", 500, "text/html", "<html>oops</html>");
+        server.createContext("/slow", exchange -> {
+            try {
+                Thread.sleep(SLOW_ANSWER.toMillis());
+            } catch (InterruptedException _) {
+                Thread.currentThread().interrupt();
+            }
+            exchange.sendResponseHeaders(204, -1);
+            exchange.close();
+        });
         server.start();
 
         String baseUrl = "http://" + server.getAddress().getHostString() + ":" + server.getAddress().getPort();
@@ -87,6 +101,13 @@ class BaseHttpServiceTest {
         assertEquals("errors.common.communication", exception.getMessage());
     }
 
+    @Test
+    void givesUpOnAnAnswerThatTakesLongerThanTheReadTimeout() {
+        ApiException exception = assertThrows(ApiException.class, () -> service.get("/slow", Item.class));
+
+        assertEquals("errors.common.communication", exception.getMessage());
+    }
+
     private void respond(String path, int status, String contentType, String body) {
         server.createContext(path, exchange -> {
             byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
@@ -104,7 +125,11 @@ class BaseHttpServiceTest {
     private static final class TestService extends BaseHttpService {
 
         TestService(String baseUrl) {
-            super(baseUrl, JsonMapper.builder().build(), new AuthTokenProvider(_ -> null));
+            super(
+                new BackendApiProperties(baseUrl, Duration.ofSeconds(1), READ_TIMEOUT),
+                JsonMapper.builder().build(),
+                new AuthTokenProvider(_ -> null)
+            );
         }
     }
 }

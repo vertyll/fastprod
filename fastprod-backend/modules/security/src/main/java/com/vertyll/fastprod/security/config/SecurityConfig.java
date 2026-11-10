@@ -1,15 +1,11 @@
 package com.vertyll.fastprod.security.config;
 
-import java.io.IOException;
 import java.util.Collection;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,9 +24,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import com.vertyll.fastprod.sharedinfrastructure.exception.GlobalExceptionHandler;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 
@@ -41,14 +34,12 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String REQUIRED_TO_ACCESS_THIS_RESOURCE = "errors.auth.authenticationRequired";
-    private static final String NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE = "errors.auth.forbidden";
-
     private final ObjectMapper objectMapper;
 
     @Bean
     @SuppressWarnings("java:S4502")
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
+        ProblemSecurityHandlers problems = new ProblemSecurityHandlers(objectMapper);
         http.cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(
@@ -59,9 +50,7 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/actuator/health",
-                        "/actuator/health/**",
-                        "/api/v1/actuator/health",
-                        "/api/v1/actuator/health/**"
+                        "/actuator/health/**"
                     )
                     .permitAll()
                     .anyRequest()
@@ -70,41 +59,19 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .oauth2ResourceServer(
                 resourceServer -> resourceServer.jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakTokens()))
+                    .authenticationEntryPoint(problems)
+                    .accessDeniedHandler(problems)
             )
-            .exceptionHandling(
-                exception -> exception
-                    .authenticationEntryPoint(
-                        (
-                            _,
-                            response,
-                            _
-                        ) -> writeProblem(response, HttpStatus.UNAUTHORIZED, REQUIRED_TO_ACCESS_THIS_RESOURCE)
-                    )
-                    .accessDeniedHandler(
-                        (
-                            _,
-                            response,
-                            _
-                        ) -> writeProblem(response, HttpStatus.FORBIDDEN, NOT_HAVE_PERMISSION_TO_ACCESS_THIS_RESOURCE)
-                    )
-            );
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(problems).accessDeniedHandler(problems));
 
         return http.build();
     }
 
-    @SuppressFBWarnings(
-        value = "XSS_SERVLET",
-        justification = "Only static JSON error responses are written, no user-controlled content"
-    )
-    private void writeProblem(HttpServletResponse response, HttpStatus status, String detail) throws IOException {
-        response.setStatus(status.value());
-        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(GlobalExceptionHandler.problem(status, detail)));
-    }
-
     @Bean
-    public JwtDecoder jwtDecoder(KeycloakResourceServerProperties keycloak) {
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(keycloak.jwkSetUri()).build();
+    public JwtDecoder jwtDecoder(KeycloakResourceServerProperties keycloak, RestTemplateBuilder restTemplates) {
+        // Boot's builder calls the key set with the timeouts of spring.http.clients.
+        NimbusJwtDecoder decoder =
+                NimbusJwtDecoder.withJwkSetUri(keycloak.jwkSetUri()).restOperations(restTemplates.build()).build();
         decoder.setJwtValidator(tokenValidator(keycloak));
         return decoder;
     }

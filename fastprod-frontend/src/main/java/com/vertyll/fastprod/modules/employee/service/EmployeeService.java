@@ -27,7 +27,7 @@ public class EmployeeService extends BaseHttpService {
         ObjectMapper objectMapper,
         AuthTokenProvider authTokenProvider
     ) {
-        super(backendApi.url(), objectMapper, authTokenProvider);
+        super(backendApi, objectMapper, authTokenProvider);
     }
 
     public EmployeeResponseDto createEmployee(EmployeeCreateDto createDto) {

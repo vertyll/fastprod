@@ -3,6 +3,13 @@ spring:
     name: fastprod-frontend
   profiles:
     default: local
+  threads:
+    virtual:
+      enabled: true
+  http:
+    clients:
+      connect-timeout: 5s
+      read-timeout: 30s
 
 server:
   port: 8001
@@ -12,7 +19,8 @@ server:
     session:
       timeout: 10h
       cookie:
-        name: FASTPROD_SESSION
+        name: __Host-FASTPROD_SESSION
+        path: /
         http-only: true
         secure: true
         same-site: lax

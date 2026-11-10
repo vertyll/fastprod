@@ -7,6 +7,7 @@ dependencies {
 
     api(libs.bundles.spring.boot.starters.security)
     api(libs.spring.boot.starter.webmvc)
+    implementation(libs.spring.boot.starter.restclient)
     api(libs.spring.boot.starter.data.jpa)
 
     compileOnly(libs.lombok)

@@ -23,7 +23,7 @@ public class TranslationClient extends BaseHttpService {
         ObjectMapper objectMapper,
         AuthTokenProvider authTokenProvider
     ) {
-        super(backendApi.url(), objectMapper, authTokenProvider);
+        super(backendApi, objectMapper, authTokenProvider);
     }
 
     public Map<String, String> messages(String language) {

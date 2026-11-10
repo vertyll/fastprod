@@ -10,7 +10,7 @@ flowchart LR
     kc[Keycloak]
     db[(PostgreSQL)]
 
-    browser -- "FASTPROD_SESSION cookie" --> front
+    browser -- "__Host-FASTPROD_SESSION cookie" --> front
     front -- "Bearer access token" --> back
     front -- "sign-in, refresh" --> kc
     back -- "token keys, Admin API for employees" --> kc

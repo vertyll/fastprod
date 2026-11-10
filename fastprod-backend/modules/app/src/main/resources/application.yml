@@ -3,6 +3,13 @@ spring:
     name: fastprod-backend
   profiles:
     default: local
+  threads:
+    virtual:
+      enabled: true
+  http:
+    clients:
+      connect-timeout: 5s
+      read-timeout: 30s
   jpa:
     open-in-view: false
     hibernate:

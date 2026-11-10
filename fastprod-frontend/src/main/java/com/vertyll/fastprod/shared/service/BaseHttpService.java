@@ -1,18 +1,19 @@
 package com.vertyll.fastprod.shared.service;
 
 import java.io.IOException;
-import java.net.CookieManager;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
+import com.vertyll.fastprod.shared.config.BackendApiProperties;
 import com.vertyll.fastprod.shared.dto.PageResponse;
 import com.vertyll.fastprod.shared.exception.ApiException;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
@@ -33,12 +34,24 @@ public class BaseHttpService {
     protected final String backendUrl;
     protected final HttpClient httpClient;
     protected final ObjectMapper objectMapper;
+    private final Duration readTimeout;
     private final AuthTokenProvider authTokenProvider;
 
-    protected BaseHttpService(String backendUrl, ObjectMapper objectMapper, AuthTokenProvider authTokenProvider) {
-        this.backendUrl = backendUrl;
-        this.httpClient =
-                HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).cookieHandler(new CookieManager()).build();
+    /**
+     * The client keeps no cookies: the services are singletons shared by every signed-in person, and the back-end
+     * knows a caller only by the bearer token each request carries.
+     */
+    protected BaseHttpService(
+        BackendApiProperties backendApi,
+        ObjectMapper objectMapper,
+        AuthTokenProvider authTokenProvider
+    ) {
+        this.backendUrl = backendApi.url();
+        this.httpClient = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
+            .connectTimeout(backendApi.connectTimeout())
+            .build();
+        this.readTimeout = backendApi.readTimeout();
         this.objectMapper = objectMapper;
         this.authTokenProvider = authTokenProvider;
     }
@@ -83,7 +96,8 @@ public class BaseHttpService {
     }
 
     private HttpRequest.Builder request(String endpoint) {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(backendUrl + endpoint));
+        HttpRequest.Builder builder =
+                HttpRequest.newBuilder().uri(URI.create(backendUrl + endpoint)).timeout(readTimeout);
         authTokenProvider.getAuthorizationHeader().ifPresent(header -> builder.header("Authorization", header));
         return builder;
     }

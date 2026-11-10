@@ -32,7 +32,8 @@ icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
 vaadin-core = { module = "com.vaadin:vaadin-core" }
 vaadin-spring-boot-starter = { module = "com.vaadin:vaadin-spring-boot-starter" }
 
-spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-security-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-security-oauth2-client" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }

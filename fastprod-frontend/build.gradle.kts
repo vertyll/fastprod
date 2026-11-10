@@ -50,7 +50,8 @@ dependencyManagement {
 dependencies {
     implementation(libs.bundles.vaadin)
     implementation(libs.icu4j)
-    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.webmvc)
+    implementation(libs.spring.boot.starter.restclient)
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.spring.boot.starter.security.oauth2.client)
 

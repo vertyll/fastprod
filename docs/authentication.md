@@ -39,7 +39,9 @@ sequenceDiagram
    sign-in started from a button through `return_to`, which `ReturnPage` keeps as the same saved request (a path on
    this site only).
 
-The browser holds only the `FASTPROD_SESSION` cookie: `HttpOnly`, `SameSite=Lax`, `Secure` outside the local profile.
+The browser holds only the `__Host-FASTPROD_SESSION` cookie: `HttpOnly`, `SameSite=Lax`, `Secure`, `Path=/` and no
+`Domain`. The local profile runs on plain HTTP, so its cookie is `FASTPROD_SESSION` without `Secure`, as the `__Host-`
+prefix requires `Secure`.
 Vaadin protects every request against CSRF on its own.
 
 ## Account actions
@@ -58,10 +60,19 @@ removal and removes a credential only when it is the person's own, then returns 
 ## Calls to the back-end
 
 The front-end calls the back-end with `Authorization: Bearer` and the session's access token (`AuthTokenProvider`,
-used by `BaseHttpService`). The back-end is a stateless OAuth2 resource server: it verifies the signature against
-Keycloak's published keys, the issuer, the expiry and the audience (`fastprod-api`), and takes the roles from
-`realm_access.roles`. It creates no session, so every call is authorized by the token alone and any instance can serve
-it.
+used by `BaseHttpService`), and with no cookies: the services are shared by every signed-in person, so the client keeps
+none. A call gives up after `application.backend.connect-timeout` (five seconds) to connect and
+`application.backend.read-timeout` (thirty seconds) to answer.
+
+The back-end is a stateless OAuth2 resource server: it verifies the signature against Keycloak's published keys, the
+issuer, the expiry and the audience (`fastprod-api`), and takes the roles from `realm_access.roles`. It creates no
+session, so every call is authorized by the token alone and any instance can serve it. A call without a token is
+answered `401` with `WWW-Authenticate: Bearer`, one with a token it refuses `401` with `error="invalid_token"`, and one
+whose token lacks the permission `403` with `error="insufficient_scope"`, each with a problem document ([Error
+responses](mechanisms/error-responses.md)).
+
+Both applications call Keycloak, for its keys and its tokens, with the timeouts of `spring.http.clients`: five seconds
+to connect and thirty to answer.
 
 ## The session and refreshing
 

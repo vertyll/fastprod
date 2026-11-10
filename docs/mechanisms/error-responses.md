@@ -13,6 +13,11 @@ The back-end never sends a sentence a person reads. Every refusal is an RFC 9457
 | `args`   | the ICU arguments for that key                                          |
 | `errors` | in a validation error, the message keys of each invalid field           |
 
+A refusal of the security filter chain, which no controller sees, is the same document: `401` with
+`errors.auth.authenticationRequired` and `403` with `errors.auth.forbidden`. They also carry the challenge RFC 6750
+asks for, `WWW-Authenticate: Bearer`, with `error="invalid_token"` when a token was sent and refused and
+`error="insufficient_scope"` when a valid token lacks the permission.
+
 The catalog is the back-end's: it ships in `fastprod-backend/modules/translation/src/main/resources/i18n`
 (`pl.json`, `en.json`, ICU MessageFormat), an admin can override any message, and `GET /api/v1/translations/{language}`
 serves it.
