@@ -1,0 +1,7 @@
+application:
+  backend:
+    url: http://localhost:8080/api/v1
+  keycloak:
+    realm-url: http://localhost:9000/realms/fastprod
+    client-secret: test-secret
+    app-url: http://localhost:8001

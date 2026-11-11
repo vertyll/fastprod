@@ -29,6 +29,7 @@ import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -44,6 +45,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 /** A whole sign-in through Spring Security and Vaadin, with Keycloak's token endpoint and tokens stood in for. */
 @SpringBootTest
+@ActiveProfiles("test")
 class SignInReturnTest {
 
     private static final String ACCESS_TOKEN = "access-token";
