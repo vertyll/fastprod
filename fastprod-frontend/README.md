@@ -38,6 +38,34 @@ language is picked in the application and kept in the session.
 - [Token refresh](docs/mechanisms/token-refresh.md) – How the session keeps a valid access token without signing the
   user out when requests race.
 
+## Content Security Policy
+
+Every response carries a `Content-Security-Policy` (`shared/security/ContentSecurityPolicy`). In production mode the
+page Vaadin starts from gets a new nonce on each request, 128 random bits, on the header and on each of its `script`
+tags; those scripts load the rest of Vaadin's client. Every other response gets the same policy with `script-src
+'self'` and no nonce.
+
+```text
+default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline';
+script-src 'self' 'nonce-<nonce>' 'strict-dynamic' 'unsafe-eval'
+```
+
+Two keywords remain, as Vaadin Flow cannot work without them
+([Vaadin: frequently reported issues](https://vaadin.com/docs/v25/flow/security/advanced-topics/frequent-issues#content-security-policy-csp-set-to-unsafe-values)):
+
+- `'unsafe-eval'`: Flow's client turns the JavaScript the server sends, `executeJs` included, into functions with
+  `new Function()`. Vaadin's [strict CSP](https://vaadin.com/docs/v25/flow/security/advanced-topics/strict-csp) setup
+  removes it by mapping every such function in a script of its own, which breaks with each new `executeJs` or add-on,
+  so it is not used here.
+- `'unsafe-inline'` in `style-src`: Vaadin's components and Lumo add `<style>` elements and `style` attributes at run
+  time, without a nonce.
+
+`data:` is allowed for images and fonts, which Vaadin's styles use for component icons and Lumo's icon font. Signing in
+and out navigate to Keycloak rather than submit a form, so `form-action` needs no other origin.
+
+In development mode the page allows inline scripts instead of a nonce, which Vaadin supports in production mode only.
+
 ## Running it
 
 Start the infrastructure and the back-end first ([Development Setup](../docs/development-setup.md)), then:

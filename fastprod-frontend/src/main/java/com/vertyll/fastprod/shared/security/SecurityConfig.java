@@ -60,6 +60,11 @@ class SecurityConfig {
         // Spring Security's saved request, which a sign-in started from a button also returns through, see ReturnPage.
         requestCache.setDelegateRequestCache(ReturnPage.requestCache());
         http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/actuator/health/**").permitAll());
+        // Written only where the response has no policy yet, so Vaadin's page keeps the one with its nonce.
+        http.headers(
+            headers -> headers
+                .contentSecurityPolicy(csp -> csp.policyDirectives(ContentSecurityPolicy.forOtherResponses()))
+        );
         http.oauth2Login(
             login -> login
                 .authorizationEndpoint(
