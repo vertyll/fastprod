@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 /** The account search against PostgreSQL, with Keycloak's Admin API stood in for. */
 @SpringBootTest
 @ActiveProfiles("test")
-@Import(PostgresTestContainer.class)
+@Import(TestcontainersConfiguration.class)
 @Transactional
 class UserAccountsSearchTest {
 

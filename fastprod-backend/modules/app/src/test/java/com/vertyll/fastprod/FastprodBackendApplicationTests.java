@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Import(PostgresTestContainer.class)
+@Import(TestcontainersConfiguration.class)
 class FastprodBackendApplicationTests {
 
     @Autowired
