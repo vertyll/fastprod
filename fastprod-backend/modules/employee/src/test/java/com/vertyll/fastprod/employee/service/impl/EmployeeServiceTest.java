@@ -4,14 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,8 +27,6 @@ import com.vertyll.fastprod.sharedinfrastructure.exception.ApiException;
 import com.vertyll.fastprod.user.api.UserAccounts;
 import com.vertyll.fastprod.user.api.UserAccounts.Account;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,10 +38,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SuppressFBWarnings(
-    value = "URF_UNREAD_FIELD",
-    justification = "Test class: employeeMapper is used by Mockito injection"
-)
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
 
@@ -56,11 +49,6 @@ class EmployeeServiceTest {
     @Mock
     private UserAccounts accounts;
 
-    @Spy
-    @SuppressWarnings("UnusedVariable")
-    private final EmployeeMapper employeeMapper = Mappers.getMapper(EmployeeMapper.class);
-
-    @InjectMocks
     private EmployeeServiceImpl employeeService;
 
     @Captor
@@ -71,6 +59,11 @@ class EmployeeServiceTest {
 
     @Captor
     private ArgumentCaptor<UserAccounts.AccountSearch> search;
+
+    @BeforeEach
+    void setUp() {
+        employeeService = new EmployeeServiceImpl(accounts, Mappers.getMapper(EmployeeMapper.class));
+    }
 
     @Test
     void createEmployee_ShouldCreateTheAccountWithTheGivenRoles() {

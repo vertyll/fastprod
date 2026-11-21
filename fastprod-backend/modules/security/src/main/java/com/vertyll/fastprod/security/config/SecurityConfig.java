@@ -37,6 +37,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
 
     @Bean
+    // CSRF protection is off: the API is stateless and reads bearer tokens, never cookies.
     @SuppressWarnings("java:S4502")
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
         ProblemSecurityHandlers problems = new ProblemSecurityHandlers(objectMapper);

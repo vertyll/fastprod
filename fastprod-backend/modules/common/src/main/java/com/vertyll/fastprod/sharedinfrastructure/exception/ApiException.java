@@ -13,6 +13,7 @@ public class ApiException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final HttpStatus status;
+    // A concrete map type keeps the exception serializable; the Map interface is not.
     @SuppressWarnings("PMD.LooseCoupling")
     private final LinkedHashMap<String, Serializable> args;
 

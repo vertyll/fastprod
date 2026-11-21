@@ -46,11 +46,9 @@ class EmployeeControllerTest {
     private MockMvc mockMvc;
     private LocalValidatorFactoryBean validator;
 
-    @SuppressWarnings("NullAway")
     @Mock
     private EmployeeService employeeService;
 
-    @SuppressWarnings("NullAway")
     @InjectMocks
     private EmployeeController employeeController;
 

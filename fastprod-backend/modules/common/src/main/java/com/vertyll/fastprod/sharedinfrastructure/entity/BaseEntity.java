@@ -22,6 +22,7 @@ import lombok.Getter;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+// PMD does not see the getters Lombok generates; JPA and auditing fill the fields after construction.
 @SuppressWarnings(
     {
         "PMD.AbstractClassWithoutAnyMethod",

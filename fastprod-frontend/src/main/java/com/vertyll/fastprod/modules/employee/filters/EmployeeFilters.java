@@ -24,6 +24,7 @@ public final class EmployeeFilters {
     private EmployeeFilters() {
     }
 
+    // The fields filter values of different types, so the list can name its element type only by a wildcard.
     @SuppressWarnings("java:S1452")
     public static List<FilterFieldConfig<?>> configs() {
         return List.of(

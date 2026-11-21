@@ -35,26 +35,21 @@ final class FilterChips {
         return Optional.empty();
     }
 
-    private static Optional<Chip> ofSelect(Select<?> select, @Nullable Object emptyToken) {
-        Object value = select.getValue();
+    private static <T> Optional<Chip> ofSelect(Select<T> select, @Nullable Object emptyToken) {
+        T value = select.getValue();
         if (value == null || (emptyToken != null && Objects.equals(value, emptyToken))) {
             return Optional.empty();
         }
-        // The generator was made for this select's items, and the value is one of them.
-        @SuppressWarnings("unchecked")
-        ItemLabelGenerator<Object> generator = (ItemLabelGenerator<Object>) select.getItemLabelGenerator();
-        String text = generator.apply(value);
+        String text = select.getItemLabelGenerator().apply(value);
         return Optional.of(new Chip(select.getLabel(), text));
     }
 
-    private static Optional<Chip> ofMultiSelect(MultiSelectComboBox<?> multiSelect) {
-        Set<?> selected = multiSelect.getSelectedItems();
+    private static <T> Optional<Chip> ofMultiSelect(MultiSelectComboBox<T> multiSelect) {
+        Set<T> selected = multiSelect.getSelectedItems();
         if (selected.isEmpty()) {
             return Optional.empty();
         }
-        // The generator was made for this combo box's items, and the selected ones are among them.
-        @SuppressWarnings("unchecked")
-        ItemLabelGenerator<Object> generator = (ItemLabelGenerator<Object>) multiSelect.getItemLabelGenerator();
+        ItemLabelGenerator<T> generator = multiSelect.getItemLabelGenerator();
         List<String> labels = selected.stream().map(generator).toList();
         return Optional.of(new Chip(multiSelect.getLabel(), String.join(", ", labels)));
     }

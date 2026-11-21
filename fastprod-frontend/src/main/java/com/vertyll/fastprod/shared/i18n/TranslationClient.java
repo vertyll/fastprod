@@ -10,6 +10,7 @@ import com.vertyll.fastprod.shared.config.BackendApiProperties;
 import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 import com.vertyll.fastprod.shared.service.BaseHttpService;
 
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
@@ -28,8 +29,8 @@ public class TranslationClient extends BaseHttpService {
 
     public Map<String, String> messages(String language) {
         // The catalog of a language is a flat JSON object of strings.
-        @SuppressWarnings("unchecked")
-        Map<String, String> messages = get(PUBLIC_ENDPOINT + encode(language), Map.class);
+        Map<String, String> messages = get(PUBLIC_ENDPOINT + encode(language), new TypeReference<>() {
+        });
         return messages == null ? Map.of() : messages;
     }
 

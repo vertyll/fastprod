@@ -12,9 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -30,8 +28,6 @@ import com.vertyll.fastprod.user.mapper.UserMapper;
 import com.vertyll.fastprod.user.repository.UserRepository;
 import com.vertyll.fastprod.user.service.RoleService;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,7 +36,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Test class: userMapper is used by Mockito injection")
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     @Mock
@@ -52,11 +47,6 @@ class UserServiceTest {
     @Mock
     private IdentityProvider identityProvider;
 
-    @Spy
-    @SuppressWarnings("UnusedVariable")
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-
-    @InjectMocks
     private UserServiceImpl userService;
 
     @Captor
@@ -67,6 +57,8 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+        userService =
+                new UserServiceImpl(userRepository, roleService, identityProvider, Mappers.getMapper(UserMapper.class));
         userRole = Role.builder().name(RoleType.USER).description("User role").build();
         managerRole = Role.builder().name(RoleType.MANAGER).description("Manager role").build();
     }

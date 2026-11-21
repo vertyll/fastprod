@@ -19,6 +19,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import static java.util.Objects.requireNonNull;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +55,7 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST.value(), problem.getStatus());
         assertEquals("errors.common.validationFailed", problem.getDetail());
 
-        Map<String, List<String>> errors = errorsOf(problem);
+        Map<?, ?> errors = errorsOf(problem);
         assertEquals(1, errors.size());
         assertEquals(List.of("Username is required"), errors.get("username"));
     }
@@ -72,7 +73,7 @@ class GlobalExceptionHandlerTest {
 
         ProblemDetail problem = handler.handleValidationException(ex);
 
-        Map<String, List<String>> errors = errorsOf(problem);
+        Map<?, ?> errors = errorsOf(problem);
         assertEquals(2, errors.size());
         assertEquals(
             List.of("Password must be at least 8 characters", "Password must contain an uppercase letter"),
@@ -113,10 +114,9 @@ class GlobalExceptionHandlerTest {
         assertEquals("errors.common.unexpected", problem.getDetail());
     }
 
-    // The handler stores the field errors under this property as a Map<String, List<String>>.
-    @SuppressWarnings("unchecked")
-    private static Map<String, List<String>> errorsOf(ProblemDetail problem) {
-        return (Map<String, List<String>>) requireNonNull(
+    private static Map<?, ?> errorsOf(ProblemDetail problem) {
+        return assertInstanceOf(
+            Map.class,
             requireNonNull(problem.getProperties()).get(GlobalExceptionHandler.ERRORS_PROPERTY)
         );
     }

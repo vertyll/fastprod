@@ -40,11 +40,9 @@ class UserControllerTest {
     private LocalValidatorFactoryBean validator;
     private Jwt token;
 
-    @SuppressWarnings("NullAway")
     @Mock
     private UserService userService;
 
-    @SuppressWarnings("NullAway")
     @InjectMocks
     private UserController userController;
 

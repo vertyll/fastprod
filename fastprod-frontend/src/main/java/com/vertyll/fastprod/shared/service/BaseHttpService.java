@@ -20,6 +20,7 @@ import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
 
@@ -62,6 +63,11 @@ public class BaseHttpService {
 
     protected <T> @Nullable T get(String endpoint, Class<T> responseType) {
         return read(send(request(endpoint).GET()), responseType);
+    }
+
+    protected <T> @Nullable T get(String endpoint, TypeReference<T> responseType) {
+        String body = send(request(endpoint).GET());
+        return body == null ? null : objectMapper.readValue(body, responseType);
     }
 
     protected <R> @Nullable R post(String endpoint, Class<R> responseType) {

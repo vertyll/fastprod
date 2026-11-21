@@ -36,6 +36,7 @@ public class TranslationEntity {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    // The constructor JPA requires; Hibernate fills the fields when it loads a row.
     @SuppressWarnings("NullAway.Init")
     protected TranslationEntity() {
     }

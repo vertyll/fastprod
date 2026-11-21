@@ -45,6 +45,7 @@ public class Role extends BaseEntity {
     @Column(nullable = false)
     private boolean active;
 
+    // The constructor JPA requires; Hibernate fills the fields when it loads a row.
     @SuppressWarnings(
         {
             "NullAway.Init",
