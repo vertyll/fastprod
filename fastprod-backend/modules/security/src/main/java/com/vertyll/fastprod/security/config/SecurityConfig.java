@@ -68,6 +68,9 @@ public class SecurityConfig {
     }
 
     @Bean
+    // Spring Security 7.2 takes only RestOperations for the key set; RestClient follows in
+    // https://github.com/spring-projects/spring-security/issues/19027
+    @SuppressWarnings("removal")
     public JwtDecoder jwtDecoder(KeycloakResourceServerProperties keycloak, RestTemplateBuilder restTemplates) {
         // Boot's builder calls the key set with the timeouts of spring.http.clients.
         NimbusJwtDecoder decoder =
