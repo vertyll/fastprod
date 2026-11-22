@@ -22,9 +22,9 @@ A module reaches another only through that module's `api` package, such as `user
 depend on one another without cycles; `common` is the shared kernel every module may use. `ModuleBoundariesTest` in
 `app` checks both on every build.
 
-`file` is built but not assembled: no feature stores files yet, and assembling it makes the upload folder
-(`application.file.uploads.file-output-path`) a required setting. The first feature that stores a file adds it to
-`app`'s dependencies and that setting to every profile.
+`file` is built but not assembled: no feature stores files yet. Every profile already names the upload folder
+(`application.file.uploads.file-output-path`), which assembling `file` makes a required setting; the first feature that
+stores a file adds `file` to `app`'s dependencies.
 
 ## API
 
