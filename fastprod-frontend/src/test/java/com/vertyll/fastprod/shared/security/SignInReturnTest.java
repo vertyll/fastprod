@@ -125,7 +125,7 @@ class SignInReturnTest {
         MockHttpServletResponse started = MockMvcTester.create(mvc).perform(authorize).getResponse();
         Map<String, String> query = queryOf(Objects.requireNonNull(started.getRedirectedUrl(), "goes to Keycloak"));
         String nonce = Objects.requireNonNull(query.get(OidcParameterNames.NONCE), "the sign-in sends a nonce");
-        when(idTokenDecoders.createDecoder(any())).thenReturn(token -> idToken(nonce));
+        when(idTokenDecoders.createDecoder(any())).thenReturn(_ -> idToken(nonce));
 
         MockHttpServletResponse callback = MockMvcTester.create(mvc)
             .perform(

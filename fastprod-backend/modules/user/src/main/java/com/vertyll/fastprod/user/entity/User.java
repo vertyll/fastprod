@@ -116,10 +116,6 @@ public class User extends BaseEntity {
         this.lastName = newLastName;
     }
 
-    public void changeEmail(String newEmail) {
-        this.email = newEmail;
-    }
-
     public void updateDetails(String newFirstName, String newLastName, String newEmail) {
         this.firstName = newFirstName;
         this.lastName = newLastName;
