@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import com.vertyll.fastprod.shared.security.AuthTokenProvider;
 
 import com.sun.net.httpserver.HttpServer;
 
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,7 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class BaseHttpServiceTest {
 
     private static final Duration READ_TIMEOUT = Duration.ofMillis(200);
-    private static final Duration SLOW_ANSWER = Duration.ofSeconds(2);
+    private static final TypeReference<Map<String, String>> TEXTS = new TypeReference<>() {
+    };
+
+    private final CountDownLatch slowAnswer = new CountDownLatch(1);
 
     private HttpServer server;
     private TestService service;
@@ -48,7 +53,7 @@ class BaseHttpServiceTest {
         respond("/broken", 500, "text/html", "<html>oops</html>");
         server.createContext("/slow", exchange -> {
             try {
-                Thread.sleep(SLOW_ANSWER.toMillis());
+                slowAnswer.await();
             } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
@@ -63,12 +68,31 @@ class BaseHttpServiceTest {
 
     @AfterEach
     void stopServer() {
+        slowAnswer.countDown();
         server.stop(0);
     }
 
     @Test
     void readsTheResponseBodyAsTheDto() {
         assertEquals(new Item("Anna"), service.get("/item", Item.class));
+    }
+
+    @Test
+    void readsTheResponseBodyAsTheGenericType() {
+        assertEquals(Map.of("name", "Anna"), service.get("/item", TEXTS));
+    }
+
+    @Test
+    void returnsNullForNoContentOfAGenericType() {
+        assertNull(service.get("/empty", TEXTS));
+    }
+
+    @Test
+    void turnsAProblemDetailForAGenericTypeIntoAnApiException() {
+        ApiException exception = assertThrows(ApiException.class, () -> service.get("/invalid", TEXTS));
+
+        assertEquals(400, exception.getStatusCode());
+        assertEquals("Validation failed", exception.getMessage());
     }
 
     @Test

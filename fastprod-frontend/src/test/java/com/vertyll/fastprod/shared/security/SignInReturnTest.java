@@ -12,6 +12,7 @@ import java.util.Set;
 
 import jakarta.servlet.Filter;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +117,7 @@ class SignInReturnTest {
         assertThat(landingAfterSignIn(session, "//evil.test/")).doesNotContain("evil.test");
     }
 
-    private String landingAfterSignIn(MockHttpSession session, String page) {
+    private String landingAfterSignIn(MockHttpSession session, @Nullable String page) {
         MockHttpServletRequestBuilder authorize = get(SecurityConfig.LOGIN_PATH).session(session);
         if (page != null) {
             authorize.param(ReturnPage.PARAMETER, page);
@@ -129,7 +130,7 @@ class SignInReturnTest {
         MockHttpServletResponse callback = MockMvcTester.create(mvc)
             .perform(
                 get("/login/oauth2/code/keycloak").param("code", "code")
-                    .param("state", query.get("state"))
+                    .param("state", Objects.requireNonNull(query.get("state"), "the sign-in sends a state"))
                     .session(session)
             )
             .getResponse();
