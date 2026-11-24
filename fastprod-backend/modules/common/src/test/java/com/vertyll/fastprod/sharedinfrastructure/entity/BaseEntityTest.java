@@ -29,7 +29,7 @@ class BaseEntityTest {
         assertTrue(clazz.isAnnotationPresent(EntityListeners.class));
         EntityListeners entityListeners = clazz.getAnnotation(EntityListeners.class);
         assertArrayEquals(
-            new Class[] {
+            new Class<?>[] {
                 AuditingEntityListener.class
             },
             entityListeners.value()
