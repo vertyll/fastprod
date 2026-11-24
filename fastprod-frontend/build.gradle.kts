@@ -61,6 +61,8 @@ dependencies {
     compileOnly(libs.jspecify)
     compileOnly(libs.spotbugs.annotations)
 
+    testCompileOnly(libs.lombok)
+
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.guava.beta.checker)
 
