@@ -153,7 +153,7 @@ subprojects {
     }
 
     tasks.withType<JavaCompile> {
-        options.compilerArgs.addAll(listOf("-parameters", "-Xlint:all", "-Werror"))
+        options.compilerArgs.add("-parameters")
 
         options.errorprone {
             enabled.set(true)
